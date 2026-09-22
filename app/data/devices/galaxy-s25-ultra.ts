@@ -2,25 +2,25 @@ import type { Device, Source } from "../types";
 
 const samsungSpecs: Source = {
   kind: "official",
-  label: "Samsung Galaxy Z Fold6 Specifications",
-  url: "https://www.samsung.com/us/smartphones/galaxy-z-fold6/specs/",
+  label: "Samsung Galaxy S25 Ultra Specifications",
+  url: "https://www.samsung.com/us/smartphones/galaxy-s25-ultra/specs/",
   retrievedAt: "2025-01-14",
 };
 
-export const galaxyZFold6: Device = {
-  slug: "galaxy-z-fold6",
-  name: "Galaxy Z Fold6",
+export const galaxyS25Ultra: Device = {
+  slug: "galaxy-s25-ultra",
+  name: "Galaxy S25 Ultra",
   brand: "Samsung",
-  series: "Galaxy Z Fold",
-  formFactor: "foldable-book",
-  releaseYear: 2024,
+  series: "Galaxy S25",
+  formFactor: "bar",
+  releaseYear: 2025,
   screens: [
     {
       id: "main",
       label: "Main",
-      diagonalInch: 7.6,
-      resolutionPx: { width: 2160, height: 1856 },
-      ppi: 374,
+      diagonalInch: 6.9,
+      resolutionPx: { width: 1440, height: 3120 },
+      ppi: 486,
       logicalSizeDp: null,
       densityDpi: null,
       cornerRadiiDp: null,
