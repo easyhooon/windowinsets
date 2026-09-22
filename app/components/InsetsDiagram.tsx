@@ -1,6 +1,10 @@
+import { useEffect, useRef, useState } from "react";
 import type { InsetsMeasurement, Screen } from "../data/types";
 
 const MAX_W = 260;
+const BASE_HEIGHT = 420;
+const MIN_ZOOM = 40;
+const MAX_ZOOM = 250;
 const PAD_TOP = 40;
 const PAD_LEFT = 40;
 const PAD_RIGHT = 64;
@@ -87,6 +91,26 @@ export function InsetsDiagram({
   screen: Screen;
   measurement: InsetsMeasurement | null;
 }) {
+  // Hooks first (rules of hooks) — the "not verified yet" early return below
+  // must come after these, not before.
+  const [zoom, setZoom] = useState(100);
+  const wrapRef = useRef<HTMLDivElement>(null);
+
+  // React's synthetic onWheel is attached passively (React 17+), so
+  // event.preventDefault() inside it is silently ignored and the page still
+  // scrolls underneath. A native listener with { passive: false } is the only
+  // way to actually stop that scroll and zoom the diagram in place instead.
+  useEffect(() => {
+    const el = wrapRef.current;
+    if (!el) return;
+    const handler = (e: WheelEvent) => {
+      e.preventDefault();
+      setZoom((z) => Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, Math.round(z - e.deltaY / 4))));
+    };
+    el.addEventListener("wheel", handler, { passive: false });
+    return () => el.removeEventListener("wheel", handler);
+  }, []);
+
   const dp = screen.logicalSizeDp;
   if (!dp) {
     return (
@@ -117,15 +141,42 @@ export function InsetsDiagram({
 
   return (
     <div className="space-y-3">
+      <div className="flex items-center justify-center gap-2 text-xs text-muted">
+        <span>Zoom</span>
+        <button
+          onClick={() => setZoom((z) => Math.max(MIN_ZOOM, z - 10))}
+          className="rounded border border-line px-1.5 py-0.5 hover:bg-canvas"
+          aria-label="Zoom out"
+        >
+          −
+        </button>
+        <button
+          onClick={() => setZoom(100)}
+          className="min-w-[3.5rem] rounded border border-line px-1.5 py-0.5 font-mono hover:bg-canvas"
+          title="Reset zoom"
+        >
+          {zoom}%
+        </button>
+        <button
+          onClick={() => setZoom((z) => Math.min(MAX_ZOOM, z + 10))}
+          className="rounded border border-line px-1.5 py-0.5 hover:bg-canvas"
+          aria-label="Zoom in"
+        >
+          +
+        </button>
+        <span className="text-subtle">(scroll over diagram to zoom)</span>
+      </div>
+      <div ref={wrapRef} className="overflow-auto" style={{ maxHeight: "min(70vh, 600px)" }}>
       <svg
         viewBox={viewBox}
         // Sized by its own real aspect ratio (device width:height), not stretched to
         // fill the container's width — that mismatch was letterboxing the phone shape
         // into a fraction of its box instead of showing it at its true proportions.
+        // Zoom scales this base height; wheel-over-diagram and +/- controls adjust it.
         style={{
-          height: "min(420px, 60vh)",
+          height: `${(BASE_HEIGHT * zoom) / 100}px`,
           width: "auto",
-          maxWidth: "100%",
+          maxWidth: "none",
           display: "block",
           marginInline: "auto",
         }}
@@ -263,6 +314,7 @@ export function InsetsDiagram({
           />
         )}
       </svg>
+      </div>
 
       {/* Color legend */}
       <div className="flex flex-wrap justify-center gap-4 text-xs border-t border-line pt-3">
