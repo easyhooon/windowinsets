@@ -9,6 +9,7 @@ class CapturePolicyTest {
         assertNotNull(CapturePolicy.blockingReason("main", 0f, true, false))
         assertNull(CapturePolicy.blockingReason("cover", 0f, true, false))
         assertNull(CapturePolicy.blockingReason("main", 180f, true, false))
+        assertNull(CapturePolicy.blockingReason("main", 0f, true, false, hasFoldingFeature = true))
     }
 
     @Test fun waitForAFullStableWindowWithoutInventingMissingHingeEvidence() {

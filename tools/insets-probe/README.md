@@ -105,6 +105,14 @@ claim that navigation changed. Raw heuristic/setting fields remain in the output
 and `modeSource` identifies the combined evidence. Insets are never modified.
 See [Android inset definitions](https://developer.android.com/develop/ui/compose/system/insets).
 
+## Version 1.2.1: stale RTL hinge sensor handling
+
+- A full-screen Main capture is accepted when WindowManager reports a real
+  `FoldingFeature`, even if RTL's hinge-angle sensor remains at 0° after the
+  physical display switches to the unfolded panel.
+- A Main label with a closed hinge and no folding feature remains blocked. The
+  active/full window dimensions and raw hinge value are still recorded.
+
 ## Version 1.2.0: FlexWindow widget launcher
 
 - Adds Samsung's documented `sub_screen` AppWidget metadata so InsetsProbe can be

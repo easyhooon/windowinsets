@@ -169,6 +169,7 @@ class MainActivity : ComponentActivity(), SensorEventListener {
             expectedDisplayId,
             display?.displayId,
             bounds.width() == maximumBounds.width() && bounds.height() == maximumBounds.height(),
+            foldingFeatures.isNotEmpty(),
         )
         if (reason != null) {
             Toast.makeText(this, reason, Toast.LENGTH_LONG).show()
