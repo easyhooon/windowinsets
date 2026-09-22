@@ -37,7 +37,42 @@ pnpm typecheck
 pnpm build      # prerendered HTML in build/client
 ```
 
+## Device coverage and priorities
+
+Decision, 2026-09-22: support Samsung Galaxy models with available official skins,
+released in **2020 or later**, including discontinued and non-flagship models.
+This supersedes the earlier no-cutoff decision. See [release evidence and archive
+policy](docs/DEVICE_COVERAGE.md).
+
+1. Complete the current Galaxy S, Z Fold and Z Flip experience.
+2. Add Galaxy Tab.
+3. Add Galaxy Note and Galaxy A; neither series takes priority over the other yet.
+
+Galaxy Z TriFold is an explicit exception: its support and animation scope require
+a separate product decision. A downloaded skin does not automatically approve it.
+
+An official skin permits an artwork preview, not a claim of verified inset data.
+Devices without captures remain marked **Skin preview / pending** until measured.
+This is the target coverage roadmap, not a claim that every model is implemented.
+
 ## Adding a device
 
-1. Create `app/data/devices/<slug>.ts` implementing `Device` (see `app/data/types.ts`).
-2. Register it in `app/data/devices.ts`. Routes, sitemap and prerendering pick it up automatically.
+1. To register downloaded skins, run `python3 scripts/import-samsung-skins.py /path/to/downloads`.
+   The importer copies original artwork, registers main/cover screens in
+   `app/data/skinCatalog.json`, and skips TriFold. Review each new model’s release
+   year against the 2020 cutoff before publishing; record boundary/older models
+   in `app/data/coverage.ts` with sources in `docs/DEVICE_COVERAGE.md`.
+2. For RTL data, keep raw JSON in `measurements/<device-slug>/`, then create
+   `app/data/devices/<slug>/index.ts` implementing `Device` (see `app/data/types.ts`).
+3. Register that entry in `verifiedEntries` in `app/data/devices.ts` using the
+   existing preview slug. Its screens override preview data; additional skin-only
+   screens stay pending. Routes, sitemap and prerendering use the merged catalogue.
+
+Current public catalogue: 70 models (28 S, 28 Tab, 7 Fold, 7 Flip). The skin
+archive retains 73 models, including three pre-2020 models. New Fold/Flip
+entries have static main/cover previews where supplied; animation is separately
+enabled per device. Note/A phone skins were not present in the supplied downloads.
+
+## Continuing development in Codex
+
+Start with [AGENTS.md](AGENTS.md) and the current [reference parity notes](docs/REFERENCE_PARITY.md). Official Samsung artwork and its layout coordinates live in `public/skins/` and `app/data/skins.ts`. Run geometry/asset regressions with `node --test tests/rendering.test.mjs`.

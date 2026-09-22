@@ -2,11 +2,67 @@
 
 **Last Updated**: 2026-09-22
 
+## Correction from official skins (2026-09-22)
+
+The old claim that RTL always exposes the main display was not justified. Fold8's
+raw `main-*.json` files are **1248×1972**, exactly matching Samsung's official
+**cover** skin layout. Its inner layout is **2448×1848**. The website now classifies
+those captures as cover based on this evidence, leaves inner measurements pending,
+and preserves the raw filenames/labels for traceability. Do not use the historical
+Bug 5 rotation workaround: it stretched cover information into a different screen.
+
+Flip8's 1080×2520 main captures match its main skin. Its 948×1048 cover skin is only
+artwork; cover insets remain pending. A screen radio button labels a capture and
+does not prove which physical display was active. Verify resolution against the
+intended display for every future capture.
+
+For current rendering architecture and verification, see
+[REFERENCE_PARITY.md](REFERENCE_PARITY.md). Legacy notes below document the prior
+session and must be read with this correction.
+
+## Probe capture diagnosis and fix (2026-09-22)
+
+Fold8's two retained captures both report **hinge angle 0°**, no folding features,
+and current/maximum windows of **1248×1972 px**. Their `screen: main` property is
+manually chosen. The original Measure All only changed that label and attempted
+navigation-mode writes; it never changed the physical display. Measure/Copy/Share
+also saved cached `lastJson` instead of collecting at the button press. These are
+confirmed code defects, although the available logs cannot establish which exact
+button sequence produced each historical capture or why RTL showed that state.
+
+InsetsProbe 1.1.0 removes the misleading batch operation and navigation toggles,
+collects fresh root-window insets/metrics at export, blocks an unsettled or
+multi-window capture, and blocks Main when a hinge reading indicates closed.
+Schema 2 makes manual screen labeling explicit and adds capture context. A null
+hinge angle is still unknown, not verification of Main. The ≤5° closed threshold
+is consistent with the [AOSP fold-state provider's convention](https://android.googlesource.com/platform/frameworks/base/+/9d3dff4ab84820404b6b130bd5435cf578dc87cf/services/foldables/devicestateprovider/src/com/android/server/policy/FoldableDeviceStateProvider.java).
+
+For a new Fold8 inner capture, actually change the device state, return to Probe
+full-screen, and verify the active window changes from the cover resolution.
+The official inner artwork is 2448×1848; it is a comparison reference, not a value
+to force into JSON (resolution settings and rotation can differ). Then select
+Main and capture each navigation mode separately. Never rotate the old cover
+measurements to fabricate an inner dataset.
+
+Build and two capture-policy unit tests passed locally. No Android device was
+connected for runtime verification; RTL display transitions remain unverified.
+See [Probe instructions](../tools/insets-probe/README.md).
+
+### RTL access check
+
+The logged-in Chrome session previously returned **403 Forbidden** on three
+visits to the RTL device page, while Samsung's developer landing/login pages
+remained accessible. A separate anonymous in-app browser reached only the RTL
+shell, not a usable device session. This does not establish a global Samsung
+outage or prove a user-account/IP fault. No additional reservation or successful
+capture occurred. A future retest needs a changed access condition; do not treat
+the earlier marketing-page access as evidence that device access works.
+
 ## Overview
 
 windowinsets.info is a reference site for Android window insets, display cutouts, corner radii and foldable hinge states across Samsung Galaxy devices. Every value is labeled **official** (published by Samsung/Google), **measured** (captured with InsetsProbe on RTL or a real device, raw JSON committed), or **community** (unverified).
 
-**Current Status**: Galaxy S25 Ultra, Galaxy S25+, Galaxy Z Fold8, Galaxy Z Flip8 measured (main screen, both gesture + 3-button navigation). Galaxy S25, Fold6, Fold7, Flip6 still pending.
+**Current Status**: Galaxy S25 Ultra, Galaxy S25+, and Galaxy Z Flip8 main screens measured; Galaxy Z Fold8 cover classified from matching official skin resolution (both gesture + 3-button). Fold8 inner remains pending. Galaxy S25, Fold6, Fold7, Flip6 still pending.
 
 ## RTL Credits & Cost
 
@@ -116,7 +172,7 @@ Practical sequence per device:
 
 1. Files download via the RTL WebClient's file transfer (browser downloads, e.g. to `~/Downloads/content`, `content (1)`, etc. — same filename repeated, browser auto-numbers them)
 2. Save to `measurements/<device-slug>/main-<threeButton|gesture>.json`
-3. Create `app/data/devices/<slug>.ts` implementing `Device` (see an existing foldable/bar example)
+3. Create `app/data/devices/<slug>/index.ts` implementing `Device` (see an existing foldable/bar example)
 4. Register in `app/data/devices.ts` (newest release year first)
 5. `pnpm typecheck && pnpm build` to verify, then commit and push
 
@@ -147,7 +203,7 @@ Practical sequence per device:
 
 1. **InsetsProbe** exports raw JSON (schemaVersion 1) with device/display/navigation/insets/displayCutout/roundedCorners/hinge.
 2. **Raw JSON committed** to `measurements/<device-slug>/<screen>-<navMode>.json` — source of truth, never hand-edited.
-3. **TypeScript device file** (`app/data/devices/<slug>.ts`) implements `Device` (see `app/data/types.ts`): dp-converted insets per nav mode, `cornerRadiiDp`, optional `cutoutShape` (real punch-hole position, when the raw capture has `boundingRects`), sources with GitHub links.
+3. **TypeScript device file** (`app/data/devices/<slug>/index.ts`) implements `Device` (see `app/data/types.ts`): dp-converted insets per nav mode, `cornerRadiiDp`, optional `cutoutShape` (real punch-hole position, when the raw capture has `boundingRects`), sources with GitHub links.
 4. **Website**: React Router, statically prerendered. `app/components/DeviceView.tsx` holds the full device-detail render — a single uniform toolbar row (Navigation / Pose / Hinge / Zoom dropdowns + a settings gear, all one button style, matching safearea.info's own toolbar exactly) plus the diagram, metrics, and sources — shared by both the `/​:slug` route and the home page. Home (`/`) renders `DeviceView` for `devices[0]` (the newest device) directly — safearea.info-style landing straight on its equivalent of iPhone Duo, instead of a separate list-only summary page. `zoom`/`showFrame`/`showRegions`/`showDimensions`/`units` all live as state in `DeviceView` and are passed down as props — both diagram components below are now fully controlled, so there's exactly one toolbar on the page, never a second private one duplicated inside a component. It shows:
    - **Bar phones**: `InsetsDiagram` — flat 2D SVG diagram with dimension lines/arrows, per-edge inset chips, corner-radius chips, the real cutout shape at its measured position, schematic (unmeasured) speaker/button marks, and mouse-wheel zoom. No inner max-height/overflow cap — like safearea.info, zooming in just grows the diagram (and the page scrolls), it doesn't get boxed into a fixed viewport.
    - **Foldables**: `FoldRenderer3D` — a genuine WebGL (three.js) renderer, not a CSS 3D transform. A plane mesh subdivided along the hinge axis bends around a cylindrical arc as the hinge angle changes (0°=closed, 180°=flat), with the *entire* diagram (bezel, colored regions, real cutout, corner chips, dimension arrows) baked into a single 2D canvas texture applied to the mesh — every label bends with the surface for free, no separate 3D-projection math for text. `axis="vertical"` for book-style folds (Z Fold), `axis="horizontal"` for flip-style (Z Flip). Only a narrow "hinge zone" actually curves (real screens are rigid glass on either side of the hinge mechanism, not flexible along their whole length); everything outside it stays flat and rotates as a rigid body tangent to the curve boundary. Also auto-corrects the captured dp values to the physically-correct silhouette orientation per fold axis — see Bug 5 above. This single component now replaces the old two-component split (`InsetsDiagram` + `FoldPreview`) that safearea.info's own single-diagram UX had been the target for; **that merge is done**, `FoldPreview.tsx` and the old per-component toolbars (`Segmented.tsx`) have been deleted.
@@ -194,7 +250,7 @@ RTL's device list/reservation pages are ordinary web pages (browser automation h
 
 - `tools/insets-probe/app/src/main/java/info/windowinsets/probe/{MainActivity,Probe}.kt` — capture + automation logic
 - `app/data/types.ts` — `Device`, `Screen`, `InsetsMeasurement`, `CutoutShape`, `FormFactor`
-- `app/data/devices/galaxy-z-fold8.ts` — most complete example (foldable, both nav modes, cutout shape, pending-cover comment)
+- `app/data/devices/galaxy-z-fold8/index.ts` — most complete example (foldable, both nav modes, cutout shape, pending-cover comment)
 - `app/components/DeviceView.tsx` — shared full device-detail render (used by home + `/:slug`), owns the single unified toolbar's state
 - `app/components/Dropdown.tsx` — the reusable "Label: Value ▾" toolbar button (Navigation/Pose/Hinge/Zoom all use this)
 - `app/components/InsetsDiagram.tsx` — bar-phone 2D SVG diagram (controlled: zoom/settings come in as props)
@@ -202,7 +258,10 @@ RTL's device list/reservation pages are ordinary web pages (browser automation h
 - `app/lib/seo.ts` — shared OG/Twitter meta helper
 - `app/routes/shell.tsx` — sidebar layout, category tabs, search
 - `app/data/devices.ts` — device registry, newest-first, Ultra > Plus > base within a year
-- `public/favicon.svg`, `public/og-source.svg` — hand-authored brand assets (edit these, then re-run the `rsvg-convert` commands to regenerate the PNGs)
+- Branding source of truth is now [design/brand/README.md](../design/brand/README.md).
+  The old `public/og-source.svg` is retired; do not regenerate the current OG image
+  from it. The generated illustration and matching corner-mark favicon replace the
+  earlier hand-authored device silhouette described above.
 
 ### Recommendations
 

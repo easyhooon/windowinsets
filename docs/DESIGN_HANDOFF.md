@@ -1,5 +1,20 @@
 # Design Handoff — Visual Polish Backlog
 
+> **Codex status, 2026-09-22:** Product direction is full safearea.info parity for
+> the current Android devices. See [REFERENCE_PARITY.md](REFERENCE_PARITY.md).
+> Coverage priorities are recorded in [README.md](../README.md#device-coverage-and-priorities):
+> current S/Fold/Flip quality → Tab → Note/A; all officially skinned models are in
+> scope from release year 2020 onward. Older artwork stays archived; see
+> [DEVICE_COVERAGE.md](DEVICE_COVERAGE.md). TriFold requires a separate decision.
+> Official Samsung skins are now provided for Fold8/Flip8 and 28 S-series models; lit solid
+> fold geometry, content-sized corner badges, responsive layout and SVG toolbar
+> icons are implemented. OG artwork and favicon were replaced with the generated
+> Android inset illustration and matching corner mark; see
+> [brand assets](../design/brand/README.md). The historical notes below
+> describe the pre-migration state. The former Fold8 rotation workaround was
+> incorrect: its capture matches the official cover display, not the inner display.
+
+
 **Purpose**: items below are things Claude (writing/maintaining this codebase) can build and wire up functionally, but can't take further without actual design work — new artwork, per-device skin assets, or a real pass on visual hierarchy/material feel. Compiled for handoff to a design-focused agent/person. Reference site throughout: **safearea.info**.
 
 All of these are visual/asset polish only — no functional bugs are being tracked here.
