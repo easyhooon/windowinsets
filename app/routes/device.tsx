@@ -43,10 +43,21 @@ function Row({ label, value }: { label: string; value: React.ReactNode }) {
   );
 }
 
+function SectionLabel({ children }: { children: React.ReactNode }) {
+  return <h3 className="mt-5 mb-1 text-xs font-semibold uppercase tracking-wide text-subtle first:mt-0">{children}</h3>;
+}
+
 const PENDING = <span className="text-subtle">pending</span>;
 
-function insetsText(i: Insets) {
-  return `T ${i.top} · R ${i.right} · B ${i.bottom} · L ${i.left} dp`;
+function insetsRows(i: Insets, unit = "dp") {
+  return (
+    <>
+      <Row label="Top" value={`${i.top} ${unit}`} />
+      <Row label="Right" value={`${i.right} ${unit}`} />
+      <Row label="Bottom" value={`${i.bottom} ${unit}`} />
+      <Row label="Left" value={`${i.left} ${unit}`} />
+    </>
+  );
 }
 
 function SourceList({ sources }: { sources: Source[] }) {
@@ -127,36 +138,66 @@ export default function DevicePage({ params }: Route.ComponentProps) {
       )}
 
       <div className="mt-8 grid gap-8 lg:grid-cols-3">
-        {/* Left: Metrics Panel */}
-        <div className="lg:col-span-1 space-y-6">
+        {/* Left: Metrics Panel — one value per row, like safearea.info */}
+        <div className="lg:col-span-1">
           <div className="rounded-[10px] border border-line bg-surface p-4 shadow-card">
-            <h2 className="text-sm font-medium text-muted">Display · {screen.label}</h2>
+            <h2 className="text-sm font-semibold">Metrics</h2>
+
+            <SectionLabel>Dimensions</SectionLabel>
             <dl>
-              <Row label="Diagonal" value={isSpecced(screen) ? `${screen.diagonalInch.toFixed(1)}″` : PENDING} />
+              <Row
+                label="Logical Size"
+                value={screen.logicalSizeDp ? `${screen.logicalSizeDp.width} × ${screen.logicalSizeDp.height} dp` : PENDING}
+              />
               <Row
                 label="Resolution"
                 value={isSpecced(screen) ? `${screen.resolutionPx.width} × ${screen.resolutionPx.height} px` : PENDING}
               />
-              <Row label="Pixel density" value={isSpecced(screen) ? `${screen.ppi} ppi` : PENDING} />
+              <Row label="Pixel Density" value={isSpecced(screen) ? `${screen.ppi} ppi` : PENDING} />
               <Row label="Density (dpi)" value={screen.densityDpi ?? PENDING} />
-              <Row
-                label="Logical size"
-                value={screen.logicalSizeDp ? `${screen.logicalSizeDp.width} × ${screen.logicalSizeDp.height} dp` : PENDING}
-              />
+              <Row label="Diagonal" value={isSpecced(screen) ? `${screen.diagonalInch.toFixed(1)}″` : PENDING} />
             </dl>
-          </div>
 
-          <div className="rounded-[10px] border border-line bg-surface p-4 shadow-card">
-            <h2 className="text-sm font-medium text-muted">
-              Insets · {navMode === "gesture" ? "Gesture" : "3-button"} navigation
-            </h2>
+            <SectionLabel>Safe Area Insets · {navMode === "gesture" ? "Gesture" : "3-button"}</SectionLabel>
             <dl>
-              <Row label="System bars" value={measurement ? insetsText(measurement.systemBars) : PENDING} />
-              <Row label="Display cutout" value={measurement ? insetsText(measurement.displayCutout) : PENDING} />
-              <Row
-                label="Measured on"
-                value={measurement ? `One UI ${measurement.condition.oneUi} · Android ${measurement.condition.android}` : PENDING}
-              />
+              {measurement ? insetsRows(measurement.systemBars) : (
+                <>
+                  <Row label="Top" value={PENDING} />
+                  <Row label="Right" value={PENDING} />
+                  <Row label="Bottom" value={PENDING} />
+                  <Row label="Left" value={PENDING} />
+                </>
+              )}
+            </dl>
+
+            <SectionLabel>Display Cutout</SectionLabel>
+            <dl>
+              {measurement ? insetsRows(measurement.displayCutout) : (
+                <>
+                  <Row label="Top" value={PENDING} />
+                  <Row label="Right" value={PENDING} />
+                  <Row label="Bottom" value={PENDING} />
+                  <Row label="Left" value={PENDING} />
+                </>
+              )}
+            </dl>
+
+            {screen.cornerRadiiDp && (
+              <>
+                <SectionLabel>Corner Radii · Portrait</SectionLabel>
+                <dl>
+                  <Row label="Top Left" value={`${screen.cornerRadiiDp.topLeft} dp`} />
+                  <Row label="Top Right" value={`${screen.cornerRadiiDp.topRight} dp`} />
+                  <Row label="Bottom Right" value={`${screen.cornerRadiiDp.bottomRight} dp`} />
+                  <Row label="Bottom Left" value={`${screen.cornerRadiiDp.bottomLeft} dp`} />
+                </dl>
+              </>
+            )}
+
+            <SectionLabel>Measured On</SectionLabel>
+            <dl>
+              <Row label="One UI" value={measurement ? measurement.condition.oneUi : PENDING} />
+              <Row label="Android" value={measurement ? measurement.condition.android : PENDING} />
             </dl>
           </div>
         </div>
@@ -164,7 +205,6 @@ export default function DevicePage({ params }: Route.ComponentProps) {
         {/* Right: Insets Diagram */}
         <div className="lg:col-span-2 flex flex-col gap-4">
           <InsetsDiagram screen={screen} measurement={measurement} />
-          <p className="text-xs text-muted text-center">{screen.label} screen · portrait</p>
         </div>
       </div>
 
