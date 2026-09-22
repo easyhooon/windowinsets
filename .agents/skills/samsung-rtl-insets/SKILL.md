@@ -123,6 +123,11 @@ step to the user.
   action, device state and remaining reservation time. Do not rely on commentary
   for this blocking handoff, continue unrelated work while the timer runs, guess a
   PIN, or repeatedly toggle power. Resume only after the user confirms completion.
+- If the user explicitly says they are unavailable to unlock and at least one
+  refundable 15-minute block remains, end the blocked reservation with **Return
+  this device to get back 1 credit(s)** selected. Verify the resulting header
+  balance, record the blocked attempt, and pause new reservations: another device
+  will start at the same lock-screen gate and only consume more credits.
 - For a Flip cover session, set **Settings > Cover screen > Cover screen timeout**
   to **30 seconds** before folding. The default 10-second timeout can turn the
   screen off between screenshot and gesture and falsely look like an input failure.

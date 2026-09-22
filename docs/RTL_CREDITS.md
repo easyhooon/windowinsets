@@ -44,6 +44,14 @@ slot expired normally without an early return. Returning to the device list then
 showed **5 Credits**, confirming the full two-credit net consumption from the
 previously observed 7-credit balance.
 
+A Galaxy Z Fold8 Ultra reservation then reduced the header from **5 to 3
+Credits**. InsetsProbe installed successfully, but the device started at its lock
+screen and the single calibrated Computer Use swipe did not unlock it. Because the
+user was unavailable for the required manual handoff and 25 minutes remained, the
+reservation was ended with RTL's checked `Return this device to get back 1
+credit(s)` option. The device list then showed **4 Credits**. No measurement from
+this blocked reservation was accepted.
+
 The preceding 2026-09-22 Usage History contained these booked reservations:
 
 | Time | Device | Booked credits |

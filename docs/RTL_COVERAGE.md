@@ -22,6 +22,9 @@ removes a model from its catalog.
   reserved twice on 2026-09-23 to complete a split 30-minute capture workflow.
   Galaxy Z Flip8 (SM-F776B) was also operated on 2026-09-23 and its FlexWindow
   cover was measured through the registered InsetsProbe AppWidget on display 1.
+  Galaxy Z Fold8 Ultra (SM-F976U, Korea/Gumi) was reservable on 2026-09-23, but
+  its session was returned before capture because the lock screen required the
+  unavailable manual handoff. This verifies catalog availability, not insets.
   The full cross-series, cross-region inventory was not completed.
 - The local skin archive contains 73 registered models; 70 are public under
   the release-year policy. All four featured mobile models have registered skins.
