@@ -13,8 +13,8 @@ extensions.configure<ApplicationExtension> {
         // RoundedCorner / Display.getRoundedCorner need API 31.
         minSdk = 31
         targetSdk = 36
-        versionCode = 1
-        versionName = "1.0.0"
+        versionCode = 2
+        versionName = "1.1.0"
     }
 
     compileOptions {
@@ -24,6 +24,7 @@ extensions.configure<ApplicationExtension> {
 }
 
 dependencies {
+    testImplementation("junit:junit:4.13.2")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.activity.ktx)
     implementation(libs.androidx.window)

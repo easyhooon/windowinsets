@@ -41,18 +41,13 @@ class MainActivity : ComponentActivity(), SensorEventListener {
     private lateinit var root: LinearLayout
     private lateinit var output: TextView
     private lateinit var screenGroup: RadioGroup
-    private lateinit var navModeGroup: RadioGroup
+    private lateinit var captureStatus: TextView
 
     private var latestInsets: WindowInsetsCompat? = null
     private var hingeAngle: Float? = null
     private var foldingFeatures: List<FoldingFeature> = emptyList()
     private var lastJson: String = ""
     private var autoExport = false
-    private var measureAllInProgress = false
-
-    /** Set by Measure All while it's waiting for a requested nav-mode switch to take effect;
-     * invoked from the real WindowInsets callback below instead of polling. */
-    private var pendingModeCheck: (() -> Unit)? = null
 
     private val layoutTracker by lazy { WindowInfoTrackerCallbackAdapter(WindowInfoTracker.getOrCreate(this)) }
     private val layoutListener = Consumer<WindowLayoutInfo> { info ->
@@ -78,7 +73,6 @@ class MainActivity : ComponentActivity(), SensorEventListener {
             val pad = insets.getInsets(Type.systemBars() or Type.displayCutout())
             v.updatePadding(pad.left, pad.top, pad.right, pad.bottom)
             refresh()
-            pendingModeCheck?.invoke()
             insets // not consumed
         }
     }
@@ -95,6 +89,8 @@ class MainActivity : ComponentActivity(), SensorEventListener {
 
     override fun onResume() {
         super.onResume()
+        hingeAngle = null
+        ViewCompat.requestApplyInsets(root)
         val sm = getSystemService(SensorManager::class.java)
         sm.getDefaultSensor(Sensor.TYPE_HINGE_ANGLE)?.let {
             sm.registerListener(this, it, SensorManager.SENSOR_DELAY_NORMAL)
@@ -108,8 +104,10 @@ class MainActivity : ComponentActivity(), SensorEventListener {
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
+        latestInsets = null
+        lastJson = ""
+        foldingFeatures = emptyList()
         ViewCompat.requestApplyInsets(root)
-        refresh()
     }
 
     override fun onSensorChanged(event: SensorEvent) {
@@ -127,105 +125,15 @@ class MainActivity : ComponentActivity(), SensorEventListener {
         else -> "phone"
     }
 
-    private fun setNavMode(mode: Int) {
-        runCatching {
-            Settings.Secure.putInt(contentResolver, "navigation_mode", mode)
-            Log.i(TAG, "Set navigation_mode to $mode")
-        }.onFailure { Log.e(TAG, "Failed to set navigation_mode", it) }
-    }
-
-    /**
-     * Bug fix history: the RadioGroup's onCheckedChangeListener guards setNavMode() behind
-     * `!measureAllInProgress`, so calling navModeGroup.check(modeId) alone during automation
-     * never actually changed the nav mode — both captures silently stayed in whatever mode was
-     * active before Measure All started. setNavMode() is now called explicitly per step.
-     *
-     * Timing fix: instead of guessing a fixed delay before export(), each step arms
-     * `pendingModeCheck`, which the real `OnApplyWindowInsetsListener` in onCreate() invokes on
-     * every insets change — the system's own signal that something (nav bar height, in
-     * particular) actually moved. Each invocation re-checks Probe.modeFromInsets(latestInsets)
-     * (the same real-insets-based inference export() uses for the file name) and only exports
-     * once it matches the requested mode. A timeout fallback still exists in case the platform
-     * ignores the request entirely (e.g. Samsung silently ignoring `navigation_mode` writes on
-     * some real devices), so the step doesn't hang forever — it captures whatever the real state
-     * turned out to be instead.
-     */
-    private fun measureAll() {
-        measureAllInProgress = true
-        val screens = listOf(ID_COVER, ID_MAIN)
-        val modes = listOf(ID_THREEBUTTON to 0, ID_GESTURE to 2)
-        val modeNames = mapOf(ID_THREEBUTTON to "threeButton", ID_GESTURE to "gesture")
-        var savedCount = 0
-
-        fun waitForModeThenExport(targetModeName: String, onSettled: () -> Unit) {
-            var settled = false
-            val timeoutRunnable = Runnable {
-                if (settled) return@Runnable
-                settled = true
-                pendingModeCheck = null
-                val actual = latestInsets?.let { Probe.modeFromInsets(it) }
-                if (actual != targetModeName) {
-                    Log.w(TAG, "Gave up waiting for nav mode '$targetModeName' (insets callback never confirmed it, system reports '$actual'); capturing as-is")
-                }
-                val file = export()
-                if (file != null) {
-                    savedCount++
-                    Log.i(TAG, "Saved: ${file.name}")
-                }
-                onSettled()
-            }
-
-            fun onConfirmed() {
-                if (settled) return
-                settled = true
-                pendingModeCheck = null
-                root.removeCallbacks(timeoutRunnable)
-                // One more short beat so refresh()'s output/lastJson reflects this exact insets pass.
-                root.postDelayed({
-                    val file = export()
-                    if (file != null) {
-                        savedCount++
-                        Log.i(TAG, "Saved: ${file.name}")
-                    }
-                    onSettled()
-                }, 150)
-            }
-
-            pendingModeCheck = {
-                if (latestInsets?.let { Probe.modeFromInsets(it) } == targetModeName) onConfirmed()
-            }
-            root.postDelayed(timeoutRunnable, 3000)
-            // The mode may already match (insets callback might not fire again if nothing moved).
-            pendingModeCheck?.invoke()
-        }
-
-        fun step(screenIndex: Int, modeIndex: Int) {
-            if (screenIndex >= screens.size) {
-                measureAllInProgress = false
-                Toast.makeText(this, "Saved $savedCount measurement file(s)", Toast.LENGTH_LONG).show()
-                return
-            }
-            val screenId = screens[screenIndex]
-            val (modeId, modeValue) = modes[modeIndex]
-
-            screenGroup.check(screenId)
-            navModeGroup.check(modeId)
-            setNavMode(modeValue)
-
-            waitForModeThenExport(modeNames.getValue(modeId)) {
-                val nextModeIndex = modeIndex + 1
-                if (nextModeIndex >= modes.size) step(screenIndex + 1, 0) else step(screenIndex, nextModeIndex)
-            }
-        }
-
-        step(0, 0)
-    }
-
     private fun refresh() {
         val insets = latestInsets ?: return
         val json = Probe.collect(this, insets, selectedScreen(), hingeAngle, foldingFeatures)
         lastJson = json.toString(2)
         output.text = lastJson
+        val bounds = windowManager.currentWindowMetrics.bounds
+        captureStatus.text = "Active window: ${bounds.width()} × ${bounds.height()} px · " +
+            "hinge: ${hingeAngle?.let { "${it.toInt()}°" } ?: "unavailable"}\n" +
+            "Screen label: ${selectedScreen()} (manual; does not switch displays)"
 
         if (autoExport) {
             autoExport = false
@@ -239,9 +147,26 @@ class MainActivity : ComponentActivity(), SensorEventListener {
 
     /** Save to app-specific external storage (adb pull-able) and log to logcat. */
     private fun export(): File? {
-        if (lastJson.isEmpty()) return null
-        val nav = latestInsets?.let { runCatching { org.json.JSONObject(lastJson).getJSONObject("navigation").getString("mode") }.getOrNull() } ?: "unknown"
-        val screen = selectedScreen()
+        val currentInsets = ViewCompat.getRootWindowInsets(root)
+        val bounds = windowManager.currentWindowMetrics.bounds
+        val reason = CapturePolicy.blockingReason(
+            selectedScreen(), hingeAngle,
+            currentInsets != null && root.isLaidOut && !root.isLayoutRequested &&
+                root.width == bounds.width() && root.height == bounds.height(),
+            isInMultiWindowMode,
+        )
+        if (reason != null) {
+            Toast.makeText(this, reason, Toast.LENGTH_LONG).show()
+            Log.w(TAG, "Capture blocked: $reason")
+            ViewCompat.requestApplyInsets(root)
+            return null
+        }
+        // A button press must collect now, not export the last callback's JSON.
+        val json = Probe.collect(this, currentInsets!!, selectedScreen(), hingeAngle, foldingFeatures)
+        lastJson = json.toString(2)
+        output.text = lastJson
+        val nav = json.getJSONObject("navigation").getString("mode")
+        val screen = json.getString("screen")
         val name = if (screen == "phone") "main-$nav.json" else "$screen-$nav.json"
         val file = File(getExternalFilesDir(null), name).apply { writeText(lastJson) }
         lastJson.lines().chunked(60).forEach { Log.i(TAG, it.joinToString("\n")) }
@@ -261,8 +186,9 @@ class MainActivity : ComponentActivity(), SensorEventListener {
             setPadding(px(12), px(8), px(12), 0)
         })
         root.addView(TextView(this).apply {
-            text = "Hold the device in portrait, at default Display size / Font size, with the navigation mode you want to record. " +
-                "Select which screen you are measuring, then Copy JSON."
+            text = "Use default Display size / Font size in full screen. Physically open or close the device first. " +
+                "Cover / Main only labels the active display; it cannot unfold the device. " +
+                "Change navigation in Android Settings, return here, then Measure."
             textSize = 12f
             setPadding(px(12), px(4), px(12), px(4))
         })
@@ -278,32 +204,22 @@ class MainActivity : ComponentActivity(), SensorEventListener {
         }
         root.addView(screenGroup)
 
-        navModeGroup = RadioGroup(this).apply {
-            orientation = RadioGroup.HORIZONTAL
-            setPadding(px(8), 0, px(8), 0)
-            addView(RadioButton(context).apply {
-                id = ID_THREEBUTTON
-                text = "3-Button"
-                setOnCheckedChangeListener { _, isChecked -> if (isChecked && !measureAllInProgress) setNavMode(0) }
-            })
-            addView(RadioButton(context).apply {
-                id = ID_GESTURE
-                text = "Gesture"
-                setOnCheckedChangeListener { _, isChecked -> if (isChecked && !measureAllInProgress) setNavMode(2) }
-            })
-            check(ID_THREEBUTTON)
+        captureStatus = TextView(this).apply {
+            textSize = 12f
+            setPadding(px(12), px(4), px(12), px(4))
+            text = "Waiting for active window insets…"
         }
-        root.addView(navModeGroup)
+        root.addView(captureStatus)
+        root.addView(Button(this).apply {
+            text = "Display / navigation settings"
+            setOnClickListener { startActivity(Intent(Settings.ACTION_DISPLAY_SETTINGS)) }
+        })
 
         val buttons = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.START
             setPadding(px(8), 0, px(8), 0)
         }
-        buttons.addView(Button(this).apply {
-            text = "Measure All"
-            setOnClickListener { measureAll() }
-        })
         buttons.addView(Button(this).apply {
             text = "Measure"
             setOnClickListener {
@@ -350,7 +266,5 @@ class MainActivity : ComponentActivity(), SensorEventListener {
         const val ID_PHONE = 1001
         const val ID_COVER = 1002
         const val ID_MAIN = 1003
-        const val ID_THREEBUTTON = 1004
-        const val ID_GESTURE = 1005
     }
 }

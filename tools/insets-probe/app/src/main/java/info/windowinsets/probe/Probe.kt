@@ -17,7 +17,7 @@ import kotlin.math.roundToInt
 
 /** Collects everything windowinsets.info needs for one screen / navigation mode. */
 object Probe {
-    const val SCHEMA_VERSION = 1
+    const val SCHEMA_VERSION = 2
 
     fun collect(
         activity: Activity,
@@ -52,6 +52,8 @@ object Probe {
         json.put("schemaVersion", SCHEMA_VERSION)
         json.put("capturedAt", java.time.Instant.now().toString())
         json.put("screen", screen) // phone | cover | main — chosen by the person taking the measurement
+        json.put("screenLabelSource", "manual")
+        json.put("probeVersion", "1.1.0")
 
         json.put(
             "device",
@@ -76,6 +78,11 @@ object Probe {
             JSONObject()
                 .put("id", display?.displayId)
                 .put("name", display?.name)
+                .put("rotation", display?.rotation)
+                .put("isInMultiWindowMode", activity.isInMultiWindowMode)
+                .put("rootViewPx", JSONObject()
+                    .put("width", activity.window.decorView.width)
+                    .put("height", activity.window.decorView.height))
                 .put("refreshRate", display?.refreshRate?.let { round2(it.toDouble()) })
                 .put("widthPx", dm.widthPixels)
                 .put("heightPx", dm.heightPixels)
@@ -202,8 +209,7 @@ object Probe {
      * in gesture navigation the nav bar inset is only the gesture hint and does not count as a
      * tappable element; with 3 buttons the tappable inset equals the bar height.
      *
-     * Public so callers (e.g. MainActivity's Measure All) can poll for the real mode instead of
-     * guessing with a fixed delay after asking the system to switch.
+     * Reports the active insets rather than claiming a requested Settings value took effect.
      */
     fun modeFromInsets(insets: WindowInsetsCompat): String {
         val navBottom = insets.getInsets(Type.navigationBars()).bottom
