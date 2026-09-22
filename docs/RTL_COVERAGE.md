@@ -20,6 +20,8 @@ removes a model from its catalog.
   The Galaxy Z list was inspected and Galaxy Z Fold8 (SM-F971N, Korea/Gumi) was
   successfully reserved on 2026-09-22. Galaxy Z Fold7 (SM-F966U, Korea/Gumi) was
   reserved twice on 2026-09-23 to complete a split 30-minute capture workflow.
+  Galaxy Z Flip8 (SM-F776B) was also operated on 2026-09-23 and its FlexWindow
+  cover was measured through the registered InsetsProbe AppWidget on display 1.
   The full cross-series, cross-region inventory was not completed.
 - The local skin archive contains 73 registered models; 70 are public under
   the release-year policy. All four featured mobile models have registered skins.
@@ -28,7 +30,9 @@ removes a model from its catalog.
   establish current reservation availability. Fold8 cover and inner were both
   recaptured from a live reservation in 3-button and gesture modes. Fold7 cover
   and inner are also measured in both modes from the same SM-F966U software
-  build. Flip8 cover remains unmeasured independently of model availability.
+  build. Flip8 cover and inner are now measured in both modes; its accepted cover
+  captures report display 1 and 948×1048 px, while the older mislabeled
+  `cover-threeButton.json` remains preserved as historical inner-display evidence.
 
 The comparison for every registered skin is in [RTL_SKIN_COMPARISON.csv](RTL_SKIN_COMPARISON.csv).
 It includes archived pre-2020 models for inventory completeness; it does not
@@ -61,6 +65,6 @@ Replace the featured-only snapshot with that verified inventory, set
 `scope: "reservation-catalog"`, and set `complete: true` only after all models
 and regions have been checked. A 403, an empty shell or a filtered page must
 never produce a complete empty inventory. Refresh the CSV from the same snapshot.
-Galaxy Z Fold8 and Fold7 reservations were made during this comparison. They
-establish those models' availability on their checked dates only; they do not make
-the partial inventory complete.
+Galaxy Z Fold8, Fold7 and Flip8 reservations were made during this comparison.
+They establish those models' availability on their checked dates only; they do not
+make the partial inventory complete.

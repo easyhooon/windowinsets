@@ -20,15 +20,17 @@ correctly labeled cover and inner recaptures described below. Do not use the
 historical Bug 5 rotation workaround: it stretched cover information into a
 different screen.
 
-Flip8's 1080×2520 main captures match its main skin. Its 948×1048 cover skin is only
-artwork; cover insets remain pending. A screen radio button labels a capture and
-does not prove which physical display was active. Verify resolution against the
-intended display for every future capture.
+Flip8's 1080×2520 main captures match its main skin. Its 948×1048 cover was later
+measured independently through InsetsProbe's FlexWindow AppWidget on display 1;
+the accepted files are documented below. A screen radio button labels a capture
+and does not prove which physical display was active. Verify the display ID and
+resolution against the intended display for every future capture.
 
 Specifically, Flip8 `cover-threeButton.json` reports 1080×2520, hinge angle 180°
 and a horizontal FLAT folding feature. Despite its filename and manual label,
 this is an inner-display capture, not a 948×1048 cover measurement. Keep this
-raw evidence unchanged and leave cover insets pending until a true cover capture.
+raw evidence unchanged; the dated FlexWindow recapture supersedes it for published
+cover values without rewriting the historical file.
 
 For current rendering architecture and verification, see
 [REFERENCE_PARITY.md](REFERENCE_PARITY.md). Legacy notes below document the prior
@@ -95,6 +97,26 @@ capture because WindowManager supplied a real FLAT folding feature across the
 display midpoint. All four raw files are preserved under
 `measurements/galaxy-z-fold7/`.
 
+### Verified Flip8 FlexWindow recapture
+
+Galaxy Z Flip8 (SM-F776B) was folded and InsetsProbe 1.2.1 was launched from its
+registered cover AppWidget. Both accepted captures report `display.id: 1`,
+`screenLabelSource: flexWindowWidget`, and an exact **948×1048 px** portrait
+window matching the official cover layout:
+
+- logical size: **399.16×441.26 dp** at Android density **380 dpi**;
+- system bars: **0/0/48/0 dp** (top/right/bottom/left) in both modes;
+- display cutout safe inset: **88 dp / 209 px** from the bottom;
+- cutout bounds: **428,839–948,1048 px**;
+- corner radii: **12 px** at the top and **97 px** at the bottom.
+
+The captures independently verify 3-button and gesture navigation. RTL again
+reported a 180° hinge angle with no folding feature, so cover identity comes from
+the FlexWindow launch source, display ID and exact active-window resolution—not
+the hinge sensor. The untouched legacy `cover-threeButton.json` remains an inner
+display mislabeled as cover; accepted cover evidence is stored under
+`measurements/galaxy-z-flip8/recapture-2026-09-23/`.
+
 ### RTL access outcome
 
 The earlier 403 was transient. After the user completed Samsung authentication
@@ -107,10 +129,9 @@ future slot availability.
 
 windowinsets.info is a reference site for Android window insets, display cutouts, corner radii and foldable hinge states across Samsung Galaxy devices. Every value is labeled **official** (published by Samsung/Google), **measured** (captured with InsetsProbe on RTL or a real device, raw JSON committed), or **community** (unverified).
 
-**Current Status**: Galaxy Z Fold8 cover and inner displays are measured in both
-navigation modes from a verified live RTL session. Galaxy Z Fold7 cover and inner
-displays are also complete in both modes. Galaxy S25 Ultra, Galaxy S25+, and Galaxy
-Z Flip8 main screens are measured. Galaxy S25, Fold6, Flip6 and Flip8 cover remain
+**Current Status**: Galaxy Z Fold8, Fold7 and Flip8 cover and inner displays are
+measured in both navigation modes from verified live RTL sessions. Galaxy S25
+Ultra and Galaxy S25+ main screens are measured. Galaxy S25, Fold6 and Flip6 remain
 pending.
 
 ## RTL Credits & Cost
@@ -260,7 +281,7 @@ Do not use Measure All. Capture each active display and navigation mode explicit
 | Device | Model | Screens | 3-Button | Gesture | Status |
 | --- | --- | --- | --- | --- | --- |
 | Galaxy Z Fold8 | SM-F971N | Cover + inner | ✓ both | ✓ both | Complete |
-| Galaxy Z Flip8 | SM-F776B | Main only | ✓ | ✓ | Complete |
+| Galaxy Z Flip8 | SM-F776B | Cover + inner | ✓ both | ✓ both | Complete |
 | Galaxy S25 Ultra | SM-S938N | Main | ✓ | ✓ | Complete |
 | Galaxy S25+ | SM-S936N | Main | ✓ | ✓ | Complete (real device, Korea — not RTL) |
 | Galaxy S25 | SM-S931N | Main | Pending | Pending | Queued |

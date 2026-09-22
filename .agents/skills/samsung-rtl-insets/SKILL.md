@@ -152,8 +152,11 @@ step to the user.
      with cover home instead of moving the activity. Starting an app from
      WebClient **Applications** can still target the hidden inner display.
    - Install InsetsProbe 1.2.0 or later. On the unfolded phone open **Settings >
-     Cover screen > Widgets** and enable the **InsetsProbe** widget. This uses
-     Samsung's documented `sub_screen` AppWidget metadata and launches Probe with
+     Cover screen > Widgets**. Scroll to **InsetsProbe**, tap its row to expand it,
+     tap the 4x4 preview, then tap the **Add** overlay. The widget is registered
+     only when its preview appears in the upper cover layout with a remove icon;
+     merely expanding the row does not add it. This uses Samsung's documented
+     `sub_screen` AppWidget metadata and launches Probe with
      `ActivityOptions.launchDisplayId = 1`.
    - Fold the device, wake and unlock the cover, swipe horizontally to the
      InsetsProbe widget, and tap **Open cover probe**. The widget preselects Cover.
@@ -180,7 +183,11 @@ step to the user.
    one-time multi-window tutorial, choose Main, and capture the inner display.
 7. Tap **Display / navigation settings**. In Settings > Display, scroll to
    **Navigation bar**, open it and select **Swipe gestures**. Return to Probe with
-   the left-edge back gesture twice. Confirm that Probe reports gesture mode.
+   the left-edge back gesture once per screen, verifying the screen after each
+   gesture. On a Flip, unfold for the full navigation settings page, apply the
+   mode, return to Probe, then fold again and relaunch it from the already-added
+   cover widget. Confirm that Probe reports gesture mode on `display 1` before
+   measuring.
 8. Repeat each physical display in gesture mode and require the matching
    `*-gesture.json` toast.
 9. Record the visible active-window resolution and hinge/folding-feature state for
@@ -192,7 +199,10 @@ step to the user.
 1. Open WebClient **File Browser** and navigate:
    `Android > data > info.windowinsets.probe > files`.
 2. Confirm the complete filename set. Hover or select each row to reveal its
-   download icon, then download files one at a time.
+   download icon, then download files one at a time. Prefer the fresh accessibility
+   button index for the intended row over a nearby coordinate: the two compact
+   download icons are easy to confuse, and repeated clicks on the first row only
+   download the same file again.
 3. RTL may name every browser download `content`, `content (1)`, and so on.
    Classify them only from JSON fields: `screen`, `navigation.mode`,
    `display.currentWindowPx`, model and `capturedAt`.

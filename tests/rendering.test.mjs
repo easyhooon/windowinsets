@@ -317,6 +317,12 @@ test('published px values and capture orientation remain exact raw evidence', ()
       },
       {
         device: galaxyZFlip8,
+        screenId: 'cover',
+        navMode,
+        capturePath: `measurements/galaxy-z-flip8/recapture-2026-09-23/cover-${navMode}.json`,
+      },
+      {
+        device: galaxyZFlip8,
         screenId: 'main',
         navMode,
         capturePath: `measurements/galaxy-z-flip8/main-${navMode}.json`,
@@ -367,7 +373,8 @@ test('px presentation prefers exact capture values over rounded dp reconstructio
     px: null,
     units: 'px',
   }), 'pending', 'missing raw px must never be reconstructed from rounded dp');
-  assert.equal(hasExactPx(galaxyZFlip8.screens.find(candidate => candidate.id === 'cover'), null), false);
+  const flipCover = galaxyZFlip8.screens.find(candidate => candidate.id === 'cover');
+  assert.equal(hasExactPx(flipCover, flipCover.insets.threeButton), true);
 });
 
 test('published cutout positions preserve raw bounds in both dp and px', () => {
@@ -376,6 +383,7 @@ test('published cutout positions preserve raw bounds in both dp and px', () => {
     [galaxyZFold2, 'main', 'measurements/galaxy-z-fold2/main-threeButton.json'],
     [galaxyZFold7, 'cover', 'measurements/galaxy-z-fold7/cover-threeButton.json'],
     [galaxyZFold8, 'cover', 'measurements/galaxy-z-fold8/recapture-2026-09-22/cover-threeButton.json'],
+    [galaxyZFlip8, 'cover', 'measurements/galaxy-z-flip8/recapture-2026-09-23/cover-threeButton.json'],
     [galaxyZFlip8, 'main', 'measurements/galaxy-z-flip8/main-threeButton.json'],
     [galaxyS25Plus, 'main', 'measurements/galaxy-s25-plus/main-threeButton.json'],
     [galaxyS25Ultra, 'main', 'measurements/galaxy-s25-ultra/main-threeButton.json'],
@@ -442,4 +450,29 @@ test('Flip8 legacy cover label does not make its flat inner capture a cover meas
   assert.equal(raw.hinge.foldingFeatures[0].state, 'FLAT');
   assert.deepEqual([raw.display.widthPx, raw.display.heightPx], [skins['galaxy-z-flip8/main'].screen.width, skins['galaxy-z-flip8/main'].screen.height]);
   assert.notEqual(raw.display.widthPx, skins['galaxy-z-flip8/cover'].screen.width);
+});
+
+test('Flip8 FlexWindow recapture verifies the real cover in both navigation modes', () => {
+  const cover = galaxyZFlip8.screens.find(screen => screen.id === 'cover');
+  assert.deepEqual(cover.resolutionPx, { width: 948, height: 1048 });
+  assert.deepEqual(cover.logicalSizePx, { width: 948, height: 1048 });
+  assert.deepEqual(cover.logicalSizeDp, { width: 399.16, height: 441.26 });
+  assert.equal(cover.captureOrientation, 'portrait');
+  assert.equal(cover.captureRotation, 0);
+  assert.equal(cover.densityDpi, 380);
+  assert.deepEqual(cover.cornerRadiiPx, { topLeft: 12, topRight: 12, bottomRight: 97, bottomLeft: 97 });
+
+  for (const navMode of ['gesture', 'threeButton']) {
+    const raw = readCapture(`measurements/galaxy-z-flip8/recapture-2026-09-23/cover-${navMode}.json`);
+    assert.equal(raw.device.model, 'SM-F776B');
+    assert.equal(raw.screen, 'cover');
+    assert.equal(raw.screenLabelSource, 'flexWindowWidget');
+    assert.equal(raw.navigation.mode, navMode);
+    assert.equal(raw.display.id, 1);
+    assert.deepEqual(raw.display.currentWindowPx, { width: 948, height: 1048 });
+    assert.equal(raw.display.isInMultiWindowMode, false);
+    assert.equal(raw.probeVersion, '1.2.1');
+    assert.deepEqual(cover.insets[navMode].systemBars, raw.insets.systemBars.dp);
+    assert.deepEqual(cover.insets[navMode].displayCutout, raw.insets.displayCutout.dp);
+  }
 });

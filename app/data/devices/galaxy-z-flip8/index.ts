@@ -14,6 +14,28 @@ const rtlGesture: Source = {
   retrievedAt: "2026-09-22",
 };
 
+const coverCaptureBase = "https://github.com/easyhooon/windowinsets/blob/main/measurements/galaxy-z-flip8/recapture-2026-09-23";
+
+const coverThreeButton: Source = {
+  kind: "measured",
+  label: "InsetsProbe 1.2.1 on Samsung RTL Galaxy Z Flip8 FlexWindow, 3-button (SM-F776B)",
+  url: `${coverCaptureBase}/cover-threeButton.json`,
+  retrievedAt: "2026-09-23",
+};
+
+const coverGesture: Source = {
+  kind: "measured",
+  label: "InsetsProbe 1.2.1 on Samsung RTL Galaxy Z Flip8 FlexWindow, gestures (SM-F776B)",
+  url: `${coverCaptureBase}/cover-gesture.json`,
+  retrievedAt: "2026-09-23",
+};
+
+const coverCondition = {
+  oneUi: "9.0",
+  android: "17",
+  note: "Samsung RTL, physically folded, portrait. InsetsProbe was launched on FlexWindow display 1 through its cover AppWidget; active window 948×1048 px matches the official cover layout. RTL reported a 180° hinge angle with no folding feature, so classification relies on display ID and active-window evidence rather than the hinge sensor.",
+};
+
 export const galaxyZFlip8: Device = {
   slug: "galaxy-z-flip8",
   name: "Galaxy Z Flip8",
@@ -25,10 +47,32 @@ export const galaxyZFlip8: Device = {
   screens: [
     {
       id: "cover", label: "Cover", diagonalInch: 0,
-      resolutionPx: { width: 0, height: 0 }, ppi: 0,
-      logicalSizePx: null, captureOrientation: null,
-      logicalSizeDp: null, densityDpi: null, cornerRadiiDp: null, cornerRadiiPx: null,
-      insets: { gesture: null, threeButton: null }, sources: [],
+      resolutionPx: { width: 948, height: 1048 }, ppi: 0,
+      logicalSizePx: { width: 948, height: 1048 }, captureOrientation: "portrait", captureRotation: 0,
+      logicalSizeDp: { width: 399.16, height: 441.26 }, densityDpi: 380,
+      cornerRadiiDp: { topLeft: 5.05, topRight: 5.05, bottomRight: 40.84, bottomLeft: 40.84 },
+      cornerRadiiPx: { topLeft: 12, topRight: 12, bottomRight: 97, bottomLeft: 97 },
+      insets: {
+        gesture: {
+          systemBars: { top: 0, right: 0, bottom: 48, left: 0 },
+          systemBarsPx: { top: 0, right: 0, bottom: 114, left: 0 },
+          displayCutout: { top: 0, right: 0, bottom: 88, left: 0 },
+          displayCutoutPx: { top: 0, right: 0, bottom: 209, left: 0 },
+          cutoutShape: { xDp: 180.21, yDp: 353.26, widthDp: 218.95, heightDp: 88, rightDp: 0, bottomDp: 0, xPx: 428, yPx: 839, widthPx: 520, heightPx: 209, rightPx: 0, bottomPx: 0 },
+          condition: coverCondition,
+          sources: [coverGesture],
+        },
+        threeButton: {
+          systemBars: { top: 0, right: 0, bottom: 48, left: 0 },
+          systemBarsPx: { top: 0, right: 0, bottom: 114, left: 0 },
+          displayCutout: { top: 0, right: 0, bottom: 88, left: 0 },
+          displayCutoutPx: { top: 0, right: 0, bottom: 209, left: 0 },
+          cutoutShape: { xDp: 180.21, yDp: 353.26, widthDp: 218.95, heightDp: 88, rightDp: 0, bottomDp: 0, xPx: 428, yPx: 839, widthPx: 520, heightPx: 209, rightPx: 0, bottomPx: 0 },
+          condition: coverCondition,
+          sources: [coverThreeButton],
+        },
+      },
+      sources: [coverThreeButton, coverGesture],
     },
     {
       id: "main",
@@ -65,5 +109,5 @@ export const galaxyZFlip8: Device = {
       sources: [rtlThreeButton, rtlGesture],
     },
   ],
-  sources: [rtlThreeButton, rtlGesture],
+  sources: [coverThreeButton, coverGesture, rtlThreeButton, rtlGesture],
 };
