@@ -53,10 +53,15 @@ CAPTCHA, two-factor authentication, or account recovery:
 Treat `Please sign in if you want to use the Remote Test Lab service.` as an expired
 or incomplete RTL session even if the device list remains visible.
 
-For an available target, select 30 minutes / 2 credits unless the user requests a
-different duration. Confirm the dialog still names the intended model and duration,
-then start the reservation. The user's request to reserve the named queue authorizes
-this ordinary reservation; unexpected paid options, terms, permissions, or a target
+For every available target, reserve exactly 30 minutes / 2 credits. This is a
+throughput invariant: Samsung provides 20 credits per day and charges 1 credit per
+15 minutes, so the minimum reservation supports up to 10 distinct devices per daily
+allocation and minimizes the calendar time needed to cover the post-2020 queue.
+Prepare the APK and capture checklist before reserving. Do not extend or renew a
+session; preserve completed evidence and requeue unfinished captures for another
+30-minute slot. Confirm the dialog still names the intended model and duration, then
+start the reservation. The user's request to reserve the named queue authorizes this
+ordinary reservation; unexpected paid options, terms, permissions, or a target
 change require a fresh user decision.
 
 If RTL returns 403, first retry after a short interval, then re-enter through the RTL
