@@ -8,12 +8,14 @@ import { galaxyZFold7 } from "./devices/galaxy-z-fold7";
 import { galaxyZFold8 } from "./devices/galaxy-z-fold8";
 import { galaxyZFlip8 } from "./devices/galaxy-z-flip8";
 
-/** Newest first. Add a device by creating a file in ./devices and listing it here. */
+/** Newest first; within the same release year, Ultra > Plus > base, matching
+ * Samsung's own tier ordering. Add a device by creating a file in ./devices
+ * and listing it here. */
 export const devices: Device[] = [
   galaxyZFold8,
   galaxyZFlip8,
-  galaxyS25Plus,
   galaxyS25Ultra,
+  galaxyS25Plus,
   galaxyS25,
   galaxyZFold7,
   galaxyZFold6,

@@ -16,15 +16,13 @@ const RADIUS_COLOR = "#be185d"; // pink-700, for corner radius chips
 const SAFE_FILL = "#4ade80"; // green-400
 const INSET_FILL = "#fb923c"; // orange-400
 
+type Units = "dp" | "px";
+
 interface Insets {
   top: number;
   right: number;
   bottom: number;
   left: number;
-}
-
-function fmt(v: number) {
-  return v === 0 ? "0" : Number(v.toFixed(2)).toString();
 }
 
 /** A dimension line with arrowheads on both ends, an optional pair of dashed
@@ -38,7 +36,6 @@ function DimensionLine({
   /** extension guide lines from the device edge out to this dimension line */
   ext?: { from: [number, number]; to: [number, number] }[];
 }) {
-  const vertical = x1 === x2;
   const midX = (x1 + x2) / 2;
   const midY = (y1 + y2) / 2;
   const chipW = Math.max(20, label.length * 7 + 8);
@@ -74,7 +71,6 @@ function DimensionLine({
         fontSize={9.5}
         fontWeight={700}
         fill="#ffffff"
-        transform={vertical ? undefined : undefined}
       >
         {label}
       </text>
@@ -94,7 +90,13 @@ export function InsetsDiagram({
   // Hooks first (rules of hooks) — the "not verified yet" early return below
   // must come after these, not before.
   const [zoom, setZoom] = useState(100);
+  const [showFrame, setShowFrame] = useState(true);
+  const [showRegions, setShowRegions] = useState(true);
+  const [showDimensions, setShowDimensions] = useState(true);
+  const [units, setUnits] = useState<Units>("dp");
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const wrapRef = useRef<HTMLDivElement>(null);
+  const settingsRef = useRef<HTMLDivElement>(null);
 
   // React's synthetic onWheel is attached passively (React 17+), so
   // event.preventDefault() inside it is silently ignored and the page still
@@ -111,6 +113,15 @@ export function InsetsDiagram({
     return () => el.removeEventListener("wheel", handler);
   }, []);
 
+  useEffect(() => {
+    if (!settingsOpen) return;
+    const onClick = (e: MouseEvent) => {
+      if (settingsRef.current && !settingsRef.current.contains(e.target as Node)) setSettingsOpen(false);
+    };
+    document.addEventListener("mousedown", onClick);
+    return () => document.removeEventListener("mousedown", onClick);
+  }, [settingsOpen]);
+
   const dp = screen.logicalSizeDp;
   if (!dp) {
     return (
@@ -118,6 +129,14 @@ export function InsetsDiagram({
         Logical size (dp) for this screen is not verified yet.
       </div>
     );
+  }
+
+  // Convert a raw dp value to whichever unit the toggle is set to, for display only —
+  // the diagram's own geometry always stays in dp (via `s`), only the printed label changes.
+  const densityDpi = screen.densityDpi;
+  function fmt(vDp: number): string {
+    const v = units === "px" && densityDpi ? vDp * (densityDpi / 160) : vDp;
+    return v === 0 ? "0" : Number(v.toFixed(2)).toString();
   }
 
   const s = MAX_W / dp.width;
@@ -164,8 +183,53 @@ export function InsetsDiagram({
         >
           +
         </button>
-        <span className="text-subtle">(scroll over diagram to zoom)</span>
+        <span className="text-subtle mr-1">(scroll over diagram to zoom)</span>
+
+        <div className="relative" ref={settingsRef}>
+          <button
+            onClick={() => setSettingsOpen((o) => !o)}
+            className="rounded border border-line px-1.5 py-0.5 hover:bg-canvas"
+            aria-label="Diagram settings"
+            title="Diagram settings"
+          >
+            ⚙
+          </button>
+          {settingsOpen && (
+            <div className="absolute right-0 z-10 mt-1 w-48 rounded-md border border-line bg-surface p-2 text-left shadow-card">
+              <label className="flex items-center gap-2 rounded px-1.5 py-1 hover:bg-canvas">
+                <input type="checkbox" checked={showFrame} onChange={(e) => setShowFrame(e.target.checked)} />
+                Show Frame
+              </label>
+              <label className="flex items-center gap-2 rounded px-1.5 py-1 hover:bg-canvas">
+                <input type="checkbox" checked={showRegions} onChange={(e) => setShowRegions(e.target.checked)} />
+                Show Regions
+              </label>
+              <label className="flex items-center gap-2 rounded px-1.5 py-1 hover:bg-canvas">
+                <input type="checkbox" checked={showDimensions} onChange={(e) => setShowDimensions(e.target.checked)} />
+                Show Dimensions
+              </label>
+              <div className="mt-1.5 border-t border-line pt-1.5">
+                <p className="px-1.5 pb-1 text-[10px] font-semibold uppercase tracking-wide text-subtle">Units</p>
+                <label className="flex items-center gap-2 rounded px-1.5 py-1 hover:bg-canvas">
+                  <input type="radio" name="units" checked={units === "dp"} onChange={() => setUnits("dp")} />
+                  dp
+                </label>
+                <label className="flex items-center gap-2 rounded px-1.5 py-1 hover:bg-canvas">
+                  <input
+                    type="radio"
+                    name="units"
+                    checked={units === "px"}
+                    onChange={() => setUnits("px")}
+                    disabled={!densityDpi}
+                  />
+                  px{!densityDpi && <span className="text-subtle"> (needs density)</span>}
+                </label>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
+
       <div ref={wrapRef} className="overflow-auto" style={{ maxHeight: "min(70vh, 600px)" }}>
       <svg
         viewBox={viewBox}
@@ -190,40 +254,51 @@ export function InsetsDiagram({
         </defs>
 
         {/* Device bezel */}
-        <rect x={0} y={0} width={W} height={H} rx={rPx} fill="#ffffff" stroke="#0f172a" strokeWidth={3} />
+        {showFrame && (
+          <rect x={0} y={0} width={W} height={H} rx={rPx} fill="#ffffff" stroke="#0f172a" strokeWidth={3} />
+        )}
 
-        {/* Decorative case chrome — schematic only, not measured data: a speaker
-         * grille and a side button, purely for visual recognizability. */}
-        <rect x={W / 2 - 18} y={5} width={36} height={3} rx={1.5} fill="#1e293b" opacity={0.35} />
-        <rect x={W - 1.5} y={H * 0.22} width={3} height={H * 0.1} rx={1.5} fill="#1e293b" opacity={0.55} />
-
-        {/* Safe area + inset bands */}
-        {safe && (
+        {showRegions && (
           <>
-            <rect
-              x={safe.left * s} y={safe.top * s}
-              width={W - (safe.left + safe.right) * s}
-              height={H - (safe.top + safe.bottom) * s}
-              fill={SAFE_FILL} fillOpacity={0.4}
-            />
-            {safe.top > 0 && <rect x={0} y={0} width={W} height={safe.top * s} fill={INSET_FILL} fillOpacity={0.55} />}
-            {safe.bottom > 0 && <rect x={0} y={H - safe.bottom * s} width={W} height={safe.bottom * s} fill={INSET_FILL} fillOpacity={0.55} />}
-            {safe.left > 0 && <rect x={0} y={0} width={safe.left * s} height={H} fill={INSET_FILL} fillOpacity={0.55} />}
-            {safe.right > 0 && <rect x={W - safe.right * s} y={0} width={safe.right * s} height={H} fill={INSET_FILL} fillOpacity={0.55} />}
+            {/* Decorative case chrome — schematic only, not measured data: a speaker
+             * grille and volume/power buttons, purely for visual recognizability. */}
+            <rect x={W / 2 - 18} y={5} width={36} height={3} rx={1.5} fill="#1e293b" opacity={0.35} />
+            <rect x={W - 1.5} y={H * 0.16} width={3} height={H * 0.06} rx={1.5} fill="#1e293b" opacity={0.55} />
+            <rect x={W - 1.5} y={H * 0.24} width={3} height={H * 0.09} rx={1.5} fill="#1e293b" opacity={0.55} />
 
-            {/* Real camera cutout, at its measured position/size (DisplayCutout.boundingRects) —
-             * not a placeholder: this pill sits exactly where the punch-hole/notch actually is. */}
-            {measurement?.cutoutShape && (
-              <rect
-                x={measurement.cutoutShape.xDp * s}
-                y={measurement.cutoutShape.yDp * s}
-                width={measurement.cutoutShape.widthDp * s}
-                height={measurement.cutoutShape.heightDp * s}
-                rx={Math.min(measurement.cutoutShape.widthDp, measurement.cutoutShape.heightDp) * s / 2}
-                fill="#0f172a"
-              />
+            {/* Safe area + inset bands */}
+            {safe && (
+              <>
+                <rect
+                  x={safe.left * s} y={safe.top * s}
+                  width={W - (safe.left + safe.right) * s}
+                  height={H - (safe.top + safe.bottom) * s}
+                  fill={SAFE_FILL} fillOpacity={0.4}
+                />
+                {safe.top > 0 && <rect x={0} y={0} width={W} height={safe.top * s} fill={INSET_FILL} fillOpacity={0.55} />}
+                {safe.bottom > 0 && <rect x={0} y={H - safe.bottom * s} width={W} height={safe.bottom * s} fill={INSET_FILL} fillOpacity={0.55} />}
+                {safe.left > 0 && <rect x={0} y={0} width={safe.left * s} height={H} fill={INSET_FILL} fillOpacity={0.55} />}
+                {safe.right > 0 && <rect x={W - safe.right * s} y={0} width={safe.right * s} height={H} fill={INSET_FILL} fillOpacity={0.55} />}
+
+                {/* Real camera cutout, at its measured position/size (DisplayCutout.boundingRects) —
+                 * not a placeholder: this pill sits exactly where the punch-hole/notch actually is. */}
+                {measurement?.cutoutShape && (
+                  <rect
+                    x={measurement.cutoutShape.xDp * s}
+                    y={measurement.cutoutShape.yDp * s}
+                    width={measurement.cutoutShape.widthDp * s}
+                    height={measurement.cutoutShape.heightDp * s}
+                    rx={Math.min(measurement.cutoutShape.widthDp, measurement.cutoutShape.heightDp) * s / 2}
+                    fill="#0f172a"
+                  />
+                )}
+              </>
             )}
+          </>
+        )}
 
+        {showDimensions && safe && (
+          <>
             {/* Inside chips: value printed directly on the band it describes */}
             {safe.top > 0 && (
               <g>
@@ -245,7 +320,7 @@ export function InsetsDiagram({
         )}
 
         {/* Corner radius chips */}
-        {r && rPx > 0 && (
+        {showDimensions && r && rPx > 0 && (
           <>
             <g>
               <circle cx={-16} cy={-16} r={9} fill={RADIUS_COLOR} />
@@ -266,52 +341,56 @@ export function InsetsDiagram({
           </>
         )}
 
-        {/* Overall width (top) */}
-        <DimensionLine
-          x1={0} y1={-28} x2={W} y2={-28}
-          label={fmt(dp.width)} color={INK}
-          ext={[{ from: [0, 0], to: [0, -28] }, { from: [W, 0], to: [W, -28] }]}
-        />
+        {showDimensions && (
+          <>
+            {/* Overall width (top) */}
+            <DimensionLine
+              x1={0} y1={-28} x2={W} y2={-28}
+              label={fmt(dp.width)} color={INK}
+              ext={[{ from: [0, 0], to: [0, -28] }, { from: [W, 0], to: [W, -28] }]}
+            />
 
-        {/* Overall height (left) */}
-        <DimensionLine
-          x1={-28} y1={0} x2={-28} y2={H}
-          label={fmt(dp.height)} color={INK}
-          ext={[{ from: [0, 0], to: [-28, 0] }, { from: [0, H], to: [-28, H] }]}
-        />
+            {/* Overall height (left) */}
+            <DimensionLine
+              x1={-28} y1={0} x2={-28} y2={H}
+              label={fmt(dp.height)} color={INK}
+              ext={[{ from: [0, 0], to: [-28, 0] }, { from: [0, H], to: [-28, H] }]}
+            />
 
-        {/* Right-side outside dimension: top inset height */}
-        {safe && safe.top > 0 && (
-          <DimensionLine
-            x1={W + 20} y1={0} x2={W + 20} y2={safe.top * s}
-            label={fmt(safe.top)} color={INSET_COLOR}
-            ext={[{ from: [W, 0], to: [W + 20, 0] }, { from: [W, safe.top * s], to: [W + 20, safe.top * s] }]}
-          />
-        )}
+            {/* Right-side outside dimension: top inset height */}
+            {safe && safe.top > 0 && (
+              <DimensionLine
+                x1={W + 20} y1={0} x2={W + 20} y2={safe.top * s}
+                label={fmt(safe.top)} color={INSET_COLOR}
+                ext={[{ from: [W, 0], to: [W + 20, 0] }, { from: [W, safe.top * s], to: [W + 20, safe.top * s] }]}
+              />
+            )}
 
-        {/* Right-side outside dimension: bottom inset height */}
-        {safe && safe.bottom > 0 && (
-          <DimensionLine
-            x1={W + 20} y1={H - safe.bottom * s} x2={W + 20} y2={H}
-            label={fmt(safe.bottom)} color={INSET_COLOR}
-            ext={[{ from: [W, H - safe.bottom * s], to: [W + 20, H - safe.bottom * s] }, { from: [W, H], to: [W + 20, H] }]}
-          />
-        )}
+            {/* Right-side outside dimension: bottom inset height */}
+            {safe && safe.bottom > 0 && (
+              <DimensionLine
+                x1={W + 20} y1={H - safe.bottom * s} x2={W + 20} y2={H}
+                label={fmt(safe.bottom)} color={INSET_COLOR}
+                ext={[{ from: [W, H - safe.bottom * s], to: [W + 20, H - safe.bottom * s] }, { from: [W, H], to: [W + 20, H] }]}
+              />
+            )}
 
-        {/* Left/right inset widths, drawn only when present (rare on phones) */}
-        {safe && safe.left > 0 && (
-          <DimensionLine
-            x1={0} y1={-14} x2={safe.left * s} y2={-14}
-            label={fmt(safe.left)} color={INSET_COLOR}
-            ext={[{ from: [0, 0], to: [0, -14] }, { from: [safe.left * s, 0], to: [safe.left * s, -14] }]}
-          />
-        )}
-        {safe && safe.right > 0 && (
-          <DimensionLine
-            x1={W - safe.right * s} y1={-14} x2={W} y2={-14}
-            label={fmt(safe.right)} color={INSET_COLOR}
-            ext={[{ from: [W - safe.right * s, 0], to: [W - safe.right * s, -14] }, { from: [W, 0], to: [W, -14] }]}
-          />
+            {/* Left/right inset widths, drawn only when present (rare on phones) */}
+            {safe && safe.left > 0 && (
+              <DimensionLine
+                x1={0} y1={-14} x2={safe.left * s} y2={-14}
+                label={fmt(safe.left)} color={INSET_COLOR}
+                ext={[{ from: [0, 0], to: [0, -14] }, { from: [safe.left * s, 0], to: [safe.left * s, -14] }]}
+              />
+            )}
+            {safe && safe.right > 0 && (
+              <DimensionLine
+                x1={W - safe.right * s} y1={-14} x2={W} y2={-14}
+                label={fmt(safe.right)} color={INSET_COLOR}
+                ext={[{ from: [W - safe.right * s, 0], to: [W - safe.right * s, -14] }, { from: [W, 0], to: [W, -14] }]}
+              />
+            )}
+          </>
         )}
       </svg>
       </div>
@@ -332,7 +411,7 @@ export function InsetsDiagram({
         </div>
       </div>
       <p className="text-center text-[11px] text-subtle">
-        All measurements in dp · {screen.label} screen · portrait
+        All measurements in {units} · {screen.label} screen · portrait
       </p>
     </div>
   );

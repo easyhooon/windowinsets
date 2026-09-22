@@ -2,15 +2,17 @@ import { useState } from "react";
 import { NavLink, Outlet } from "react-router";
 import { devices, REPO_URL } from "../data/devices";
 
-type Category = "bar" | "foldable";
+type Category = "bar" | "fold" | "flip";
 
 const CATEGORIES: { id: Category; label: string }[] = [
   { id: "bar", label: "Galaxy S" },
-  { id: "foldable", label: "Galaxy Z" },
+  { id: "fold", label: "Galaxy Z Fold" },
+  { id: "flip", label: "Galaxy Z Flip" },
 ];
 
 function categoryOf(formFactor: (typeof devices)[number]["formFactor"]): Category {
-  return formFactor === "bar" ? "bar" : "foldable";
+  if (formFactor === "bar") return "bar";
+  return formFactor === "foldable-flip" ? "flip" : "fold";
 }
 
 export default function Shell() {
