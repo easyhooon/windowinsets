@@ -11,8 +11,8 @@ export function Segmented<T extends string>({
 }) {
   return (
     <div role="group" aria-label={label} className="flex items-center gap-2">
-      <span className="text-xs text-neutral-500">{label}</span>
-      <div className="inline-flex rounded-md border border-neutral-300 p-0.5 dark:border-neutral-700">
+      <span className="text-xs text-muted">{label}</span>
+      <div className="inline-flex rounded-md border border-line bg-canvas p-0.5">
         {options.map((o) => (
           <button
             key={o.value}
@@ -21,8 +21,8 @@ export function Segmented<T extends string>({
             onClick={() => onChange(o.value)}
             className={`rounded px-2.5 py-1 text-sm ${
               o.value === value
-                ? "bg-neutral-900 text-white dark:bg-neutral-100 dark:text-neutral-900"
-                : "text-neutral-600 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:bg-neutral-900"
+                ? "bg-surface font-medium text-fg shadow-sm ring-1 ring-line"
+                : "text-muted hover:text-fg"
             }`}
           >
             {o.label}

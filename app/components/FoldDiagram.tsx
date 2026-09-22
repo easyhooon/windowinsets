@@ -16,23 +16,23 @@ export function FoldDiagram({ angle }: { angle: number }) {
   return (
     <figure className="flex flex-col items-center">
       <svg viewBox="-140 -140 280 170" className="h-44 w-full max-w-xs" role="img" aria-label={`Hinge angle ${angle} degrees`}>
-        <line x1="-130" y1="20" x2="130" y2="20" className="stroke-neutral-300 dark:stroke-neutral-700" strokeDasharray="3 4" />
+        <line x1="-130" y1="20" x2="130" y2="20" className="stroke-line" strokeDasharray="3 4" />
         {/* left half: rotates clockwise about the hinge at (0,0) */}
         <g style={{ transform: `rotate(${half}deg)`, transition: "transform 120ms linear" }}>
-          <rect x={-len} y={-7} width={len} height={7} rx={3} className="fill-neutral-700 dark:fill-neutral-300" />
-          <rect x={-len + 4} y={-5} width={len - 8} height={2} rx={1} className="fill-blue-400" />
+          <rect x={-len} y={-7} width={len} height={7} rx={3} className="fill-fg" />
+          <rect x={-len + 4} y={-5} width={len - 8} height={2} rx={1} className="fill-accent" />
         </g>
         {/* right half: rotates counter-clockwise */}
         <g style={{ transform: `rotate(${-half}deg)`, transition: "transform 120ms linear" }}>
-          <rect x={0} y={-7} width={len} height={7} rx={3} className="fill-neutral-700 dark:fill-neutral-300" />
-          <rect x={4} y={-5} width={len - 8} height={2} rx={1} className="fill-blue-400" />
+          <rect x={0} y={-7} width={len} height={7} rx={3} className="fill-fg" />
+          <rect x={4} y={-5} width={len - 8} height={2} rx={1} className="fill-accent" />
         </g>
-        <circle cx={0} cy={0} r={5} className="fill-neutral-900 stroke-neutral-400 dark:fill-neutral-100" />
+        <circle cx={0} cy={0} r={5} className="fill-fg stroke-subtle" />
       </svg>
       <figcaption className="mt-1 text-center text-sm">
-        <span className="block text-xs text-neutral-500">Side view · hinge seen edge-on</span>
+        <span className="block text-xs text-muted">Side view · hinge seen edge-on</span>
         <span className="font-mono">{angle}°</span> ·{" "}
-        <span className="font-mono text-xs text-neutral-500">FoldingFeature.State = {state}</span>
+        <span className="font-mono text-xs text-muted">FoldingFeature.State = {state}</span>
       </figcaption>
     </figure>
   );

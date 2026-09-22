@@ -8,28 +8,28 @@ export default function Shell() {
   const filtered = devices.filter((d) => d.name.toLowerCase().includes(q));
 
   return (
-    <div className="flex h-dvh flex-col bg-neutral-50 text-neutral-900 dark:bg-neutral-950 dark:text-neutral-100">
-      <header className="flex items-center gap-3 border-b border-neutral-200 px-4 py-3 dark:border-neutral-800">
+    <div className="flex h-dvh flex-col bg-canvas text-fg">
+      <header className="flex items-center gap-3 border-b border-line bg-canvas px-4 py-3">
         <NavLink to="/" className="text-base font-semibold">
           windowinsets.info
         </NavLink>
-        <span className="hidden text-sm text-neutral-500 sm:inline">
+        <span className="hidden text-sm text-muted sm:inline">
           Window insets &amp; display metrics for Galaxy devices
         </span>
       </header>
       <div className="flex min-h-0 flex-1 flex-col md:flex-row">
-        <aside className="flex max-h-48 shrink-0 flex-col border-b border-neutral-200 md:max-h-none md:w-64 md:border-r md:border-b-0 dark:border-neutral-800">
+        <aside className="flex max-h-48 shrink-0 flex-col border-b border-line bg-surface md:max-h-none md:w-64 md:border-r md:border-b-0">
           <div className="p-3">
             <input
               type="search"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search devices…"
-              className="w-full rounded-md border border-neutral-300 bg-white px-3 py-1.5 text-sm dark:border-neutral-700 dark:bg-neutral-900"
+              className="w-full rounded-md border border-line bg-surface px-3 py-1.5 text-sm"
             />
           </div>
           <nav className="min-h-0 flex-1 overflow-y-auto px-2 pb-3">
-            <p className="px-2 pb-1 text-xs font-medium text-neutral-500">
+            <p className="px-2 pb-1 text-xs font-medium text-muted">
               Samsung Galaxy · {filtered.length}
             </p>
             {filtered.map((d) => (
@@ -39,18 +39,18 @@ export default function Shell() {
                 className={({ isActive }) =>
                   `block rounded-md px-2 py-1.5 text-sm ${
                     isActive
-                      ? "bg-blue-100 font-medium text-blue-800 dark:bg-blue-950 dark:text-blue-200"
-                      : "hover:bg-neutral-100 dark:hover:bg-neutral-900"
+                      ? "bg-accent-subtle font-medium text-accent"
+                      : "hover:bg-canvas"
                   }`
                 }
               >
                 {d.name}
-                <span className="block text-xs text-neutral-500">{d.releaseYear}</span>
+                <span className="block text-xs text-muted">{d.releaseYear}</span>
               </NavLink>
             ))}
           </nav>
         </aside>
-        <main className="min-h-0 flex-1 overflow-y-auto">
+        <main className="grid-canvas min-h-0 flex-1 overflow-y-auto">
           <Outlet />
         </main>
       </div>

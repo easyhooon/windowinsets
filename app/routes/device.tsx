@@ -35,26 +35,26 @@ const POSES = [
 
 function Row({ label, value }: { label: string; value: React.ReactNode }) {
   return (
-    <div className="flex justify-between gap-4 border-b border-neutral-200 py-2 text-sm dark:border-neutral-800">
-      <dt className="text-neutral-500">{label}</dt>
+    <div className="flex justify-between gap-4 border-b border-line py-2 text-sm">
+      <dt className="text-muted">{label}</dt>
       <dd className="text-right font-mono">{value}</dd>
     </div>
   );
 }
 
-const PENDING = <span className="text-neutral-400">pending</span>;
+const PENDING = <span className="text-subtle">pending</span>;
 
 function insetsText(i: Insets) {
   return `T ${i.top} · R ${i.right} · B ${i.bottom} · L ${i.left} dp`;
 }
 
 function SourceList({ sources }: { sources: Source[] }) {
-  if (sources.length === 0) return <p className="text-sm text-neutral-500">No verified source yet.</p>;
+  if (sources.length === 0) return <p className="text-sm text-muted">No verified source yet.</p>;
   return (
     <ul className="space-y-1 text-sm">
       {sources.map((s) => (
         <li key={s.label + s.retrievedAt}>
-          <span className="mr-2 rounded bg-neutral-200 px-1.5 py-0.5 text-xs uppercase dark:bg-neutral-800">{s.kind}</span>
+          <span className="mr-2 rounded bg-canvas px-1.5 py-0.5 text-xs uppercase">{s.kind}</span>
           {s.url ? (
             <a href={s.url} className="underline" rel="noopener noreferrer" target="_blank">
               {s.label}
@@ -62,7 +62,7 @@ function SourceList({ sources }: { sources: Source[] }) {
           ) : (
             s.label
           )}
-          <span className="text-neutral-500"> · checked {s.retrievedAt}</span>
+          <span className="text-muted"> · checked {s.retrievedAt}</span>
         </li>
       ))}
     </ul>
@@ -85,7 +85,7 @@ export default function DevicePage({ params }: Route.ComponentProps) {
   return (
     <article className="mx-auto max-w-4xl p-4 md:p-6">
       <h1 className="text-2xl font-semibold">{device.name}</h1>
-      <p className="text-sm text-neutral-500">
+      <p className="text-sm text-muted">
         {device.series} · {device.releaseYear}
       </p>
 
@@ -104,7 +104,7 @@ export default function DevicePage({ params }: Route.ComponentProps) {
       {foldable && (
         <div className="mt-4">
           <label className="flex items-center gap-3 text-sm">
-            <span className="text-neutral-500">Hinge</span>
+            <span className="text-muted">Hinge</span>
             <input
               type="range"
               min={0}
@@ -123,11 +123,11 @@ export default function DevicePage({ params }: Route.ComponentProps) {
         <div className="flex flex-col items-center gap-6">
           {foldable && <FoldDiagram angle={angle} />}
           <InsetsView screen={screen} measurement={measurement} />
-          <p className="text-xs text-neutral-500">{screen.label} screen · portrait</p>
+          <p className="text-xs text-muted">{screen.label} screen · portrait</p>
         </div>
 
-        <div>
-          <h2 className="text-sm font-medium text-neutral-500">Display · {screen.label}</h2>
+        <div className="self-start rounded-[10px] border border-line bg-surface p-4 shadow-card">
+          <h2 className="text-sm font-medium text-muted">Display · {screen.label}</h2>
           <dl>
             <Row label="Diagonal" value={isSpecced(screen) ? `${screen.diagonalInch.toFixed(1)}″` : PENDING} />
             <Row
@@ -142,7 +142,7 @@ export default function DevicePage({ params }: Route.ComponentProps) {
             />
           </dl>
 
-          <h2 className="mt-6 text-sm font-medium text-neutral-500">
+          <h2 className="mt-6 text-sm font-medium text-muted">
             Insets · {navMode === "gesture" ? "Gesture" : "3-button"} navigation
           </h2>
           <dl>
@@ -154,7 +154,7 @@ export default function DevicePage({ params }: Route.ComponentProps) {
             />
           </dl>
 
-          <h2 className="mt-6 text-sm font-medium text-neutral-500">Sources</h2>
+          <h2 className="mt-6 text-sm font-medium text-muted">Sources</h2>
           <SourceList sources={[...screen.sources, ...(measurement?.sources ?? [])]} />
         </div>
       </div>
