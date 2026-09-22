@@ -6,6 +6,7 @@ import { skins } from '../app/data/skins.ts';
 import { isInCoverage } from '../app/data/coverage.ts';
 import { getRtlAvailability, rtlCatalog } from '../app/data/rtlAvailability.ts';
 import { galaxyZFold2 } from '../app/data/devices/galaxy-z-fold2/index.ts';
+import { galaxyZFold8 } from '../app/data/devices/galaxy-z-fold8/index.ts';
 
 test('folds remain finite and symmetric at closed, intermediate, and flat poses on both axes', () => {
   for (const vertical of [true, false]) for (const angle of [0, 1, 45, 90, 135, 179, 180]) {
@@ -116,7 +117,32 @@ test('RTL comparisons never turn an incomplete inventory into non-support claims
   const complete = { ...snapshot, scope: 'reservation-catalog', complete: true };
   assert.equal(getRtlAvailability('galaxy-s20', complete).status, 'not-listed');
   assert.match(getRtlAvailability('galaxy-s20', complete).previewNotice, /Not listed/);
-  assert.equal(getRtlAvailability('galaxy-z-fold8', complete).label, 'Listed on RTL');
+  assert.equal(getRtlAvailability('galaxy-z-fold8', complete).label, 'Reservable on RTL');
+});
+
+test('Fold8 recapture keeps cover and inner evidence distinct in both navigation modes', () => {
+  const captures = [
+    ['cover', 'gesture'],
+    ['cover', 'threeButton'],
+    ['main', 'gesture'],
+    ['main', 'threeButton'],
+  ];
+  for (const [screenId, navMode] of captures) {
+    const raw = JSON.parse(readFileSync(`measurements/galaxy-z-fold8/recapture-2026-09-22/${screenId}-${navMode}.json`, 'utf8'));
+    const screen = galaxyZFold8.screens.find(candidate => candidate.id === screenId);
+    assert.equal(raw.screen, screenId);
+    assert.equal(raw.navigation.mode, navMode);
+    assert.deepEqual(screen.resolutionPx, raw.display.currentWindowPx);
+    assert.deepEqual(screen.logicalSizeDp, raw.display.maximumWindowDp);
+    assert.deepEqual(screen.insets[navMode].systemBars, raw.insets.systemBars.dp);
+    assert.deepEqual(screen.insets[navMode].displayCutout, raw.insets.displayCutout.dp);
+  }
+  const cover = galaxyZFold8.screens.find(screen => screen.id === 'cover');
+  const main = galaxyZFold8.screens.find(screen => screen.id === 'main');
+  assert.deepEqual(cover.resolutionPx, { width: 1248, height: 1972 });
+  assert.deepEqual(main.resolutionPx, { width: 2448, height: 1848 });
+  assert.equal(main.insets.gesture.systemBars.bottom, 14.86);
+  assert.equal(main.insets.threeButton.systemBars.bottom, 48);
 });
 
 test('Fold2 uses captured full-window dimensions rather than Android 13 app metrics', () => {

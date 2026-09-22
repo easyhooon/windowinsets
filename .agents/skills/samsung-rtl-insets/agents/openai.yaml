@@ -1,0 +1,4 @@
+interface:
+  display_name: "Samsung RTL Insets"
+  short_description: "Reserve RTL devices and ingest verified insets"
+  default_prompt: "Use $samsung-rtl-insets to continue the next Samsung RTL measurement."

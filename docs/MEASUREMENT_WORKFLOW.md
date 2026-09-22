@@ -13,11 +13,12 @@ and its per-skin comparison for checked sources, unknowns and completion steps.
 ## Correction from official skins (2026-09-22)
 
 The old claim that RTL always exposes the main display was not justified. Fold8's
-raw `main-*.json` files are **1248×1972**, exactly matching Samsung's official
-**cover** skin layout. Its inner layout is **2448×1848**. The website now classifies
-those captures as cover based on this evidence, leaves inner measurements pending,
-and preserves the raw filenames/labels for traceability. Do not use the historical
-Bug 5 rotation workaround: it stretched cover information into a different screen.
+historical root-level `main-*.json` files are **1248×1972**, exactly matching
+Samsung's official **cover** skin layout. Its inner layout is **2448×1848**. Those
+historical files remain unchanged for traceability. The website now uses the dated,
+correctly labeled cover and inner recaptures described below. Do not use the
+historical Bug 5 rotation workaround: it stretched cover information into a
+different screen.
 
 Flip8's 1080×2520 main captures match its main skin. Its 948×1048 cover skin is only
 artwork; cover insets remain pending. A screen radio button labels a capture and
@@ -50,32 +51,47 @@ Schema 2 makes manual screen labeling explicit and adds capture context. A null
 hinge angle is still unknown, not verification of Main. The ≤5° closed threshold
 is consistent with the [AOSP fold-state provider's convention](https://android.googlesource.com/platform/frameworks/base/+/9d3dff4ab84820404b6b130bd5435cf578dc87cf/services/foldables/devicestateprovider/src/com/android/server/policy/FoldableDeviceStateProvider.java).
 
-For a new Fold8 inner capture, actually change the device state, return to Probe
-full-screen, and verify the active window changes from the cover resolution.
-The official inner artwork is 2448×1848; it is a comparison reference, not a value
-to force into JSON (resolution settings and rotation can differ). Then select
-Main and capture each navigation mode separately. Never rotate the old cover
-measurements to fabricate an inner dataset.
+The required correction was to change the physical device state, return to Probe
+full-screen, and verify that the active window changed from the cover resolution.
+The official inner artwork remained a comparison reference, never a value forced
+into JSON. The verified recapture below completed that procedure. Never rotate the
+old cover measurements to fabricate an inner dataset. See
+[Probe instructions](../tools/insets-probe/README.md).
 
-Build and two capture-policy unit tests passed locally. No Android device was
-connected for runtime verification; RTL display transitions remain unverified.
-See [Probe instructions](../tools/insets-probe/README.md).
+### Verified Fold8 recapture
 
-### RTL access check
+A later authenticated RTL session supersedes the earlier access and display-switching
+assumptions. Computer Use reached the live WebClient, installed InsetsProbe 1.1.2,
+and used the WebClient folding control to activate both physical displays:
 
-The logged-in Chrome session previously returned **403 Forbidden** on three
-visits to the RTL device page, while Samsung's developer landing/login pages
-remained accessible. A separate anonymous in-app browser reached only the RTL
-shell, not a usable device session. This does not establish a global Samsung
-outage or prove a user-account/IP fault. No additional reservation or successful
-capture occurred. A future retest needs a changed access condition; do not treat
-the earlier marketing-page access as evidence that device access works.
+- folded cover: **1248×1972 px**, portrait;
+- unfolded inner display: **2448×1848 px**, landscape, with a vertical FLAT
+  WindowManager folding feature at the midpoint.
+
+Both displays were captured in 3-button and gesture navigation modes. The accepted
+raw files are preserved under
+`measurements/galaxy-z-fold8/recapture-2026-09-22/`. The older root-level
+`main-*.json` evidence remains immutable, but the website now uses the correctly
+labeled recaptures. The folded capture still reports a 180° hinge sensor value with
+no folding features, so the cover classification relies on the actively switched
+display and its exact official cover resolution, not that unreliable angle field.
+
+### RTL access outcome
+
+The earlier 403 was transient. After the user completed Samsung authentication
+manually, the reservation catalog and live WebClient both opened. Galaxy Z Fold8
+was available and successfully reserved for 30 minutes / 2 credits. This confirms
+that model's reservability on the checked date, but not the complete catalog or
+future slot availability.
 
 ## Overview
 
 windowinsets.info is a reference site for Android window insets, display cutouts, corner radii and foldable hinge states across Samsung Galaxy devices. Every value is labeled **official** (published by Samsung/Google), **measured** (captured with InsetsProbe on RTL or a real device, raw JSON committed), or **community** (unverified).
 
-**Current Status**: Galaxy S25 Ultra, Galaxy S25+, and Galaxy Z Flip8 main screens measured; Galaxy Z Fold8 cover classified from matching official skin resolution (both gesture + 3-button). Fold8 inner remains pending. Galaxy S25, Fold6, Fold7, Flip6 still pending.
+**Current Status**: Galaxy Z Fold8 cover and inner displays are measured in both
+navigation modes from a verified live RTL session. Galaxy S25 Ultra, Galaxy S25+,
+and Galaxy Z Flip8 main screens are measured. Galaxy S25, Fold6, Fold7, Flip6 and
+Flip8 cover remain pending.
 
 ## RTL Credits & Cost
 
@@ -91,7 +107,10 @@ Confirmed directly from Samsung's official RTL FAQ (developer.samsung.com/remote
 
 Other notes:
 - Closing/losing the RTL WebClient session triggers a full device restart (~1–2 min) before it can be reserved again — avoid closing mid-task.
-- The WebClient opens in a new browser window that browser-automation tools (Claude in Chrome, etc.) cannot see or control, regardless of who clicks "Start" — it's outside the extension's tracked tab group and doesn't go through `window.open()` in an interceptable way. The physical device session is inherently a human-operated step; automation can drive the reservation/list pages but not the live device view itself.
+- The separate WebClient window is controllable through Computer Use when it is
+  visible. Its streamed Android canvas often lacks accessibility nodes, so use fresh
+  screenshots and coordinates. Authentication and unreliable lock-screen steps
+  remain manual handoffs.
 
 ## Known Issue: Intermittent 403 Forbidden on developer.samsung.com/remotetestlab/*
 
@@ -114,11 +133,16 @@ We separately confirmed during this project that the RTL single-page-app itself 
 
 **What worked in practice**: retry after 10–30s; re-enter through the marketing page (`developer.samsung.com/remote-test-lab`) rather than deep-linking straight to `/remotetestlab/devices`; if the SPA is visibly crashed (blank sidebar, unresponsive buttons), a hard reload or fresh tab is needed rather than continuing to click around the broken state.
 
-## Two Confirmed Platform Limitations (Not Bugs)
+## Live RTL constraints
 
 These looked like automation bugs at first but are real Android/Samsung platform behavior, confirmed by re-testing after fixing the actual code bugs:
 
-1. **Cover screen can't be captured separately from Main.** InsetsProbe's "Cover/Main" radio buttons are just a label the person taking the measurement picks — RTL's remote view only ever exposes ONE active display (whichever one is currently shown), so a "cover" capture and a "main" capture taken back-to-back on the same RTL session return byte-identical `display`/`insets` data. Confirmed on both Fold8 and Flip8: `cover-threeButton.json` and `main-threeButton.json` had identical `widthPx`/`heightPx`/`insets`, just different `"screen"` label strings. **Cover-screen data can only come from someone with a physically folded real unit**, not RTL. All current foldable device entries leave `screens[cover]` as `null`/pending for this reason (see comment in `galaxy-z-fold8.ts`).
+1. **A label never switches displays, but the WebClient folding control can.**
+   The Probe Cover/Main radio buttons remain labels only. On a foldable RTL device,
+   use the right-side folding control to choose Folded or Unfolded, wait for the
+   active window size to change, then choose the matching Probe label. Fold8 cover
+   and inner were captured separately this way. Do not infer a display change from
+   the radio button or hinge angle alone.
 
 2. **`Settings.Secure.putInt(navigation_mode, ...)` is silently ignored on real Samsung hardware.** This was suspected from the start (there was already a code comment about it) and got compounded by a real bug (see below), but even after fixing the bug, a fresh timestamped re-test on Fold8 still came back `"navigation.mode": "threeButton"` after requesting gesture mode programmatically. **There is no way to switch navigation mode from InsetsProbe on real Samsung hardware.** Gesture-mode captures require a human to manually switch it via **Settings → Display → Navigation bar → Swipe gestures**, then tap the individual **"Measure"** button (not "Measure All") once.
 
@@ -160,40 +184,61 @@ Android's `screenWidthDp`/`screenHeightDp` reflect whatever rotation the app hap
 
 ### Step 1: Reserve Device on Samsung RTL
 
-1. Go to [developer.samsung.com/remote-test-lab](https://developer.samsung.com/remote-test-lab)
-2. Click "Get Started" → log in with Samsung Developer account
-3. Browse devices, select target
-4. Click device → set duration (**30 min / 2 credits is enough** — don't over-reserve)
-5. Click "Start" in the reservation dialog (a human must watch/operate the resulting WebClient window — see limitations above)
+1. Go to [developer.samsung.com/remote-test-lab](https://developer.samsung.com/remote-test-lab).
+2. Stop at Samsung authentication and ask the user to sign in manually. Never enter
+   credentials, solve CAPTCHA or approve account verification.
+3. After the user confirms login, reopen the target and verify that reservation
+   options appear without a sign-in notice.
+4. Select **30 min / 2 credits**, re-check the exact model and start the reservation.
+5. Keep the WebClient window open. Computer Use can operate its visible controls;
+   hand off only an inaccessible popup, permission prompt, power-on or unlock step.
 
 ### Step 2: Install InsetsProbe APK
 
-1. Build APK from `tools/insets-probe`: `./gradlew assembleDebug` → `app/build/outputs/apk/debug/app-debug.apk`
-2. Upload APK to RTL, tap "Install", wait for completion
+1. Build from `tools/insets-probe` with
+   `./gradlew :app:testDebugUnitTest :app:assembleDebug`.
+2. In WebClient choose **Applications**, click the install/upload icon, then use
+   macOS **Cmd+Shift+G** in the file chooser and enter the absolute path to
+   `tools/insets-probe/app/build/outputs/apk/debug/app-debug.apk`.
+3. Wait for `InsetsProbe info.windowinsets.probe` to appear, select its row and
+   click Start.
+4. If the display is black, click the lower physical side button in the rendered
+   device frame to wake it. Ask the user to unlock manually when a swipe, PIN,
+   biometric or lock-screen transition is not reliable through the remote stream.
 
 ### Step 3: Capture Measurements
 
-Given limitation #2, **"Measure All" only reliably captures 3-button mode** (both its "cover" and "main" passes will be identical main-screen 3-button data, per limitation #1 — only one of them is worth keeping).
+Do not use Measure All. Capture each active display and navigation mode explicitly:
 
-Practical sequence per device:
-1. Open InsetsProbe, tap **"Measure"** once (default 3-button state) → 1 file
-2. Manually switch **Settings → Display → Navigation bar → Swipe gestures**
-3. Return to InsetsProbe, tap **"Measure"** once again → 1 file (gesture)
-4. That's 2 files per device (main screen only, both nav modes) — cover screen stays pending
+1. Confirm the physical RTL state and Probe active-window size. On Fold8, the
+   WebClient's middle Folded option produced the 1248×1972 cover; Unfolded produced
+   the 2448×1848 inner display.
+2. Select the matching Probe radio label and tap **Measure**. Accept the capture
+   only when the toast filename matches the intended screen and actual nav mode.
+3. Use **Display / navigation settings**, scroll to **Navigation bar**, select
+   **Swipe gestures**, then use the left-edge back gesture twice to return to Probe.
+4. Tap **Measure** again and verify the `*-gesture.json` toast.
+5. For foldables, repeat after physically switching the WebClient display. Verify
+   resolution after every switch; the label does not change the display.
 
 ### Step 4: Export & Commit Data
 
-1. Files download via the RTL WebClient's file transfer (browser downloads, e.g. to `~/Downloads/content`, `content (1)`, etc. — same filename repeated, browser auto-numbers them)
-2. Save to `measurements/<device-slug>/main-<threeButton|gesture>.json`
-3. Create `app/data/devices/<slug>/index.ts` implementing `Device` (see an existing foldable/bar example)
-4. Register in `app/data/devices.ts` (newest release year first)
-5. `pnpm typecheck && pnpm build` to verify, then commit and push
+1. Open WebClient **File Browser** and navigate to
+   `Android/data/info.windowinsets.probe/files`.
+2. Hover each JSON row to reveal its download icon. RTL downloads them as
+   `content`, `content (1)`, etc.; do not trust those browser filenames.
+3. Inspect `screen`, `navigation.mode`, `display.currentWindowPx`, model and
+   timestamp inside every download before assigning an evidence path.
+4. Preserve superseded raw evidence. If canonical filenames already exist, add a
+   dated recapture directory instead of overwriting them.
+5. Register only accepted values, update coverage/workflow docs, then run
+   `pnpm typecheck`, `node --test tests/rendering.test.mjs`, and `pnpm build`.
 
 ## Device Status & Progress
 
 | Device | Model | Screens | 3-Button | Gesture | Status |
 | --- | --- | --- | --- | --- | --- |
-| Galaxy Z Fold8 | SM-F971N | Main only (cover: RTL can't capture it separately) | ✓ | ✓ | Complete |
+| Galaxy Z Fold8 | SM-F971N | Cover + inner | ✓ both | ✓ both | Complete |
 | Galaxy Z Flip8 | SM-F776B | Main only | ✓ | ✓ | Complete |
 | Galaxy S25 Ultra | SM-S938N | Main | ✓ | ✓ | Complete |
 | Galaxy S25+ | SM-S936N | Main | ✓ | ✓ | Complete (real device, Korea — not RTL) |
@@ -214,7 +259,7 @@ Practical sequence per device:
 
 ## Data Flow: Device → JSON → TypeScript → Website
 
-1. **InsetsProbe** exports raw JSON (schemaVersion 1) with device/display/navigation/insets/displayCutout/roundedCorners/hinge.
+1. **InsetsProbe** exports raw JSON (schemaVersion 2) with device/display/navigation/insets/displayCutout/roundedCorners/hinge and explicit capture context.
 2. **Raw JSON committed** to `measurements/<device-slug>/<screen>-<navMode>.json` — source of truth, never hand-edited.
 3. **TypeScript device file** (`app/data/devices/<slug>/index.ts`) implements `Device` (see `app/data/types.ts`): dp-converted insets per nav mode, `cornerRadiiDp`, optional `cutoutShape` (real punch-hole position, when the raw capture has `boundingRects`), sources with GitHub links.
 4. **Website**: React Router, statically prerendered. `app/components/DeviceView.tsx` holds the full device-detail render — a single uniform toolbar row (Navigation / Pose / Hinge / Zoom dropdowns + a settings gear, all one button style, matching safearea.info's own toolbar exactly) plus the diagram, metrics, and sources — shared by both the `/​:slug` route and the home page. Home (`/`) renders `DeviceView` for `devices[0]` (the newest device) directly — safearea.info-style landing straight on its equivalent of iPhone Duo, instead of a separate list-only summary page. `zoom`/`showFrame`/`showRegions`/`showDimensions`/`units` all live as state in `DeviceView` and are passed down as props — both diagram components below are now fully controlled, so there's exactly one toolbar on the page, never a second private one duplicated inside a component. It shows:
@@ -245,25 +290,26 @@ Practical sequence per device:
 - Source tier: `official` only for published specs; `measured` for RTL/device captures; `community` for unreproduced submissions.
 - Run `pnpm typecheck && pnpm build` before committing device data changes — the build's prerender step will fail loudly on a malformed `Device`.
 
-## Codex Migration Notes
+## Computer Use automation notes
 
-### Why Claude in Chrome was used here
+RTL's reservation pages and separate live WebClient window were both operated
+successfully through Computer Use. The Android stream itself usually has no useful
+accessibility tree, so every device action must be derived from a fresh screenshot.
+This includes the right-bezel power button, Probe radio buttons, Settings scrolling,
+the folding-state menu and File Browser row actions. Stop and ask the user only for
+authentication, an inaccessible permission/popup, or a lock-screen gesture that is
+not reliable through the stream.
 
-RTL's device list/reservation pages are ordinary web pages (browser automation handles them fine: navigate, click, form-fill, screenshot). The **live device view is a separate, human-operated step** no browser-automation tool here could see or control — confirmed by intercepting `window.open` (nothing captured) and by testing whether *my own* click on Start produced a controllable popup (it didn't either — the popup mechanism itself is outside the tracked tab group regardless of who triggers it, likely a dynamically-created `<a target="_blank">` rather than a `window.open()` call).
-
-### Codex Equivalents
-
-| Capability | Claude in Chrome | Codex Equivalent |
-| --- | --- | --- |
-| Browser automation (navigate/click/form-fill) | `computer()`, `navigate()`, `form_input()` | Similar Codex browser tools — works fine for RTL's list/reservation pages |
-| Live device view | **Not controllable by either** | Same limitation applies — a human must operate the actual phone screen |
-| File retrieval | Browser downloads (numbered duplicates: `content`, `content (1)`, ...) | Same pattern — read files the human downloads and forwards |
+Browser downloads still use numbered duplicate names such as `content` and
+`content (1)`. The JSON fields, not the browser filename, determine the accepted
+screen and navigation-mode identity.
 
 ### File Paths to Reference
 
 - `tools/insets-probe/app/src/main/java/info/windowinsets/probe/{MainActivity,Probe}.kt` — capture + automation logic
 - `app/data/types.ts` — `Device`, `Screen`, `InsetsMeasurement`, `CutoutShape`, `FormFactor`
-- `app/data/devices/galaxy-z-fold8/index.ts` — most complete example (foldable, both nav modes, cutout shape, pending-cover comment)
+- `app/data/devices/galaxy-z-fold8/index.ts` — complete foldable example with
+  cover/inner captures in both nav modes and a measured cover cutout shape
 - `app/components/DeviceView.tsx` — shared full device-detail render (used by home + `/:slug`), owns the single unified toolbar's state
 - `app/components/Dropdown.tsx` — the reusable "Label: Value ▾" toolbar button (Navigation/Pose/Hinge/Zoom all use this)
 - `app/components/InsetsDiagram.tsx` — bar-phone 2D SVG diagram (controlled: zoom/settings come in as props)
@@ -278,8 +324,12 @@ RTL's device list/reservation pages are ordinary web pages (browser automation h
 
 ### Recommendations
 
-1. Keep RTL's list/reservation-page automation in whatever agent is driving it — the pages themselves are ordinary web automation targets. Don't try to make the live device view unattended; it structurally requires a human.
-2. Preserve the "measure 3-button, manually flip Settings, measure gesture again" 2-step pattern per device — Measure All's automation value is now just the screen-radio convenience, not nav-mode switching (which doesn't work on real hardware regardless of code).
+1. Use the repository's `samsung-rtl-insets` skill so reservation, install,
+   power/wake, screen switching, nav-mode switching, export and validation follow
+   the same verified sequence.
+2. Preserve the "measure 3-button, manually flip Settings, measure gesture again"
+   pattern per physical display. Do not use Measure All or treat a radio label as a
+   display switch.
 3. Budget ~2 credits (30 min) per device; ~10 devices/day is the real ceiling under the free 20-credit daily allowance.
 4. When adding a device, always run `pnpm typecheck && pnpm build` — malformed `Device` objects fail the prerender step loudly, which is the fastest signal something's wrong before it reaches production.
 5. When capturing a foldable's main screen, run the probe app in its natural flat/open rotation if at all possible, so the raw JSON's `orientation`/`screenWidthDp`/`screenHeightDp` already match the physical silhouette (landscape for book-fold, portrait for flip-fold) — this avoids needing `FoldRenderer3D`'s draw-time rotation correction (Bug 5) for new devices.

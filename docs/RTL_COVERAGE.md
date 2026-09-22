@@ -16,14 +16,17 @@ removes a model from its catalog.
   features Galaxy Z Fold8, Galaxy Z Flip8, Galaxy S26 Ultra and Galaxy Tab S11.
   These are featured models, not a complete inventory or verified free slots.
 - [Reservation catalog](https://developer.samsung.com/remotetestlab/devices)
-  still returned 403 Forbidden when the logged-in Chrome tab was reloaded on
-  2026-09-22. The public text fetch exposed only an application shell.
+  became accessible after the user completed Samsung authentication manually.
+  The Galaxy Z list was inspected and Galaxy Z Fold8 (SM-F971N, Korea/Gumi) was
+  successfully reserved for 30 minutes / 2 credits. The full cross-series,
+  cross-region inventory was not completed.
 - The local skin archive contains 73 registered models; 70 are public under
   the release-year policy. All four featured mobile models have registered skins.
   The other 69 archived models (66 public) remain unverified, not unsupported.
 - Existing S25+ and S25 Ultra captures document past measurements. They do not
-  establish current reservation availability. Fold8 inner and Flip8 cover remain
-  unmeasured independently of model availability.
+  establish current reservation availability. Fold8 cover and inner were both
+  recaptured from the live reservation in 3-button and gesture modes. Flip8 cover
+  remains unmeasured independently of model availability.
 
 The comparison for every registered skin is in [RTL_SKIN_COMPARISON.csv](RTL_SKIN_COMPARISON.csv).
 It includes archived pre-2020 models for inventory completeness; it does not
@@ -31,8 +34,9 @@ publish their routes or change the separate TriFold decision.
 
 ## Data and presentation
 
-The `rtlCatalog` snapshot in `app/data/rtlAvailability.ts` stores the source, check date, inventory scope and
-explicit model slugs. `rtlAvailability.ts` derives three states:
+The `rtlCatalog` snapshot in `app/data/rtlAvailability.ts` stores the source,
+check date, inventory scope, featured model slugs and separately verified
+reservable slugs. `rtlAvailability.ts` derives three inventory states:
 
 | Evidence | Display | Measurement handling |
 | --- | --- | --- |
@@ -55,7 +59,6 @@ Replace the featured-only snapshot with that verified inventory, set
 `scope: "reservation-catalog"`, and set `complete: true` only after all models
 and regions have been checked. A 403, an empty shell or a filtered page must
 never produce a complete empty inventory. Refresh the CSV from the same snapshot.
-No new device reservation was made during this comparison.
-
-Validation: typecheck, seven rendering/catalog tests and static build passed.
-Local browser visual verification was blocked by `ERR_BLOCKED_BY_CLIENT`.
+A Galaxy Z Fold8 reservation was made during this comparison. It establishes that
+model's availability on the checked date only; it does not make the partial
+inventory complete.
