@@ -132,22 +132,30 @@ class MainActivity : ComponentActivity(), SensorEventListener {
     private fun measureAll() {
         measureAllInProgress = true
         val screens = listOf(ID_COVER, ID_MAIN)
-        val modes = listOf(ID_THREEBUTTON, ID_GESTURE)
+        // Bug fix: the RadioGroup's onCheckedChangeListener guards setNavMode() behind
+        // `!measureAllInProgress`, so calling navModeGroup.check(modeId) alone during
+        // automation never actually changed the nav mode — both captures silently stayed
+        // in whatever mode was active before Measure All started. Call setNavMode()
+        // explicitly here instead of relying on that listener.
+        val modes = listOf(ID_THREEBUTTON to 0, ID_GESTURE to 2)
         var delay = 0L
 
         for (screenId in screens) {
-            for (modeId in modes) {
+            for ((modeId, modeValue) in modes) {
                 root.postDelayed({
                     screenGroup.check(screenId)
                     navModeGroup.check(modeId)
+                    setNavMode(modeValue)
+                    // Real hardware needs more time than the emulator for the system nav
+                    // bar to actually switch and for insets to settle before export.
                     root.postDelayed({
                         val file = export()
                         if (file != null) {
                             Log.i(TAG, "Saved: ${file.name}")
                         }
-                    }, 300)
+                    }, 600)
                 }, delay)
-                delay += 1000
+                delay += 1400
             }
         }
 
