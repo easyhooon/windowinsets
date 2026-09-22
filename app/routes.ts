@@ -4,6 +4,7 @@ export default [
   layout("routes/shell.tsx", [
     index("routes/home.tsx"),
     route("methodology", "routes/methodology.tsx"),
+    route("developer-guide", "routes/developer-guide.tsx"),
     route(":slug", "routes/device.tsx"),
   ]),
   route("sitemap.xml", "routes/sitemap.ts"),

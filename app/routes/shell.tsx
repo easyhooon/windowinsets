@@ -17,6 +17,9 @@ export default function Shell() {
           Window insets &amp; display metrics for Galaxy devices
         </span>
         <nav className="ml-auto flex items-center gap-4 text-sm">
+          <NavLink to="/developer-guide" className="text-muted hover:text-fg">
+            Developer guide
+          </NavLink>
           <NavLink to="/methodology" className="text-muted hover:text-fg">
             How we measure
           </NavLink>

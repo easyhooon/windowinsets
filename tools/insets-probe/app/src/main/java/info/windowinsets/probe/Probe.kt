@@ -97,7 +97,7 @@ object Probe {
                 ),
         )
 
-        json.put("navigation", navigationJson(activity))
+        json.put("navigation", navigationJson(activity, insets))
 
         val types = linkedMapOf(
             "statusBars" to Type.statusBars(),
@@ -196,13 +196,33 @@ object Probe {
         return o
     }
 
-    private fun navigationJson(activity: Activity): JSONObject {
+    /**
+     * The Settings value can be changed without the system UI following (Samsung ignores
+     * `navigation_mode` written over adb), so the mode is inferred from the insets themselves:
+     * in gesture navigation the nav bar inset is only the gesture hint and does not count as a
+     * tappable element; with 3 buttons the tappable inset equals the bar height.
+     */
+    private fun navigationJson(activity: Activity, insets: WindowInsetsCompat): JSONObject {
         // 0 = 3-button, 1 = 2-button, 2 = gestural (AOSP Settings.Secure "navigation_mode").
         val setting = runCatching { Settings.Secure.getInt(activity.contentResolver, "navigation_mode", -1) }.getOrDefault(-1)
         val resId = activity.resources.getIdentifier("config_navBarInteractionMode", "integer", "android")
         val fromConfig = if (resId != 0) activity.resources.getInteger(resId) else -1
+
+        val navBottom = insets.getInsets(Type.navigationBars()).bottom
+        val tappableBottom = insets.getInsets(Type.tappableElement()).bottom
+        val fromInsets = when {
+            navBottom == 0 -> "unknown"
+            tappableBottom == 0 -> "gesture"
+            tappableBottom == navBottom -> "threeButton"
+            else -> "unknown"
+        }
+        val fromSetting = modeName(if (setting != -1) setting else fromConfig)
         return JSONObject()
-            .put("mode", modeName(if (setting != -1) setting else fromConfig))
+            // What the insets say is authoritative; the setting is only recorded for comparison.
+            .put("mode", if (fromInsets != "unknown") fromInsets else fromSetting)
+            .put("modeFromInsets", fromInsets)
+            .put("modeFromSetting", fromSetting)
+            .put("settingAgreesWithInsets", fromInsets == "unknown" || fromInsets == fromSetting)
             .put("settingsSecureNavigationMode", setting)
             .put("configNavBarInteractionMode", fromConfig)
     }
