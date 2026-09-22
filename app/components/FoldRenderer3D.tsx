@@ -91,6 +91,25 @@ function drawDiagram(
       roundedRectPath(cx, cy, cw, ch, Math.min(cw, ch) / 2);
       ctx.fill();
     }
+
+    // Safe area's own size, centered inside the green region — the
+    // "SAFE AREA / W × H" label safearea.info prints on top of its own
+    // safe-area fill (the safe rect's own dp size, not the overall device
+    // size the outside dimension arrows already show).
+    if (opts.showDimensions) {
+      const safeWDp = dpW - safe.left - safe.right;
+      const safeHDp = dpH - safe.top - safe.bottom;
+      const scx = safe.left * px + (W - (safe.left + safe.right) * px) / 2;
+      const scy = safe.top * px + (H - (safe.top + safe.bottom) * px) / 2;
+      ctx.globalAlpha = 0.8;
+      ctx.fillStyle = "#166534";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.font = `700 ${9 * px / 4}px sans-serif`;
+      ctx.fillText("SAFE AREA", scx, scy - 8 * px / 4);
+      ctx.font = `700 ${12 * px / 4}px sans-serif`;
+      ctx.fillText(`${opts.fmt(safeWDp)} × ${opts.fmt(safeHDp)}`, scx, scy + 9 * px / 4);
+    }
     ctx.restore();
   }
 

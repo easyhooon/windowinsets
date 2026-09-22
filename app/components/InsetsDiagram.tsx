@@ -228,6 +228,27 @@ export function InsetsDiagram({
                     fill="#0f172a"
                   />
                 )}
+
+                {/* Safe area's own size, centered inside the green region — the
+                 * "SAFE AREA / W × H" label safearea.info prints on top of its
+                 * own safe-area fill (this is the safe rect's own dp size, not
+                 * the overall device size shown by the outside dimension lines). */}
+                {showDimensions && (() => {
+                  const safeWDp = dp.width - safe.left - safe.right;
+                  const safeHDp = dp.height - safe.top - safe.bottom;
+                  const cx = safe.left * s + (W - (safe.left + safe.right) * s) / 2;
+                  const cy = safe.top * s + (H - (safe.top + safe.bottom) * s) / 2;
+                  return (
+                    <g opacity={0.8}>
+                      <text x={cx} y={cy - 7} textAnchor="middle" dominantBaseline="central" fontSize={9} fontWeight={700} letterSpacing={1} fill="#166534">
+                        SAFE AREA
+                      </text>
+                      <text x={cx} y={cy + 8} textAnchor="middle" dominantBaseline="central" fontSize={12} fontWeight={700} fill="#166534">
+                        {fmt(safeWDp)} × {fmt(safeHDp)}
+                      </text>
+                    </g>
+                  );
+                })()}
               </>
             )}
           </>
