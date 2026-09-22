@@ -352,7 +352,7 @@ export function FoldRenderer3D({
     texture.colorSpace = THREE.SRGBColorSpace;
     texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
 
-    const material = new THREE.MeshBasicMaterial({ map: texture, transparent: true, side: THREE.DoubleSide, depthWrite: false });
+    const material = new THREE.MeshBasicMaterial({ map: texture, transparent: true, side: THREE.FrontSide, depthWrite: false });
     const mesh = new THREE.Mesh(geometry, material);
     deviceGroup.add(mesh);
 
@@ -376,7 +376,7 @@ export function FoldRenderer3D({
     const coverTexture = new THREE.CanvasTexture(coverCanvas);
     coverTexture.colorSpace = THREE.SRGBColorSpace;
     coverTexture.anisotropy = renderer.capabilities.getMaxAnisotropy();
-    const coverMaterial = new THREE.MeshBasicMaterial({ map: coverTexture, transparent: true, side: THREE.DoubleSide, depthWrite: false });
+    const coverMaterial = new THREE.MeshBasicMaterial({ map: coverTexture, transparent: true, side: THREE.FrontSide, depthWrite: false });
     const coverGeometry = new THREE.PlaneGeometry(1, 1, 2, 2);
     const coverMesh = new THREE.Mesh(coverGeometry, coverMaterial);
     deviceGroup.add(coverMesh);
@@ -463,6 +463,8 @@ export function FoldRenderer3D({
         geo.computeBoundingSphere();
       }
       shellMesh.visible = stateRef.current.showFrame;
+      // Inner annotation margins extend beyond the chassis; hide them when shut.
+      mesh.visible = displayedAngle > 0.5;
       coverMesh.visible = !!stateRef.current.cover && displayedAngle < 100;
       const reveal = Math.max(0, 1 - displayedAngle / 100);
       const turn = reveal * reveal * (3 - 2 * reveal) * Math.PI / 2;

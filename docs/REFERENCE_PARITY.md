@@ -106,3 +106,18 @@ check. No full pixel-parity claim is made.
 The eight explicit measured/specification entries live at
 `app/data/devices/<slug>/index.ts`. Shared types, coverage rules and skin previews
 remain in `app/data/`; the public routes and data values are unchanged by the move.
+
+## Fold2 animation verification (2026-09-22)
+
+Enabled the shared book-fold renderer for the measured Galaxy Z Fold2 entry.
+Pose presets and the 0–180° hinge slider now accompany Outer/Inner selection.
+Display textures render only their front faces, and the inner annotation plane
+is hidden when fully closed, preventing reversed cover labels at partial angles
+and inner measurement margins leaking around the closed cover.
+
+Verified in local Chrome through browser Playwright controls and screenshots:
+Fold2 closed, 90°, open, hinge slider to 0°, plus closed/90° at 390×844.
+Flip8 90° remains visually intact with the shared material change.
+Typecheck, all 9 rendering tests, and static build pass. The browser logged an
+existing hydration warning for an injected `cz-shortcut-listen` body attribute.
+These pose angles are illustrative controls, not newly captured hinge measurements.
