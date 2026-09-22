@@ -5,6 +5,7 @@ import { bendPoint, createChassis, rigidPanelPoint } from '../app/components/fol
 import { skins } from '../app/data/skins.ts';
 import { isInCoverage } from '../app/data/coverage.ts';
 import { getRtlAvailability, rtlCatalog } from '../app/data/rtlAvailability.ts';
+import { galaxyZFold2 } from '../app/data/devices/galaxy-z-fold2/index.ts';
 
 test('folds remain finite and symmetric at closed, intermediate, and flat poses on both axes', () => {
   for (const vertical of [true, false]) for (const angle of [0, 1, 45, 90, 135, 179, 180]) {
@@ -116,4 +117,25 @@ test('RTL comparisons never turn an incomplete inventory into non-support claims
   assert.equal(getRtlAvailability('galaxy-s20', complete).status, 'not-listed');
   assert.match(getRtlAvailability('galaxy-s20', complete).previewNotice, /Not listed/);
   assert.equal(getRtlAvailability('galaxy-z-fold8', complete).label, 'Listed on RTL');
+});
+
+test('Fold2 uses captured full-window dimensions rather than Android 13 app metrics', () => {
+  const raw = JSON.parse(readFileSync('measurements/galaxy-z-fold2/main-threeButton.json', 'utf8'));
+  const screen = galaxyZFold2.screens.find(screen => screen.id === 'main');
+  assert.deepEqual(screen.resolutionPx, raw.display.currentWindowPx);
+  assert.deepEqual(screen.logicalSizeDp, raw.display.maximumWindowDp);
+  assert.notEqual(screen.resolutionPx.height, raw.display.appMetricsPx.height);
+  assert.equal(raw.display.appMetricsPx.height + raw.insets.systemBars.px.top + raw.insets.systemBars.px.bottom, screen.resolutionPx.height);
+  assert.equal(screen.insets.threeButton.condition.oneUi, '5.1.1');
+  assert.deepEqual(screen.insets.threeButton.systemBars, raw.insets.systemBars.dp);
+  assert.equal(screen.insets.gesture, null);
+});
+
+test('Flip8 legacy cover label does not make its flat inner capture a cover measurement', () => {
+  const raw = JSON.parse(readFileSync('measurements/galaxy-z-flip8/cover-threeButton.json', 'utf8'));
+  assert.equal(raw.screen, 'cover');
+  assert.equal(raw.hinge.angleDegrees, 180);
+  assert.equal(raw.hinge.foldingFeatures[0].state, 'FLAT');
+  assert.deepEqual([raw.display.widthPx, raw.display.heightPx], [skins['galaxy-z-flip8/main'].screen.width, skins['galaxy-z-flip8/main'].screen.height]);
+  assert.notEqual(raw.display.widthPx, skins['galaxy-z-flip8/cover'].screen.width);
 });

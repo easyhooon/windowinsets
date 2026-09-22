@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router";
-import { isSpecced } from "../data/devices";
 import type { Device, Insets, NavMode, Source } from "../data/types";
 import { Dropdown } from "./Dropdown";
 import { FoldRenderer3D } from "./FoldRenderer3D";
@@ -146,11 +145,11 @@ export function DeviceView({ device }: { device: Device }) {
               />
               <Row
                 label="Resolution"
-                value={isSpecced(screen) ? `${screen.resolutionPx.width} × ${screen.resolutionPx.height} px` : PENDING}
+                value={screen.resolutionPx.width > 0 && screen.resolutionPx.height > 0 ? `${screen.resolutionPx.width} × ${screen.resolutionPx.height} px` : PENDING}
               />
-              <Row label="Pixel Density" value={isSpecced(screen) ? `${screen.ppi} ppi` : PENDING} />
+              <Row label="Pixel Density" value={screen.ppi > 0 ? `${screen.ppi} ppi` : PENDING} />
               <Row label="Density (dpi)" value={screen.densityDpi ?? PENDING} />
-              <Row label="Diagonal" value={isSpecced(screen) ? `${screen.diagonalInch.toFixed(1)}″` : PENDING} />
+              <Row label="Diagonal" value={screen.diagonalInch > 0 ? `${screen.diagonalInch.toFixed(1)}″` : PENDING} />
             </dl>
 
             <SectionLabel>Safe Area Insets · {navMode === "gesture" ? "Gesture" : "3-button"}</SectionLabel>
@@ -201,6 +200,7 @@ export function DeviceView({ device }: { device: Device }) {
             </dl>
         <details className="sources-details"><summary>Sources & measurement conditions</summary>
           <p className="mb-3 text-xs text-muted">{device.name} · {screen.label} · {measurement ? "Captured portrait. Rotation changes the view, not the recorded Android insets." : "Official artwork preview. Android insets have not been measured for this navigation mode."}</p>
+          {measurement?.condition.note && <p className="mb-3 text-xs text-muted">{measurement.condition.note}</p>}
           <SourceList sources={Array.from(new Map((measurement?.sources ?? []).concat(screen.sources).map(s => [s.label, s])).values())} />
           <Link to="/methodology" className="mt-3 block text-accent underline">How these values are measured →</Link>
         </details>

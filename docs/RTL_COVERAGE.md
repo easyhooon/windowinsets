@@ -3,7 +3,9 @@
 Checked 2026-09-22. **The full comparison is not yet verified.**
 
 Keep registered skins browsable under the existing 2020+ coverage policy.
-New measurement collection targets models offered by Samsung Remote Test Lab.
+New measurement collection prioritizes models offered by Samsung Remote Test Lab.
+The owner also explicitly authorized physical Fold2 measurements on 2026-09-22;
+verified physical-device captures are accepted without implying RTL availability.
 Only actual InsetsProbe captures populate insets; a skin or RTL listing never
 supplies measured values. Preserve historical captures even if Samsung later
 removes a model from its catalog.
