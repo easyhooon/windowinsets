@@ -6,9 +6,51 @@
 
 windowinsets.info is a reference site for Android window insets, display cutouts, corner radii and foldable hinge states across Samsung Galaxy devices. Every value is labeled **official** (published by Samsung/Google), **measured** (captured with InsetsProbe on RTL or a real device, raw JSON committed), or **community** (unverified).
 
-**Current Status**: Galaxy S25 Ultra measured (both gesture + 3-button navigation). Fold8, Flip6, S25 awaiting measurement via Samsung Remote Test Lab (RTL).
+**Current Status**: Galaxy S25 Ultra, Galaxy Z Fold8, Galaxy Z Flip8 measured (main screen, both gesture + 3-button navigation). Galaxy S25, Fold6, Fold7, Flip6 still pending.
 
-**Efficiency Problem Solved**: Manual RTL measurement was projected to take 1 month for all Galaxy models. Solution: Built "Measure All" button into InsetsProbe to automate sequential capture of all screen/navigation combinations in one click, reducing per-device time from ~20 min to ~2 min.
+## RTL Credits & Cost
+
+Confirmed directly from Samsung's official RTL FAQ (developer.samsung.com/remotetestlab/docs/2/faq):
+
+- **"Is there a charge for using the Remote Test Lab service?"** → *"It's free of charge for Samsung Developer members."*
+- **"What is the Credit?"** → *"The Credit is needed to reserve a remote device on the Remote Test Lab (1 Credit = 15 min.)"*
+- **"How can I get the Credit?"** → *"You can get 20 Credits once a day by signing in the Remote Test Lab web site."*
+
+**No paid credit purchase option exists.** RTL is free for Samsung Developer members with a fixed **20 credits/day (= 5 hours), resetting once every 24 hours by signing in.** There is no way to buy more the same day.
+
+**Pacing**: a full manual capture (main screen, 3-button + gesture) costs ~2 credits (30 min reservation) in practice. At that rate, **up to ~10 devices per day** can be measured within the free daily allowance. Plan device order accordingly — measure the highest-priority/newest devices first each day.
+
+Other notes:
+- Closing/losing the RTL WebClient session triggers a full device restart (~1–2 min) before it can be reserved again — avoid closing mid-task.
+- The WebClient opens in a new browser window that browser-automation tools (Claude in Chrome, etc.) cannot see or control, regardless of who clicks "Start" — it's outside the extension's tracked tab group and doesn't go through `window.open()` in an interceptable way. The physical device session is inherently a human-operated step; automation can drive the reservation/list pages but not the live device view itself.
+
+## Two Confirmed Platform Limitations (Not Bugs)
+
+These looked like automation bugs at first but are real Android/Samsung platform behavior, confirmed by re-testing after fixing the actual code bugs:
+
+1. **Cover screen can't be captured separately from Main.** InsetsProbe's "Cover/Main" radio buttons are just a label the person taking the measurement picks — RTL's remote view only ever exposes ONE active display (whichever one is currently shown), so a "cover" capture and a "main" capture taken back-to-back on the same RTL session return byte-identical `display`/`insets` data. Confirmed on both Fold8 and Flip8: `cover-threeButton.json` and `main-threeButton.json` had identical `widthPx`/`heightPx`/`insets`, just different `"screen"` label strings. **Cover-screen data can only come from someone with a physically folded real unit**, not RTL. All current foldable device entries leave `screens[cover]` as `null`/pending for this reason (see comment in `galaxy-z-fold8.ts`).
+
+2. **`Settings.Secure.putInt(navigation_mode, ...)` is silently ignored on real Samsung hardware.** This was suspected from the start (there was already a code comment about it) and got compounded by a real bug (see below), but even after fixing the bug, a fresh timestamped re-test on Fold8 still came back `"navigation.mode": "threeButton"` after requesting gesture mode programmatically. **There is no way to switch navigation mode from InsetsProbe on real Samsung hardware.** Gesture-mode captures require a human to manually switch it via **Settings → Display → Navigation bar → Swipe gestures**, then tap the individual **"Measure"** button (not "Measure All") once.
+
+## Fixed Bugs (for real, unlike #2 above)
+
+### Bug 1: `measureAll()` never actually changed nav mode
+
+The nav-mode RadioGroup's `onCheckedChangeListener` guarded `setNavMode()` behind `!measureAllInProgress` — which is `false` for the *entire* automated run, so the guard silently skipped every `setNavMode()` call during Measure All. Combined with limitation #2 above, this meant every "gesture" capture actually stayed in whatever mode was already active, and since `export()` names files from the *actually captured* mode (not the requested one), both mode-passes for a screen collided on the same filename and silently overwrote each other — which is why early runs produced only 2 files instead of 4.
+
+**Fix**: call `setNavMode()` explicitly in the automation loop instead of relying on the guarded listener.
+
+### Bug 2: Fixed-delay timing instead of a real completion signal
+
+Originally used a guessed fixed delay (300ms, later 600ms) before exporting. Per review feedback ("isn't there a callback for this?") — yes: `ViewCompat.setOnApplyWindowInsetsListener` already fires on every real insets change. Reworked `measureAll()` to arm a `pendingModeCheck` hook invoked from that listener, so it reacts the instant `Probe.modeFromInsets(latestInsets)` matches the requested mode, with a 3-second timeout `Runnable` (properly cancelled via `removeCallbacks` once confirmed) as a safety net for limitation #2.
+
+### Bug 3: FoldPreview's 3D fold animation sometimes rendered flat
+
+The CSS `rotateY`/`rotateX` transform was verified correct via devtools (`getComputedStyle`), but screenshots after a slider interaction sometimes still showed the pre-interaction flat frame — a Chromium compositor-layer-promotion quirk with CSS 3D transforms that update after first paint. **Fix**: added `will-change: transform` to the rotating panels, forcing them onto their own compositor layer so updates are reliably repainted.
+
+### Bug 4: InsetsDiagram SVG letterboxed the phone shape smaller than it should be
+
+The `<svg>` had `className="w-full max-w-lg"` (fills container width) **and** `style={{maxHeight: 420}}` independently — when the resulting box's aspect ratio didn't match the `viewBox`'s real device ratio, the content got centered/shrunk (letterboxed) inside a mismatched box, making the phone look artificially small with lots of surrounding whitespace. **Fix**: size the SVG by height with `width: "auto"`, so the element's own box matches the content's true aspect ratio instead of stretching to fill available width.
 
 ## Complete Measurement Workflow
 
@@ -16,262 +58,108 @@ windowinsets.info is a reference site for Android window insets, display cutouts
 
 1. Go to [developer.samsung.com/remote-test-lab](https://developer.samsung.com/remote-test-lab)
 2. Click "Get Started" → log in with Samsung Developer account
-3. Browse devices, select target (e.g., Galaxy Z Fold8 SM-F971N_KR1)
-4. Click device → set duration (23 min sufficient for 4 captures)
-5. Click "Start" in the reservation dialog
+3. Browse devices, select target
+4. Click device → set duration (**30 min / 2 credits is enough** — don't over-reserve)
+5. Click "Start" in the reservation dialog (a human must watch/operate the resulting WebClient window — see limitations above)
 
 ### Step 2: Install InsetsProbe APK
 
-1. Build APK from `tools/insets-probe` (Android Studio or `./gradlew assembleDebug`)
-2. Once session starts, upload APK to RTL
-3. Tap "Install" on the device control panel
-4. Wait for installation to complete
+1. Build APK from `tools/insets-probe`: `./gradlew assembleDebug` → `app/build/outputs/apk/debug/app-debug.apk`
+2. Upload APK to RTL, tap "Install", wait for completion
 
-### Step 3: Run "Measure All" Button
+### Step 3: Capture Measurements
 
-1. Open InsetsProbe app on device
-2. App shows two RadioGroups: Screen (Phone/Cover/Main) and Navigation (3-Button/Gesture)
-3. Click "Measure All" button
-4. App automatically captures 4 JSON files sequentially:
-   - cover-threeButton.json
-   - cover-gesture.json
-   - main-threeButton.json
-   - main-gesture.json
-5. Each file is saved to app-specific external storage, with 1000ms delays between switches
+Given limitation #2, **"Measure All" only reliably captures 3-button mode** (both its "cover" and "main" passes will be identical main-screen 3-button data, per limitation #1 — only one of them is worth keeping).
+
+Practical sequence per device:
+1. Open InsetsProbe, tap **"Measure"** once (default 3-button state) → 1 file
+2. Manually switch **Settings → Display → Navigation bar → Swipe gestures**
+3. Return to InsetsProbe, tap **"Measure"** once again → 1 file (gesture)
+4. That's 2 files per device (main screen only, both nav modes) — cover screen stays pending
 
 ### Step 4: Export & Commit Data
 
-1. Use RTL file browser or adb to access `/data/data/info.windowinsets.probe/files/`
-2. Download all 4 JSON files to `measurements/<device-slug>/`
-3. Create device TypeScript file at `app/data/devices/<slug>.ts` implementing `Device` interface
-4. Register device in `app/data/devices.ts`
-5. Commit and push to GitHub
+1. Files download via the RTL WebClient's file transfer (browser downloads, e.g. to `~/Downloads/content`, `content (1)`, etc. — same filename repeated, browser auto-numbers them)
+2. Save to `measurements/<device-slug>/main-<threeButton|gesture>.json`
+3. Create `app/data/devices/<slug>.ts` implementing `Device` (see an existing foldable/bar example)
+4. Register in `app/data/devices.ts` (newest release year first)
+5. `pnpm typecheck && pnpm build` to verify, then commit and push
 
 ## Device Status & Progress
 
-| Device | Model | Screens | 3-Button | Gesture | Status | Files |
-| --- | --- | --- | --- | --- | --- | --- |
-| Galaxy S25 Ultra | SM-S938N | Main | ✓ | ✓ | Complete | [main-threeButton.json](https://github.com/easyhooon/windowinsets/blob/main/measurements/galaxy-s25-ultra/main-threeButton.json), [main-gesture.json](https://github.com/easyhooon/windowinsets/blob/main/measurements/galaxy-s25-ultra/main-gesture.json) |
-| Galaxy Z Fold8 | SM-F971N | Cover + Main | Pending | Pending | Next | — |
-| Galaxy Z Flip6 | SM-F731N | Cover + Main | Pending | Pending | Queued | — |
-| Galaxy S25 | SM-S931N | Main | Pending | Pending | Queued | — |
-| Galaxy Z Fold7 | TBD | Cover + Main | Pending | Pending | Optional | — |
+| Device | Model | Screens | 3-Button | Gesture | Status |
+| --- | --- | --- | --- | --- | --- |
+| Galaxy Z Fold8 | SM-F971N | Main only (cover: RTL can't capture it separately) | ✓ | ✓ | Complete |
+| Galaxy Z Flip8 | SM-F776B | Main only | ✓ | ✓ | Complete |
+| Galaxy S25 Ultra | SM-S938N | Main | ✓ | ✓ | Complete |
+| Galaxy S25 | SM-S931N | Main | Pending | Pending | Queued |
+| Galaxy Z Fold7 | TBD | Main | Pending | Pending | Queued |
+| Galaxy Z Fold6 | TBD | Main | Pending | Pending | Queued |
+| Galaxy Z Flip6 | TBD | Main | Pending | Pending | Queued |
 
-**Measurement Conditions** (all captures):
-- Portrait orientation, full screen
-- Default Display size, Font size, Screen resolution
-- One UI 8.5, Android 16
-- Density: 450 dpi (S25 Ultra)
-- Computed dp = px ÷ (densityDpi ÷ 160), rounded to 2 decimals
+**Measurement Conditions** (all captures): Portrait, full screen, default Display/Font size, One UI + Android version recorded per capture, dp = px ÷ (densityDpi ÷ 160) rounded to 2 decimals.
 
-## InsetsProbe App: Architecture & Automation
+## InsetsProbe App: Architecture
 
-**Location**: `tools/insets-probe/` (monorepo)
+**Location**: `tools/insets-probe/`
 
-### Key Features
-
-- **WindowInsets Reader**: Captures all system inset types using Android Window Insets API
-- **DisplayCutout Parser**: Records safe insets, bounding rectangles, waterfall insets
-- **RoundedCorner Support**: All four corner radii with density-independent conversion
-- **FoldingFeature Tracking**: Foldable state, orientation, occlusion bounds + hinge angle sensor
-- **Navigation Mode Toggle**: RadioGroup switch between 3-Button (mode=0) and Gesture (mode=2)
-- **JSON Export**: Raw output (never hand-edited) with metadata: device model, Android version, One UI version, densityDpi, defaultDensityDpi, fontScale
-
-### "Measure All" Button (NEW)
-
-Implemented in `MainActivity.kt:132-158`:
-
-```kotlin
-private fun measureAll() {
-    measureAllInProgress = true
-    val screens = listOf(ID_COVER, ID_MAIN)
-    val modes = listOf(ID_THREEBUTTON, ID_GESTURE)
-    var delay = 0L
-
-    for (screenId in screens) {
-        for (modeId in modes) {
-            root.postDelayed({
-                screenGroup.check(screenId)
-                navModeGroup.check(modeId)
-                root.postDelayed({
-                    val file = export()
-                    if (file != null) Log.i(TAG, "Saved: ${file.name}")
-                }, 300)
-            }, delay)
-            delay += 1000
-        }
-    }
-
-    root.postDelayed({
-        measureAllInProgress = false
-        Toast.makeText(this, "Saved 4 measurement files", Toast.LENGTH_LONG).show()
-    }, delay + 500)
-}
-```
-
-**Automation Logic**:
-1. Loops through screens (Cover, Main) and modes (3-Button, Gesture)
-2. Sequential delays: 1000ms between each switch
-3. Each switch waits 300ms for insets to stabilize before export
-4. Files saved as `<screen>-<mode>.json` (e.g., `cover-threeButton.json`)
-5. `measureAllInProgress` flag prevents manual nav mode changes during automation
-
-### Navigation Mode Switching
-
-```kotlin
-private fun setNavMode(mode: Int) {
-    runCatching {
-        Settings.Secure.putInt(contentResolver, "navigation_mode", mode)
-        Log.i(TAG, "Set navigation_mode to $mode")
-    }.onFailure { Log.e(TAG, "Failed to set navigation_mode", it) }
-}
-```
-
-Mode values:
-- `0` = 3-Button (back, home, recents)
-- `2` = Gesture (system gestures with side swipe zones)
+- **WindowInsets Reader / DisplayCutout Parser / RoundedCorner Support / FoldingFeature Tracking** — see `Probe.kt`. Also captures `displayCutout.boundingRects` (the cutout's real x/y/width/height, not just how far it intrudes) — used by the website to draw the actual punch-hole position (see below).
+- **Navigation Mode Toggle**: UI-only convenience; does **not** reliably change the real system nav mode on Samsung hardware (limitation #2).
+- **Measure All**: now uses `Probe.modeFromInsets()` (public) + the real `OnApplyWindowInsetsListener` callback for completion detection, not a fixed delay. See `MainActivity.kt`.
 
 ## Data Flow: Device → JSON → TypeScript → Website
 
-### Stage 1: InsetsProbe Exports JSON
+1. **InsetsProbe** exports raw JSON (schemaVersion 1) with device/display/navigation/insets/displayCutout/roundedCorners/hinge.
+2. **Raw JSON committed** to `measurements/<device-slug>/<screen>-<navMode>.json` — source of truth, never hand-edited.
+3. **TypeScript device file** (`app/data/devices/<slug>.ts`) implements `Device` (see `app/data/types.ts`): dp-converted insets per nav mode, `cornerRadiiDp`, optional `cutoutShape` (real punch-hole position, when the raw capture has `boundingRects`), sources with GitHub links.
+4. **Website**: React Router, statically prerendered. Device pages show:
+   - `InsetsDiagram` — flat 2D diagram with dimension lines/arrows, per-edge inset chips, corner-radius chips, the real cutout shape at its measured position, and schematic (unmeasured) speaker/button marks for visual recognizability.
+   - `FoldPreview` — 3D CSS-transform hinge animation (foldables only) driven by the same hinge-angle convention as Android's `FoldingFeature` (0°=closed, 180°=flat). `axis="vertical"` for book-style folds (Z Fold), `axis="horizontal"` for flip-style (Z Flip). Inset value labels live inside the rotating panels so they stay visible and correctly foreshortened throughout the animation.
+   - `Metrics` panel — one value per row (Dimensions / Safe Area Insets / Display Cutout / Corner Radii / Measured On), not cramped multi-value lines.
 
-InsetsProbe collects via Android Window Insets API and exports raw JSON with all metadata.
+## SEO / Sharing
 
-### Stage 2: Raw JSON Committed
+`app/lib/seo.ts` provides a shared `pageMeta()` helper used by all 4 routes: full OG + Twitter Card tags (title, description, type, site_name, image + dimensions/alt, canonical), following safearea.info's pattern. **`og-default.png` (1200×630) itself is not generated yet** — deferred until image-generation tooling is available (planned for when Codex quota is back). The favicon is also still the default `public/favicon.ico`.
 
-Files saved to GitHub at `measurements/<device-slug>/<screen>-<navMode>.json`:
-- Raw, unedited JSON (source of truth)
-- Linked from TypeScript device files for traceability
-- File name format: `main-gesture.json`, `cover-threeButton.json`
+## Build Verification
 
-### Stage 3: TypeScript Device Definition
+`vite.config.ts` defines `__BUILD_COMMIT__` from `git rev-parse --short HEAD` at build time. It's exposed only as a `data-build-commit` attribute on the root `<div>` in `shell.tsx` — **not shown in the UI** — inspect via view-source/devtools to confirm you're not looking at a stale cached page after a deploy.
 
-Example: `app/data/devices/galaxy-s25-ultra.ts`
+## Best Practices / Data Quality Checklist
 
-Device data structure with:
-- Slug, name, release year, form factor
-- Display specs: size, resolution, density
-- Insets per navigation mode with source attribution
-- dp conversions from raw px values
-
-**Key Conversions**:
-- px → dp: `dp = px ÷ (densityDpi ÷ 160)`
-- Example: 153px at 450dpi = 153 ÷ 2.8125 = 34.13 dp
-- Always round to 2 decimals
-
-### Stage 4: Website Display
-
-- React Router statically prerendered to HTML
-- Device pages at `/<slug>` show insets with source tier badges
-- Methodology page at `/methodology` explains measurement conditions
-- All values link to their raw JSON source in GitHub
-
-## Best Practices & Optimization
-
-### Workflow Optimization
-
-**Before** (Manual, ~20 min per foldable device):
-1. Manually navigate Settings to toggle navigation mode
-2. Capture each screen individually with "Measure" button
-3. Export 4 times (copy/paste via UI)
-4. Manual file renaming and transfer
-
-**After** ("Measure All" automation, ~2 min per device):
-1. One click captures all 4 combinations sequentially
-2. Automatic file naming with standardized format
-3. Batch export to app-specific external storage
-4. Single ADB pull for all files at once
-
-**Result**: ~90% time savings; enables scaling to 10+ Galaxy models in reasonable timeframe.
-
-### Common Pitfalls
-
-- **Display Size/Font Size Mismatch**: Always measure at default settings. Non-default sizes change densityDpi and pixel-to-dp conversions. Capture verifies defaultDensityDpi vs actual densityDpi.
-- **Navigation Mode Confusion**: InsetsProbe shows both modes, but navigation bar height changes (gesture = 14.93 dp, 3-button = 48 dp). Both measurements required.
-- **FoldingFeature Timing**: Hinge angle sensor and FoldingFeature discovery takes ~300ms after screen switch. App delays 300ms before export.
-- **Decimals**: All dp values rounded to 2 decimals. Don't estimate or round further.
-- **Never Hand-Edit JSON**: Raw files are source of truth. Metadata must match capture conditions.
-
-### Data Quality Checks Before Commit
-
-1. **Verify Density Conversion**: Ensure logicalSizeDp times densityDpi equals 160 times logicalSizePixels width.
-2. **Insets Must Have All 4 Sides**: systemBars and displayCutout need top, right, bottom, left (even if 0).
-3. **formFactor Type**: Must be "bar", "foldable-book", or "foldable-flip" (not "phone").
-4. **CornerRadiiDp Complete**: All four corners or omit entirely (don't use null).
-5. **Source Tier Accuracy**: "official" only for published specs; "measured" for RTL/device captures; "community" for unverified.
+- Never estimate a value — leave `null`/pending until actually measured.
+- `logicalSizeDp × densityDpi` should be internally consistent with `resolutionPx` (`dp = px ÷ (densityDpi ÷ 160)`).
+- Insets need all 4 sides (even if 0); `formFactor` is `"bar" | "foldable-book" | "foldable-flip"` (not `"phone"`).
+- `cornerRadiiDp`: all four corners or omit (`null`) entirely.
+- Source tier: `official` only for published specs; `measured` for RTL/device captures; `community` for unreproduced submissions.
+- Run `pnpm typecheck && pnpm build` before committing device data changes — the build's prerender step will fail loudly on a malformed `Device`.
 
 ## Codex Migration Notes
 
-### Current Setup: Claude in Chrome
+### Why Claude in Chrome was used here
 
-Currently using **Claude in Chrome** to automate RTL interactions:
-- Open RTL web portal → navigate device list → select device → set duration → click Start
-- Retrieve device files via browser file explorer
-- Login and session management via Chrome's native auth
-
-**Why Claude in Chrome works here**:
-- RTL portal is web-based; requires real browser context
-- Complex UI interactions (dropdowns, dialogs, file uploads)
-- Session state needs to persist across multiple steps
-- User approval gates (can ask user to login manually if needed)
+RTL's device list/reservation pages are ordinary web pages (browser automation handles them fine: navigate, click, form-fill, screenshot). The **live device view is a separate, human-operated step** no browser-automation tool here could see or control — confirmed by intercepting `window.open` (nothing captured) and by testing whether *my own* click on Start produced a controllable popup (it didn't either — the popup mechanism itself is outside the tracked tab group regardless of who triggers it, likely a dynamically-created `<a target="_blank">` rather than a `window.open()` call).
 
 ### Codex Equivalents
 
-| Capability | Claude in Chrome | Codex Equivalent | Note |
-| --- | --- | --- | --- |
-| Browser automation | `computer()`, `navigate()`, `click()` | Similar Codex browser tools | Direct web interaction |
-| Screenshots | `computer(action:"screenshot")` | Codex screenshot tools | Visual verification |
-| Form filling | `form_input()`, `type()` | Codex form handling | RTL device selection |
-| File operations | Browser download/file manager | Codex file handling | Extract JSON from downloads |
-| Session persistence | Native Chrome auth | Codex session management | Login once per session |
-| User gate | Can request user action | Codex user confirmation tools | "Please log in, then ask me to continue" |
-
-### Automation Patterns to Preserve
-
-1. **RTL Session Lifecycle**:
-   - Open developer.samsung.com/remote-test-lab
-   - Navigate to Reservations or Devices
-   - Select target device (filter by model, location)
-   - Set duration (23 min for 4 captures)
-   - Click Start; wait for connection
-   - Extract files from device storage
-
-2. **InsetsProbe "Measure All" Workflow**:
-   - Upload compiled APK to RTL device
-   - Open app; wait for insets to settle
-   - Click "Measure All" button
-   - Wait ~5 seconds for all 4 captures to complete
-   - Retrieve 4 JSON files via ADB or file manager
-
-3. **Batch Commit Pattern**:
-   - Move JSON files to `measurements/<device-slug>/` (4 files)
-   - Create `app/data/devices/<slug>.ts` device file
-   - Register in `app/data/devices.ts`
-   - Run `pnpm typecheck` to verify types
-   - Commit with message: "Add <Device Name>: all screens & nav modes measured"
+| Capability | Claude in Chrome | Codex Equivalent |
+| --- | --- | --- |
+| Browser automation (navigate/click/form-fill) | `computer()`, `navigate()`, `form_input()` | Similar Codex browser tools — works fine for RTL's list/reservation pages |
+| Live device view | **Not controllable by either** | Same limitation applies — a human must operate the actual phone screen |
+| File retrieval | Browser downloads (numbered duplicates: `content`, `content (1)`, ...) | Same pattern — read files the human downloads and forwards |
 
 ### File Paths to Reference
 
-**Core measurement logic**:
-- `tools/insets-probe/app/src/main/java/.../MainActivity.kt` — Measure All automation
-- `app/data/devices/galaxy-s25-ultra.ts` — Device data structure example
-- `app/data/types.ts` — Device, InsetsMeasurement, FormFactor types
-- `measurements/galaxy-s25-ultra/` — Raw JSON sources (truth)
+- `tools/insets-probe/app/src/main/java/info/windowinsets/probe/{MainActivity,Probe}.kt` — capture + automation logic
+- `app/data/types.ts` — `Device`, `Screen`, `InsetsMeasurement`, `CutoutShape`, `FormFactor`
+- `app/data/devices/galaxy-z-fold8.ts` — most complete example (foldable, both nav modes, cutout shape, pending-cover comment)
+- `app/components/{InsetsDiagram,FoldPreview}.tsx` — the two visualization components
+- `app/lib/seo.ts` — shared OG/Twitter meta helper
+- `app/data/devices.ts` — device registry, newest-first
 
-**Website generation**:
-- `app/routes/home.tsx` — Device list page
-- `app/routes/[slug].tsx` — Individual device page with insets display
-- `app/routes/methodology.tsx` — Measurement conditions & transparency
-- `app/data/devices.ts` — Device registry (auto-generates routes)
+### Recommendations
 
-### Codex Development Recommendations
-
-1. **Keep RTL automation in Claude Code** (or Codex equivalent) rather than hard-coded scripts. RTL UI changes frequently; browser automation handles it gracefully.
-2. **Preserve "Measure All" button** in InsetsProbe. This is the efficiency multiplier.
-3. **Store device list in code** (devices.ts), not a database. Static site generation means all data is known at build time.
-4. **Commit measurements as JSON + TypeScript**. Dual format: raw JSON for verification, TypeScript for type safety and site display.
-5. **Document measurement conditions** prominently (methodology.tsx). Insets are conditional; missing conditions leads to incorrect usage.
-
----
-
-**Note on measureAll() Refactoring**: The current implementation uses nested `postDelayed` callbacks, which could be refactored to use coroutines for cleaner code. This is a non-critical optimization for future work.
+1. Keep RTL's list/reservation-page automation in whatever agent is driving it — the pages themselves are ordinary web automation targets. Don't try to make the live device view unattended; it structurally requires a human.
+2. Preserve the "measure 3-button, manually flip Settings, measure gesture again" 2-step pattern per device — Measure All's automation value is now just the screen-radio convenience, not nav-mode switching (which doesn't work on real hardware regardless of code).
+3. Budget ~2 credits (30 min) per device; ~10 devices/day is the real ceiling under the free 20-credit daily allowance.
+4. When adding a device, always run `pnpm typecheck && pnpm build` — malformed `Device` objects fail the prerender step loudly, which is the fastest signal something's wrong before it reaches production.
