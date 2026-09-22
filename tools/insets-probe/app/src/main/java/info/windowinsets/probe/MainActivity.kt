@@ -50,6 +50,10 @@ class MainActivity : ComponentActivity(), SensorEventListener {
     private var autoExport = false
     private var measureAllInProgress = false
 
+    /** Set by Measure All while it's waiting for a requested nav-mode switch to take effect;
+     * invoked from the real WindowInsets callback below instead of polling. */
+    private var pendingModeCheck: (() -> Unit)? = null
+
     private val layoutTracker by lazy { WindowInfoTrackerCallbackAdapter(WindowInfoTracker.getOrCreate(this)) }
     private val layoutListener = Consumer<WindowLayoutInfo> { info ->
         foldingFeatures = info.displayFeatures.filterIsInstance<FoldingFeature>()
@@ -74,6 +78,7 @@ class MainActivity : ComponentActivity(), SensorEventListener {
             val pad = insets.getInsets(Type.systemBars() or Type.displayCutout())
             v.updatePadding(pad.left, pad.top, pad.right, pad.bottom)
             refresh()
+            pendingModeCheck?.invoke()
             insets // not consumed
         }
     }
@@ -129,40 +134,91 @@ class MainActivity : ComponentActivity(), SensorEventListener {
         }.onFailure { Log.e(TAG, "Failed to set navigation_mode", it) }
     }
 
+    /**
+     * Bug fix history: the RadioGroup's onCheckedChangeListener guards setNavMode() behind
+     * `!measureAllInProgress`, so calling navModeGroup.check(modeId) alone during automation
+     * never actually changed the nav mode — both captures silently stayed in whatever mode was
+     * active before Measure All started. setNavMode() is now called explicitly per step.
+     *
+     * Timing fix: instead of guessing a fixed delay before export(), each step arms
+     * `pendingModeCheck`, which the real `OnApplyWindowInsetsListener` in onCreate() invokes on
+     * every insets change — the system's own signal that something (nav bar height, in
+     * particular) actually moved. Each invocation re-checks Probe.modeFromInsets(latestInsets)
+     * (the same real-insets-based inference export() uses for the file name) and only exports
+     * once it matches the requested mode. A timeout fallback still exists in case the platform
+     * ignores the request entirely (e.g. Samsung silently ignoring `navigation_mode` writes on
+     * some real devices), so the step doesn't hang forever — it captures whatever the real state
+     * turned out to be instead.
+     */
     private fun measureAll() {
         measureAllInProgress = true
         val screens = listOf(ID_COVER, ID_MAIN)
-        // Bug fix: the RadioGroup's onCheckedChangeListener guards setNavMode() behind
-        // `!measureAllInProgress`, so calling navModeGroup.check(modeId) alone during
-        // automation never actually changed the nav mode — both captures silently stayed
-        // in whatever mode was active before Measure All started. Call setNavMode()
-        // explicitly here instead of relying on that listener.
         val modes = listOf(ID_THREEBUTTON to 0, ID_GESTURE to 2)
-        var delay = 0L
+        val modeNames = mapOf(ID_THREEBUTTON to "threeButton", ID_GESTURE to "gesture")
+        var savedCount = 0
 
-        for (screenId in screens) {
-            for ((modeId, modeValue) in modes) {
+        fun waitForModeThenExport(targetModeName: String, onSettled: () -> Unit) {
+            var settled = false
+            val timeoutRunnable = Runnable {
+                if (settled) return@Runnable
+                settled = true
+                pendingModeCheck = null
+                val actual = latestInsets?.let { Probe.modeFromInsets(it) }
+                if (actual != targetModeName) {
+                    Log.w(TAG, "Gave up waiting for nav mode '$targetModeName' (insets callback never confirmed it, system reports '$actual'); capturing as-is")
+                }
+                val file = export()
+                if (file != null) {
+                    savedCount++
+                    Log.i(TAG, "Saved: ${file.name}")
+                }
+                onSettled()
+            }
+
+            fun onConfirmed() {
+                if (settled) return
+                settled = true
+                pendingModeCheck = null
+                root.removeCallbacks(timeoutRunnable)
+                // One more short beat so refresh()'s output/lastJson reflects this exact insets pass.
                 root.postDelayed({
-                    screenGroup.check(screenId)
-                    navModeGroup.check(modeId)
-                    setNavMode(modeValue)
-                    // Real hardware needs more time than the emulator for the system nav
-                    // bar to actually switch and for insets to settle before export.
-                    root.postDelayed({
-                        val file = export()
-                        if (file != null) {
-                            Log.i(TAG, "Saved: ${file.name}")
-                        }
-                    }, 600)
-                }, delay)
-                delay += 1400
+                    val file = export()
+                    if (file != null) {
+                        savedCount++
+                        Log.i(TAG, "Saved: ${file.name}")
+                    }
+                    onSettled()
+                }, 150)
+            }
+
+            pendingModeCheck = {
+                if (latestInsets?.let { Probe.modeFromInsets(it) } == targetModeName) onConfirmed()
+            }
+            root.postDelayed(timeoutRunnable, 3000)
+            // The mode may already match (insets callback might not fire again if nothing moved).
+            pendingModeCheck?.invoke()
+        }
+
+        fun step(screenIndex: Int, modeIndex: Int) {
+            if (screenIndex >= screens.size) {
+                measureAllInProgress = false
+                Toast.makeText(this, "Saved $savedCount measurement file(s)", Toast.LENGTH_LONG).show()
+                return
+            }
+            val screenId = screens[screenIndex]
+            val (modeId, modeValue) = modes[modeIndex]
+
+            screenGroup.check(screenId)
+            navModeGroup.check(modeId)
+            setNavMode(modeValue)
+
+            waitForModeThenExport(modeNames.getValue(modeId)) {
+                val nextModeIndex = modeIndex + 1
+                if (nextModeIndex >= modes.size) step(screenIndex + 1, 0) else step(screenIndex, nextModeIndex)
             }
         }
 
-        root.postDelayed({
-            measureAllInProgress = false
-            Toast.makeText(this, "Saved 4 measurement files", Toast.LENGTH_LONG).show()
-        }, delay + 500)
+        step(0, 0)
     }
 
     private fun refresh() {
