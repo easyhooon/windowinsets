@@ -4,9 +4,11 @@ import * as THREE from "three";
 import { bendPoint, createChassis, rigidPanelPoint } from "./foldGeometry";
 import type { DeviceSkin } from "../data/skins";
 import type { CutoutShape, Screen, InsetsMeasurement } from "../data/types";
+import { cornerPairs, formatLengthFromPairs, insetPairs, safeInsets, safeInsetsPx } from "../data/measurementUnits";
 
 const SEGMENTS = 96; // vertices along the fold axis — higher = smoother curve
 const THICKNESS = 0.065; // Stylized world-space thickness, not measured hardware data.
+const ANNOTATION_PAD_DP = 80;
 
 const INK = DIAGRAM_COLORS.ink;
 const INSET_COLOR = DIAGRAM_COLORS.inset;
@@ -18,13 +20,6 @@ type Units = "dp" | "px";
 
 interface Insets { top: number; right: number; bottom: number; left: number }
 interface CornerRadii { topLeft: number; topRight: number; bottomRight: number; bottomLeft: number }
-
-function fmtWith(units: Units, densityDpi: number | null) {
-  return (vDp: number) => {
-    const v = units === "px" && densityDpi ? vDp * (densityDpi / 160) : vDp;
-    return v === 0 ? "0" : Number(v.toFixed(2)).toString();
-  };
-}
 
 /** Draws the full flat measurement diagram (bezel, safe/inset regions, real
  * cutout, corner-radius chips, outside dimension arrows) onto a 2D canvas —
@@ -49,8 +44,16 @@ function drawDiagram(
   },
 ) {
   const W = dpW * px, H = dpH * px;
-  const labelScale = opts.annotationScale;
-  const PAD = 48 * px; // margin for outside dimension lines, scaled modestly
+  let labelScale = opts.annotationScale;
+  const PAD = ANNOTATION_PAD_DP * px;
+  // Labels grow as the viewport zooms out. Clamp them to the available annotation
+  // margin so long dimensions (for example 932.57) are never texture-clipped.
+  const outsideLabels = [opts.fmt(dpW), opts.fmt(dpH)];
+  if (opts.safe) outsideLabels.push(opts.fmt(opts.safe.top), opts.fmt(opts.safe.right), opts.fmt(opts.safe.bottom), opts.fmt(opts.safe.left));
+  if (opts.cornerRadiiDp) outsideLabels.push(...Object.values(opts.cornerRadiiDp).map(opts.fmt));
+  const longest = Math.max(...outsideLabels.map(label => label.length), 1);
+  const marginScale = (2 * (ANNOTATION_PAD_DP - 20) - 8) / (longest * 7.2);
+  labelScale = Math.min(labelScale, marginScale);
   ctx.clearRect(0, 0, W + PAD * 2, H + PAD * 2);
   ctx.save();
   ctx.translate(PAD, PAD);
@@ -159,7 +162,11 @@ function drawDiagram(
     chip(nameX, inline ? y : y - 10 * px * scale, name, color, scale);
     ctx.fillStyle = color;
     ctx.font = `400 ${fontSize}px ${DIAGRAM_FONT}`;
-    ctx.fillText(value, inline ? x + (nameW + gap) / 2 : x, inline ? y : y + 12 * px * scale);
+    const valueX = inline ? x + (nameW + gap) / 2 : x;
+    const valueY = inline ? y : y + 12 * px * scale;
+    const valueWidth = ctx.measureText(value).width;
+    opts.hits.push({ x: valueX - valueWidth / 2 + PAD, y: valueY - fontSize / 2 + PAD, width: valueWidth, height: fontSize, text: value });
+    ctx.fillText(value, valueX, valueY);
   }
 
   function arrowLine(x1: number, y1: number, x2: number, y2: number, color: string) {
@@ -209,15 +216,9 @@ function drawDiagram(
     if (safe && opts.layers.insets) {
       if (safe.top > 0) {
         regionLabel(W * .25, safe.top * px / 2, "TOP", opts.fmt(safe.top), INSET_COLOR, W / 2, safe.top * px, true);
-        extLine(W, 0, W + 18 * px, 0, INSET_COLOR); extLine(W, safe.top * px, W + 18 * px, safe.top * px, INSET_COLOR);
-        arrowLine(W + 18 * px, 0, W + 18 * px, safe.top * px, INSET_COLOR);
-        chip(W + 18 * px, safe.top * px / 2, opts.fmt(safe.top), INSET_COLOR);
       }
       if (safe.bottom > 0) {
         regionLabel(W / 2, H - safe.bottom * px / 2, "BOTTOM", opts.fmt(safe.bottom), INSET_COLOR, W, safe.bottom * px, true);
-        extLine(W, H - safe.bottom * px, W + 18 * px, H - safe.bottom * px, INSET_COLOR); extLine(W, H, W + 18 * px, H, INSET_COLOR);
-        arrowLine(W + 18 * px, H - safe.bottom * px, W + 18 * px, H, INSET_COLOR);
-        chip(W + 18 * px, H - safe.bottom * px / 2, opts.fmt(safe.bottom), INSET_COLOR);
       }
       if (safe.left > 0) {
         extLine(0, 0, 0, -12 * px, INSET_COLOR); extLine(safe.left * px, 0, safe.left * px, -12 * px, INSET_COLOR);
@@ -251,9 +252,11 @@ export function FoldRenderer3D({
   widthDp,
   heightDp,
   safe,
+  safePx,
+  logicalSizePx,
   cornerRadiiDp,
+  cornerRadiiPx,
   cutoutShape,
-  densityDpi,
   zoom,
   showFrame,
   showRegions,
@@ -263,15 +266,18 @@ export function FoldRenderer3D({
   skin,
   measured = true,
   cover,
+  onTransitionEnd,
 }: {
   angle: number;
   axis: "vertical" | "horizontal";
   widthDp: number;
   heightDp: number;
   safe: Insets | null;
+  safePx?: Insets | null;
+  logicalSizePx?: { width: number; height: number } | null;
   cornerRadiiDp?: CornerRadii | null;
+  cornerRadiiPx?: CornerRadii | null;
   cutoutShape?: CutoutShape;
-  densityDpi?: number | null;
   /** Zoom/settings are controlled from the parent toolbar (DeviceView) so
    * every control on the page lives in one uniform row, safearea.info-style,
    * instead of a second private toolbar duplicated inside this component. */
@@ -284,12 +290,13 @@ export function FoldRenderer3D({
   skin?: DeviceSkin;
   measured?: boolean;
   cover?: { screen: Screen; measurement: InsetsMeasurement | null; skin: DeviceSkin };
+  onTransitionEnd?: () => void;
 }) {
   const mountRef = useRef<HTMLDivElement>(null);
   const wrapRef = useRef<HTMLDivElement>(null);
 
-  const stateRef = useRef({ angle, safe, cornerRadiiDp: cornerRadiiDp ?? null, cutoutShape, showFrame, showRegions, showDimensions, units, zoom, layers, cover });
-  stateRef.current = { angle, safe, cornerRadiiDp: cornerRadiiDp ?? null, cutoutShape, showFrame, showRegions, showDimensions, units, zoom, layers, cover };
+  const stateRef = useRef({ angle, safe, safePx, logicalSizePx, cornerRadiiDp: cornerRadiiDp ?? null, cornerRadiiPx: cornerRadiiPx ?? null, cutoutShape, showFrame, showRegions, showDimensions, units, zoom, layers, cover, onTransitionEnd });
+  stateRef.current = { angle, safe, safePx, logicalSizePx, cornerRadiiDp: cornerRadiiDp ?? null, cornerRadiiPx: cornerRadiiPx ?? null, cutoutShape, showFrame, showRegions, showDimensions, units, zoom, layers, cover, onTransitionEnd };
 
   useEffect(() => {
     const mount = mountRef.current;
@@ -326,7 +333,8 @@ export function FoldRenderer3D({
     // measurements must never be rotated/stretched to stand in for the inside.
     const silW = dpW, silH = dpH;
 
-    const aspect = (silW + 96) / (silH + 96);
+    const annotationMargin = ANNOTATION_PAD_DP * 2;
+    const aspect = (silW + annotationMargin) / (silH + annotationMargin);
     // Keep the LONGER silhouette edge pinned to a constant world size so the
     // camera framing stays consistent whichever way the panel ends up
     // oriented — otherwise a landscape silhouette (book fold) would blow
@@ -341,7 +349,7 @@ export function FoldRenderer3D({
     const basePositions = geometry.attributes.position.array.slice();
 
     const px = 1200 / dpW; // canvas px per dp — fixed texel density, independent of zoom or rotation
-    const PAD = 48 * px;
+    const PAD = ANNOTATION_PAD_DP * px;
     // Annotation margins remain outside the physical chassis.
     const contentW = dpW * px + PAD * 2;
     const contentH = dpH * px + PAD * 2;
@@ -358,8 +366,8 @@ export function FoldRenderer3D({
     deviceGroup.add(mesh);
 
     // The annotation texture includes margins; the solid ends at the display.
-    const bodyW = worldW * silW / (silW + 96) * (skin ? skin.body.width / skin.screen.width : 1);
-    const bodyH = worldH * silH / (silH + 96) * (skin ? skin.body.height / skin.screen.height : 1);
+    const bodyW = worldW * silW / (silW + annotationMargin) * (skin ? skin.body.width / skin.screen.width : 1);
+    const bodyH = worldH * silH / (silH + annotationMargin) * (skin ? skin.body.height / skin.screen.height : 1);
     const radius = skin ? skin.body.radius / skin.body.width * bodyW : (cornerRadiiDp?.topLeft ?? 8) * bodyW / silW;
     const shellGeometry = createChassis(bodyW, bodyH, radius, THICKNESS);
     const shellBase = shellGeometry.attributes.position.array.slice();
@@ -393,13 +401,13 @@ export function FoldRenderer3D({
       if (!data) { coverMesh.visible = false; return; }
       const { screen, measurement, skin: outerSkin } = data;
       const size = screen.logicalSizeDp ?? { width: outerSkin.screen.width / 3, height: outerSkin.screen.height / 3 };
-      const factor = 1000 / (size.width + 96);
+      const factor = 1000 / (size.width + annotationMargin);
       coverCanvas.width = 1000;
-      coverCanvas.height = Math.ceil((size.height + 96) * factor);
+      coverCanvas.height = Math.ceil((size.height + annotationMargin) * factor);
       const physicalPanelW = isVertical ? bodyW / 2 - hingeZoneHalfWidth : bodyW;
       const physicalPanelH = isVertical ? bodyH : bodyH / 2 - hingeZoneHalfWidth;
-      const fullW = (size.width + 96) * outerSkin.screen.width / size.width;
-      const fullH = (size.height + 96) * outerSkin.screen.height / size.height;
+      const fullW = (size.width + annotationMargin) * outerSkin.screen.width / size.width;
+      const fullH = (size.height + annotationMargin) * outerSkin.screen.height / size.height;
       const scale = Math.min(physicalPanelW / outerSkin.body.width, physicalPanelH / outerSkin.body.height);
       const panelW = fullW * scale, panelH = fullH * scale;
       const positions = coverGeometry.attributes.position;
@@ -412,18 +420,22 @@ export function FoldRenderer3D({
         positions.setXYZ(i, x, y, -THICKNESS - .004);
       }
       coverBase = positions.array.slice();
-      const outerSafe = measurement ? {
-        top: Math.max(measurement.systemBars.top, measurement.displayCutout.top),
-        right: Math.max(measurement.systemBars.right, measurement.displayCutout.right),
-        bottom: Math.max(measurement.systemBars.bottom, measurement.displayCutout.bottom),
-        left: Math.max(measurement.systemBars.left, measurement.displayCutout.left),
-      } : null;
+      const outerSafe = measurement ? safeInsets(measurement) : null;
+      const outerSafePx = measurement ? safeInsetsPx(measurement) : null;
       drawDiagram(coverCtx, size.width, size.height, factor, {
         safe: outerSafe, cornerRadiiDp: screen.cornerRadiiDp, cutoutShape: measurement?.cutoutShape,
         showFrame: st.showFrame, showRegions: st.showRegions, showDimensions: st.showDimensions && !!screen.logicalSizeDp,
-        fmt: fmtWith(st.units, screen.densityDpi), layers: st.layers, skin: outerSkin,
+        fmt: formatLengthFromPairs(st.units, [
+          [size.width, screen.logicalSizePx?.width], [size.height, screen.logicalSizePx?.height],
+          ...(outerSafe && outerSafePx && screen.logicalSizePx ? [
+            [size.width - outerSafe.left - outerSafe.right, screen.logicalSizePx.width - outerSafePx.left - outerSafePx.right],
+            [size.height - outerSafe.top - outerSafe.bottom, screen.logicalSizePx.height - outerSafePx.top - outerSafePx.bottom],
+          ] as Array<[number, number]> : []),
+          ...insetPairs(outerSafe, outerSafePx),
+          ...cornerPairs(screen.cornerRadiiDp, screen.cornerRadiiPx),
+        ]), layers: st.layers, skin: outerSkin,
         artwork: coverArtwork, foreground: coverForeground, hits: coverHits,
-        annotationScale: worldPerCssPixel / (panelW / (size.width + 96)) * 100 / st.zoom,
+        annotationScale: worldPerCssPixel / (panelW / (size.width + annotationMargin)) * 100 / st.zoom,
       });
       coverTexture.needsUpdate = true;
     }
@@ -435,12 +447,20 @@ export function FoldRenderer3D({
     function redrawTexture() {
       hits.length = 0;
       const st = stateRef.current;
-      const fmt = fmtWith(st.units, densityDpi ?? null);
+      const fmt = formatLengthFromPairs(st.units, [
+        [dpW, st.logicalSizePx?.width], [dpH, st.logicalSizePx?.height],
+        ...(st.safe && st.safePx && st.logicalSizePx ? [
+          [dpW - st.safe.left - st.safe.right, st.logicalSizePx.width - st.safePx.left - st.safePx.right],
+          [dpH - st.safe.top - st.safe.bottom, st.logicalSizePx.height - st.safePx.top - st.safePx.bottom],
+        ] as Array<[number, number]> : []),
+        ...insetPairs(st.safe, st.safePx),
+        ...cornerPairs(st.cornerRadiiDp, st.cornerRadiiPx),
+      ]);
       ctx.save();
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       drawDiagram(ctx, dpW, dpH, px, {
         safe: st.safe, cornerRadiiDp: st.cornerRadiiDp, cutoutShape: st.cutoutShape,
-        showFrame: st.showFrame, showRegions: st.showRegions, showDimensions: st.showDimensions && measured, fmt, layers: st.layers, skin, artwork, foreground, hits, annotationScale: worldPerCssPixel / (worldW / (dpW + 96)) * 100 / st.zoom,
+        showFrame: st.showFrame, showRegions: st.showRegions, showDimensions: st.showDimensions && measured, fmt, layers: st.layers, skin, artwork, foreground, hits, annotationScale: worldPerCssPixel / (worldW / (dpW + annotationMargin)) * 100 / st.zoom,
       });
       ctx.restore();
       texture.needsUpdate = true;
@@ -483,6 +503,7 @@ export function FoldRenderer3D({
       lastTime = time;
       displayedAngle = reducedMotion.matches ? target : displayedAngle + (target - displayedAngle) * (1 - Math.exp(-delta / 75));
       if (Math.abs(target - displayedAngle) < 0.05) displayedAngle = target;
+      if (mount) mount.dataset.displayedAngle = displayedAngle.toFixed(2);
       const pixelRatio = Math.min(4, window.devicePixelRatio * Math.max(1, stateRef.current.zoom / 100));
       if (renderer.getPixelRatio() !== pixelRatio) renderer.setPixelRatio(pixelRatio);
       applyBend();
@@ -490,7 +511,7 @@ export function FoldRenderer3D({
       camera.lookAt(0, 0, 0);
       renderer.render(scene, camera);
       if (displayedAngle !== target) raf = requestAnimationFrame(render);
-      else lastTime = 0;
+      else { lastTime = 0; stateRef.current.onTransitionEnd?.(); }
     }
     const update = () => {
       redrawTexture();
@@ -513,10 +534,16 @@ export function FoldRenderer3D({
     const copyLabel = async (e: PointerEvent) => {
       // offset coordinates account for the viewport's CSS scale and rotation.
       raycaster.setFromCamera(new THREE.Vector2(e.offsetX / containerW * 2 - 1, 1 - e.offsetY / containerH * 2), camera);
-      const uv = raycaster.intersectObject(mesh)[0]?.uv;
+      const innerIntersection = raycaster.intersectObject(mesh)[0];
+      const coverIntersection = raycaster.intersectObject(coverMesh)[0];
+      const intersection = !innerIntersection ? coverIntersection : !coverIntersection ? innerIntersection : innerIntersection.distance <= coverIntersection.distance ? innerIntersection : coverIntersection;
+      const uv = intersection?.uv;
       if (!uv) return;
-      const x = uv.x * canvas.width, y = (1 - uv.y) * canvas.height;
-      const hit = hits.find(h => x >= h.x && x <= h.x + h.width && y >= h.y && y <= h.y + h.height);
+      const isCover = intersection?.object === coverMesh;
+      const targetCanvas = isCover ? coverCanvas : canvas;
+      const targetHits = isCover ? coverHits : hits;
+      const x = uv.x * targetCanvas.width, y = (1 - uv.y) * targetCanvas.height;
+      const hit = targetHits.find(h => x >= h.x && x <= h.x + h.width && y >= h.y && y <= h.y + h.height);
       if (hit) { e.stopPropagation(); try { await navigator.clipboard.writeText(hit.text); } catch {} }
     };
     renderer.domElement.addEventListener("pointerdown", copyLabel);
@@ -539,13 +566,13 @@ export function FoldRenderer3D({
     // Geometry/scene are rebuilt only when the device itself changes; angle
     // and display toggles update in place via the ref-backed redraw below.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [widthDp, heightDp, axis, densityDpi, skin, measured]);
+  }, [widthDp, heightDp, axis, skin, measured]);
 
   // Cheap updates (no scene rebuild) whenever angle or display options change.
   useEffect(() => {
     const mount = mountRef.current as (HTMLDivElement & { __update?: () => void }) | null;
     mount?.__update?.();
-  }, [angle, safe, cornerRadiiDp, cutoutShape, showFrame, showRegions, showDimensions, units, zoom, layers, cover]);
+  }, [angle, safe, safePx, logicalSizePx, cornerRadiiDp, cornerRadiiPx, cutoutShape, showFrame, showRegions, showDimensions, units, zoom, layers, cover, onTransitionEnd]);
 
   if (!widthDp || !heightDp) {
     return (

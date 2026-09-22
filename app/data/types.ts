@@ -42,13 +42,27 @@ export interface CutoutShape {
   yDp: number;
   widthDp: number;
   heightDp: number;
+  /** Distance from the cutout's far edge to the display's right/bottom edge. */
+  rightDp: number;
+  bottomDp: number;
+  /** Exact capture pixels. Omitted only for legacy/non-probe data. */
+  xPx?: number;
+  yPx?: number;
+  widthPx?: number;
+  heightPx?: number;
+  rightPx?: number;
+  bottomPx?: number;
 }
 
 export interface InsetsMeasurement {
   /** WindowInsets.Type.systemBars() */
   systemBars: Insets;
+  /** Exact pixels from the capture; dp must never be multiplied back into px when present. */
+  systemBarsPx?: Insets;
   /** WindowInsets.Type.displayCutout() */
   displayCutout: Insets;
+  /** Exact pixels from the capture. */
+  displayCutoutPx?: Insets;
   /** Present only when the raw capture included boundingRects. */
   cutoutShape?: CutoutShape;
   condition: MeasurementCondition;
@@ -67,12 +81,18 @@ export interface Screen {
   label: string;
   diagonalInch: number;
   resolutionPx: { width: number; height: number };
+  /** Captured app/window extent, distinct from the physical panel resolution. */
+  logicalSizePx?: { width: number; height: number } | null;
+  /** Orientation recorded by the probe for logicalSizeDp/logicalSizePx. */
+  captureOrientation?: "portrait" | "landscape" | null;
   ppi: number;
   /** null = not verified yet. Never estimate. */
   logicalSizeDp: { width: number; height: number } | null;
   densityDpi: number | null;
   cornerRadiiDp: CornerRadii | null;
-  /** Portrait insets per navigation mode; null = not measured yet. */
+  /** Exact pixels from the capture. */
+  cornerRadiiPx?: CornerRadii | null;
+  /** Insets in captureOrientation per navigation mode; null = not measured yet. */
   insets: Record<NavMode, InsetsMeasurement | null>;
   sources: Source[];
 }

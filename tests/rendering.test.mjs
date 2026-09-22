@@ -7,6 +7,62 @@ import { isInCoverage } from '../app/data/coverage.ts';
 import { getRtlAvailability, rtlCatalog } from '../app/data/rtlAvailability.ts';
 import { galaxyZFold2 } from '../app/data/devices/galaxy-z-fold2/index.ts';
 import { galaxyZFold8 } from '../app/data/devices/galaxy-z-fold8/index.ts';
+import { galaxyZFlip8 } from '../app/data/devices/galaxy-z-flip8/index.ts';
+import { galaxyS25Plus } from '../app/data/devices/galaxy-s25-plus/index.ts';
+import { galaxyS25Ultra } from '../app/data/devices/galaxy-s25-ultra/index.ts';
+import { formatLength, hasExactPx, safeInsetsPx } from '../app/data/measurementUnits.ts';
+
+function readCapture(path) {
+  return JSON.parse(readFileSync(path, 'utf8'));
+}
+
+function rawCornerRadii(raw) {
+  const corners = raw.roundedCorners?.windowInsets;
+  if (!corners || Object.values(corners).some(corner => corner === null)) return null;
+  return {
+    topLeft: corners.topLeft.radiusPx,
+    topRight: corners.topRight.radiusPx,
+    bottomRight: corners.bottomRight.radiusPx,
+    bottomLeft: corners.bottomLeft.radiusPx,
+  };
+}
+
+function rawCutoutShape(raw) {
+  const rect = raw.displayCutout?.boundingRects?.[0]?.px;
+  if (!rect) return null;
+  return {
+    xPx: rect.left,
+    yPx: rect.top,
+    widthPx: rect.right - rect.left,
+    heightPx: rect.bottom - rect.top,
+  };
+}
+
+function assertExactPixelEvidence({ device, screenId, navMode, capturePath }) {
+  const raw = readCapture(capturePath);
+  const screen = device.screens.find(candidate => candidate.id === screenId);
+  const measurement = screen?.insets[navMode];
+  assert.ok(screen, `${device.slug} must expose its ${screenId} screen`);
+  assert.ok(measurement, `${device.slug} ${screenId} ${navMode} must be measured`);
+
+  assert.deepEqual(screen.logicalSizePx, raw.display.currentWindowPx);
+  assert.equal(screen.captureOrientation, raw.display.orientation);
+  assert.deepEqual(screen.cornerRadiiPx, rawCornerRadii(raw));
+  assert.deepEqual(measurement.systemBarsPx, raw.insets.systemBars.px);
+  assert.deepEqual(measurement.displayCutoutPx, raw.insets.displayCutout.px);
+
+  const cutout = rawCutoutShape(raw);
+  if (cutout) {
+    assert.deepEqual({
+      xPx: measurement.cutoutShape?.xPx,
+      yPx: measurement.cutoutShape?.yPx,
+      widthPx: measurement.cutoutShape?.widthPx,
+      heightPx: measurement.cutoutShape?.heightPx,
+    }, cutout);
+  } else {
+    assert.equal(measurement.cutoutShape, undefined);
+  }
+}
 
 test('folds remain finite and symmetric at closed, intermediate, and flat poses on both axes', () => {
   for (const vertical of [true, false]) for (const angle of [0, 1, 45, 90, 135, 179, 180]) {
@@ -19,6 +75,45 @@ test('folds remain finite and symmetric at closed, intermediate, and flat poses 
     assert.ok(Math.abs(Math.hypot(...p.map((v,i) => v - behind[i])) - .065) < 1e-10);
   }
   assert.deepEqual(bendPoint(1, 2, -.065, 180, true, .14), [1, 2, -.065]);
+});
+
+test('hinge endpoint geometry is exact for both Fold and Flip axes', () => {
+  const hinge = .14;
+  const extent = 1.2;
+  const closedAlong = 2 * hinge / Math.PI;
+  const closedDepth = closedAlong + extent - hinge;
+  const epsilon = 1e-12;
+
+  for (const vertical of [true, false]) {
+    const positive = vertical ? [extent, .6, 0] : [.6, extent, 0];
+    const negative = vertical ? [-extent, .6, 0] : [.6, -extent, 0];
+
+    assert.deepEqual(bendPoint(...positive, 180, vertical, hinge), positive);
+    assert.deepEqual(bendPoint(...negative, 180, vertical, hinge), negative);
+
+    const closedPositive = bendPoint(...positive, 0, vertical, hinge);
+    const closedNegative = bendPoint(...negative, 0, vertical, hinge);
+    const axis = vertical ? 0 : 1;
+    assert.ok(Math.abs(closedPositive[axis] - closedAlong) < epsilon);
+    assert.ok(Math.abs(closedNegative[axis] + closedAlong) < epsilon);
+    assert.ok(Math.abs(closedPositive[2] - closedDepth) < epsilon);
+    assert.ok(Math.abs(closedNegative[2] - closedDepth) < epsilon);
+  }
+});
+
+test('hinge geometry stays continuous through every animation degree', () => {
+  for (const vertical of [true, false]) {
+    let previous = null;
+    for (let angle = 0; angle <= 180; angle++) {
+      const point = bendPoint(vertical ? 1 : 0, vertical ? 0 : 1, 0, angle, vertical, .14);
+      assert.ok(point.every(Number.isFinite));
+      if (previous) {
+        const step = Math.hypot(...point.map((value, index) => value - previous[index]));
+        assert.ok(step < .01, `${vertical ? 'Fold' : 'Flip'} jumps ${step} between ${angle - 1}° and ${angle}°`);
+      }
+      previous = point;
+    }
+  }
 });
 
 test('chassis is a closed solid with two triangles per shared edge', () => {
@@ -145,6 +240,120 @@ test('Fold8 recapture keeps cover and inner evidence distinct in both navigation
   assert.equal(main.insets.threeButton.systemBars.bottom, 48);
 });
 
+test('published px values and capture orientation remain exact raw evidence', () => {
+  const cases = [
+    ...['gesture', 'threeButton'].flatMap(navMode => [
+      {
+        device: galaxyZFold2,
+        screenId: 'cover',
+        navMode,
+        capturePath: `measurements/galaxy-z-fold2/cover-${navMode}.json`,
+      },
+      {
+        device: galaxyZFold2,
+        screenId: 'main',
+        navMode,
+        capturePath: `measurements/galaxy-z-fold2/main-${navMode}.json`,
+      },
+      {
+        device: galaxyZFold8,
+        screenId: 'cover',
+        navMode,
+        capturePath: `measurements/galaxy-z-fold8/recapture-2026-09-22/cover-${navMode}.json`,
+      },
+      {
+        device: galaxyZFold8,
+        screenId: 'main',
+        navMode,
+        capturePath: `measurements/galaxy-z-fold8/recapture-2026-09-22/main-${navMode}.json`,
+      },
+      {
+        device: galaxyZFlip8,
+        screenId: 'main',
+        navMode,
+        capturePath: `measurements/galaxy-z-flip8/main-${navMode}.json`,
+      },
+      {
+        device: galaxyS25Plus,
+        screenId: 'main',
+        navMode,
+        capturePath: `measurements/galaxy-s25-plus/main-${navMode}.json`,
+      },
+      {
+        device: galaxyS25Ultra,
+        screenId: 'main',
+        navMode,
+        capturePath: `measurements/galaxy-s25-ultra/main-${navMode}.json`,
+      },
+    ]),
+  ];
+
+  for (const evidence of cases) assertExactPixelEvidence(evidence);
+
+  const fold8Main = galaxyZFold8.screens.find(screen => screen.id === 'main');
+  const s25Main = galaxyS25Ultra.screens.find(screen => screen.id === 'main');
+  assert.equal(fold8Main.captureOrientation, 'landscape');
+  assert.deepEqual(fold8Main.logicalSizePx, { width: 2448, height: 1848 });
+  assert.equal(s25Main.insets.threeButton.systemBarsPx.top, 96,
+    '96 raw px must not be reconstructed as 95.99 px from rounded dp');
+});
+
+test('px presentation prefers exact capture values over rounded dp reconstruction', () => {
+  const screen = galaxyS25Ultra.screens.find(candidate => candidate.id === 'main');
+  const measurement = screen.insets.threeButton;
+  assert.equal(formatLength({
+    dp: measurement.systemBars.top,
+    px: measurement.systemBarsPx.top,
+    units: 'px',
+  }), '96');
+  assert.equal(formatLength({
+    dp: measurement.systemBars.top,
+    px: measurement.systemBarsPx.top,
+    units: 'dp',
+  }), '34.13');
+  assert.deepEqual(safeInsetsPx(measurement), { top: 96, right: 0, bottom: 135, left: 0 });
+  assert.deepEqual(screen.logicalSizePx, { width: 1080, height: 2340 });
+  assert.equal(hasExactPx(screen, measurement), true);
+  assert.equal(formatLength({
+    dp: measurement.systemBars.top,
+    px: null,
+    units: 'px',
+  }), 'pending', 'missing raw px must never be reconstructed from rounded dp');
+  assert.equal(hasExactPx(galaxyZFlip8.screens.find(candidate => candidate.id === 'cover'), null), false);
+});
+
+test('published cutout positions preserve raw bounds in both dp and px', () => {
+  const cases = [
+    [galaxyZFold2, 'cover', 'measurements/galaxy-z-fold2/cover-threeButton.json'],
+    [galaxyZFold2, 'main', 'measurements/galaxy-z-fold2/main-threeButton.json'],
+    [galaxyZFold8, 'cover', 'measurements/galaxy-z-fold8/recapture-2026-09-22/cover-threeButton.json'],
+    [galaxyZFlip8, 'main', 'measurements/galaxy-z-flip8/main-threeButton.json'],
+    [galaxyS25Plus, 'main', 'measurements/galaxy-s25-plus/main-threeButton.json'],
+    [galaxyS25Ultra, 'main', 'measurements/galaxy-s25-ultra/main-threeButton.json'],
+  ];
+
+  for (const [device, screenId, capturePath] of cases) {
+    const raw = readCapture(capturePath);
+    const rawPx = raw.displayCutout.boundingRects[0].px;
+    const rawDp = raw.displayCutout.boundingRects[0].dp;
+    const shape = device.screens.find(screen => screen.id === screenId).insets.threeButton.cutoutShape;
+    assert.deepEqual(shape, {
+      xDp: rawDp.left,
+      yDp: rawDp.top,
+      widthDp: rawDp.width,
+      heightDp: rawDp.height,
+      rightDp: Number((raw.display.maximumWindowDp.width - rawDp.right).toFixed(2)),
+      bottomDp: Number((raw.display.maximumWindowDp.height - rawDp.bottom).toFixed(2)),
+      xPx: rawPx.left,
+      yPx: rawPx.top,
+      widthPx: rawPx.right - rawPx.left,
+      heightPx: rawPx.bottom - rawPx.top,
+      rightPx: raw.display.currentWindowPx.width - rawPx.right,
+      bottomPx: raw.display.currentWindowPx.height - rawPx.bottom,
+    });
+  }
+});
+
 test('Fold2 uses captured full-window dimensions rather than Android 13 app metrics', () => {
   const raw = JSON.parse(readFileSync('measurements/galaxy-z-fold2/main-threeButton.json', 'utf8'));
   const screen = galaxyZFold2.screens.find(screen => screen.id === 'main');
@@ -162,17 +371,18 @@ test('Fold2 uses captured full-window dimensions rather than Android 13 app metr
   assert.match(screen.insets.gesture.condition.note, /taskbar/);
   const coverRaw = JSON.parse(readFileSync('measurements/galaxy-z-fold2/cover-threeButton.json', 'utf8'));
   const cover = galaxyZFold2.screens.find(screen => screen.id === 'cover');
-  assert.deepEqual(cover.resolutionPx, coverRaw.display.currentWindowPx);
+  assert.deepEqual(cover.resolutionPx, { width: 816, height: 2260 });
+  assert.deepEqual(cover.logicalSizePx, coverRaw.display.currentWindowPx);
   assert.deepEqual(cover.logicalSizeDp, coverRaw.display.maximumWindowDp);
   assert.deepEqual(cover.insets.threeButton.systemBars, coverRaw.insets.systemBars.dp);
   assert.equal(cover.cornerRadiiDp, null);
   const coverGesture = JSON.parse(readFileSync('measurements/galaxy-z-fold2/cover-gesture.json', 'utf8'));
   assert.equal(coverGesture.navigation.mode, 'gesture');
   assert.deepEqual(cover.insets.gesture.systemBars, coverGesture.insets.systemBars.dp);
-  assert.deepEqual(cover.resolutionPx, coverGesture.display.currentWindowPx);
+  assert.deepEqual(cover.logicalSizePx, coverGesture.display.currentWindowPx);
   assert.equal(cover.insets.gesture.systemBars.bottom, 15);
   assert.deepEqual(coverRaw.hinge.foldingFeatures, []);
-  assert.notEqual(cover.resolutionPx.width, skins['galaxy-z-fold2/cover'].screen.width);
+  assert.equal(cover.resolutionPx.width, skins['galaxy-z-fold2/cover'].screen.width);
   assert.match(cover.insets.threeButton.condition.note, /816×2260/);
 });
 

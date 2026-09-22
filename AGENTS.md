@@ -36,7 +36,8 @@ leave other models unverified. Preserve historical captures. See
 - `docs/MEASUREMENT_WORKFLOW.md`: capture process, known RTL issues, corrections.
 - `docs/DESIGN_HANDOFF.md`: original Claude visual backlog; see current status first.
 - React Router framework mode, React, TypeScript, three.js; pnpm; static prerender.
-- `pnpm dev`, `pnpm typecheck`, `pnpm build`, `node --test tests/rendering.test.mjs`.
+- `pnpm dev`, `pnpm typecheck`, `pnpm build`, `pnpm test:visual`,
+  `node --test tests/rendering.test.mjs`.
 
 ## Non-negotiable data boundaries
 
@@ -44,8 +45,9 @@ leave other models unverified. Preserve historical captures. See
   null/pending. Skin pixel coordinates are artwork metadata, not measured insets.
 - Fold8's legacy `main-*.json` captures are 1248×1972, matching the official COVER
   skin. The website classifies them as cover from this evidence; the original
-  labels/files remain unchanged. Inner measurements are pending. Never rotate or
-  stretch those cover values onto the inner display.
+  labels/files remain unchanged. The dated `recapture-2026-09-22/` set contains
+  separate verified cover and 2448×1848 landscape inner captures. Never rotate or
+  stretch the legacy cover values onto the inner display.
 - Skin foregrounds depict physical cameras; DisplayCutout bounds describe an OS
   exclusion rectangle. Do not replace the artwork's camera with the bounds.
 - View rotation rotates the recorded diagram; it does not invent landscape

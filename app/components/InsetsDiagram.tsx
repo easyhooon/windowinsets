@@ -1,6 +1,7 @@
 import { DIAGRAM_FONT, DIAGRAM_COLORS } from "./diagramStyle";
 import type { DeviceSkin } from "../data/skins";
 import type { InsetsMeasurement, Screen } from "../data/types";
+import { cornerPairs, formatLengthFromPairs, insetPairs, safeInsets, safeInsetsPx } from "../data/measurementUnits";
 
 const MAX_W = 260;
 const BASE_HEIGHT = 700;
@@ -112,30 +113,24 @@ export function InsetsDiagram({
     );
   }
 
-  // Convert a raw dp value to whichever unit the toggle is set to, for display only —
-  // the diagram's own geometry always stays in dp (via `s`), only the printed label changes.
-  const densityDpi = screen.densityDpi;
-  function fmt(vDp: number): string {
-    const v = units === "px" && densityDpi ? vDp * (densityDpi / 160) : vDp;
-    return v === 0 ? "0" : Number(v.toFixed(2)).toString();
-  }
-
   const s = MAX_W / dp.width;
   const W = dp.width * s;
   const H = dp.height * s;
   const r = screen.cornerRadiiDp;
   const rPx = r ? r.topLeft * s : 0;
 
-  const bars = measurement?.systemBars;
-  const cut = measurement?.displayCutout;
-  const safe: Insets | null = bars && cut
-    ? {
-        top: Math.max(bars.top, cut.top),
-        right: Math.max(bars.right, cut.right),
-        bottom: Math.max(bars.bottom, cut.bottom),
-        left: Math.max(bars.left, cut.left),
-      }
-    : null;
+  const safe: Insets | null = measurement ? safeInsets(measurement) : null;
+  const safePx = measurement ? safeInsetsPx(measurement) : null;
+  const fmt = formatLengthFromPairs(units, [
+    [dp.width, screen.logicalSizePx?.width],
+    [dp.height, screen.logicalSizePx?.height],
+    ...(safe && safePx && screen.logicalSizePx ? [
+      [dp.width - safe.left - safe.right, screen.logicalSizePx.width - safePx.left - safePx.right],
+      [dp.height - safe.top - safe.bottom, screen.logicalSizePx.height - safePx.top - safePx.bottom],
+    ] as const : []),
+    ...insetPairs(safe, safePx),
+    ...cornerPairs(r, screen.cornerRadiiPx),
+  ]);
 
   const labelScale = (H + PAD_TOP + PAD_BOTTOM) / BASE_HEIGHT * 100 / zoom;
   const viewBox = `${-PAD_LEFT} ${-PAD_TOP} ${W + PAD_LEFT + PAD_RIGHT} ${H + PAD_TOP + PAD_BOTTOM}`;
@@ -274,24 +269,6 @@ export function InsetsDiagram({
               label={fmt(dp.height)} color={INK}
               ext={[{ from: [0, 0], to: [-28, 0] }, { from: [0, H], to: [-28, H] }]}
             />
-
-            {/* Right-side outside dimension: top inset height */}
-            {layers.insets && safe && safe.top > 0 && (
-              <DimensionLine scale={labelScale}
-                x1={W + 20} y1={0} x2={W + 20} y2={safe.top * s}
-                label={fmt(safe.top)} color={INSET_COLOR}
-                ext={[{ from: [W, 0], to: [W + 20, 0] }, { from: [W, safe.top * s], to: [W + 20, safe.top * s] }]}
-              />
-            )}
-
-            {/* Right-side outside dimension: bottom inset height */}
-            {layers.insets && safe && safe.bottom > 0 && (
-              <DimensionLine scale={labelScale}
-                x1={W + 20} y1={H - safe.bottom * s} x2={W + 20} y2={H}
-                label={fmt(safe.bottom)} color={INSET_COLOR}
-                ext={[{ from: [W, H - safe.bottom * s], to: [W + 20, H - safe.bottom * s] }, { from: [W, H], to: [W + 20, H] }]}
-              />
-            )}
 
             {/* Left/right inset widths, drawn only when present (rare on phones) */}
             {layers.insets && safe && safe.left > 0 && (

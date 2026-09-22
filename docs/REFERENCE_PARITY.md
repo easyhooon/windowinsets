@@ -77,7 +77,9 @@ from https://developer.samsung.com/galaxy-emulator-skin.
 | Fold | Closed/partial/open, arbitrary hinge | Presets and slider, eased three.js hinge, rigid outer panels, closed solid shell, reduced-motion support |
 | Layers | Safe area/insets/reserved/corners | Independent legend toggles; Android cutout bounding region replaces iOS reserved regions |
 | Settings | Frame, regions, dimensions, units | All switches plus Android dp/px and navigation mode |
-| Measurements | Labels and clickable metrics | Content-sized labels; metrics copy with result feedback; SVG numeric labels and 3D texture hit areas copy values |
+| Measurements | Labels and clickable metrics | Whole metric rows and 2D/3D labels copy values; exact captured px is kept separately from rounded dp |
+| Display metadata | Logical size, panel resolution, physical density and scale | Android adds Captured Window and Android Density so active WindowMetrics are not mislabeled as native panel resolution or physical PPI |
+| Reserved regions | Size and four directional offsets | Android cutout bounds expose Size plus Left/Top/Right/Bottom distances in the same hierarchy |
 | Artwork | Per-device frames | Official Fold8 main/cover, Flip8 main/cover and 28 S20–S26 variants aligned by original layout coordinates |
 
 ## Proportions and measurement correction
@@ -90,24 +92,51 @@ margins in its aspect calculation; the solid chassis excludes those margins.
 The legacy Fold8 main capture has `widthPx: 1248`, `heightPx: 1972`. Both navigation
 captures match the COVER layout exactly. The official main layout is 2448×1848.
 The previous renderer rotated 1248×1972 and treated it as the unfolded display;
-that was a data classification error, not an orientation correction. The new
-website associates those captures with cover based on the matching resolution.
-No raw JSON was changed. The main view uses the official skin only and explicitly
-shows pending measurements. Skin dimensions never produce dp metrics/insets.
+that was a data classification error, not an orientation correction. The dated
+recapture now supplies separate 1248×1972 cover and 2448×1848 landscape inner
+measurements in both navigation modes. No legacy raw JSON was changed. Skin
+dimensions never produce dp metrics/insets.
+
+## Exact units and Android substitutions — 2026-09-23
+
+Captured px and rounded dp are separate evidence. The px view uses raw
+`currentWindowPx`, system-bar px, display-cutout px, rounded-corner px and cutout
+bounds; it never multiplies rounded dp back by Android density. If any required raw
+px field is absent, px mode is unavailable and the missing value stays pending.
+
+`Resolution` means sourced physical panel resolution. `Captured Window` means the
+active app/window extent recorded by InsetsProbe and can differ because of display
+mode or a user/device override. `Physical Density` is reserved for sourced panel
+PPI; `Android Density` and `Scale` report the logical density used for dp. These
+extra rows are Android-specific substitutions needed to avoid presenting unlike
+measurements as if they were the same safearea.info metric.
+
+Fold/Flip routes fit the selected cover or inner display without clipping. While
+Fit mode is active, a pose change computes the target display's fit at transition
+start so the endpoint does not snap. Explicit user zoom or pan leaves Fit mode and
+is preserved through the hinge transition; Fit to canvas restores automatic fit.
 
 ## Verification
 
-- `node --test tests/rendering.test.mjs`: finite/symmetric hinge positions across
-  both axes and 0/1/45/90/135/179/180 degrees; physical offset preserved; all chassis
-  edges belong to exactly two triangles; all asset display rectangles match layouts.
+- `node --test tests/rendering.test.mjs`: 15 deterministic checks covering every
+  animation degree, endpoints, exact raw px/dp/cutout evidence, safe-area px math,
+  physical offset, closed chassis and official asset rectangles.
 - Browser-driven Playwright/AX checks: desktop and 390px mobile layouts, device
   navigation, Metrics disclosure, dp/px settings, orientation, pose, keyboard +/0,
-  official artwork loading and console errors. Metrics displayed “Copied” after
-  clipboard write resolved; the automation clipboard reader did not expose the
-  browser's system clipboard content, so exact pasted contents are not asserted.
-- This is browser-driven QA, not a committed Playwright Test runner/CI suite.
-  Real two-finger touch gestures need device testing; desktop synthetic wheel and
-  keyboard checks do not prove hardware touch behavior.
+  official artwork loading and console errors. Metric rows report “Copied”; the
+  WebGL cover-label test also reads back the exact displayed clipboard value.
+- `pnpm test:visual` is the committed Chrome screenshot and interaction regression
+  floor: 32 tests and 58 approved images cover desktop and 390px mobile, S25 Ultra
+  navigation/unit/orientation combinations, Fold/Flip poses, exact px, real hinge
+  interpolation, reduced motion, fit/manual zoom/pan behavior, keyboard Fit recovery
+  and cover-label copy.
+  Real two-finger touch gestures still need device testing; desktop synthetic wheel
+  and keyboard checks do not prove hardware touch behavior.
+- 2026-09-23 parity pass: Chrome checks at 1512×716 and 390×844 covered Fold8
+  0°/90°/180°, Flip8 cover/90°/open, static Fold7 Outer/Inner, S25 Ultra exact px,
+  gesture/3-button switching, 2×2 mobile legend, readable controls, full metric-row
+  keyboard copy, automatic target-screen fit and stable manual zoom across Fold8's
+  animated endpoint.
 - S-series batch: 26 imported image/mask pairs match their downloaded ZIP bytes.
   All 28 S-series routes are prerendered. Chrome visual checks cover S20, S23 Ultra,
   S26 Ultra and S26 FE at 390×844; mobile zoom was exercised from 63% to 50%, and

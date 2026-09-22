@@ -15,9 +15,11 @@ export const galaxyZFold2: Device = {
       "label": "Cover",
       "diagonalInch": 0,
       "resolutionPx": {
-        "width": 960,
-        "height": 2658
+        "width": 816,
+        "height": 2260
       },
+      "logicalSizePx": { "width": 960, "height": 2658 },
+      "captureOrientation": "portrait",
       "ppi": 0,
       "logicalSizeDp": {
         "width": 320,
@@ -25,6 +27,7 @@ export const galaxyZFold2: Device = {
       },
       "densityDpi": 480,
       "cornerRadiiDp": null,
+      "cornerRadiiPx": null,
       "insets": {
         "gesture": {
           "systemBars": {
@@ -33,17 +36,23 @@ export const galaxyZFold2: Device = {
             "bottom": 15,
             "left": 0
           },
+          "systemBarsPx": { "top": 93, "right": 0, "bottom": 45, "left": 0 },
           "displayCutout": {
             "top": 30.67,
             "right": 0,
             "bottom": 0,
             "left": 0
           },
+          "displayCutoutPx": { "top": 92, "right": 0, "bottom": 0, "left": 0 },
           "cutoutShape": {
             "xDp": 148,
             "yDp": 0,
             "widthDp": 24,
-            "heightDp": 30.67
+            "heightDp": 30.67,
+            "rightDp": 148,
+            "bottomDp": 855.33,
+            "xPx": 444, "yPx": 0, "widthPx": 72, "heightPx": 92,
+            "rightPx": 444, "bottomPx": 2566
           },
           "condition": {
             "oneUi": "5.1.1",
@@ -66,17 +75,23 @@ export const galaxyZFold2: Device = {
             "bottom": 48,
             "left": 0
           },
+          "systemBarsPx": { "top": 93, "right": 0, "bottom": 144, "left": 0 },
           "displayCutout": {
             "top": 30.67,
             "right": 0,
             "bottom": 0,
             "left": 0
           },
+          "displayCutoutPx": { "top": 92, "right": 0, "bottom": 0, "left": 0 },
           "cutoutShape": {
             "xDp": 148,
             "yDp": 0,
             "widthDp": 24,
-            "heightDp": 30.67
+            "heightDp": 30.67,
+            "rightDp": 148,
+            "bottomDp": 855.33,
+            "xPx": 444, "yPx": 0, "widthPx": 72, "heightPx": 92,
+            "rightPx": 444, "bottomPx": 2566
           },
           "condition": {
             "oneUi": "5.1.1",
@@ -94,6 +109,12 @@ export const galaxyZFold2: Device = {
         }
       },
       "sources": [
+        {
+          "kind": "measured",
+          "label": "Galaxy Z Fold2 physical panel and app-window investigation notes",
+          "url": "https://github.com/easyhooon/windowinsets/blob/main/measurements/galaxy-z-fold2/README.md",
+          "retrievedAt": "2026-09-22"
+        },
         {
           "kind": "measured",
           "label": "InsetsProbe 1.1.1 on physical Galaxy Z Fold2 cover (SM-F916N)",
@@ -116,6 +137,8 @@ export const galaxyZFold2: Device = {
         "width": 1768,
         "height": 2208
       },
+      "logicalSizePx": { "width": 1768, "height": 2208 },
+      "captureOrientation": "portrait",
       "ppi": 0,
       "logicalSizeDp": {
         "width": 589.33,
@@ -128,6 +151,7 @@ export const galaxyZFold2: Device = {
         "bottomRight": 20,
         "bottomLeft": 20
       },
+      "cornerRadiiPx": { "topLeft": 60, "topRight": 60, "bottomRight": 60, "bottomLeft": 60 },
       "insets": {
         "gesture": {
           "systemBars": {
@@ -136,17 +160,23 @@ export const galaxyZFold2: Device = {
             "bottom": 48,
             "left": 0
           },
+          "systemBarsPx": { "top": 88, "right": 0, "bottom": 144, "left": 0 },
           "displayCutout": {
             "top": 29.33,
             "right": 0,
             "bottom": 0,
             "left": 0
           },
+          "displayCutoutPx": { "top": 88, "right": 0, "bottom": 0, "left": 0 },
           "cutoutShape": {
             "xDp": 436.33,
             "yDp": 0,
             "widthDp": 25,
-            "heightDp": 29.33
+            "heightDp": 29.33,
+            "rightDp": 128,
+            "bottomDp": 706.67,
+            "xPx": 1309, "yPx": 0, "widthPx": 75, "heightPx": 88,
+            "rightPx": 384, "bottomPx": 2120
           },
           "condition": {
             "oneUi": "5.1.1",
@@ -169,17 +199,23 @@ export const galaxyZFold2: Device = {
             "bottom": 48,
             "left": 0
           },
+          "systemBarsPx": { "top": 88, "right": 0, "bottom": 144, "left": 0 },
           "displayCutout": {
             "top": 29.33,
             "right": 0,
             "bottom": 0,
             "left": 0
           },
+          "displayCutoutPx": { "top": 88, "right": 0, "bottom": 0, "left": 0 },
           "cutoutShape": {
             "xDp": 436.33,
             "yDp": 0,
             "widthDp": 25,
-            "heightDp": 29.33
+            "heightDp": 29.33,
+            "rightDp": 128,
+            "bottomDp": 706.67,
+            "xPx": 1309, "yPx": 0, "widthPx": 75, "heightPx": 88,
+            "rightPx": 384, "bottomPx": 2120
           },
           "condition": {
             "oneUi": "5.1.1",

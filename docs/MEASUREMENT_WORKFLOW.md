@@ -247,7 +247,11 @@ Do not use Measure All. Capture each active display and navigation mode explicit
 | Galaxy Z Fold6 | TBD | Main | Pending | Pending | Queued |
 | Galaxy Z Flip6 | TBD | Main | Pending | Pending | Queued |
 
-**Measurement Conditions** (all captures): Portrait, full screen, default Display/Font size, One UI + Android version recorded per capture, dp = px ÷ (densityDpi ÷ 160) rounded to 2 decimals.
+**Measurement Conditions**: full screen, default Display/Font size and One UI +
+Android version are recorded per capture. Orientation is evidence, not a default:
+Fold8 cover is portrait and its verified inner capture is landscape. Probe dp is
+`px ÷ (densityDpi ÷ 160)` rounded to 2 decimals, while the website preserves and
+displays the original px separately instead of reconstructing it from rounded dp.
 
 ## InsetsProbe App: Architecture
 
@@ -284,7 +288,9 @@ Do not use Measure All. Capture each active display and navigation mode explicit
 ## Best Practices / Data Quality Checklist
 
 - Never estimate a value — leave `null`/pending until actually measured.
-- `logicalSizeDp × densityDpi` should be internally consistent with `resolutionPx` (`dp = px ÷ (densityDpi ÷ 160)`).
+- `logicalSizeDp × densityDpi` should be internally consistent with
+  `logicalSizePx` (`dp = px ÷ (densityDpi ÷ 160)`). `resolutionPx` is the sourced
+  physical panel resolution and may legitimately differ from the captured window.
 - Insets need all 4 sides (even if 0); `formFactor` is `"bar" | "foldable-book" | "foldable-flip"` (not `"phone"`).
 - `cornerRadiiDp`: all four corners or omit (`null`) entirely.
 - Source tier: `official` only for published specs; `measured` for RTL/device captures; `community` for unreproduced submissions.
