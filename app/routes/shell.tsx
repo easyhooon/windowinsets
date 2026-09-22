@@ -2,10 +2,25 @@ import { useState } from "react";
 import { NavLink, Outlet } from "react-router";
 import { devices, REPO_URL } from "../data/devices";
 
+type Category = "bar" | "foldable";
+
+const CATEGORIES: { id: Category; label: string }[] = [
+  { id: "bar", label: "Galaxy S" },
+  { id: "foldable", label: "Galaxy Z" },
+];
+
+function categoryOf(formFactor: (typeof devices)[number]["formFactor"]): Category {
+  return formFactor === "bar" ? "bar" : "foldable";
+}
+
 export default function Shell() {
   const [query, setQuery] = useState("");
+  const [category, setCategory] = useState<Category>("bar");
   const q = query.trim().toLowerCase();
-  const filtered = devices.filter((d) => d.name.toLowerCase().includes(q));
+  const searching = q.length > 0;
+  const filtered = devices.filter(
+    (d) => d.name.toLowerCase().includes(q) && (searching || categoryOf(d.formFactor) === category),
+  );
 
   return (
     // data-build-commit is not shown in the UI — inspect it (view-source or devtools)
@@ -32,7 +47,7 @@ export default function Shell() {
       </header>
       <div className="flex min-h-0 flex-1 flex-col md:flex-row">
         <aside className="flex max-h-48 shrink-0 flex-col border-b border-line bg-surface md:max-h-none md:w-64 md:border-r md:border-b-0">
-          <div className="p-3">
+          <div className="p-3 pb-0">
             <input
               type="search"
               value={query}
@@ -41,9 +56,26 @@ export default function Shell() {
               className="w-full rounded-md border border-line bg-surface px-3 py-1.5 text-sm"
             />
           </div>
+          {!searching && (
+            <div className="flex gap-1 p-3 pb-2">
+              {CATEGORIES.map((c) => (
+                <button
+                  key={c.id}
+                  onClick={() => setCategory(c.id)}
+                  className={`flex-1 rounded-md px-2 py-1.5 text-sm font-medium transition ${
+                    category === c.id
+                      ? "bg-accent-subtle text-accent"
+                      : "text-muted hover:bg-canvas"
+                  }`}
+                >
+                  {c.label}
+                </button>
+              ))}
+            </div>
+          )}
           <nav className="min-h-0 flex-1 overflow-y-auto px-2 pb-3">
             <p className="px-2 pb-1 text-xs font-medium text-muted">
-              Samsung Galaxy · {filtered.length}
+              {searching ? "Samsung Galaxy" : CATEGORIES.find((c) => c.id === category)?.label} · {filtered.length}
             </p>
             {filtered.map((d) => (
               <NavLink
