@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router";
-import { FoldDiagram } from "../components/FoldDiagram";
+import { FoldPreview } from "../components/FoldPreview";
 import { InsetsDiagram } from "../components/InsetsDiagram";
 import { Segmented } from "../components/Segmented";
 import { findDevice, isSpecced, SITE_URL } from "../data/devices";
@@ -94,6 +94,17 @@ export default function DevicePage({ params }: Route.ComponentProps) {
   const screen = foldable && angle === 0 && cover ? cover : main;
   const measurement = screen.insets[navMode];
 
+  const mainMeasurement = main.insets[navMode];
+  const mainSafe = mainMeasurement
+    ? {
+        top: Math.max(mainMeasurement.systemBars.top, mainMeasurement.displayCutout.top),
+        right: Math.max(mainMeasurement.systemBars.right, mainMeasurement.displayCutout.right),
+        bottom: Math.max(mainMeasurement.systemBars.bottom, mainMeasurement.displayCutout.bottom),
+        left: Math.max(mainMeasurement.systemBars.left, mainMeasurement.displayCutout.left),
+      }
+    : null;
+  const foldAxis = device.formFactor === "foldable-flip" ? "horizontal" : "vertical";
+
   return (
     <article className="mx-auto max-w-4xl p-4 md:p-6">
       <h1 className="text-2xl font-semibold">{device.name}</h1>
@@ -133,7 +144,14 @@ export default function DevicePage({ params }: Route.ComponentProps) {
 
       {foldable && (
         <div className="mt-6 flex items-center justify-center">
-          <FoldDiagram angle={angle} />
+          <FoldPreview
+            angle={angle}
+            axis={foldAxis}
+            widthDp={main.logicalSizeDp?.width ?? 0}
+            heightDp={main.logicalSizeDp?.height ?? 0}
+            safe={mainSafe}
+            cornerRadiiDp={main.cornerRadiiDp}
+          />
         </div>
       )}
 
