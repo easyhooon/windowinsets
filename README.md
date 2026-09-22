@@ -2,11 +2,7 @@
 
 Window insets, display cutouts, corner radii and foldable hinge states for Samsung Galaxy devices — with a source for every number.
 
-## Inspired by safearea.info
-
-This project exists because of [safearea.info](https://safearea.info). Seeing how clearly it lays out safe areas, reserved regions and the iPhone Duo fold animation for iOS inspired me to build something similar for Android. Huge shout-out and thank you to its creator. 🙌
-
-If you work on iOS, go check it out. If you work on Android and want to contribute, open a pull request with your InsetsProbe measurements.
+Its interface is inspired by [safearea.info](https://safearea.info), adapted for measured Android data and Samsung foldables.
 
 ## How I measure
 
