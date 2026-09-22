@@ -30,6 +30,7 @@ export function FoldDiagram({ angle }: { angle: number }) {
         <circle cx={0} cy={0} r={5} className="fill-neutral-900 stroke-neutral-400 dark:fill-neutral-100" />
       </svg>
       <figcaption className="mt-1 text-center text-sm">
+        <span className="block text-xs text-neutral-500">Side view · hinge seen edge-on</span>
         <span className="font-mono">{angle}°</span> ·{" "}
         <span className="font-mono text-xs text-neutral-500">FoldingFeature.State = {state}</span>
       </figcaption>
