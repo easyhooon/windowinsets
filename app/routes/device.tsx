@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router";
 import { FoldDiagram } from "../components/FoldDiagram";
-import { InsetsView } from "../components/InsetsView";
+import { InsetsDiagram } from "../components/InsetsDiagram";
 import { Segmented } from "../components/Segmented";
 import { findDevice, isSpecced, SITE_URL } from "../data/devices";
 import type { Insets, NavMode, Source } from "../data/types";
@@ -120,49 +120,63 @@ export default function DevicePage({ params }: Route.ComponentProps) {
         </div>
       )}
 
-      <div className="mt-6 grid gap-8 md:grid-cols-2">
-        <div className="flex flex-col items-center gap-6">
-          {foldable && <FoldDiagram angle={angle} />}
-          <InsetsView screen={screen} measurement={measurement} />
-          <p className="text-xs text-muted">{screen.label} screen · portrait</p>
+      {foldable && (
+        <div className="mt-6 flex items-center justify-center">
+          <FoldDiagram angle={angle} />
+        </div>
+      )}
+
+      <div className="mt-8 grid gap-8 lg:grid-cols-3">
+        {/* Left: Metrics Panel */}
+        <div className="lg:col-span-1 space-y-6">
+          <div className="rounded-[10px] border border-line bg-surface p-4 shadow-card">
+            <h2 className="text-sm font-medium text-muted">Display · {screen.label}</h2>
+            <dl>
+              <Row label="Diagonal" value={isSpecced(screen) ? `${screen.diagonalInch.toFixed(1)}″` : PENDING} />
+              <Row
+                label="Resolution"
+                value={isSpecced(screen) ? `${screen.resolutionPx.width} × ${screen.resolutionPx.height} px` : PENDING}
+              />
+              <Row label="Pixel density" value={isSpecced(screen) ? `${screen.ppi} ppi` : PENDING} />
+              <Row label="Density (dpi)" value={screen.densityDpi ?? PENDING} />
+              <Row
+                label="Logical size"
+                value={screen.logicalSizeDp ? `${screen.logicalSizeDp.width} × ${screen.logicalSizeDp.height} dp` : PENDING}
+              />
+            </dl>
+          </div>
+
+          <div className="rounded-[10px] border border-line bg-surface p-4 shadow-card">
+            <h2 className="text-sm font-medium text-muted">
+              Insets · {navMode === "gesture" ? "Gesture" : "3-button"} navigation
+            </h2>
+            <dl>
+              <Row label="System bars" value={measurement ? insetsText(measurement.systemBars) : PENDING} />
+              <Row label="Display cutout" value={measurement ? insetsText(measurement.displayCutout) : PENDING} />
+              <Row
+                label="Measured on"
+                value={measurement ? `One UI ${measurement.condition.oneUi} · Android ${measurement.condition.android}` : PENDING}
+              />
+            </dl>
+          </div>
         </div>
 
-        <div className="self-start rounded-[10px] border border-line bg-surface p-4 shadow-card">
-          <h2 className="text-sm font-medium text-muted">Display · {screen.label}</h2>
-          <dl>
-            <Row label="Diagonal" value={isSpecced(screen) ? `${screen.diagonalInch.toFixed(1)}″` : PENDING} />
-            <Row
-              label="Resolution"
-              value={isSpecced(screen) ? `${screen.resolutionPx.width} × ${screen.resolutionPx.height} px` : PENDING}
-            />
-            <Row label="Pixel density" value={isSpecced(screen) ? `${screen.ppi} ppi` : PENDING} />
-            <Row label="Density (dpi)" value={screen.densityDpi ?? PENDING} />
-            <Row
-              label="Logical size"
-              value={screen.logicalSizeDp ? `${screen.logicalSizeDp.width} × ${screen.logicalSizeDp.height} dp` : PENDING}
-            />
-          </dl>
-
-          <h2 className="mt-6 text-sm font-medium text-muted">
-            Insets · {navMode === "gesture" ? "Gesture" : "3-button"} navigation
-          </h2>
-          <dl>
-            <Row label="System bars" value={measurement ? insetsText(measurement.systemBars) : PENDING} />
-            <Row label="Display cutout" value={measurement ? insetsText(measurement.displayCutout) : PENDING} />
-            <Row
-              label="Measured on"
-              value={measurement ? `One UI ${measurement.condition.oneUi} · Android ${measurement.condition.android}` : PENDING}
-            />
-          </dl>
-
-          <h2 className="mt-6 text-sm font-medium text-muted">Sources</h2>
-          <SourceList sources={[...screen.sources, ...(measurement?.sources ?? [])]} />
-          <p className="mt-3 text-sm">
-            <Link to="/methodology" className="text-accent underline">
-              How these values are measured →
-            </Link>
-          </p>
+        {/* Right: Insets Diagram */}
+        <div className="lg:col-span-2 flex flex-col gap-4">
+          <InsetsDiagram screen={screen} measurement={measurement} />
+          <p className="text-xs text-muted text-center">{screen.label} screen · portrait</p>
         </div>
+      </div>
+
+      {/* Sources */}
+      <div className="mt-8 rounded-[10px] border border-line bg-surface p-4 shadow-card max-w-2xl">
+        <h2 className="text-sm font-medium text-muted">Sources</h2>
+        <SourceList sources={Array.from(new Map((measurement?.sources ?? []).concat(screen.sources).map(s => [s.label, s])).values())} />
+        <p className="mt-3 text-sm">
+          <Link to="/methodology" className="text-accent underline">
+            How these values are measured →
+          </Link>
+        </p>
       </div>
     </article>
   );
