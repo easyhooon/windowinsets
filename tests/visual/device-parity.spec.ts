@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import { readFile } from "node:fs/promises";
 
 const devices = [
   { slug: "galaxy-z-fold8", label: "Fold8" },
@@ -35,6 +36,24 @@ async function chooseUnits(page: Page, units: "dp" | "px") {
   await page.getByRole("radio", { name: units }).click();
   await page.getByRole("button", { name: "View settings" }).click();
 }
+
+test("per-device JSON export downloads the complete versioned device payload", async ({ page }) => {
+  await page.goto("/galaxy-z-flip8");
+  const button = page.getByRole("button", { name: "Export JSON" });
+  await expect(button).toBeVisible();
+  const downloadPromise = page.waitForEvent("download");
+  await button.click();
+  const download = await downloadPromise;
+  expect(download.suggestedFilename()).toBe("galaxy-z-flip8-window-insets.json");
+  const path = await download.path();
+  expect(path).not.toBeNull();
+  const exported = JSON.parse(await readFile(path!, "utf8"));
+  expect(exported.schema).toBe("https://windowinsets.info/schemas/device-window-insets-v1.schema.json");
+  expect(exported.schemaVersion).toBe(1);
+  expect(exported.screens.map((screen: { id: string }) => screen.id)).toEqual(["cover", "main"]);
+  expect(exported.screens[0].navigationModes.gesture.status).toBe("measured");
+  expect(exported.screens[0].navigationModes.threeButton.status).toBe("measured");
+});
 
 for (const device of devices) {
   for (const pose of poses) {

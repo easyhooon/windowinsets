@@ -213,6 +213,13 @@ hinges.forEach { hinge ->
           All values are linked to their source (official specs, raw probe JSON, or community
           reports), so you can always trace where a number came from.
         </p>
+        <h3>Exporting a complete device</h3>
+        <p>
+          Choose <b>Export JSON</b> at the top of a device's Metrics panel to download every
+          registered screen and both Android navigation modes. The versioned export keeps raw
+          dp and px separate, labels safe-area calculations as derived, includes capture
+          conditions and sources, and leaves unmeasured values explicitly pending.
+        </p>
       </Section>
 
       <Section title="Found an issue or want to contribute?">

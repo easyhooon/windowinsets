@@ -1,0 +1,118 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import Ajv2020 from 'ajv/dist/2020.js';
+import { runnerImport } from 'vite';
+import { galaxyS25 } from '../app/data/devices/galaxy-s25/index.ts';
+import { galaxyS25Plus } from '../app/data/devices/galaxy-s25-plus/index.ts';
+import { galaxyZFlip8 } from '../app/data/devices/galaxy-z-flip8/index.ts';
+import {
+  createDeviceExport,
+  deviceExportFilename,
+  DEVICE_EXPORT_SCHEMA,
+  DEVICE_EXPORT_SCHEMA_VERSION,
+  downloadDeviceExport,
+  serializeDeviceExport,
+} from '../app/data/deviceExport.ts';
+
+test('device export is versioned and includes every screen and navigation mode', () => {
+  const exported = createDeviceExport(galaxyZFlip8);
+  const schema = JSON.parse(readFileSync('public/schemas/device-window-insets-v1.schema.json', 'utf8'));
+  assert.equal(exported.schema, DEVICE_EXPORT_SCHEMA);
+  assert.equal(exported.schema, 'https://windowinsets.info/schemas/device-window-insets-v1.schema.json');
+  assert.equal(exported.schemaVersion, DEVICE_EXPORT_SCHEMA_VERSION);
+  assert.equal(schema.$id, exported.schema);
+  assert.deepEqual(schema.required, ['schema', 'schemaVersion', 'device', 'screens', 'sources']);
+  assert.deepEqual(exported.screens.map(screen => screen.id), ['cover', 'main']);
+  for (const screen of exported.screens) {
+    assert.deepEqual(Object.keys(screen.navigationModes).sort(), ['gesture', 'threeButton']);
+  }
+  assert.equal(deviceExportFilename(galaxyZFlip8), 'galaxy-z-flip8-window-insets.json');
+  assert.deepEqual(JSON.parse(serializeDeviceExport(galaxyZFlip8)), exported);
+});
+
+test('every public device export validates against the published schema', async () => {
+  const schema = JSON.parse(readFileSync('public/schemas/device-window-insets-v1.schema.json', 'utf8'));
+  const validate = new Ajv2020({ allErrors: true, validateFormats: false }).compile(schema);
+  const { module: { devices } } = await runnerImport('./app/data/devices.ts', { root: process.cwd() });
+  for (const device of devices) {
+    const exported = createDeviceExport(device);
+    assert.equal(validate(exported), true, `${device.slug}: ${JSON.stringify(validate.errors)}`);
+  }
+});
+
+test('device export keeps measured dp and exact raw px separate from derived values', () => {
+  const cover = createDeviceExport(galaxyZFlip8).screens.find(screen => screen.id === 'cover');
+  const measurement = cover.navigationModes.gesture.value;
+  assert.equal(cover.capture.status, 'measured');
+  assert.deepEqual(cover.capture.value.logicalSize, {
+    dp: { width: 399.16, height: 441.26 },
+    px: { width: 948, height: 1048 },
+  });
+  assert.deepEqual(measurement.raw.systemBars, {
+    dp: { top: 0, right: 0, bottom: 48, left: 0 },
+    px: { top: 0, right: 0, bottom: 114, left: 0 },
+  });
+  assert.deepEqual(measurement.raw.displayCutoutBounds, {
+    dp: { left: 180.21, top: 353.26, width: 218.95, height: 88, right: 0, bottom: 0 },
+    px: { left: 428, top: 839, width: 520, height: 209, right: 0, bottom: 0 },
+  });
+  assert.equal(measurement.derived.safeAreaInsets.evidence, 'derived');
+  assert.deepEqual(measurement.derived.safeAreaInsets.px, { top: 0, right: 0, bottom: 209, left: 0 });
+  assert.deepEqual(measurement.derived.safeAreaSize.px, { width: 948, height: 839 });
+  assert.deepEqual(measurement.derived.safeAreaSize.dp, { width: 399.16, height: 353.26 });
+  assert.equal(measurement.evidence, 'measured');
+  assert.equal(measurement.condition.oneUi, '9.0');
+  assert.ok(measurement.sources[0].url?.endsWith('/cover-gesture.json'));
+});
+
+test('preview-only exports preserve explicit pending and null values', () => {
+  const exported = createDeviceExport(galaxyS25);
+  const main = exported.screens[0];
+  assert.deepEqual(main.specifications.resolutionPx, { width: 1080, height: 2340 });
+  assert.equal(main.capture.status, 'pending');
+  assert.equal(main.capture.value, null);
+  assert.deepEqual(main.navigationModes, {
+    gesture: { status: 'pending', value: null },
+    threeButton: { status: 'pending', value: null },
+  });
+  assert.equal(main.sources[0].note, null);
+  assert.equal(exported.device.foldAnimation, false);
+  assert.equal(main.specifications.evidence, 'registered');
+});
+
+test('derived dp sizes use display precision while exact px remains unchanged', () => {
+  const main = createDeviceExport(galaxyS25Plus).screens.find(screen => screen.id === 'main');
+  const gesture = main.navigationModes.gesture.value;
+  assert.deepEqual(gesture.derived.safeAreaSize.dp, { width: 384, height: 783.29 });
+  assert.deepEqual(gesture.derived.safeAreaSize.px, { width: 1080, height: 2203 });
+});
+
+test('download cleanup removes the anchor and defers object URL revocation even on click failure', async () => {
+  const originalDocument = globalThis.document;
+  const originalCreate = URL.createObjectURL;
+  const originalRevoke = URL.revokeObjectURL;
+  const events = [];
+  const anchor = {
+    href: '', download: '', hidden: false,
+    click() { events.push('click'); throw new Error('synthetic click failure'); },
+    remove() { events.push('remove'); },
+  };
+  globalThis.document = {
+    createElement() { events.push('create'); return anchor; },
+    body: { appendChild() { events.push('append'); } },
+  };
+  URL.createObjectURL = () => { events.push('object-url'); return 'blob:test'; };
+  URL.revokeObjectURL = () => { events.push('revoke'); };
+  try {
+    assert.throws(() => downloadDeviceExport(galaxyS25), /synthetic click failure/);
+    assert.deepEqual(events, ['object-url', 'create', 'append', 'click', 'remove']);
+    await new Promise(resolve => setTimeout(resolve, 0));
+    assert.deepEqual(events, ['object-url', 'create', 'append', 'click', 'remove', 'revoke']);
+  } finally {
+    if (originalDocument === undefined) delete globalThis.document;
+    else globalThis.document = originalDocument;
+    URL.createObjectURL = originalCreate;
+    URL.revokeObjectURL = originalRevoke;
+  }
+});

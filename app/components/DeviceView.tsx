@@ -10,6 +10,7 @@ import { ResizeHandle } from "./ResizeHandle";
 import { Icon } from "./Icon";
 import { getRtlAvailability } from "../data/rtlAvailability";
 import { formatLength, hasExactPx, safeInsets, safeInsetsPx } from "../data/measurementUnits";
+import { downloadDeviceExport } from "../data/deviceExport";
 
 function Row({ label, value }: { label: string; value: React.ReactNode }) {
   const [status, setStatus] = useState("");
@@ -98,7 +99,10 @@ export function DeviceView({ device }: { device: Device }) {
   const [units, setUnits] = useState<"dp" | "px">("dp");
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [metricsOpen, setMetricsOpen] = useState(false);
+  const [exportStatus, setExportStatus] = useState("");
   const settings = useRef<HTMLDivElement>(null);
+  const exportTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  useEffect(() => () => clearTimeout(exportTimer.current), []);
   useEffect(() => {
     if (!settingsOpen) return;
     const close = (e: PointerEvent) => { if (!settings.current?.contains(e.target as Node)) setSettingsOpen(false); };
@@ -148,10 +152,24 @@ export function DeviceView({ device }: { device: Device }) {
     ? device.formFactor === "foldable-flip" ? 380 : closed ? 340 : 700
     : size ? 700 * (260 + 128) / (260 * size.height / size.width + 84) : 440;
   const diagramHeight = useFold && closed ? (device.formFactor === "foldable-flip" ? 390 : 500) : 700;
+  const exportJson = () => {
+    try {
+      downloadDeviceExport(device);
+      setExportStatus("JSON downloaded");
+    } catch {
+      setExportStatus("Download unavailable");
+    }
+    clearTimeout(exportTimer.current);
+    exportTimer.current = setTimeout(() => setExportStatus(""), 1800);
+  };
   return <article style={{ "--metrics-width": `${metricsWidth}px` } as React.CSSProperties} className="device-workspace" aria-label={device.name}>
     <h1 className="sr-only">{device.name} Window Insets</h1>
     <div className={`metrics-panel ${metricsOpen ? "is-open" : ""}`} aria-busy={transitionTarget !== null}>
-      <button className="metrics-toggle" aria-expanded={metricsOpen} onClick={() => setMetricsOpen(!metricsOpen)}>Metrics<Icon name="chevron" /></button>
+      <div className="metrics-bar">
+        <button className="metrics-toggle" aria-expanded={metricsOpen} onClick={() => setMetricsOpen(!metricsOpen)}>Metrics<Icon name="chevron" /></button>
+        <button type="button" className="export-json-button" onClick={exportJson}>Export JSON</button>
+        <span className="sr-only" role="status">{exportStatus}</span>
+      </div>
       <div className="metrics-content">
         <h2>Metrics</h2>
         {foldable && <div className="screen-tabs" aria-label="Display">{device.screens.map(s => <button key={s.id} aria-pressed={screen.id === s.id} onClick={() => pose(s.id === "cover" ? "0" : "180")}>{s.label === "Main" ? "Inner" : "Outer"}</button>)}</div>}

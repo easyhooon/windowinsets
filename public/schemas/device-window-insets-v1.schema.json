@@ -1,0 +1,330 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://windowinsets.info/schemas/device-window-insets-v1.schema.json",
+  "title": "windowinsets.info per-device export v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "schemaVersion", "device", "screens", "sources"],
+  "properties": {
+    "schema": { "const": "https://windowinsets.info/schemas/device-window-insets-v1.schema.json" },
+    "schemaVersion": { "const": 1 },
+    "device": { "$ref": "#/$defs/device" },
+    "screens": { "type": "array", "items": { "$ref": "#/$defs/screen" } },
+    "sources": { "type": "array", "items": { "$ref": "#/$defs/source" } }
+  },
+  "$defs": {
+    "size": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["width", "height"],
+      "properties": {
+        "width": { "type": "number", "minimum": 0 },
+        "height": { "type": "number", "minimum": 0 }
+      }
+    },
+    "pixelSize": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["width", "height"],
+      "properties": {
+        "width": { "type": "integer", "minimum": 0 },
+        "height": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "insets": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["top", "right", "bottom", "left"],
+      "properties": {
+        "top": { "type": "number", "minimum": 0 },
+        "right": { "type": "number", "minimum": 0 },
+        "bottom": { "type": "number", "minimum": 0 },
+        "left": { "type": "number", "minimum": 0 }
+      }
+    },
+    "pixelInsets": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["top", "right", "bottom", "left"],
+      "properties": {
+        "top": { "type": "integer", "minimum": 0 },
+        "right": { "type": "integer", "minimum": 0 },
+        "bottom": { "type": "integer", "minimum": 0 },
+        "left": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "corners": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["topLeft", "topRight", "bottomRight", "bottomLeft"],
+      "properties": {
+        "topLeft": { "type": "number", "minimum": 0 },
+        "topRight": { "type": "number", "minimum": 0 },
+        "bottomRight": { "type": "number", "minimum": 0 },
+        "bottomLeft": { "type": "number", "minimum": 0 }
+      }
+    },
+    "pixelCorners": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["topLeft", "topRight", "bottomRight", "bottomLeft"],
+      "properties": {
+        "topLeft": { "type": "integer", "minimum": 0 },
+        "topRight": { "type": "integer", "minimum": 0 },
+        "bottomRight": { "type": "integer", "minimum": 0 },
+        "bottomLeft": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "bounds": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["left", "top", "width", "height", "right", "bottom"],
+      "properties": {
+        "left": { "type": "number", "minimum": 0 },
+        "top": { "type": "number", "minimum": 0 },
+        "width": { "type": "number", "minimum": 0 },
+        "height": { "type": "number", "minimum": 0 },
+        "right": { "type": "number", "minimum": 0 },
+        "bottom": { "type": "number", "minimum": 0 }
+      }
+    },
+    "pixelBounds": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["left", "top", "width", "height", "right", "bottom"],
+      "properties": {
+        "left": { "type": "integer", "minimum": 0 },
+        "top": { "type": "integer", "minimum": 0 },
+        "width": { "type": "integer", "minimum": 0 },
+        "height": { "type": "integer", "minimum": 0 },
+        "right": { "type": "integer", "minimum": 0 },
+        "bottom": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "label", "url", "retrievedAt", "note"],
+      "properties": {
+        "kind": { "enum": ["official", "measured", "community"] },
+        "label": { "type": "string" },
+        "url": { "type": ["string", "null"] },
+        "retrievedAt": { "type": "string", "format": "date" },
+        "note": { "type": ["string", "null"] }
+      }
+    },
+    "device": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["slug", "name", "brand", "series", "formFactor", "foldAnimation", "releaseYear"],
+      "properties": {
+        "slug": { "type": "string" },
+        "name": { "type": "string" },
+        "brand": { "const": "Samsung" },
+        "series": { "type": "string" },
+        "formFactor": { "enum": ["bar", "tablet", "foldable-book", "foldable-flip"] },
+        "foldAnimation": { "type": "boolean" },
+        "releaseYear": { "type": ["integer", "null"] }
+      }
+    },
+    "sizePair": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["dp", "px"],
+      "properties": {
+        "dp": { "oneOf": [{ "$ref": "#/$defs/size" }, { "type": "null" }] },
+        "px": { "oneOf": [{ "$ref": "#/$defs/pixelSize" }, { "type": "null" }] }
+      }
+    },
+    "measuredSizePair": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["dp", "px"],
+      "properties": {
+        "dp": { "$ref": "#/$defs/size" },
+        "px": { "oneOf": [{ "$ref": "#/$defs/pixelSize" }, { "type": "null" }] }
+      }
+    },
+    "insetsPair": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["dp", "px"],
+      "properties": {
+        "dp": { "oneOf": [{ "$ref": "#/$defs/insets" }, { "type": "null" }] },
+        "px": { "oneOf": [{ "$ref": "#/$defs/pixelInsets" }, { "type": "null" }] }
+      }
+    },
+    "measuredInsetsPair": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["dp", "px"],
+      "properties": {
+        "dp": { "$ref": "#/$defs/insets" },
+        "px": { "oneOf": [{ "$ref": "#/$defs/pixelInsets" }, { "type": "null" }] }
+      }
+    },
+    "boundsPair": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["dp", "px"],
+      "properties": {
+        "dp": { "oneOf": [{ "$ref": "#/$defs/bounds" }, { "type": "null" }] },
+        "px": { "oneOf": [{ "$ref": "#/$defs/pixelBounds" }, { "type": "null" }] }
+      }
+    },
+    "measuredBoundsPair": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["dp", "px"],
+      "properties": {
+        "dp": { "$ref": "#/$defs/bounds" },
+        "px": { "oneOf": [{ "$ref": "#/$defs/pixelBounds" }, { "type": "null" }] }
+      }
+    },
+    "cornerPair": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["dp", "px"],
+      "properties": {
+        "dp": { "oneOf": [{ "$ref": "#/$defs/corners" }, { "type": "null" }] },
+        "px": { "oneOf": [{ "$ref": "#/$defs/pixelCorners" }, { "type": "null" }] }
+      }
+    },
+    "captureValue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["evidence", "logicalSize", "densityDpi", "orientation", "displayRotation", "cornerRadii"],
+      "properties": {
+        "evidence": { "const": "measured" },
+        "logicalSize": { "$ref": "#/$defs/measuredSizePair" },
+        "densityDpi": { "type": "number", "exclusiveMinimum": 0 },
+        "orientation": { "enum": ["portrait", "landscape", null] },
+        "displayRotation": { "enum": [0, 1, 2, 3, null] },
+        "cornerRadii": { "$ref": "#/$defs/cornerPair" }
+      }
+    },
+    "capture": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["status", "value"],
+          "properties": { "status": { "const": "measured" }, "value": { "$ref": "#/$defs/captureValue" } }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["status", "value"],
+          "properties": { "status": { "const": "pending" }, "value": { "type": "null" } }
+        }
+      ]
+    },
+    "derivedInsets": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["evidence", "method", "dp", "px"],
+      "properties": {
+        "evidence": { "const": "derived" },
+        "method": { "const": "max(systemBars, displayCutoutInsets) per edge" },
+        "dp": { "$ref": "#/$defs/insets" },
+        "px": { "oneOf": [{ "$ref": "#/$defs/pixelInsets" }, { "type": "null" }] }
+      }
+    },
+    "derivedSize": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["evidence", "method", "dp", "px"],
+      "properties": {
+        "evidence": { "const": "derived" },
+        "method": { "const": "logicalSize - safeAreaInsets" },
+        "dp": { "$ref": "#/$defs/size" },
+        "px": { "oneOf": [{ "$ref": "#/$defs/pixelSize" }, { "type": "null" }] }
+      }
+    },
+    "measurement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["evidence", "raw", "derived", "condition", "sources"],
+      "properties": {
+        "evidence": { "const": "measured" },
+        "raw": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["systemBars", "displayCutoutInsets", "displayCutoutBounds"],
+          "properties": {
+            "systemBars": { "$ref": "#/$defs/measuredInsetsPair" },
+            "displayCutoutInsets": { "$ref": "#/$defs/measuredInsetsPair" },
+            "displayCutoutBounds": { "oneOf": [{ "$ref": "#/$defs/measuredBoundsPair" }, { "type": "null" }] }
+          }
+        },
+        "derived": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["safeAreaInsets", "safeAreaSize"],
+          "properties": {
+            "safeAreaInsets": { "$ref": "#/$defs/derivedInsets" },
+            "safeAreaSize": { "$ref": "#/$defs/derivedSize" }
+          }
+        },
+        "condition": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["oneUi", "android", "note"],
+          "properties": {
+            "oneUi": { "type": "string" },
+            "android": { "type": "string" },
+            "note": { "type": ["string", "null"] }
+          }
+        },
+        "sources": { "type": "array", "items": { "$ref": "#/$defs/source" } }
+      }
+    },
+    "navigationMode": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["status", "value"],
+          "properties": { "status": { "const": "measured" }, "value": { "$ref": "#/$defs/measurement" } }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["status", "value"],
+          "properties": { "status": { "const": "pending" }, "value": { "type": "null" } }
+        }
+      ]
+    },
+    "screen": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "label", "specifications", "capture", "navigationModes", "sources"],
+      "properties": {
+        "id": { "enum": ["cover", "main"] },
+        "label": { "type": "string" },
+        "specifications": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["evidence", "diagonalInch", "resolutionPx", "ppi"],
+          "properties": {
+            "evidence": { "const": "registered" },
+            "diagonalInch": { "oneOf": [{ "type": "number", "exclusiveMinimum": 0 }, { "type": "null" }] },
+            "resolutionPx": { "oneOf": [{ "$ref": "#/$defs/pixelSize" }, { "type": "null" }] },
+            "ppi": { "oneOf": [{ "type": "number", "exclusiveMinimum": 0 }, { "type": "null" }] }
+          }
+        },
+        "capture": { "$ref": "#/$defs/capture" },
+        "navigationModes": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["gesture", "threeButton"],
+          "properties": {
+            "gesture": { "$ref": "#/$defs/navigationMode" },
+            "threeButton": { "$ref": "#/$defs/navigationMode" }
+          }
+        },
+        "sources": { "type": "array", "items": { "$ref": "#/$defs/source" } }
+      }
+    }
+  }
+}

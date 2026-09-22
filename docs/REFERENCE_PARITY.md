@@ -80,6 +80,7 @@ from https://developer.samsung.com/galaxy-emulator-skin.
 | Measurements | Labels and clickable metrics | Whole metric rows and 2D/3D labels copy values; exact captured px is kept separately from rounded dp |
 | Display metadata | Logical size, panel resolution, physical density and scale | Android adds Captured Window and Android Density so active WindowMetrics are not mislabeled as native panel resolution or physical PPI |
 | Reserved regions | Size and four directional offsets | Android cutout bounds expose Size plus Left/Top/Right/Bottom distances in the same hierarchy |
+| Data export | No observed per-device JSON download | Intentional Android-service divergence: a compact Export JSON action in the Metrics header downloads the complete versioned evidence payload |
 | Artwork | Per-device frames | Official Fold8 main/cover, Flip8 main/cover and 28 S20–S26 variants aligned by original layout coordinates |
 
 ## Proportions and measurement correction
@@ -118,7 +119,7 @@ is preserved through the hinge transition; Fit to canvas restores automatic fit.
 
 ## Verification
 
-- `node --test tests/rendering.test.mjs`: 16 deterministic checks covering every
+- `node --test tests/rendering.test.mjs`: 17 deterministic checks covering every
   animation degree, endpoints, exact raw px/dp/cutout evidence, safe-area px math,
   physical offset, closed chassis and official asset rectangles.
 - Browser-driven Playwright/AX checks: desktop and 390px mobile layouts, device
@@ -126,7 +127,8 @@ is preserved through the hinge transition; Fit to canvas restores automatic fit.
   official artwork loading and console errors. Metric rows report “Copied”; the
   WebGL cover-label test also reads back the exact displayed clipboard value.
 - `pnpm test:visual` is the committed Chrome screenshot and interaction regression
-  floor: 38 tests and 64 approved images cover desktop and 390px mobile, S25 Ultra
+  floor: 40 tests and 64 approved images cover desktop and 390px mobile, per-device
+  JSON downloads, S25 Ultra
   navigation/unit/orientation combinations, Fold/Flip poses, exact px, real hinge
   interpolation, reduced motion, fit/manual zoom/pan behavior, keyboard Fit recovery
   and cover-label copy.
@@ -152,6 +154,12 @@ is preserved through the hinge transition; Fit to canvas restores automatic fit.
 
 ## Remaining differences
 
+- **Export JSON** is an intentional product divergence from the observed
+  safearea.info UI. Android consumers need exact probe dp/px, navigation-mode,
+  display and provenance data outside the visual tool. The action stays secondary
+  in the Metrics header on desktop and mobile so it does not reorganize the
+  reference-shaped canvas controls. Its v1 contract and derivation boundaries are
+  documented in `JSON_EXPORT.md`.
 - Fold8/Flip8 cover and inner displays share one WebGL scene through folding.
   The cover uses the rigid rear-panel transform; applying the inner cylindrical
   bend to its annotation margins previously pulled it inside the opaque chassis.
