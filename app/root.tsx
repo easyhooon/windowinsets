@@ -11,9 +11,9 @@ import type { Route } from "./+types/root";
 import "./app.css";
 
 export const links: Route.LinksFunction = () => [
-  { rel: "icon", type: "image/svg+xml", href: "/favicon.svg" },
-  { rel: "icon", type: "image/png", sizes: "32x32", href: "/favicon-32.png" },
-  { rel: "apple-touch-icon", href: "/apple-touch-icon.png" },
+  { rel: "icon", type: "image/svg+xml", href: "/favicon-v2.svg" },
+  { rel: "icon", type: "image/png", sizes: "32x32", href: "/favicon-v2-32.png" },
+  { rel: "apple-touch-icon", sizes: "180x180", href: "/apple-touch-icon-v2.png" },
   { rel: "preload", href: "/fonts/mona-sans.woff2", as: "font", type: "font/woff2", crossOrigin: "anonymous" },
 ];
 

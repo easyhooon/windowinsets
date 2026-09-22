@@ -5,7 +5,7 @@ import type { Route } from "./+types/home";
 
 export function meta(_: Route.MetaArgs) {
   return pageMeta({
-    title: "Android Window Insets & Display Metrics for Galaxy Devices | windowinsets.info",
+    title: "Android Window Insets & Safe Areas | windowinsets.info",
     description:
       "Window insets, display cutouts, corner radii and foldable hinge states for Samsung Galaxy devices, with a source for every number.",
     url: SITE_URL,

@@ -2,10 +2,9 @@ import { SITE_URL } from "../data/devices";
 
 export const SITE_NAME = "windowinsets.info";
 
-// TODO: generate an actual 1200x630 OG image (e.g. og-default.png in /public) —
-// deferred until image-generation tooling is available.
-const OG_IMAGE = `${SITE_URL}/og-default.png`;
-const OG_IMAGE_ALT = "windowinsets.info — window insets for Samsung Galaxy devices";
+// Versioned asset URL lets sharing crawlers distinguish this artwork from v1.
+const OG_IMAGE = `${SITE_URL}/og-android-v2.png`;
+const OG_IMAGE_ALT = "Window Insets for Android — a folding phone with mint safe areas and apricot inset bands. windowinsets.info";
 
 /** Standard <meta>/<link> tags every page should ship, following the pattern
  * safearea.info uses: og:title/description/type/site_name/image(+dims/alt),

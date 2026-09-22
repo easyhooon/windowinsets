@@ -1,5 +1,5 @@
 import { DeviceView } from "../components/DeviceView";
-import { findDevice, SITE_URL } from "../data/devices";
+import { findDevice, hasVerifiedInsets, SITE_URL } from "../data/devices";
 import { pageMeta } from "../lib/seo";
 import type { Route } from "./+types/device";
 
@@ -8,7 +8,9 @@ export function meta({ params }: Route.MetaArgs) {
   if (!device) return [{ title: "Not found | windowinsets.info" }];
   return pageMeta({
     title: `${device.name} Window Insets & Display Metrics | windowinsets.info`,
-    description: `Status bar, navigation bar and cutout insets, resolution, density and hinge states for ${device.name}, with sources for every value.`,
+    description: hasVerifiedInsets(device)
+      ? `Explore measured window insets, safe areas and display cutouts for ${device.name}, with capture conditions and sources.`
+      : `Explore the ${device.name} device preview. Android window insets are pending real-device measurement.`,
     url: `${SITE_URL}/${device.slug}`,
   });
 }

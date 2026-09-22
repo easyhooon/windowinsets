@@ -16,7 +16,7 @@ export default function Shell() {
   return <div style={{ "--sidebar-width": `${sidebarWidth}px` } as React.CSSProperties} className="app-shell" data-build-commit={__BUILD_COMMIT__}>
     <a href="#device-canvas" className="skip-link">Skip to device canvas</a>
     <header className="app-header">
-      <NavLink to="/" className="brand"><img src="/favicon.svg" width="28" height="28" alt="" />windowinsets.info</NavLink>
+      <NavLink to="/" className="brand"><img src="/favicon-v2.svg" width="28" height="28" alt="" />windowinsets.info</NavLink>
       <button className="mobile-model" aria-expanded={mobileOpen} onClick={() => setMobileOpen(!mobileOpen)}><span className={`device-thumbnail ${current.formFactor}`} /><span>{current.name}<small>{current.releaseYear ?? "Skin preview"}</small></span><Icon name="chevron" /></button>
     </header>
     <div className="app-content">
