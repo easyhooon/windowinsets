@@ -63,6 +63,11 @@ export function FoldPreview({
   const half = (180 - angle) / 2;
   const r = cornerRadiiDp ? cornerRadiiDp.topLeft * s : 0;
 
+  const fmt = (v: number) => (v === 0 ? "0" : Number(v.toFixed(2)).toString());
+
+  // Value labels live INSIDE the same rotated panel as the band they describe,
+  // so they travel with it (correctly foreshortened by the 3D transform)
+  // instead of disappearing or staying flat while the panel folds.
   function insetBands(part: "a" | "b") {
     if (!safe) return null;
     const bands: React.ReactNode[] = [];
@@ -70,11 +75,36 @@ export function FoldPreview({
     const showBottom = isVertical || part === "b";
     const showLeft = !isVertical || part === "a";
     const showRight = !isVertical || part === "b";
+    const chip = "absolute rounded bg-orange-700 px-1 text-[9px] font-bold leading-tight text-white whitespace-nowrap";
 
-    if (showTop && safe.top > 0) bands.push(<div key="t" style={{ position: "absolute", top: 0, left: 0, right: 0, height: safe.top * s }} className="bg-orange-400/60" />);
-    if (showBottom && safe.bottom > 0) bands.push(<div key="b" style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: safe.bottom * s }} className="bg-orange-400/60" />);
-    if (showLeft && safe.left > 0) bands.push(<div key="l" style={{ position: "absolute", top: 0, bottom: 0, left: 0, width: safe.left * s }} className="bg-orange-400/60" />);
-    if (showRight && safe.right > 0) bands.push(<div key="r" style={{ position: "absolute", top: 0, bottom: 0, right: 0, width: safe.right * s }} className="bg-orange-400/60" />);
+    if (showTop && safe.top > 0) {
+      bands.push(
+        <div key="t" style={{ position: "absolute", top: 0, left: 0, right: 0, height: safe.top * s }} className="bg-orange-400/60">
+          <span className={chip} style={{ left: "50%", top: "50%", transform: "translate(-50%,-50%)" }}>{fmt(safe.top)}</span>
+        </div>,
+      );
+    }
+    if (showBottom && safe.bottom > 0) {
+      bands.push(
+        <div key="b" style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: safe.bottom * s }} className="bg-orange-400/60">
+          <span className={chip} style={{ left: "50%", top: "50%", transform: "translate(-50%,-50%)" }}>{fmt(safe.bottom)}</span>
+        </div>,
+      );
+    }
+    if (showLeft && safe.left > 0) {
+      bands.push(
+        <div key="l" style={{ position: "absolute", top: 0, bottom: 0, left: 0, width: safe.left * s }} className="bg-orange-400/60">
+          <span className={chip} style={{ left: "50%", top: "50%", transform: "translate(-50%,-50%) rotate(-90deg)" }}>{fmt(safe.left)}</span>
+        </div>,
+      );
+    }
+    if (showRight && safe.right > 0) {
+      bands.push(
+        <div key="r" style={{ position: "absolute", top: 0, bottom: 0, right: 0, width: safe.right * s }} className="bg-orange-400/60">
+          <span className={chip} style={{ left: "50%", top: "50%", transform: "translate(-50%,-50%) rotate(-90deg)" }}>{fmt(safe.right)}</span>
+        </div>,
+      );
+    }
     return bands;
   }
 
@@ -124,6 +154,9 @@ export function FoldPreview({
           {isVertical ? "Book fold · vertical hinge" : "Flip fold · horizontal hinge"}
         </span>
         <span className="font-mono">{angle}°</span>
+        <span className="ml-2 font-mono text-xs text-muted">
+          {fmt(widthDp)} × {fmt(heightDp)} dp
+        </span>
       </figcaption>
     </figure>
   );

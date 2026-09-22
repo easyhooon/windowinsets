@@ -119,8 +119,16 @@ export function InsetsDiagram({
     <div className="space-y-3">
       <svg
         viewBox={viewBox}
-        className="w-full max-w-lg mx-auto"
-        style={{ maxHeight: 420 }}
+        // Sized by its own real aspect ratio (device width:height), not stretched to
+        // fill the container's width — that mismatch was letterboxing the phone shape
+        // into a fraction of its box instead of showing it at its true proportions.
+        style={{
+          height: "min(420px, 60vh)",
+          width: "auto",
+          maxWidth: "100%",
+          display: "block",
+          marginInline: "auto",
+        }}
         role="img"
         aria-label={`${screen.label} screen insets diagram`}
       >
@@ -132,6 +140,11 @@ export function InsetsDiagram({
 
         {/* Device bezel */}
         <rect x={0} y={0} width={W} height={H} rx={rPx} fill="#ffffff" stroke="#0f172a" strokeWidth={3} />
+
+        {/* Decorative case chrome — schematic only, not measured data: a speaker
+         * grille and a side button, purely for visual recognizability. */}
+        <rect x={W / 2 - 18} y={5} width={36} height={3} rx={1.5} fill="#1e293b" opacity={0.35} />
+        <rect x={W - 1.5} y={H * 0.22} width={3} height={H * 0.1} rx={1.5} fill="#1e293b" opacity={0.55} />
 
         {/* Safe area + inset bands */}
         {safe && (
@@ -146,6 +159,19 @@ export function InsetsDiagram({
             {safe.bottom > 0 && <rect x={0} y={H - safe.bottom * s} width={W} height={safe.bottom * s} fill={INSET_FILL} fillOpacity={0.55} />}
             {safe.left > 0 && <rect x={0} y={0} width={safe.left * s} height={H} fill={INSET_FILL} fillOpacity={0.55} />}
             {safe.right > 0 && <rect x={W - safe.right * s} y={0} width={safe.right * s} height={H} fill={INSET_FILL} fillOpacity={0.55} />}
+
+            {/* Real camera cutout, at its measured position/size (DisplayCutout.boundingRects) —
+             * not a placeholder: this pill sits exactly where the punch-hole/notch actually is. */}
+            {measurement?.cutoutShape && (
+              <rect
+                x={measurement.cutoutShape.xDp * s}
+                y={measurement.cutoutShape.yDp * s}
+                width={measurement.cutoutShape.widthDp * s}
+                height={measurement.cutoutShape.heightDp * s}
+                rx={Math.min(measurement.cutoutShape.widthDp, measurement.cutoutShape.heightDp) * s / 2}
+                fill="#0f172a"
+              />
+            )}
 
             {/* Inside chips: value printed directly on the band it describes */}
             {safe.top > 0 && (

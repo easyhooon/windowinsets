@@ -35,12 +35,14 @@ export const galaxyZFlip8: Device = {
         gesture: {
           systemBars: { top: 36, right: 0, bottom: 15, left: 0 },
           displayCutout: { top: 36, right: 0, bottom: 0, left: 0 },
+          cutoutShape: { xDp: 169.67, yDp: 0, widthDp: 20.67, heightDp: 36 },
           condition: { oneUi: "9.0", android: "17" },
           sources: [rtlGesture],
         },
         threeButton: {
           systemBars: { top: 36, right: 0, bottom: 48, left: 0 },
           displayCutout: { top: 36, right: 0, bottom: 0, left: 0 },
+          cutoutShape: { xDp: 169.67, yDp: 0, widthDp: 20.67, heightDp: 36 },
           condition: { oneUi: "9.0", android: "17" },
           sources: [rtlThreeButton],
         },

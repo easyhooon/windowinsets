@@ -51,12 +51,14 @@ export const galaxyZFold8: Device = {
         gesture: {
           systemBars: { top: 41.9, right: 0, bottom: 14.86, left: 0 },
           displayCutout: { top: 39.62, right: 0, bottom: 0, left: 0 },
+          cutoutShape: { xDp: 224.38, yDp: 0, widthDp: 26.67, heightDp: 39.62 },
           condition: { oneUi: "9.0", android: "17" },
           sources: [rtlGesture],
         },
         threeButton: {
           systemBars: { top: 41.9, right: 0, bottom: 48, left: 0 },
           displayCutout: { top: 39.62, right: 0, bottom: 0, left: 0 },
+          cutoutShape: { xDp: 224.38, yDp: 0, widthDp: 26.67, heightDp: 39.62 },
           condition: { oneUi: "9.0", android: "17" },
           sources: [rtlThreeButton],
         },

@@ -40,12 +40,14 @@ export const galaxyS25Ultra: Device = {
         gesture: {
           systemBars: { top: 34.13, right: 0, bottom: 14.93, left: 0 },
           displayCutout: { top: 34.13, right: 0, bottom: 0, left: 0 },
+          cutoutShape: { xDp: 182.76, yDp: 0, widthDp: 18.49, heightDp: 34.13 },
           condition: { oneUi: "8.5", android: "16" },
           sources: [rtlMeasured],
         },
         threeButton: {
           systemBars: { top: 34.13, right: 0, bottom: 48, left: 0 },
           displayCutout: { top: 34.13, right: 0, bottom: 0, left: 0 },
+          cutoutShape: { xDp: 182.76, yDp: 0, widthDp: 18.49, heightDp: 34.13 },
           condition: { oneUi: "8.5", android: "16" },
           sources: [rtlMeasured],
         },

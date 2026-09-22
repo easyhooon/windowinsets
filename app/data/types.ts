@@ -33,11 +33,24 @@ export interface MeasurementCondition {
   note?: string;
 }
 
+/** The cutout's own bounding rectangle in dp, as reported by
+ * DisplayCutout.boundingRects — its real position and size, not just how far
+ * it intrudes from each edge. Used to draw the punch-hole/notch at its true
+ * spot instead of a full-width placeholder band. */
+export interface CutoutShape {
+  xDp: number;
+  yDp: number;
+  widthDp: number;
+  heightDp: number;
+}
+
 export interface InsetsMeasurement {
   /** WindowInsets.Type.systemBars() */
   systemBars: Insets;
   /** WindowInsets.Type.displayCutout() */
   displayCutout: Insets;
+  /** Present only when the raw capture included boundingRects. */
+  cutoutShape?: CutoutShape;
   condition: MeasurementCondition;
   sources: Source[];
 }
