@@ -2,20 +2,18 @@ import { useState } from "react";
 import { Link } from "react-router";
 import { isSpecced } from "../data/devices";
 import type { Device, Insets, NavMode, Source } from "../data/types";
-import { FoldPreview } from "./FoldPreview";
+import { Dropdown } from "./Dropdown";
+import { FoldRenderer3D } from "./FoldRenderer3D";
 import { InsetsDiagram } from "./InsetsDiagram";
-import { Segmented } from "./Segmented";
-
-const NAV_OPTIONS: { value: NavMode; label: string }[] = [
-  { value: "threeButton", label: "3-button" },
-  { value: "gesture", label: "Gesture" },
-];
 
 const POSES = [
   { label: "Closed", angle: 0 },
   { label: "Half-open", angle: 90 },
   { label: "Flat", angle: 180 },
 ];
+
+const MIN_ZOOM = 25;
+const MAX_ZOOM = 500;
 
 function Row({ label, value }: { label: string; value: React.ReactNode }) {
   return (
@@ -64,13 +62,22 @@ function SourceList({ sources }: { sources: Source[] }) {
   );
 }
 
-/** Full device detail view: nav/pose controls, fold animation, insets diagram,
- * metrics panel and sources. Shared by the device route and the home page
- * (which shows this directly for the newest device, safearea.info-style,
- * instead of a separate list-only landing page). */
+/** Full device detail view: a single toolbar of uniform dropdown controls
+ * (Navigation / Pose / Hinge / Zoom / Settings — matching safearea.info's
+ * "Orientation: Portrait ▾  Zoom: 93% ▾  Pose: Closed ▾  Hinge: 0° ▾  ⚙"
+ * pattern exactly, one consistent button style instead of mixed tab/slider/
+ * icon controls), the fold animation or insets diagram, metrics panel and
+ * sources. Shared by the device route and the home page (which shows this
+ * directly for the newest device instead of a separate list-only page). */
 export function DeviceView({ device }: { device: Device }) {
   const [navMode, setNavMode] = useState<NavMode>("threeButton");
   const [angle, setAngle] = useState(180);
+  const [zoom, setZoom] = useState(100);
+  const [showFrame, setShowFrame] = useState(true);
+  const [showRegions, setShowRegions] = useState(true);
+  const [showDimensions, setShowDimensions] = useState(true);
+  const [units, setUnits] = useState<"dp" | "px">("dp");
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   const foldable = device.formFactor !== "bar";
   const cover = device.screens.find((s) => s.id === "cover");
@@ -88,6 +95,7 @@ export function DeviceView({ device }: { device: Device }) {
       }
     : null;
   const foldAxis = device.formFactor === "foldable-flip" ? "horizontal" : "vertical";
+  const canUsePx = !!screen.densityDpi;
 
   return (
     <article className="mx-auto max-w-4xl p-4 md:p-6">
@@ -96,52 +104,115 @@ export function DeviceView({ device }: { device: Device }) {
         {device.series} · {device.releaseYear}
       </p>
 
-      <div className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-2">
-        <Segmented label="Navigation" value={navMode} options={NAV_OPTIONS} onChange={setNavMode} />
+      <div className="mt-4 flex flex-wrap items-center gap-2">
+        <Dropdown
+          label="Navigation"
+          value={navMode}
+          options={[
+            { value: "threeButton", label: "3-button" },
+            { value: "gesture", label: "Gesture" },
+          ]}
+          onChange={(v) => setNavMode(v as NavMode)}
+        />
         {foldable && (
-          <Segmented
+          <Dropdown
             label="Pose"
-            value={POSES.find((p) => p.angle === angle)?.label ?? ""}
-            options={POSES.map((p) => ({ value: p.label, label: p.label }))}
-            onChange={(l) => setAngle(POSES.find((p) => p.label === l)!.angle)}
+            value={String(POSES.find((p) => p.angle === angle)?.angle ?? angle)}
+            options={POSES.map((p) => ({ value: String(p.angle), label: p.label }))}
+            onChange={(v) => setAngle(Number(v))}
           />
         )}
+        {foldable && (
+          <Dropdown
+            label="Hinge"
+            value={`${angle}°`}
+            options={[]}
+            onChange={() => {}}
+            footer={
+              <input
+                type="range"
+                min={0}
+                max={180}
+                step={1}
+                value={angle}
+                onChange={(e) => setAngle(Number(e.target.value))}
+                className="w-40"
+                aria-label="Hinge angle in degrees"
+              />
+            }
+          />
+        )}
+        <Dropdown
+          label="Zoom"
+          value={`${zoom}%`}
+          options={[
+            { value: "out", label: "− Zoom Out" },
+            { value: "in", label: "+ Zoom In" },
+            { value: "fit", label: "⤢ Zoom to Fit (100%)" },
+          ]}
+          onChange={(v) => {
+            if (v === "out") setZoom((z) => Math.max(MIN_ZOOM, z - 10));
+            else if (v === "in") setZoom((z) => Math.min(MAX_ZOOM, z + 10));
+            else setZoom(100);
+          }}
+        />
+        <div className="relative">
+          <button
+            onClick={() => setSettingsOpen((o) => !o)}
+            className="rounded-md border border-line bg-surface px-2.5 py-1.5 text-sm hover:bg-canvas"
+            aria-label="Diagram settings"
+            title="Diagram settings"
+          >
+            ⚙
+          </button>
+          {settingsOpen && (
+            <div className="absolute right-0 z-20 mt-1 w-48 rounded-md border border-line bg-surface p-2 text-left shadow-card">
+              <label className="flex items-center gap-2 rounded px-1.5 py-1 hover:bg-canvas">
+                <input type="checkbox" checked={showFrame} onChange={(e) => setShowFrame(e.target.checked)} /> Show Frame
+              </label>
+              <label className="flex items-center gap-2 rounded px-1.5 py-1 hover:bg-canvas">
+                <input type="checkbox" checked={showRegions} onChange={(e) => setShowRegions(e.target.checked)} /> Show Regions
+              </label>
+              <label className="flex items-center gap-2 rounded px-1.5 py-1 hover:bg-canvas">
+                <input type="checkbox" checked={showDimensions} onChange={(e) => setShowDimensions(e.target.checked)} /> Show Dimensions
+              </label>
+              <div className="mt-1.5 border-t border-line pt-1.5">
+                <p className="px-1.5 pb-1 text-[10px] font-semibold uppercase tracking-wide text-subtle">Units</p>
+                <label className="flex items-center gap-2 rounded px-1.5 py-1 hover:bg-canvas">
+                  <input type="radio" name="dv-units" checked={units === "dp"} onChange={() => setUnits("dp")} /> dp
+                </label>
+                <label className="flex items-center gap-2 rounded px-1.5 py-1 hover:bg-canvas">
+                  <input type="radio" name="dv-units" checked={units === "px"} onChange={() => setUnits("px")} disabled={!canUsePx} />
+                  px{!canUsePx && <span className="text-subtle"> (needs density)</span>}
+                </label>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
       {foldable && (
-        <div className="mt-4">
-          <label className="flex items-center gap-3 text-sm">
-            <span className="text-muted">Hinge</span>
-            <input
-              type="range"
-              min={0}
-              max={180}
-              step={1}
-              value={angle}
-              onChange={(e) => setAngle(Number(e.target.value))}
-              className="w-full max-w-sm"
-              aria-label="Hinge angle in degrees"
-            />
-          </label>
-        </div>
-      )}
-
-      {foldable && (
         <div className="mt-6 flex items-center justify-center">
-          <FoldPreview
+          <FoldRenderer3D
             angle={angle}
             axis={foldAxis}
             widthDp={main.logicalSizeDp?.width ?? 0}
             heightDp={main.logicalSizeDp?.height ?? 0}
             safe={mainSafe}
             cornerRadiiDp={main.cornerRadiiDp}
+            cutoutShape={mainMeasurement?.cutoutShape}
+            densityDpi={main.densityDpi}
+            zoom={zoom} onZoomChange={setZoom}
+            showFrame={showFrame} showRegions={showRegions} showDimensions={showDimensions} units={units}
           />
         </div>
       )}
 
       <div className="mt-8 grid gap-8 lg:grid-cols-3">
-        {/* Left: Metrics Panel — one value per row, like safearea.info */}
-        <div className="lg:col-span-1">
+        {/* Left: Metrics Panel — one value per row, like safearea.info.
+         * Full width for foldables, since FoldRenderer3D above is already the
+         * single unified diagram (no separate InsetsDiagram column needed). */}
+        <div className={foldable ? "lg:col-span-3 lg:max-w-md" : "lg:col-span-1"}>
           <div className="rounded-[10px] border border-line bg-surface p-4 shadow-card">
             <h2 className="text-sm font-semibold">Metrics</h2>
 
@@ -204,10 +275,18 @@ export function DeviceView({ device }: { device: Device }) {
           </div>
         </div>
 
-        {/* Right: Insets Diagram */}
-        <div className="lg:col-span-2 flex flex-col gap-4">
-          <InsetsDiagram screen={screen} measurement={measurement} />
-        </div>
+        {/* Right: Insets Diagram — bar phones only. Foldables already show
+         * their full diagram (with the same zoom/settings/corner/cutout
+         * features) inside the folding FoldRenderer3D above. */}
+        {!foldable && (
+          <div className="lg:col-span-2 flex flex-col gap-4">
+            <InsetsDiagram
+              screen={screen} measurement={measurement}
+              zoom={zoom} onZoomChange={setZoom}
+              showFrame={showFrame} showRegions={showRegions} showDimensions={showDimensions} units={units}
+            />
+          </div>
+        )}
       </div>
 
       {/* Sources */}

@@ -1,10 +1,10 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import type { InsetsMeasurement, Screen } from "../data/types";
 
 const MAX_W = 260;
 const BASE_HEIGHT = 420;
-const MIN_ZOOM = 40;
-const MAX_ZOOM = 250;
+const MIN_ZOOM = 25;
+const MAX_ZOOM = 500;
 const PAD_TOP = 40;
 const PAD_LEFT = 40;
 const PAD_RIGHT = 64;
@@ -83,20 +83,31 @@ function DimensionLine({
 export function InsetsDiagram({
   screen,
   measurement,
+  zoom,
+  onZoomChange,
+  showFrame,
+  showRegions,
+  showDimensions,
+  units,
 }: {
   screen: Screen;
   measurement: InsetsMeasurement | null;
+  /** Zoom/settings are controlled from the parent toolbar (DeviceView) so
+   * every control lives in one uniform row, safearea.info-style, instead of
+   * a second private toolbar duplicated inside this component. Scroll-to-zoom
+   * still works here — it just reports the new value up via onZoomChange. */
+  zoom: number;
+  onZoomChange: (zoom: number) => void;
+  showFrame: boolean;
+  showRegions: boolean;
+  showDimensions: boolean;
+  units: Units;
 }) {
-  // Hooks first (rules of hooks) — the "not verified yet" early return below
-  // must come after these, not before.
-  const [zoom, setZoom] = useState(100);
-  const [showFrame, setShowFrame] = useState(true);
-  const [showRegions, setShowRegions] = useState(true);
-  const [showDimensions, setShowDimensions] = useState(true);
-  const [units, setUnits] = useState<Units>("dp");
-  const [settingsOpen, setSettingsOpen] = useState(false);
   const wrapRef = useRef<HTMLDivElement>(null);
-  const settingsRef = useRef<HTMLDivElement>(null);
+  const zoomRef = useRef(zoom);
+  zoomRef.current = zoom;
+  const onZoomChangeRef = useRef(onZoomChange);
+  onZoomChangeRef.current = onZoomChange;
 
   // React's synthetic onWheel is attached passively (React 17+), so
   // event.preventDefault() inside it is silently ignored and the page still
@@ -107,20 +118,12 @@ export function InsetsDiagram({
     if (!el) return;
     const handler = (e: WheelEvent) => {
       e.preventDefault();
-      setZoom((z) => Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, Math.round(z - e.deltaY / 4))));
+      const next = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, Math.round(zoomRef.current - e.deltaY / 4)));
+      onZoomChangeRef.current(next);
     };
     el.addEventListener("wheel", handler, { passive: false });
     return () => el.removeEventListener("wheel", handler);
   }, []);
-
-  useEffect(() => {
-    if (!settingsOpen) return;
-    const onClick = (e: MouseEvent) => {
-      if (settingsRef.current && !settingsRef.current.contains(e.target as Node)) setSettingsOpen(false);
-    };
-    document.addEventListener("mousedown", onClick);
-    return () => document.removeEventListener("mousedown", onClick);
-  }, [settingsOpen]);
 
   const dp = screen.logicalSizeDp;
   if (!dp) {
@@ -160,77 +163,10 @@ export function InsetsDiagram({
 
   return (
     <div className="space-y-3">
-      <div className="flex items-center justify-center gap-2 text-xs text-muted">
-        <span>Zoom</span>
-        <button
-          onClick={() => setZoom((z) => Math.max(MIN_ZOOM, z - 10))}
-          className="rounded border border-line px-1.5 py-0.5 hover:bg-canvas"
-          aria-label="Zoom out"
-        >
-          −
-        </button>
-        <button
-          onClick={() => setZoom(100)}
-          className="min-w-[3.5rem] rounded border border-line px-1.5 py-0.5 font-mono hover:bg-canvas"
-          title="Reset zoom"
-        >
-          {zoom}%
-        </button>
-        <button
-          onClick={() => setZoom((z) => Math.min(MAX_ZOOM, z + 10))}
-          className="rounded border border-line px-1.5 py-0.5 hover:bg-canvas"
-          aria-label="Zoom in"
-        >
-          +
-        </button>
-        <span className="text-subtle mr-1">(scroll over diagram to zoom)</span>
-
-        <div className="relative" ref={settingsRef}>
-          <button
-            onClick={() => setSettingsOpen((o) => !o)}
-            className="rounded border border-line px-1.5 py-0.5 hover:bg-canvas"
-            aria-label="Diagram settings"
-            title="Diagram settings"
-          >
-            ⚙
-          </button>
-          {settingsOpen && (
-            <div className="absolute right-0 z-10 mt-1 w-48 rounded-md border border-line bg-surface p-2 text-left shadow-card">
-              <label className="flex items-center gap-2 rounded px-1.5 py-1 hover:bg-canvas">
-                <input type="checkbox" checked={showFrame} onChange={(e) => setShowFrame(e.target.checked)} />
-                Show Frame
-              </label>
-              <label className="flex items-center gap-2 rounded px-1.5 py-1 hover:bg-canvas">
-                <input type="checkbox" checked={showRegions} onChange={(e) => setShowRegions(e.target.checked)} />
-                Show Regions
-              </label>
-              <label className="flex items-center gap-2 rounded px-1.5 py-1 hover:bg-canvas">
-                <input type="checkbox" checked={showDimensions} onChange={(e) => setShowDimensions(e.target.checked)} />
-                Show Dimensions
-              </label>
-              <div className="mt-1.5 border-t border-line pt-1.5">
-                <p className="px-1.5 pb-1 text-[10px] font-semibold uppercase tracking-wide text-subtle">Units</p>
-                <label className="flex items-center gap-2 rounded px-1.5 py-1 hover:bg-canvas">
-                  <input type="radio" name="units" checked={units === "dp"} onChange={() => setUnits("dp")} />
-                  dp
-                </label>
-                <label className="flex items-center gap-2 rounded px-1.5 py-1 hover:bg-canvas">
-                  <input
-                    type="radio"
-                    name="units"
-                    checked={units === "px"}
-                    onChange={() => setUnits("px")}
-                    disabled={!densityDpi}
-                  />
-                  px{!densityDpi && <span className="text-subtle"> (needs density)</span>}
-                </label>
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-
-      <div ref={wrapRef} className="overflow-auto" style={{ maxHeight: "min(70vh, 600px)" }}>
+      {/* No max-height/overflow cap here — matching safearea.info, zooming in
+       * just grows the diagram (and the page scrolls), it doesn't get boxed
+       * into a fixed viewport. */}
+      <div ref={wrapRef}>
       <svg
         viewBox={viewBox}
         // Sized by its own real aspect ratio (device width:height), not stretched to

@@ -4,10 +4,14 @@ import { devices, REPO_URL } from "../data/devices";
 
 type Category = "bar" | "fold" | "flip";
 
+// "Galaxy" (and "Z" for the foldables) is dropped here since every tab is a
+// Galaxy device — spelling it out on each tab just made "S" look oddly
+// short next to "Galaxy Z Fold"/"Galaxy Z Flip". The full name still shows
+// on each device's own page.
 const CATEGORIES: { id: Category; label: string }[] = [
-  { id: "bar", label: "Galaxy S" },
-  { id: "fold", label: "Galaxy Z Fold" },
-  { id: "flip", label: "Galaxy Z Flip" },
+  { id: "bar", label: "S" },
+  { id: "fold", label: "Fold" },
+  { id: "flip", label: "Flip" },
 ];
 
 function categoryOf(formFactor: (typeof devices)[number]["formFactor"]): Category {

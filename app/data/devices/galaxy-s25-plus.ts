@@ -14,6 +14,13 @@ const probe: Source = {
   retrievedAt: "2025-01-14",
 };
 
+const probeGesture: Source = {
+  kind: "measured",
+  label: "InsetsProbe on SM-S936N (Korea)",
+  url: "https://github.com/easyhooon/windowinsets/blob/main/measurements/galaxy-s25-plus/main-gesture.json",
+  retrievedAt: "2026-09-22",
+};
+
 export const galaxyS25Plus: Device = {
   slug: "galaxy-s25-plus",
   name: "Galaxy S25+",
@@ -26,22 +33,29 @@ export const galaxyS25Plus: Device = {
       id: "main",
       label: "Main",
       diagonalInch: 6.7,
-      resolutionPx: { width: 3120, height: 1440 },
+      resolutionPx: { width: 1440, height: 3120 },
       ppi: 496,
       logicalSizeDp: { width: 384, height: 832 },
       densityDpi: 450,
       cornerRadiiDp: { topLeft: 40.18, topRight: 40.18, bottomRight: 40.18, bottomLeft: 40.18 },
       insets: {
-        gesture: null,
+        gesture: {
+          systemBars: { top: 33.78, right: 0, bottom: 14.93, left: 0 },
+          displayCutout: { top: 33.42, right: 0, bottom: 0, left: 0 },
+          cutoutShape: { xDp: 183.11, yDp: 0, widthDp: 18.13, heightDp: 33.42 },
+          condition: { oneUi: "8.5", android: "16" },
+          sources: [probeGesture],
+        },
         threeButton: {
           systemBars: { top: 33.78, right: 0, bottom: 48, left: 0 },
           displayCutout: { top: 33.42, right: 0, bottom: 0, left: 0 },
+          cutoutShape: { xDp: 183.11, yDp: 0, widthDp: 18.13, heightDp: 33.42 },
           condition: { oneUi: "8.5", android: "16" },
           sources: [probe],
         },
       },
-      sources: [samsungSpecs],
+      sources: [samsungSpecs, probe, probeGesture],
     },
   ],
-  sources: [samsungSpecs],
+  sources: [samsungSpecs, probe, probeGesture],
 };

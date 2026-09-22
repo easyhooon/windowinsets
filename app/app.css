@@ -25,10 +25,9 @@ body {
   color-scheme: light;
 }
 
-/* Faint blueprint grid behind the device canvas. */
+/* Faint dot-grid ("graph paper") behind the device canvas — matches
+ * safearea.info's own background treatment. */
 .grid-canvas {
-  background-image:
-    linear-gradient(rgba(9, 105, 218, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(9, 105, 218, 0.03) 1px, transparent 1px);
-  background-size: 24px 24px;
+  background-image: radial-gradient(rgba(31, 35, 40, 0.12) 1px, transparent 1px);
+  background-size: 20px 20px;
 }

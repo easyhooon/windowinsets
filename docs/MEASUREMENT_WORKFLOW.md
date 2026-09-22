@@ -6,7 +6,7 @@
 
 windowinsets.info is a reference site for Android window insets, display cutouts, corner radii and foldable hinge states across Samsung Galaxy devices. Every value is labeled **official** (published by Samsung/Google), **measured** (captured with InsetsProbe on RTL or a real device, raw JSON committed), or **community** (unverified).
 
-**Current Status**: Galaxy S25 Ultra, Galaxy Z Fold8, Galaxy Z Flip8 measured (main screen, both gesture + 3-button navigation). Galaxy S25, Fold6, Fold7, Flip6 still pending.
+**Current Status**: Galaxy S25 Ultra, Galaxy S25+, Galaxy Z Fold8, Galaxy Z Flip8 measured (main screen, both gesture + 3-button navigation). Galaxy S25, Fold6, Fold7, Flip6 still pending.
 
 ## RTL Credits & Cost
 
@@ -73,6 +73,20 @@ The CSS `rotateY`/`rotateX` transform was verified correct via devtools (`getCom
 
 The `<svg>` had `className="w-full max-w-lg"` (fills container width) **and** `style={{maxHeight: 420}}` independently — when the resulting box's aspect ratio didn't match the `viewBox`'s real device ratio, the content got centered/shrunk (letterboxed) inside a mismatched box, making the phone look artificially small with lots of surrounding whitespace. **Fix**: size the SVG by height with `width: "auto"`, so the element's own box matches the content's true aspect ratio instead of stretching to fill available width.
 
+*(Note: `FoldPreview`, referenced in Bug 3 above, was later fully replaced by the three.js-based `FoldRenderer3D` — see the Data Flow section below. Bug 3's fix is kept here only as a historical record; it no longer applies to any component in the current codebase.)*
+
+### Bug 5: Fold8's book-fold rendered portrait (tall) instead of landscape (wide) when flat
+
+Android's `screenWidthDp`/`screenHeightDp` reflect whatever rotation the app happened to be running in at capture time — they are **not** a fixed "panel shape". Fold8's main-screen capture came back `orientation: "portrait"` (475×751 dp), and `FoldRenderer3D` was feeding that directly into the plane's width/height, so the fully-open ("Flat") pose rendered as a tall narrow rectangle. Physically wrong: a book-fold's vertical hinge splits the panel into left/right halves, so opening it **doubles the width**, not the height — flat must be landscape. (Cross-checked against the closed-state ratio the user described, ~4:3: half of the captured 751.24 dp height ≈ 375.6, and 475.43:375.6 ≈ 4:3.16 — consistent with the panel actually being landscape once open, captured rotated 90°.)
+
+**Fix**: `FoldRenderer3D` now derives the expected physical silhouette from the fold axis — `vertical` (book) must be landscape, `horizontal` (flip) must be portrait — and if the captured dp values don't already match, rotates the diagram 90° at draw time (rotating the 2D canvas context before calling `drawDiagram`, not a UV/texture rotation) before it becomes the WebGL texture. This keeps every measured number exactly as recorded (insets, cutout position, corner radii are all still laid out in the original captured frame) while presenting the physically correct on-screen orientation. Flip8's capture was already portrait (correct for a flip's flat pose), so it renders unchanged. See the code comments in `FoldRenderer3D.tsx` for the exact rotation math.
+
+**Caveat**: this is a rendering-level correction, not a re-measurement. A cleaner long-term fix is to recapture foldable "main" screens with the probe app run in its natural flat/open rotation so `orientation` in the raw JSON already matches the physical silhouette — see the new capture guidance below.
+
+### Bug 6: `display.name` leaking the RTL device's locale (Korean) into committed JSON
+
+`Display.getName()` returns an OS/locale-dependent string (e.g. `"기본으로 제공되는 화면"` when the rented RTL device's system language was Korean). Two committed sample files had this leak through untouched. **Fix (data)**: both occurrences replaced with `"Built-in Screen"` (the English string Android returns for the same field when the device locale is English — confirmed against the Fold8/Flip8 captures, which already came from an English-locale session). **Fix (process)**: set the RTL device's language to English *before* capturing, so future exports don't need this correction — `display.name` is otherwise not used by the website at all, but keeping the repo's committed JSON in English avoids Korean text leaking into a public English-language repo.
+
 ## Complete Measurement Workflow
 
 ### Step 1: Reserve Device on Samsung RTL
@@ -113,6 +127,7 @@ Practical sequence per device:
 | Galaxy Z Fold8 | SM-F971N | Main only (cover: RTL can't capture it separately) | ✓ | ✓ | Complete |
 | Galaxy Z Flip8 | SM-F776B | Main only | ✓ | ✓ | Complete |
 | Galaxy S25 Ultra | SM-S938N | Main | ✓ | ✓ | Complete |
+| Galaxy S25+ | SM-S936N | Main | ✓ | ✓ | Complete (real device, Korea — not RTL) |
 | Galaxy S25 | SM-S931N | Main | Pending | Pending | Queued |
 | Galaxy Z Fold7 | TBD | Main | Pending | Pending | Queued |
 | Galaxy Z Fold6 | TBD | Main | Pending | Pending | Queued |
@@ -133,10 +148,10 @@ Practical sequence per device:
 1. **InsetsProbe** exports raw JSON (schemaVersion 1) with device/display/navigation/insets/displayCutout/roundedCorners/hinge.
 2. **Raw JSON committed** to `measurements/<device-slug>/<screen>-<navMode>.json` — source of truth, never hand-edited.
 3. **TypeScript device file** (`app/data/devices/<slug>.ts`) implements `Device` (see `app/data/types.ts`): dp-converted insets per nav mode, `cornerRadiiDp`, optional `cutoutShape` (real punch-hole position, when the raw capture has `boundingRects`), sources with GitHub links.
-4. **Website**: React Router, statically prerendered. `app/components/DeviceView.tsx` holds the full device-detail render (controls, diagram, metrics, sources) shared by both the `/​:slug` route and the home page. Home (`/`) renders `DeviceView` for `devices[0]` (the newest device) directly — safearea.info-style landing straight on its equivalent of iPhone Duo, instead of a separate list-only summary page. It shows:
-   - `InsetsDiagram` — flat 2D diagram with dimension lines/arrows, per-edge inset chips, corner-radius chips, the real cutout shape at its measured position, schematic (unmeasured) speaker/button marks, mouse-wheel + button **zoom** (40–250%), and a **settings menu** (Show Frame / Show Regions / Show Dimensions toggles, dp↔px unit switch) — all modeled on safearea.info's own controls.
-   - `FoldPreview` — 3D CSS-transform hinge animation (foldables only) driven by the same hinge-angle convention as Android's `FoldingFeature` (0°=closed, 180°=flat). `axis="vertical"` for book-style folds (Z Fold), `axis="horizontal"` for flip-style (Z Flip). Inset value labels live inside the rotating panels so they stay visible and correctly foreshortened throughout the animation.
-     - **Known gap (raised, not yet resolved):** safearea.info shows ONE unified diagram that both animates and carries all the dimension labels/corner chips/zoom/settings — we currently render `InsetsDiagram` (rich, static) and `FoldPreview` (animated, simpler) as two separate components on foldable pages. Merging them properly means bringing `InsetsDiagram`'s feature set (zoom, settings, corner chips, real cutout) into `FoldPreview`'s already-verified CSS-3D-on-HTML-divs approach and no longer rendering `InsetsDiagram` at all for foldables — deliberately *not* attempting the fold via CSS 3D transforms on nested SVG `<g>` elements, since perspective distance math would need to be reconciled with the SVG viewBox's own scale, risking inconsistent/distorted rendering across devices. This is planned but not done as of this writing.
+4. **Website**: React Router, statically prerendered. `app/components/DeviceView.tsx` holds the full device-detail render — a single uniform toolbar row (Navigation / Pose / Hinge / Zoom dropdowns + a settings gear, all one button style, matching safearea.info's own toolbar exactly) plus the diagram, metrics, and sources — shared by both the `/​:slug` route and the home page. Home (`/`) renders `DeviceView` for `devices[0]` (the newest device) directly — safearea.info-style landing straight on its equivalent of iPhone Duo, instead of a separate list-only summary page. `zoom`/`showFrame`/`showRegions`/`showDimensions`/`units` all live as state in `DeviceView` and are passed down as props — both diagram components below are now fully controlled, so there's exactly one toolbar on the page, never a second private one duplicated inside a component. It shows:
+   - **Bar phones**: `InsetsDiagram` — flat 2D SVG diagram with dimension lines/arrows, per-edge inset chips, corner-radius chips, the real cutout shape at its measured position, schematic (unmeasured) speaker/button marks, and mouse-wheel zoom. No inner max-height/overflow cap — like safearea.info, zooming in just grows the diagram (and the page scrolls), it doesn't get boxed into a fixed viewport.
+   - **Foldables**: `FoldRenderer3D` — a genuine WebGL (three.js) renderer, not a CSS 3D transform. A plane mesh subdivided along the hinge axis bends around a cylindrical arc as the hinge angle changes (0°=closed, 180°=flat), with the *entire* diagram (bezel, colored regions, real cutout, corner chips, dimension arrows) baked into a single 2D canvas texture applied to the mesh — every label bends with the surface for free, no separate 3D-projection math for text. `axis="vertical"` for book-style folds (Z Fold), `axis="horizontal"` for flip-style (Z Flip). Only a narrow "hinge zone" actually curves (real screens are rigid glass on either side of the hinge mechanism, not flexible along their whole length); everything outside it stays flat and rotates as a rigid body tangent to the curve boundary. Also auto-corrects the captured dp values to the physically-correct silhouette orientation per fold axis — see Bug 5 above. This single component now replaces the old two-component split (`InsetsDiagram` + `FoldPreview`) that safearea.info's own single-diagram UX had been the target for; **that merge is done**, `FoldPreview.tsx` and the old per-component toolbars (`Segmented.tsx`) have been deleted.
+   - Toolbar zoom range: 25–500% (button steps of 10%, or free via mouse wheel) on both diagram types — no artificial low ceiling; safearea.info itself demonstrates zooming well past 250%, and there was no reason to stop earlier.
    - `Metrics` panel — one value per row (Dimensions / Safe Area Insets / Display Cutout / Corner Radii / Measured On), not cramped multi-value lines.
    - Sidebar (`shell.tsx`) — 3 flat category tabs (**Galaxy S / Galaxy Z Fold / Galaxy Z Flip**), each independently sorted; search overrides tabs and searches everything. `devices.ts` orders newest-first, and within the same release year by Samsung's own tier convention (Ultra > Plus > base).
 
@@ -180,8 +195,10 @@ RTL's device list/reservation pages are ordinary web pages (browser automation h
 - `tools/insets-probe/app/src/main/java/info/windowinsets/probe/{MainActivity,Probe}.kt` — capture + automation logic
 - `app/data/types.ts` — `Device`, `Screen`, `InsetsMeasurement`, `CutoutShape`, `FormFactor`
 - `app/data/devices/galaxy-z-fold8.ts` — most complete example (foldable, both nav modes, cutout shape, pending-cover comment)
-- `app/components/DeviceView.tsx` — shared full device-detail render (used by home + `/:slug`)
-- `app/components/{InsetsDiagram,FoldPreview}.tsx` — the two visualization components (see the "known gap" note above about merging these)
+- `app/components/DeviceView.tsx` — shared full device-detail render (used by home + `/:slug`), owns the single unified toolbar's state
+- `app/components/Dropdown.tsx` — the reusable "Label: Value ▾" toolbar button (Navigation/Pose/Hinge/Zoom all use this)
+- `app/components/InsetsDiagram.tsx` — bar-phone 2D SVG diagram (controlled: zoom/settings come in as props)
+- `app/components/FoldRenderer3D.tsx` — foldable three.js diagram (controlled the same way); see Bug 5 above for the silhouette-rotation logic and the file's own code comments for the hinge-bend math
 - `app/lib/seo.ts` — shared OG/Twitter meta helper
 - `app/routes/shell.tsx` — sidebar layout, category tabs, search
 - `app/data/devices.ts` — device registry, newest-first, Ultra > Plus > base within a year
@@ -193,4 +210,6 @@ RTL's device list/reservation pages are ordinary web pages (browser automation h
 2. Preserve the "measure 3-button, manually flip Settings, measure gesture again" 2-step pattern per device — Measure All's automation value is now just the screen-radio convenience, not nav-mode switching (which doesn't work on real hardware regardless of code).
 3. Budget ~2 credits (30 min) per device; ~10 devices/day is the real ceiling under the free 20-credit daily allowance.
 4. When adding a device, always run `pnpm typecheck && pnpm build` — malformed `Device` objects fail the prerender step loudly, which is the fastest signal something's wrong before it reaches production.
-5. **Open task**: merge `InsetsDiagram` and `FoldPreview` into one component for foldables (see the "known gap" note above) — bring zoom/settings/corner-chips/real-cutout into the CSS-3D-on-HTML-divs approach rather than trying 3D transforms on SVG.
+5. When capturing a foldable's main screen, run the probe app in its natural flat/open rotation if at all possible, so the raw JSON's `orientation`/`screenWidthDp`/`screenHeightDp` already match the physical silhouette (landscape for book-fold, portrait for flip-fold) — this avoids needing `FoldRenderer3D`'s draw-time rotation correction (Bug 5) for new devices.
+6. Set the RTL device's system language to English before capturing, so `display.name` (locale-dependent) doesn't leak non-English text into committed JSON (Bug 6).
+7. **Open backlog, highest priority first** (per explicit product direction): Galaxy Tab support > dark mode > Korean/English site i18n. Tab support should come before either of the other two, not after.

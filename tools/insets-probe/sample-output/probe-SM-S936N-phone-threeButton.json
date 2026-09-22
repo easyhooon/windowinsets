@@ -16,7 +16,7 @@
   },
   "display": {
     "id": 0,
-    "name": "기본으로 제공되는 화면",
+    "name": "Built-in Screen",
     "refreshRate": 120,
     "widthPx": 1080,
     "heightPx": 2340,
