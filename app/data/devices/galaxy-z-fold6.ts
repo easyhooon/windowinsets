@@ -1,0 +1,44 @@
+import type { Device, Source } from "../types";
+
+const samsungSkinPage: Source = {
+  kind: "official",
+  label: "Samsung Developer – Galaxy Z emulator skins",
+  url: "https://developer.samsung.com/galaxy-emulator-skin/galaxy-z.html",
+  retrievedAt: "2026-09-22",
+};
+
+export const galaxyZFold6: Device = {
+  slug: "galaxy-z-fold6",
+  name: "Galaxy Z Fold6",
+  brand: "Samsung",
+  series: "Galaxy Z Fold",
+  formFactor: "foldable-book",
+  releaseYear: 2024,
+  screens: [
+    {
+      id: "cover",
+      label: "Cover",
+      diagonalInch: 0,
+      resolutionPx: { width: 0, height: 0 },
+      ppi: 0,
+      logicalSizeDp: null,
+      densityDpi: null,
+      cornerRadiiDp: null,
+      insets: { gesture: null, threeButton: null },
+      sources: [],
+    },
+    {
+      id: "main",
+      label: "Main",
+      diagonalInch: 7.6,
+      resolutionPx: { width: 1856, height: 2160 },
+      ppi: 374,
+      logicalSizeDp: null,
+      densityDpi: null,
+      cornerRadiiDp: null,
+      insets: { gesture: null, threeButton: null },
+      sources: [samsungSkinPage],
+    },
+  ],
+  sources: [samsungSkinPage],
+};

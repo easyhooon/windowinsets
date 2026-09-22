@@ -1,0 +1,23 @@
+import type { Device } from "./types";
+import { galaxyZFold6 } from "./devices/galaxy-z-fold6";
+import { galaxyZFold7 } from "./devices/galaxy-z-fold7";
+
+/** Newest first. Add a device by creating a file in ./devices and listing it here. */
+export const devices: Device[] = [galaxyZFold7, galaxyZFold6];
+
+export const SITE_URL = "https://windowinsets.info";
+
+export function findDevice(slug: string | undefined): Device | undefined {
+  return devices.find((d) => d.slug === slug);
+}
+
+export function hasVerifiedInsets(device: Device): boolean {
+  return device.screens.some((s) =>
+    Object.values(s.insets).some((m) => m !== null),
+  );
+}
+
+/** A screen counts as "specced" once resolution/ppi were filled in from a source. */
+export function isSpecced(screen: Device["screens"][number]): boolean {
+  return screen.ppi > 0 && screen.resolutionPx.width > 0;
+}
