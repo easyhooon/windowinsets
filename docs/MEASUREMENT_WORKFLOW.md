@@ -24,6 +24,27 @@ Other notes:
 - Closing/losing the RTL WebClient session triggers a full device restart (~1–2 min) before it can be reserved again — avoid closing mid-task.
 - The WebClient opens in a new browser window that browser-automation tools (Claude in Chrome, etc.) cannot see or control, regardless of who clicks "Start" — it's outside the extension's tracked tab group and doesn't go through `window.open()` in an interceptable way. The physical device session is inherently a human-operated step; automation can drive the reservation/list pages but not the live device view itself.
 
+## Known Issue: Intermittent 403 Forbidden on developer.samsung.com/remotetestlab/*
+
+Throughout this project, RTL's own pages (`/remotetestlab/devices`, `/remotetestlab/reservations`, even the marketing page at `/remote-test-lab`) have intermittently returned a bare **403 Forbidden** — sometimes on direct URL navigation, sometimes on an in-app link click, sometimes for a logged-in session that was working seconds earlier. Retrying after a short wait (10–30s) usually clears it; sometimes a full re-login is needed.
+
+**This is a known, widely-reported issue on Samsung's own side, not something wrong with our login flow, cookies, or the browser used:**
+
+- [403 Forbidden — Samsung Developer Forums](https://forum.developer.samsung.com/t/403-forbidden/34558)
+- [Can no longer access RTL — Samsung Developer Program](https://forum.developer.samsung.com/t/can-no-longer-access-rtl/39361)
+- [The remote test lab doesn't work — Samsung Community (EU)](https://eu.community.samsung.com/t5/mobile-apps-services/the-remote-test-lab-doesn-t-work/td-p/11105920)
+- [Remote Test Lab not working, but still taking my credits](https://forum.developer.samsung.com/t/remote-test-lab-not-working-but-still-taking-my-credits/32396)
+- [Remote test lab down?](https://forum.developer.samsung.com/t/remote-test-lab-down/13322)
+- [Can't login to Remote Test Lab](https://forum.developer.samsung.com/t/cant-login-to-remote-test-lab/27808)
+- [Cannot use the Remote Test Lab](https://forum.developer.samsung.com/t/cannot-use-the-remote-test-lab/23934)
+- [Samsung's own troubleshooting doc: "Troubleshooting Common Issues While Using the Remote Test Lab Service"](https://developer.samsung.com/sdp/blog/en/2022/08/23/troubleshooting-common-issues-while-using-the-remote-test-lab-service)
+
+Causes reported across those threads (any combination may apply): stale browser cache/cookies for the domain, 2FA session hiccups, Samsung-side rate limiting/WAF, and occasional real outages. One user reported clearing several weeks of browser data fixed it; Samsung's own guidance for persistent cases is to file a support ticket.
+
+We separately confirmed during this project that the RTL single-page-app itself can throw a client-side JS error (`TypeError: Cannot read properties of null (reading 'filter')` in its own minified bundle) that leaves the page blank/unresponsive (including a dead "Sign in" button) — this looks like the SPA choking on a null array somewhere in its own state (likely related to the same underlying session/rate-limit flakiness), not a bug in anything we control.
+
+**What worked in practice**: retry after 10–30s; re-enter through the marketing page (`developer.samsung.com/remote-test-lab`) rather than deep-linking straight to `/remotetestlab/devices`; if the SPA is visibly crashed (blank sidebar, unresponsive buttons), a hard reload or fresh tab is needed rather than continuing to click around the broken state.
+
 ## Two Confirmed Platform Limitations (Not Bugs)
 
 These looked like automation bugs at first but are real Android/Samsung platform behavior, confirmed by re-testing after fixing the actual code bugs:
