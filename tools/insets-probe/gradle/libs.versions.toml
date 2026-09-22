@@ -1,0 +1,15 @@
+[versions]
+agp = "9.0.1"
+# Pinned to versions compatible with AGP 9.0.1 / compileSdk 36 (newer ones need AGP 9.1 + compileSdk 37).
+coreKtx = "1.17.0"
+activityKtx = "1.11.0"
+window = "1.5.0"
+
+[libraries]
+androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-activity-ktx = { group = "androidx.activity", name = "activity-ktx", version.ref = "activityKtx" }
+androidx-window = { group = "androidx.window", name = "window", version.ref = "window" }
+androidx-window-java = { group = "androidx.window", name = "window-java", version.ref = "window" }
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "agp" }
