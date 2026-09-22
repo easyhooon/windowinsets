@@ -38,12 +38,11 @@ option raised the balance to **7 Credits**. This is direct evidence that an earl
 return can refund one whole unused 15-minute block; it does not establish
 sub-credit or partial-block behavior.
 
-A subsequent Galaxy Z Flip8 reservation dialog was confirmed at exactly **30
-minutes / 2 credits** and produced the verified FlexWindow captures at about 02:40
-KST. The last observed header before that booking was **7 Credits**, but the header
-and any early-return refund were not re-observed afterward. Therefore **5 Credits
-must not be reported as a confirmed balance**; two credits are the booked amount,
-not verified net consumption.
+A subsequent Galaxy Z Flip8 reservation was confirmed at exactly **30 minutes / 2
+credits** and produced the verified FlexWindow captures at about 02:40 KST. The
+slot expired normally without an early return. Returning to the device list then
+showed **5 Credits**, confirming the full two-credit net consumption from the
+previously observed 7-credit balance.
 
 The preceding 2026-09-22 Usage History contained these booked reservations:
 
