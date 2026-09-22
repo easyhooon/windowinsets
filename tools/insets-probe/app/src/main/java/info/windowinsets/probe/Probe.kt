@@ -53,7 +53,7 @@ object Probe {
         json.put("capturedAt", java.time.Instant.now().toString())
         json.put("screen", screen) // phone | cover | main — chosen by the person taking the measurement
         json.put("screenLabelSource", "manual")
-        json.put("probeVersion", "1.1.1")
+        json.put("probeVersion", "1.1.2")
 
         json.put(
             "device",
@@ -216,7 +216,8 @@ object Probe {
      * in gesture navigation the nav bar inset is only the gesture hint and does not count as a
      * tappable element; with 3 buttons the tappable inset equals the bar height.
      *
-     * Reports the active insets rather than claiming a requested Settings value took effect.
+     * This is only a heuristic: a tappable taskbar can exist with gesture navigation.
+     * navigationJson also checks the active config and side gesture regions.
      */
     fun modeFromInsets(insets: WindowInsetsCompat): String {
         val navBottom = insets.getInsets(Type.navigationBars()).bottom
@@ -237,9 +238,12 @@ object Probe {
 
         val fromInsets = modeFromInsets(insets)
         val fromSetting = modeName(if (setting != -1) setting else fromConfig)
+        val gestures = insets.getInsets(Type.systemGestures())
+        val sideGestures = gestures.left > 0 && gestures.right > 0
+        val mode = NavigationMode.resolve(fromInsets, fromSetting, fromConfig, sideGestures)
         return JSONObject()
-            // What the insets say is authoritative; the setting is only recorded for comparison.
-            .put("mode", if (fromInsets != "unknown") fromInsets else fromSetting)
+            .put("mode", mode)
+            .put("modeSource", if (fromConfig == 2 && sideGestures) "configAndSideGestures" else "insetsWithSettingFallback")
             .put("modeFromInsets", fromInsets)
             .put("modeFromSetting", fromSetting)
             .put("settingAgreesWithInsets", fromInsets == "unknown" || fromInsets == fromSetting)

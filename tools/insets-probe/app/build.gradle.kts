@@ -13,8 +13,8 @@ extensions.configure<ApplicationExtension> {
         // RoundedCorner / Display.getRoundedCorner need API 31.
         minSdk = 31
         targetSdk = 36
-        versionCode = 3
-        versionName = "1.1.1"
+        versionCode = 4
+        versionName = "1.1.2"
     }
 
     compileOptions {
