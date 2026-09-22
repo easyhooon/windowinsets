@@ -8,11 +8,17 @@ This project exists because of [safearea.info](https://safearea.info). Seeing ho
 
 If you work on iOS, go check it out. If you work on Android, come help us fill in the devices.
 
-## Data policy
+## How we measure
 
-- Every value carries a `Source` (`official` / `measured` / `community`) and the date it was checked.
-- Inset values are only valid for the One UI / Android version and navigation mode (gesture / 3-button) they were measured on.
-- Unverified values are `null` and shown as **pending**. Never estimate or derive a number without a source.
+The full write-up lives on the site at [/methodology](https://windowinsets.info/methodology) (source: [`app/routes/methodology.tsx`](app/routes/methodology.tsx)). In short:
+
+- **Three source tiers.** Every value is `official` (published by Samsung/Google), `measured` (captured with InsetsProbe on a real device or Samsung Remote Test Lab, raw JSON committed here) or `community` (not yet reproduced). Each source shows the date it was checked.
+- **Insets are measured, not published.** Samsung documents resolution and density, but not status/navigation bar heights, cutouts or corner radii, so we read them from Android itself with [InsetsProbe](tools/insets-probe).
+- **Conditions are part of the data.** Portrait, full screen, default Display size / Font size / Screen resolution, one navigation mode (gesture or 3-button) per capture, and the One UI + Android version are all recorded. A value is only valid for those conditions.
+- **Never estimated.** Nothing is interpolated from another device or derived from resolution alone. Unverified values are `null` and shown as **pending**.
+- **Known limits.** One UI updates can change values; landscape and multi-window are not covered yet; a real app may see different insets if it adds its own padding or window flags.
+
+Found a mistake or have a capture that disagrees with ours? Open an issue or pull request with your InsetsProbe JSON — a reproduction is as valuable as a new device.
 
 ## Measuring a device
 

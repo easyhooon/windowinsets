@@ -24,7 +24,10 @@ export default function Home() {
         Status bar, navigation bar and display cutout insets, corner radii, and foldable
         hinge states — every value is labeled <b>official</b>, <b>measured</b> or{" "}
         <b>community</b>, with its source and the One UI / Android version it applies to.
-        Values that are not verified yet are shown as pending, never guessed.
+        Values that are not verified yet are shown as pending, never guessed.{" "}
+        <Link to="/methodology" className="text-accent underline">
+          See how we measure.
+        </Link>
       </p>
       <h2 className="mt-8 text-sm font-medium text-muted">Devices</h2>
       <ul className="mt-2 divide-y divide-line rounded-[10px] border border-line bg-surface shadow-card">

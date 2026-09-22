@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router";
 import { FoldDiagram } from "../components/FoldDiagram";
 import { InsetsView } from "../components/InsetsView";
 import { Segmented } from "../components/Segmented";
@@ -156,6 +157,11 @@ export default function DevicePage({ params }: Route.ComponentProps) {
 
           <h2 className="mt-6 text-sm font-medium text-muted">Sources</h2>
           <SourceList sources={[...screen.sources, ...(measurement?.sources ?? [])]} />
+          <p className="mt-3 text-sm">
+            <Link to="/methodology" className="text-accent underline">
+              How these values are measured →
+            </Link>
+          </p>
         </div>
       </div>
     </article>

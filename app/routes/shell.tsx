@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { NavLink, Outlet } from "react-router";
-import { devices } from "../data/devices";
+import { devices, REPO_URL } from "../data/devices";
 
 export default function Shell() {
   const [query, setQuery] = useState("");
@@ -16,6 +16,14 @@ export default function Shell() {
         <span className="hidden text-sm text-muted sm:inline">
           Window insets &amp; display metrics for Galaxy devices
         </span>
+        <nav className="ml-auto flex items-center gap-4 text-sm">
+          <NavLink to="/methodology" className="text-muted hover:text-fg">
+            How we measure
+          </NavLink>
+          <a href={REPO_URL} className="text-muted hover:text-fg" rel="noopener noreferrer" target="_blank">
+            GitHub
+          </a>
+        </nav>
       </header>
       <div className="flex min-h-0 flex-1 flex-col md:flex-row">
         <aside className="flex max-h-48 shrink-0 flex-col border-b border-line bg-surface md:max-h-none md:w-64 md:border-r md:border-b-0">

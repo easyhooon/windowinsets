@@ -6,6 +6,12 @@ import { galaxyZFold7 } from "./devices/galaxy-z-fold7";
 export const devices: Device[] = [galaxyZFold7, galaxyZFold6];
 
 export const SITE_URL = "https://windowinsets.info";
+export const REPO_URL = "https://github.com/easyhooon/windowinsets";
+
+/** Non-device pages that are prerendered and listed in the sitemap. */
+export const STATIC_PATHS = ["/", "/methodology"];
+
+export const allPaths = () => [...STATIC_PATHS, ...devices.map((d) => `/${d.slug}`)];
 
 export function findDevice(slug: string | undefined): Device | undefined {
   return devices.find((d) => d.slug === slug);
