@@ -129,6 +129,16 @@ test('Fold2 uses captured full-window dimensions rather than Android 13 app metr
   assert.equal(screen.insets.threeButton.condition.oneUi, '5.1.1');
   assert.deepEqual(screen.insets.threeButton.systemBars, raw.insets.systemBars.dp);
   assert.equal(screen.insets.gesture, null);
+  const coverRaw = JSON.parse(readFileSync('measurements/galaxy-z-fold2/cover-threeButton.json', 'utf8'));
+  const cover = galaxyZFold2.screens.find(screen => screen.id === 'cover');
+  assert.deepEqual(cover.resolutionPx, coverRaw.display.currentWindowPx);
+  assert.deepEqual(cover.logicalSizeDp, coverRaw.display.maximumWindowDp);
+  assert.deepEqual(cover.insets.threeButton.systemBars, coverRaw.insets.systemBars.dp);
+  assert.equal(cover.cornerRadiiDp, null);
+  assert.equal(cover.insets.gesture, null);
+  assert.deepEqual(coverRaw.hinge.foldingFeatures, []);
+  assert.notEqual(cover.resolutionPx.width, skins['galaxy-z-fold2/cover'].screen.width);
+  assert.match(cover.insets.threeButton.condition.note, /816×2260/);
 });
 
 test('Flip8 legacy cover label does not make its flat inner capture a cover measurement', () => {
