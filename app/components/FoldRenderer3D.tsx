@@ -148,7 +148,8 @@ function drawDiagram(
   }
 
   function regionLabel(x: number, y: number, name: string, value: string, color: string, areaW: number, areaH: number, inline: boolean) {
-    const scale = Math.min(labelScale, areaH / ((inline ? 22 : 42) * px), areaW / ((name.length + value.length + 4) * 8 * px));
+    const labelWidth = inline ? name.length + value.length + 4 : Math.max(name.length, value.length) + 2;
+    const scale = Math.min(labelScale, areaH / ((inline ? 22 : 42) * px), areaW / (labelWidth * 8 * px));
     const fontSize = 12 * px * scale;
     ctx.font = `500 ${fontSize}px ${DIAGRAM_FONT}`;
     const nameW = ctx.measureText(name).width + 8 * px * scale;

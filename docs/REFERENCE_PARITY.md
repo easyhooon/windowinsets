@@ -1,8 +1,65 @@
 # safearea.info parity — 2026-09-22
 
+## Binding development direction
+
+WindowInsets is a faithful Android clone of safearea.info. “Clone” means the live
+reference supplies the default answer for visual and interaction decisions; it does
+not mean taking selected ideas and redesigning them into a different dashboard.
+The product should feel like the same tool operating on Android measurements and
+Samsung hardware.
+
+Use this decision order for every frontend change:
+
+1. Reproduce the reference information architecture, component placement, visual
+   proportions, typography, spacing, responsive behavior and interaction model.
+2. Substitute Android concepts only where the underlying platform meaning differs.
+   Keep the reference hierarchy and presentation around that substitution.
+3. Preserve measurement truth. A missing Android value remains pending, and a view
+   rotation remains a view transform rather than a claimed landscape capture.
+4. Add an Android-only control only when the dataset cannot be represented without
+   it, such as navigation mode, outer/inner display or hinge state. Place it in the
+   closest reference control group without reorganizing the primary experience.
+5. Treat independent enhancements as a separate proposal after parity is reached.
+   They require an explicit product decision and must not silently replace the clone
+   baseline.
+
+Reference parity takes priority over subjective polish. A new summary card, metric
+visualization, section order, label, breakpoint or interaction is acceptable only
+when it has a reference analogue or is a documented Android substitution. In
+particular, enlarging values or rearranging Top/Right/Bottom/Left into a custom
+directional dashboard is not parity when safearea.info presents those values as
+metric rows.
+
+Semantic parity is as important as appearance. A section titled **Safe Area Insets**
+must show the effective safe-area values, not raw `systemBars`. Android-only raw
+values such as System Bars and Display Cutout belong in a reference-shaped detail or
+reserved-region presentation, with their relationship to the safe area made clear.
+
+## Parity workflow and completion gate
+
+Before changing a reference-facing surface, inspect the current live safearea.info
+page at representative desktop and mobile sizes and record any behavior not already
+captured below. Implement against that observation, then compare the reference and
+local page side by side at the same viewport.
+
+A parity change is complete only when all of the following are true:
+
+- Desktop and mobile preserve the same hierarchy, control grouping, major spacing
+  relationships and responsive transitions as the reference.
+- Diagram sizing, label styling, pan/zoom/rotation and direct manipulation match the
+  reference behavior for equivalent states.
+- Fold and Flip views remain visually stable when closed, partially folded and open;
+  hinge motion introduces no clipping, mirrored text, detached artwork or layout
+  jump.
+- A bar phone, Fold and Flip are checked with measured data, pending data and both
+  Android navigation modes where available.
+- Every visible difference is either fixed or listed under **Remaining differences**
+  with its Android/data rationale. A passing typecheck or build alone is not visual
+  parity evidence.
+
 ## Target and evidence
 
-The product is the Android equivalent of [safearea.info](https://safearea.info/),
+The product is a faithful Android clone of [safearea.info](https://safearea.info/),
 not a differently designed metrics dashboard. Inspected the live page at 1440×1000
 and its mobile presentation. Tested the closed and partially folded views, view
 settings and four orientation choices. Samsung artwork was supplied by the owner

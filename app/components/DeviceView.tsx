@@ -34,12 +34,19 @@ function insetsRows(i: Insets, unit = "dp", fmt = (v: number) => String(v)) {
   return (
     <>
       <Row label="Top" value={`${fmt(i.top)} ${unit}`} />
-      <Row label="Right" value={`${fmt(i.right)} ${unit}`} />
       <Row label="Bottom" value={`${fmt(i.bottom)} ${unit}`} />
       <Row label="Left" value={`${fmt(i.left)} ${unit}`} />
+      <Row label="Right" value={`${fmt(i.right)} ${unit}`} />
     </>
   );
 }
+
+const pendingInsetsRows = <>
+  <Row label="Top" value={PENDING} />
+  <Row label="Bottom" value={PENDING} />
+  <Row label="Left" value={PENDING} />
+  <Row label="Right" value={PENDING} />
+</>;
 
 function SourceList({ sources }: { sources: Source[] }) {
   if (sources.length === 0) return <p className="text-sm text-muted">No verified source yet.</p>;
@@ -131,13 +138,8 @@ export function DeviceView({ device }: { device: Device }) {
       <button className="metrics-toggle" aria-expanded={metricsOpen} onClick={() => setMetricsOpen(!metricsOpen)}>Metrics<Icon name="chevron" /></button>
       <div className="metrics-content">
         <h2>Metrics</h2>
-        <section className="rtl-status" aria-label="Remote Test Lab availability">
-          <a href={rtl.sourceUrl} target="_blank" rel="noreferrer">{rtl.label} ↗</a>
-          <p>{rtl.description}</p>
-          <small>Checked {rtl.checkedAt} · {measurement ? "Measured selection" : "No capture for this selection"}</small>
-        </section>
         {foldable && <div className="screen-tabs" aria-label="Display">{device.screens.map(s => <button key={s.id} aria-pressed={screen.id === s.id} onClick={() => { setScreenId(s.id); setAngle(s.id === "cover" ? 0 : 180); }}>{s.label === "Main" ? "Inner" : "Outer"}</button>)}</div>}
-                    <SectionLabel>Dimensions</SectionLabel>
+            <SectionLabel>Dimensions</SectionLabel>
             <dl>
               <Row
                 label="Logical Size"
@@ -148,37 +150,17 @@ export function DeviceView({ device }: { device: Device }) {
                 value={screen.resolutionPx.width > 0 && screen.resolutionPx.height > 0 ? `${screen.resolutionPx.width} × ${screen.resolutionPx.height} px` : PENDING}
               />
               <Row label="Pixel Density" value={screen.ppi > 0 ? `${screen.ppi} ppi` : PENDING} />
-              <Row label="Density (dpi)" value={screen.densityDpi ?? PENDING} />
-              <Row label="Diagonal" value={screen.diagonalInch > 0 ? `${screen.diagonalInch.toFixed(1)}″` : PENDING} />
+              <Row label="Scale" value={screen.densityDpi ? `${Number((screen.densityDpi / 160).toFixed(2))}×` : PENDING} />
             </dl>
 
-            <SectionLabel>Safe Area Insets · {navMode === "gesture" ? "Gesture" : "3-button"}</SectionLabel>
+            <SectionLabel>Safe Area Insets</SectionLabel>
             <dl>
-              {measurement ? insetsRows(measurement.systemBars, units, fmt) : (
-                <>
-                  <Row label="Top" value={PENDING} />
-                  <Row label="Right" value={PENDING} />
-                  <Row label="Bottom" value={PENDING} />
-                  <Row label="Left" value={PENDING} />
-                </>
-              )}
-            </dl>
-
-            <SectionLabel>Display Cutout</SectionLabel>
-            <dl>
-              {measurement ? insetsRows(measurement.displayCutout, units, fmt) : (
-                <>
-                  <Row label="Top" value={PENDING} />
-                  <Row label="Right" value={PENDING} />
-                  <Row label="Bottom" value={PENDING} />
-                  <Row label="Left" value={PENDING} />
-                </>
-              )}
+              {safe ? insetsRows(safe, units, fmt) : pendingInsetsRows}
             </dl>
 
             {measurement?.cutoutShape && <>
-              <SectionLabel>Cutout bounds</SectionLabel>
-              <dl>{Object.entries({ X: measurement.cutoutShape.xDp, Y: measurement.cutoutShape.yDp, Width: measurement.cutoutShape.widthDp, Height: measurement.cutoutShape.heightDp }).map(([label, value]) => <Row key={label} label={label} value={`${fmt(value)} ${units}`} />)}</dl>
+              <SectionLabel>Reserved Regions</SectionLabel>
+              <dl><Row label="Display Cutout" value={`${fmt(measurement.cutoutShape.widthDp)} × ${fmt(measurement.cutoutShape.heightDp)} ${units}`} /></dl>
             </>}
 
             {screen.cornerRadiiDp && (
@@ -193,12 +175,21 @@ export function DeviceView({ device }: { device: Device }) {
               </>
             )}
 
-            <SectionLabel>Measured On</SectionLabel>
-            <dl>
-              <Row label="One UI" value={measurement ? measurement.condition.oneUi : PENDING} />
-              <Row label="Android" value={measurement ? measurement.condition.android : PENDING} />
-            </dl>
-        <details className="sources-details"><summary>Sources & measurement conditions</summary>
+        <details className="sources-details"><summary>Android details & sources</summary>
+          <section className="rtl-status" aria-label="Remote Test Lab availability">
+            <a href={rtl.sourceUrl} target="_blank" rel="noreferrer">{rtl.label} ↗</a>
+            <p>{rtl.description}</p>
+            <small>Checked {rtl.checkedAt} · {measurement ? "Measured selection" : "No capture for this selection"}</small>
+          </section>
+          <SectionLabel>System Bars · {navMode === "gesture" ? "Gesture" : "3-button"}</SectionLabel>
+          <dl>{measurement ? insetsRows(measurement.systemBars, units, fmt) : pendingInsetsRows}</dl>
+          <SectionLabel>Display Cutout Insets</SectionLabel>
+          <dl>{measurement ? insetsRows(measurement.displayCutout, units, fmt) : pendingInsetsRows}</dl>
+          <SectionLabel>Measured On</SectionLabel>
+          <dl>
+            <Row label="One UI" value={measurement ? measurement.condition.oneUi : PENDING} />
+            <Row label="Android" value={measurement ? measurement.condition.android : PENDING} />
+          </dl>
           <p className="mb-3 text-xs text-muted">{device.name} · {screen.label} · {measurement ? "Captured portrait. Rotation changes the view, not the recorded Android insets." : "Official artwork preview. Android insets have not been measured for this navigation mode."}</p>
           {measurement?.condition.note && <p className="mb-3 text-xs text-muted">{measurement.condition.note}</p>}
           <SourceList sources={Array.from(new Map((measurement?.sources ?? []).concat(screen.sources).map(s => [s.label, s])).values())} />

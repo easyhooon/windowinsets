@@ -35,7 +35,8 @@ function Badge({ x, y, label, color, scale }: { x: number; y: number; label: str
 function RegionLabel({ x, y, name, value, color, scale, width, height, inline = false }: {
   x: number; y: number; name: string; value: string; color: string; scale: number; width: number; height: number; inline?: boolean;
 }) {
-  const k = Math.min(scale, height / (inline ? 22 : 42), width / ((name.length + value.length + 4) * 8));
+  const labelWidth = inline ? name.length + value.length + 4 : Math.max(name.length, value.length) + 2;
+  const k = Math.min(scale, height / (inline ? 22 : 42), width / (labelWidth * 8));
   const nameW = (name.length * 7.2 + 8) * k, valueW = value.length * 7.2 * k, gap = 10 * k;
   return <g>
     <Badge x={inline ? x - (valueW + gap) / 2 : x} y={inline ? y : y - 10 * k} label={name} color={color} scale={k} />

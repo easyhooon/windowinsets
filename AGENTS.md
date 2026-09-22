@@ -2,10 +2,15 @@
 
 ## Product goal
 
-Build the Android equivalent of https://safearea.info: preserve its information
-architecture, responsive behavior, diagram proportions, and direct manipulation.
-Use Samsung device artwork rather than invented handset silhouettes. Improve the
-existing device set before collecting more data or adding unrelated features.
+Clone https://safearea.info as faithfully as possible for Android. The reference is
+the product specification, not visual inspiration: match its information hierarchy,
+layout, typography, spacing, responsive transitions, diagram proportions, controls,
+and direct-manipulation behavior before proposing independent improvements. Adapt
+only the platform-specific substance—Android WindowInsets semantics, navigation
+modes, fold states, and official Samsung device artwork. Keep reference-shaped UI
+when an Android equivalent exists; document every intentional divergence in
+`docs/REFERENCE_PARITY.md`. Improve the existing device set before collecting more
+data or adding unrelated features.
 
 Coverage decision (2026-09-22): all Samsung Galaxy models with official skins are
 in scope when released in 2020 or later, regardless of discontinuation or flagship
@@ -26,7 +31,8 @@ leave other models unverified. Preserve historical captures. See
 
 ## Start here
 
-- `docs/REFERENCE_PARITY.md`: observed reference behavior, implementation and QA.
+- `docs/REFERENCE_PARITY.md`: binding clone doctrine, observed reference behavior,
+  intentional Android substitutions, implementation status and visual QA.
 - `docs/MEASUREMENT_WORKFLOW.md`: capture process, known RTL issues, corrections.
 - `docs/DESIGN_HANDOFF.md`: original Claude visual backlog; see current status first.
 - React Router framework mode, React, TypeScript, three.js; pnpm; static prerender.
