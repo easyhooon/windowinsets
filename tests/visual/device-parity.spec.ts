@@ -37,6 +37,21 @@ async function chooseUnits(page: Page, units: "dp" | "px") {
   await page.getByRole("button", { name: "View settings" }).click();
 }
 
+test("sidebar inquiry opens the GitHub issue template chooser", async ({ page }, testInfo) => {
+  await page.goto("/galaxy-z-flip8");
+  if (testInfo.project.name === "mobile") {
+    await page.locator(".mobile-model").click();
+  }
+
+  const inquiry = page.getByRole("link", { name: "GitHub에서 문의하기 (새 창)" });
+  await expect(inquiry).toBeVisible();
+  await expect(inquiry).toHaveAttribute(
+    "href",
+    "https://github.com/easyhooon/windowinsets/issues/new/choose",
+  );
+  await expect(page.locator(".sidebar-footer")).toHaveScreenshot("sidebar-footer-inquiry.png");
+});
+
 test("per-device JSON export downloads the complete versioned device payload", async ({ page }) => {
   await page.goto("/galaxy-z-flip8");
   const button = page.getByRole("button", { name: "Export JSON" });

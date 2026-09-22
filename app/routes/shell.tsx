@@ -32,7 +32,15 @@ export default function Shell() {
           </section>)}
           {!filtered.length && <p className="p-3 text-sm text-muted">No devices found.</p>}
         </nav>
-        <nav className="sidebar-footer"><NavLink to="/developer-guide" onClick={() => setMobileOpen(false)}>Developer guide</NavLink><NavLink to="/methodology" onClick={() => setMobileOpen(false)}>How we measure</NavLink><a href={REPO_URL} target="_blank" rel="noreferrer">GitHub ↗</a><a href="https://safearea.info" target="_blank" rel="noreferrer">Inspired by safearea.info ↗</a></nav>
+        <nav className="sidebar-footer">
+          <NavLink to="/developer-guide" onClick={() => setMobileOpen(false)}>Developer guide</NavLink>
+          <NavLink to="/methodology" onClick={() => setMobileOpen(false)}>How we measure</NavLink>
+          <span className="sidebar-footer-community">
+            <a href={REPO_URL} target="_blank" rel="noreferrer">GitHub ↗</a>
+            <a href={`${REPO_URL}/issues/new/choose`} target="_blank" rel="noreferrer" aria-label="GitHub에서 문의하기 (새 창)">문의하기 ↗</a>
+          </span>
+          <a href="https://safearea.info" target="_blank" rel="noreferrer">Inspired by safearea.info ↗</a>
+        </nav>
       </aside>
       <ResizeHandle label="Devices width" value={sidebarWidth} onChange={setSidebarWidth} min={190} max={360} />
       <main className="workspace"><Outlet /></main>
