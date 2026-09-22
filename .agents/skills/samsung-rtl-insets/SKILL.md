@@ -98,10 +98,14 @@ step to the user.
 
 - Set language to English and restore default Display size, Font size, and Screen
   resolution before the first capture.
-- If the rendered screen is black, use the physical buttons drawn on the device's
-  right bezel. The upper control is volume; the lower control is power/wake.
-- A click on the lower side button may wake or sleep the device. Re-read the
-  screenshot after every click.
+- If the rendered screen is black, use the physical side-button hitbox drawn on the
+  device. Rotation and folded front/rear views move the controls and can reverse
+  their apparent order, so identify the short power/fingerprint button from a fresh
+  screenshot instead of assuming that it is always above or below the volume rocker.
+- Keep browser-viewport coordinates and macOS Computer Use coordinates separate;
+  Chrome bars and RTL full-screen transitions change their scale and origin. A
+  single deliberate power click may wake or sleep the device, so re-read the same
+  coordinate space after every click.
 - Lock-screen swipes and authentication are a manual fallback. If one precise
   attempt is unreliable, ask the user to wake/unlock the already-open device and
   resume after they confirm. Never guess a PIN or repeatedly toggle power.
@@ -114,19 +118,35 @@ step to the user.
    Open its menu and choose the explicit Folded, Unfolded or Flex state by tooltip;
    do not infer the state from icon shape alone. Wait for the chassis and active
    window size to settle.
-3. Select Probe's radio circle matching the physically active display. Cover/Main
+3. For a Galaxy Z Flip cover capture, complete the **FlexWindow launch** branch
+   before selecting a label:
+   - The cover is a separate FlexWindow surface; folding can replace the inner app
+     with cover home instead of moving the activity. Starting an app from
+     WebClient **Applications** can still target the hidden inner display.
+   - On the unfolded phone open **Settings > Cover screen** and enable **Show the
+     Now brief and favorite apps**. Fold the device, wake the cover, and hand off
+     its unlock gesture after one unreliable automation attempt.
+   - On the live cover, touch and hold an empty area, choose **Edit**, and add
+     `InsetsProbe` to the favorite apps when it is offered. Flip8 supports up to
+     five favorite apps, but Samsung may exclude unsupported apps.
+   - Launch `InsetsProbe` from the cover itself. Accept a cover capture only when
+     Probe visibly owns the active cover window and reports the official cover
+     dimensions. If Probe is absent from the picker, opens only on the inner
+     display, or produces a black cover, record the compatibility blocker and
+     requeue the device; inner-display values are not cover evidence.
+4. Select Probe's radio circle matching the physically active display. Cover/Main
    is a manual label and never switches hardware.
-4. Tap **Measure** and require the toast filename to match the intended combination,
+5. Tap **Measure** and require the toast filename to match the intended combination,
    for example `cover-threeButton.json`. A different filename is a rejected
    attempt, not evidence.
-5. For a book fold, capture the folded cover, switch to Unfolded, dismiss any
+6. For a book fold, capture the folded cover, switch to Unfolded, dismiss any
    one-time multi-window tutorial, choose Main, and capture the inner display.
-6. Tap **Display / navigation settings**. In Settings > Display, scroll to
+7. Tap **Display / navigation settings**. In Settings > Display, scroll to
    **Navigation bar**, open it and select **Swipe gestures**. Return to Probe with
    the left-edge back gesture twice. Confirm that Probe reports gesture mode.
-7. Repeat each physical display in gesture mode and require the matching
+8. Repeat each physical display in gesture mode and require the matching
    `*-gesture.json` toast.
-8. Record the visible active-window resolution and hinge/folding-feature state for
+9. Record the visible active-window resolution and hinge/folding-feature state for
    each capture. A hinge angle can be wrong on RTL; screen classification requires
    the actual switched state plus resolution evidence.
 
