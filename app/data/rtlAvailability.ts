@@ -1,13 +1,14 @@
 // Partial official listing; never infer non-support from this snapshot.
 export const rtlCatalog = {
-  "checkedAt": "2026-09-22",
+  "checkedAt": "2026-09-23",
   "sourceUrl": "https://developer.samsung.com/remote-test-lab",
   "scope": "featured-devices",
   "complete": false,
   "reservationCatalogUrl": "https://developer.samsung.com/remotetestlab/devices",
-  "reservationCatalogResult": "Accessible after manual sign-in. Galaxy Z inventory was inspected and Galaxy Z Fold8 was successfully reserved; the full cross-series and cross-region inventory is still incomplete.",
+  "reservationCatalogResult": "Accessible after manual sign-in. Galaxy Z inventory was inspected; Galaxy Z Fold8 and Fold7 were successfully reserved. The full cross-series and cross-region inventory is still incomplete.",
   "reservableSlugs": [
-    "galaxy-z-fold8"
+    "galaxy-z-fold8",
+    "galaxy-z-fold7"
   ],
   "listedSlugs": [
     "galaxy-z-fold8",
@@ -29,9 +30,9 @@ export interface RtlCatalog {
 
 /** Absence from a featured list or a blocked page is not evidence of non-support. */
 export function getRtlAvailability(slug: string, snapshot: RtlCatalog = rtlCatalog) {
-  const status = snapshot.listedSlugs.includes(slug) ? "listed"
-    : snapshot.complete ? "not-listed" : "unknown";
   const reservable = snapshot.reservableSlugs?.includes(slug) ?? false;
+  const status = snapshot.listedSlugs.includes(slug) || reservable ? "listed"
+    : snapshot.complete ? "not-listed" : "unknown";
   return {
     status,
     checkedAt: snapshot.checkedAt,

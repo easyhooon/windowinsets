@@ -107,6 +107,8 @@ step to the user.
 
 - Set language to English and restore default Display size, Font size, and Screen
   resolution before the first capture.
+- Set the main **Settings > Display > Screen timeout** to the longest available
+  value for the reservation, then restore it only if the workflow requires it.
 - If the rendered screen is black, use the physical side-button hitbox drawn on the
   device. Rotation and folded front/rear views move the controls and can reverse
   their apparent order, so identify the short power/fingerprint button from a fresh
@@ -116,8 +118,11 @@ step to the user.
   single deliberate power click may wake or sleep the device, so re-read the same
   coordinate space after every click.
 - Lock-screen swipes and authentication are a manual fallback. If one precise
-  attempt is unreliable, ask the user to wake/unlock the already-open device and
-  resume after they confirm. Never guess a PIN or repeatedly toggle power.
+  attempt is unreliable, stop live-device actions and send a final response
+  immediately so the app delivers a visible user notification. State the exact
+  action, device state and remaining reservation time. Do not rely on commentary
+  for this blocking handoff, continue unrelated work while the timer runs, guess a
+  PIN, or repeatedly toggle power. Resume only after the user confirms completion.
 - For a Flip cover session, set **Settings > Cover screen > Cover screen timeout**
   to **30 seconds** before folding. The default 10-second timeout can turn the
   screen off between screenshot and gesture and falsely look like an input failure.

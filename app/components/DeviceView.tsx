@@ -231,7 +231,7 @@ export function DeviceView({ device }: { device: Device }) {
         {useFold ? <FoldRenderer3D angle={angle} axis={device.formFactor === "foldable-flip" ? "horizontal" : "vertical"}
           widthDp={main.logicalSizeDp?.width ?? (mainSkin ? mainSkin.screen.width / 3 : 0)} heightDp={main.logicalSizeDp?.height ?? (mainSkin ? mainSkin.screen.height / 3 : 0)}
           safe={mainSafe} safePx={mainSafePx} logicalSizePx={main.logicalSizePx} cornerRadiiDp={main.cornerRadiiDp} cornerRadiiPx={main.cornerRadiiPx} cutoutShape={mainMeasurement?.cutoutShape}
-          zoom={zoom} showFrame={showFrame} showRegions={showRegions} showDimensions={showDimensions} units={units} layers={layers} skin={mainSkin} measured={!!main.logicalSizeDp} cover={outerScreen && outerSkin ? { screen: outerScreen, measurement: outerScreen.insets[navMode], skin: outerSkin } : undefined}
+          zoom={zoom} showFrame={showFrame} showRegions={showRegions} showDimensions={showDimensions} units={units} layers={layers} skin={mainSkin} skinRotation={main.captureRotation ?? 0} measured={!!main.logicalSizeDp} cover={outerScreen && outerSkin ? { screen: outerScreen, measurement: outerScreen.insets[navMode], skin: outerSkin } : undefined}
           onTransitionEnd={() => { if (transitionTarget) { setScreenId(transitionTarget); setTransitionTarget(null); } }} />
           : <InsetsDiagram screen={screen} measurement={measurement} zoom={zoom} showFrame={showFrame} showRegions={showRegions} showDimensions={showDimensions} units={units} layers={layers} skin={skin} />}
       </DiagramViewport>

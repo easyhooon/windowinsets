@@ -2,6 +2,7 @@ import { expect, test, type Page } from "@playwright/test";
 
 const devices = [
   { slug: "galaxy-z-fold8", label: "Fold8" },
+  { slug: "galaxy-z-fold7", label: "Fold7" },
   { slug: "galaxy-z-flip8", label: "Flip8" },
 ] as const;
 
@@ -121,13 +122,15 @@ test("S25 Ultra remains readable across navigation, units, and orientation", asy
   }
 });
 
-test("static Fold previews switch displays without a 3D completion callback", async ({ page }) => {
+test("Fold7 animation switches from measured cover to measured inner display", async ({ page }) => {
   await page.goto("/galaxy-z-fold7");
+  await waitForDiagram(page);
   await openMetricsIfCollapsed(page);
-  await page.getByRole("button", { name: "Inner" }).click();
-  await expect(page.getByRole("img", { name: "Main screen insets diagram" })).toBeVisible();
-  await page.getByRole("button", { name: "Outer" }).click();
-  await expect(page.getByRole("img", { name: "Cover screen insets diagram" })).toBeVisible();
+  await page.getByRole("button", { name: "Pose: Closed" }).click();
+  await page.getByRole("button", { name: "Open", exact: true }).click();
+  await waitForFoldTransition(page);
+  await expect(page.locator(".screen-tabs button").filter({ hasText: "Inner" })).toHaveAttribute("aria-pressed", "true");
+  await expect(page.getByRole("button", { name: "Logical Size 832 × 749.71 dp" })).toBeVisible();
 });
 
 test("fold pose changes preserve an explicit zoom", async ({ page }) => {

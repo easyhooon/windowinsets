@@ -118,7 +118,7 @@ is preserved through the hinge transition; Fit to canvas restores automatic fit.
 
 ## Verification
 
-- `node --test tests/rendering.test.mjs`: 15 deterministic checks covering every
+- `node --test tests/rendering.test.mjs`: 16 deterministic checks covering every
   animation degree, endpoints, exact raw px/dp/cutout evidence, safe-area px math,
   physical offset, closed chassis and official asset rectangles.
 - Browser-driven Playwright/AX checks: desktop and 390px mobile layouts, device
@@ -126,14 +126,14 @@ is preserved through the hinge transition; Fit to canvas restores automatic fit.
   official artwork loading and console errors. Metric rows report “Copied”; the
   WebGL cover-label test also reads back the exact displayed clipboard value.
 - `pnpm test:visual` is the committed Chrome screenshot and interaction regression
-  floor: 32 tests and 58 approved images cover desktop and 390px mobile, S25 Ultra
+  floor: 38 tests and 64 approved images cover desktop and 390px mobile, S25 Ultra
   navigation/unit/orientation combinations, Fold/Flip poses, exact px, real hinge
   interpolation, reduced motion, fit/manual zoom/pan behavior, keyboard Fit recovery
   and cover-label copy.
   Real two-finger touch gestures still need device testing; desktop synthetic wheel
   and keyboard checks do not prove hardware touch behavior.
 - 2026-09-23 parity pass: Chrome checks at 1512×716 and 390×844 covered Fold8
-  0°/90°/180°, Flip8 cover/90°/open, static Fold7 Outer/Inner, S25 Ultra exact px,
+  0°/90°/180°, Flip8 cover/90°/open, measured Fold7 0°/90°/180°, S25 Ultra exact px,
   gesture/3-button switching, 2×2 mobile legend, readable controls, full metric-row
   keyboard copy, automatic target-screen fit and stable manual zoom across Fold8's
   animated endpoint.

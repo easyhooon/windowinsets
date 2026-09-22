@@ -1,6 +1,6 @@
 # WindowInsets Measurement Workflow & Status
 
-**Last Updated**: 2026-09-22
+**Last Updated**: 2026-09-23
 
 ## RTL collection scope
 
@@ -76,6 +76,25 @@ labeled recaptures. The folded capture still reports a 180° hinge sensor value 
 no folding features, so the cover classification relies on the actively switched
 display and its exact official cover resolution, not that unreliable angle field.
 
+### Verified Fold7 capture
+
+Galaxy Z Fold7 (SM-F966U) was measured on Samsung RTL across two minimum
+reservations. The first session produced cover 3-button plus inner 3-button and
+gesture captures; the second produced the remaining cover gesture capture. Both
+RTL instances reported the same Android 16 / One UI 8.5 build.
+
+- folded cover: **1080×2520 px**, portrait, matching the official cover layout;
+- unfolded inner display: **2184×1968 px**, landscape, the rotated orientation of
+  the official 1968×2184 inner layout;
+- cover cutout: **60×102 px** at x=510, y=0;
+- system bars: cover 110 px top and 126/39 px bottom; inner 79 px top and
+  126/39 px bottom for 3-button/gesture respectively.
+
+The inner display's hinge sensor remained at 0°, but InsetsProbe 1.2.1 accepted the
+capture because WindowManager supplied a real FLAT folding feature across the
+display midpoint. All four raw files are preserved under
+`measurements/galaxy-z-fold7/`.
+
 ### RTL access outcome
 
 The earlier 403 was transient. After the user completed Samsung authentication
@@ -89,9 +108,10 @@ future slot availability.
 windowinsets.info is a reference site for Android window insets, display cutouts, corner radii and foldable hinge states across Samsung Galaxy devices. Every value is labeled **official** (published by Samsung/Google), **measured** (captured with InsetsProbe on RTL or a real device, raw JSON committed), or **community** (unverified).
 
 **Current Status**: Galaxy Z Fold8 cover and inner displays are measured in both
-navigation modes from a verified live RTL session. Galaxy S25 Ultra, Galaxy S25+,
-and Galaxy Z Flip8 main screens are measured. Galaxy S25, Fold6, Fold7, Flip6 and
-Flip8 cover remain pending.
+navigation modes from a verified live RTL session. Galaxy Z Fold7 cover and inner
+displays are also complete in both modes. Galaxy S25 Ultra, Galaxy S25+, and Galaxy
+Z Flip8 main screens are measured. Galaxy S25, Fold6, Flip6 and Flip8 cover remain
+pending.
 
 ## RTL Credits & Cost
 
@@ -244,7 +264,7 @@ Do not use Measure All. Capture each active display and navigation mode explicit
 | Galaxy S25 Ultra | SM-S938N | Main | ✓ | ✓ | Complete |
 | Galaxy S25+ | SM-S936N | Main | ✓ | ✓ | Complete (real device, Korea — not RTL) |
 | Galaxy S25 | SM-S931N | Main | Pending | Pending | Queued |
-| Galaxy Z Fold7 | TBD | Main | Pending | Pending | Queued |
+| Galaxy Z Fold7 | SM-F966U | Cover + inner | ✓ both | ✓ both | Complete |
 | Galaxy Z Fold6 | TBD | Main | Pending | Pending | Queued |
 | Galaxy Z Flip6 | TBD | Main | Pending | Pending | Queued |
 
@@ -337,7 +357,9 @@ screen and navigation-mode identity.
 2. Preserve the "measure 3-button, manually flip Settings, measure gesture again"
    pattern per physical display. Do not use Measure All or treat a radio label as a
    display switch.
-3. Budget ~2 credits (30 min) per device; ~10 devices/day is the real ceiling under the free 20-credit daily allowance.
+3. Budget 2 credits (30 min) per reservation. Use the live header balance rather
+   than assuming the published 20-credit allowance; the 2026-09-23 account grant
+   was 10 credits.
 4. When adding a device, always run `pnpm typecheck && pnpm build` — malformed `Device` objects fail the prerender step loudly, which is the fastest signal something's wrong before it reaches production.
 5. When capturing a foldable's main screen, run the probe app in its natural flat/open rotation if at all possible, so the raw JSON's `orientation`/`screenWidthDp`/`screenHeightDp` already match the physical silhouette (landscape for book-fold, portrait for flip-fold) — this avoids needing `FoldRenderer3D`'s draw-time rotation correction (Bug 5) for new devices.
 6. Set the RTL device's system language to English before capturing, so `display.name` (locale-dependent) doesn't leak non-English text into committed JSON (Bug 6).

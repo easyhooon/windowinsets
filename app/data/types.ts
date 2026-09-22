@@ -85,6 +85,8 @@ export interface Screen {
   logicalSizePx?: { width: number; height: number } | null;
   /** Orientation recorded by the probe for logicalSizeDp/logicalSizePx. */
   captureOrientation?: "portrait" | "landscape" | null;
+  /** Android Display rotation (Surface.ROTATION_*), used to align portrait artwork with a rotated capture. */
+  captureRotation?: 0 | 1 | 2 | 3 | null;
   ppi: number;
   /** null = not verified yet. Never estimate. */
   logicalSizeDp: { width: number; height: number } | null;

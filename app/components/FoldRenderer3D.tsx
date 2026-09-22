@@ -20,6 +20,51 @@ type Units = "dp" | "px";
 
 interface Insets { top: number; right: number; bottom: number; left: number }
 interface CornerRadii { topLeft: number; topRight: number; bottomRight: number; bottomLeft: number }
+type QuarterTurns = 0 | 1 | 2 | 3;
+
+function transformSkin(
+  ctx: CanvasRenderingContext2D,
+  skin: DeviceSkin,
+  width: number,
+  height: number,
+  rotation: QuarterTurns,
+) {
+  const { x, y, width: screenW, height: screenH } = skin.screen;
+  if (rotation === 1) {
+    const sx = height / screenW, sy = width / screenH;
+    ctx.transform(0, -sx, sy, 0, -y * sy, (screenW + x) * sx);
+  } else if (rotation === 2) {
+    const sx = width / screenW, sy = height / screenH;
+    ctx.transform(-sx, 0, 0, -sy, (screenW + x) * sx, (screenH + y) * sy);
+  } else if (rotation === 3) {
+    const sx = height / screenW, sy = width / screenH;
+    ctx.transform(0, sx, -sy, 0, (screenH + y) * sy, -x * sx);
+  } else {
+    const sx = width / screenW, sy = height / screenH;
+    ctx.transform(sx, 0, 0, sy, -x * sx, -y * sy);
+  }
+}
+
+function drawForeground(
+  ctx: CanvasRenderingContext2D,
+  image: HTMLImageElement,
+  width: number,
+  height: number,
+  rotation: QuarterTurns,
+) {
+  ctx.save();
+  if (rotation === 1) {
+    ctx.transform(0, -height / image.naturalWidth, width / image.naturalHeight, 0, 0, height);
+  } else if (rotation === 2) {
+    ctx.transform(-width / image.naturalWidth, 0, 0, -height / image.naturalHeight, width, height);
+  } else if (rotation === 3) {
+    ctx.transform(0, height / image.naturalWidth, -width / image.naturalHeight, 0, width, 0);
+  } else {
+    ctx.scale(width / image.naturalWidth, height / image.naturalHeight);
+  }
+  ctx.drawImage(image, 0, 0);
+  ctx.restore();
+}
 
 /** Draws the full flat measurement diagram (bezel, safe/inset regions, real
  * cutout, corner-radius chips, outside dimension arrows) onto a 2D canvas —
@@ -37,6 +82,7 @@ function drawDiagram(
     fmt: (v: number) => string;
     layers: { safe: boolean; insets: boolean; cutout: boolean; corners: boolean };
     skin?: DeviceSkin;
+    skinRotation?: QuarterTurns;
     artwork?: HTMLImageElement;
     foreground?: HTMLImageElement;
     annotationScale: number;
@@ -72,11 +118,11 @@ function drawDiagram(
 
   if (opts.showFrame && opts.skin && opts.artwork?.complete && opts.artwork.naturalWidth) {
     const skin = opts.skin;
-    const sx = W / skin.screen.width, sy = H / skin.screen.height;
     ctx.save();
-    roundedRectPath((skin.body.x - skin.screen.x) * sx, (skin.body.y - skin.screen.y) * sy, skin.body.width * sx, skin.body.height * sy, skin.body.radius * Math.min(sx, sy));
+    transformSkin(ctx, skin, W, H, opts.skinRotation ?? 0);
+    roundedRectPath(skin.body.x, skin.body.y, skin.body.width, skin.body.height, skin.body.radius);
     ctx.clip();
-    ctx.drawImage(opts.artwork, -skin.screen.x * sx, -skin.screen.y * sy, skin.width * sx, skin.height * sy);
+    ctx.drawImage(opts.artwork, 0, 0);
     ctx.restore();
   }
   if (opts.showFrame) {
@@ -127,7 +173,7 @@ function drawDiagram(
   }
 
   if (opts.showFrame && opts.foreground?.complete && opts.foreground.naturalWidth) {
-    ctx.drawImage(opts.foreground, 0, 0, W, H);
+    drawForeground(ctx, opts.foreground, W, H, opts.skinRotation ?? 0);
   }
   if (!opts.safe && opts.skin) {
     ctx.fillStyle = "#59636e";
@@ -264,6 +310,7 @@ export function FoldRenderer3D({
   units,
   layers,
   skin,
+  skinRotation = 0,
   measured = true,
   cover,
   onTransitionEnd,
@@ -288,6 +335,7 @@ export function FoldRenderer3D({
   units: Units;
   layers: { safe: boolean; insets: boolean; cutout: boolean; corners: boolean };
   skin?: DeviceSkin;
+  skinRotation?: QuarterTurns;
   measured?: boolean;
   cover?: { screen: Screen; measurement: InsetsMeasurement | null; skin: DeviceSkin };
   onTransitionEnd?: () => void;
@@ -366,9 +414,11 @@ export function FoldRenderer3D({
     deviceGroup.add(mesh);
 
     // The annotation texture includes margins; the solid ends at the display.
-    const bodyW = worldW * silW / (silW + annotationMargin) * (skin ? skin.body.width / skin.screen.width : 1);
-    const bodyH = worldH * silH / (silH + annotationMargin) * (skin ? skin.body.height / skin.screen.height : 1);
-    const radius = skin ? skin.body.radius / skin.body.width * bodyW : (cornerRadiiDp?.topLeft ?? 8) * bodyW / silW;
+    const skinRotated = skinRotation % 2 === 1;
+    const bodyW = worldW * silW / (silW + annotationMargin) * (skin ? (skinRotated ? skin.body.height / skin.screen.height : skin.body.width / skin.screen.width) : 1);
+    const bodyH = worldH * silH / (silH + annotationMargin) * (skin ? (skinRotated ? skin.body.width / skin.screen.width : skin.body.height / skin.screen.height) : 1);
+    const skinBodyWidth = skinRotated ? skin?.body.height : skin?.body.width;
+    const radius = skin && skinBodyWidth ? skin.body.radius / skinBodyWidth * bodyW : (cornerRadiiDp?.topLeft ?? 8) * bodyW / silW;
     const shellGeometry = createChassis(bodyW, bodyH, radius, THICKNESS);
     const shellBase = shellGeometry.attributes.position.array.slice();
     const shellMaterial = new THREE.MeshStandardMaterial({
@@ -433,7 +483,7 @@ export function FoldRenderer3D({
           ] as Array<[number, number]> : []),
           ...insetPairs(outerSafe, outerSafePx),
           ...cornerPairs(screen.cornerRadiiDp, screen.cornerRadiiPx),
-        ]), layers: st.layers, skin: outerSkin,
+        ]), layers: st.layers, skin: outerSkin, skinRotation: screen.captureRotation ?? 0,
         artwork: coverArtwork, foreground: coverForeground, hits: coverHits,
         annotationScale: worldPerCssPixel / (panelW / (size.width + annotationMargin)) * 100 / st.zoom,
       });
@@ -460,7 +510,7 @@ export function FoldRenderer3D({
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       drawDiagram(ctx, dpW, dpH, px, {
         safe: st.safe, cornerRadiiDp: st.cornerRadiiDp, cutoutShape: st.cutoutShape,
-        showFrame: st.showFrame, showRegions: st.showRegions, showDimensions: st.showDimensions && measured, fmt, layers: st.layers, skin, artwork, foreground, hits, annotationScale: worldPerCssPixel / (worldW / (dpW + annotationMargin)) * 100 / st.zoom,
+        showFrame: st.showFrame, showRegions: st.showRegions, showDimensions: st.showDimensions && measured, fmt, layers: st.layers, skin, skinRotation, artwork, foreground, hits, annotationScale: worldPerCssPixel / (worldW / (dpW + annotationMargin)) * 100 / st.zoom,
       });
       ctx.restore();
       texture.needsUpdate = true;
@@ -566,7 +616,7 @@ export function FoldRenderer3D({
     // Geometry/scene are rebuilt only when the device itself changes; angle
     // and display toggles update in place via the ref-backed redraw below.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [widthDp, heightDp, axis, skin, measured]);
+  }, [widthDp, heightDp, axis, skin, skinRotation, measured]);
 
   // Cheap updates (no scene rebuild) whenever angle or display options change.
   useEffect(() => {

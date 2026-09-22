@@ -1,10 +1,67 @@
 import type { Device, Source } from "../../types";
 
+const captureBase = "https://github.com/easyhooon/windowinsets/blob/main/measurements/galaxy-z-fold7";
+
 const samsungSkinPage: Source = {
   kind: "official",
   label: "Samsung Developer – Galaxy Z emulator skins",
   url: "https://developer.samsung.com/galaxy-emulator-skin/galaxy-z.html",
   retrievedAt: "2026-09-22",
+};
+
+const coverThreeButton: Source = {
+  kind: "measured",
+  label: "InsetsProbe 1.2.0 on Samsung RTL Galaxy Z Fold7 cover, 3-button (SM-F966U)",
+  url: `${captureBase}/cover-threeButton.json`,
+  retrievedAt: "2026-09-23",
+};
+
+const coverGesture: Source = {
+  kind: "measured",
+  label: "InsetsProbe 1.2.1 on Samsung RTL Galaxy Z Fold7 cover, gestures (SM-F966U)",
+  url: `${captureBase}/cover-gesture.json`,
+  retrievedAt: "2026-09-23",
+};
+
+const mainThreeButton: Source = {
+  kind: "measured",
+  label: "InsetsProbe 1.2.1 on Samsung RTL Galaxy Z Fold7 inner display, 3-button (SM-F966U)",
+  url: `${captureBase}/main-threeButton.json`,
+  retrievedAt: "2026-09-23",
+};
+
+const mainGesture: Source = {
+  kind: "measured",
+  label: "InsetsProbe 1.2.1 on Samsung RTL Galaxy Z Fold7 inner display, gestures (SM-F966U)",
+  url: `${captureBase}/main-gesture.json`,
+  retrievedAt: "2026-09-23",
+};
+
+const coverCondition = {
+  oneUi: "8.5",
+  android: "16",
+  note: "Samsung RTL, physically folded, portrait. Active window 1080×2520 px; hinge 0° with no folding feature. The two navigation modes were captured from separate SM-F966U reservations on the same software build.",
+};
+
+const mainCondition = {
+  oneUi: "8.5",
+  android: "16",
+  note: "Samsung RTL, fully unfolded, landscape. Active window 2184×1968 px. RTL's hinge sensor remained at 0°, while WindowManager reported a horizontal FLAT folding feature across the display midpoint.",
+};
+
+const coverCutout = {
+  xDp: 194.29,
+  yDp: 0,
+  widthDp: 22.86,
+  heightDp: 38.86,
+  rightDp: 194.29,
+  bottomDp: 921.14,
+  xPx: 510,
+  yPx: 0,
+  widthPx: 60,
+  heightPx: 102,
+  rightPx: 510,
+  bottomPx: 2418,
 };
 
 export const galaxyZFold7: Device = {
@@ -13,33 +70,77 @@ export const galaxyZFold7: Device = {
   brand: "Samsung",
   series: "Galaxy Z Fold",
   formFactor: "foldable-book",
+  foldAnimation: true,
   releaseYear: 2025,
   screens: [
     {
       id: "cover",
       label: "Cover",
-      // Spec + inset values not verified yet.
       diagonalInch: 0,
-      resolutionPx: { width: 0, height: 0 },
+      resolutionPx: { width: 1080, height: 2520 },
+      logicalSizePx: { width: 1080, height: 2520 },
+      captureOrientation: "portrait",
+      captureRotation: 0,
       ppi: 0,
-      logicalSizeDp: null,
-      densityDpi: null,
-      cornerRadiiDp: null,
-      insets: { gesture: null, threeButton: null },
-      sources: [],
+      logicalSizeDp: { width: 411.43, height: 960 },
+      densityDpi: 420,
+      cornerRadiiDp: { topLeft: 4.95, topRight: 4.95, bottomRight: 4.95, bottomLeft: 4.95 },
+      cornerRadiiPx: { topLeft: 13, topRight: 13, bottomRight: 13, bottomLeft: 13 },
+      insets: {
+        gesture: {
+          systemBars: { top: 41.9, right: 0, bottom: 14.86, left: 0 },
+          systemBarsPx: { top: 110, right: 0, bottom: 39, left: 0 },
+          displayCutout: { top: 38.86, right: 0, bottom: 0, left: 0 },
+          displayCutoutPx: { top: 102, right: 0, bottom: 0, left: 0 },
+          cutoutShape: coverCutout,
+          condition: coverCondition,
+          sources: [coverGesture],
+        },
+        threeButton: {
+          systemBars: { top: 41.9, right: 0, bottom: 48, left: 0 },
+          systemBarsPx: { top: 110, right: 0, bottom: 126, left: 0 },
+          displayCutout: { top: 38.86, right: 0, bottom: 0, left: 0 },
+          displayCutoutPx: { top: 102, right: 0, bottom: 0, left: 0 },
+          cutoutShape: coverCutout,
+          condition: coverCondition,
+          sources: [coverThreeButton],
+        },
+      },
+      sources: [samsungSkinPage, coverThreeButton, coverGesture],
     },
     {
       id: "main",
       label: "Main",
       diagonalInch: 8.0,
       resolutionPx: { width: 1968, height: 2184 },
+      logicalSizePx: { width: 2184, height: 1968 },
+      captureOrientation: "landscape",
+      captureRotation: 1,
       ppi: 368,
-      logicalSizeDp: null,
-      densityDpi: null,
-      cornerRadiiDp: null,
-      insets: { gesture: null, threeButton: null },
-      sources: [samsungSkinPage],
+      logicalSizeDp: { width: 832, height: 749.71 },
+      densityDpi: 420,
+      cornerRadiiDp: { topLeft: 4.95, topRight: 4.95, bottomRight: 4.95, bottomLeft: 4.95 },
+      cornerRadiiPx: { topLeft: 13, topRight: 13, bottomRight: 13, bottomLeft: 13 },
+      insets: {
+        gesture: {
+          systemBars: { top: 30.1, right: 0, bottom: 14.86, left: 0 },
+          systemBarsPx: { top: 79, right: 0, bottom: 39, left: 0 },
+          displayCutout: { top: 0, right: 0, bottom: 0, left: 0 },
+          displayCutoutPx: { top: 0, right: 0, bottom: 0, left: 0 },
+          condition: mainCondition,
+          sources: [mainGesture],
+        },
+        threeButton: {
+          systemBars: { top: 30.1, right: 0, bottom: 48, left: 0 },
+          systemBarsPx: { top: 79, right: 0, bottom: 126, left: 0 },
+          displayCutout: { top: 0, right: 0, bottom: 0, left: 0 },
+          displayCutoutPx: { top: 0, right: 0, bottom: 0, left: 0 },
+          condition: mainCondition,
+          sources: [mainThreeButton],
+        },
+      },
+      sources: [samsungSkinPage, mainThreeButton, mainGesture],
     },
   ],
-  sources: [samsungSkinPage],
+  sources: [samsungSkinPage, coverThreeButton, coverGesture, mainThreeButton, mainGesture],
 };

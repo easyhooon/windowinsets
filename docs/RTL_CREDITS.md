@@ -28,6 +28,16 @@ header to **10 Credits**. A second click produced `Available only 1 time a day`
 and did not change the balance. The UI did not expose a countdown, reset time or
 timezone, so those details remain unknown.
 
+A Galaxy Z Fold7 reservation then ran for the full 30-minute minimum and expired
+without extension. The header showed **8 Credits** afterward, directly confirming
+the documented two-credit cost for one minimum reservation on this account.
+
+A second 30-minute Fold7 reservation reduced the header from **8 to 6 Credits**.
+Ending it early with RTL's checked `Return this device to get back 1 credit(s)`
+option raised the balance to **7 Credits**. This is direct evidence that an early
+return can refund one whole unused 15-minute block; it does not establish
+sub-credit or partial-block behavior.
+
 The preceding 2026-09-22 Usage History contained these booked reservations:
 
 | Time | Device | Booked credits |

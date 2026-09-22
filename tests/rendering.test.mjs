@@ -6,6 +6,7 @@ import { skins } from '../app/data/skins.ts';
 import { isInCoverage } from '../app/data/coverage.ts';
 import { getRtlAvailability, rtlCatalog } from '../app/data/rtlAvailability.ts';
 import { galaxyZFold2 } from '../app/data/devices/galaxy-z-fold2/index.ts';
+import { galaxyZFold7 } from '../app/data/devices/galaxy-z-fold7/index.ts';
 import { galaxyZFold8 } from '../app/data/devices/galaxy-z-fold8/index.ts';
 import { galaxyZFlip8 } from '../app/data/devices/galaxy-z-flip8/index.ts';
 import { galaxyS25Plus } from '../app/data/devices/galaxy-s25-plus/index.ts';
@@ -205,7 +206,7 @@ test('RTL comparisons never turn an incomplete inventory into non-support claims
     assert.equal(getRtlAvailability(slug).status, 'listed');
   }
   const comparison = skins.map(device => getRtlAvailability(device.slug));
-  assert.equal(comparison.filter(result => result.status === 'listed').length, 4);
+  assert.equal(comparison.filter(result => result.status === 'listed').length, 5);
   assert.ok(comparison.every(result => result.status !== 'not-listed'));
   // Existing captures do not imply that a model can still be reserved today.
   assert.equal(getRtlAvailability('galaxy-s25-plus').status, 'unknown');
@@ -213,6 +214,41 @@ test('RTL comparisons never turn an incomplete inventory into non-support claims
   assert.equal(getRtlAvailability('galaxy-s20', complete).status, 'not-listed');
   assert.match(getRtlAvailability('galaxy-s20', complete).previewNotice, /Not listed/);
   assert.equal(getRtlAvailability('galaxy-z-fold8', complete).label, 'Reservable on RTL');
+  assert.equal(getRtlAvailability('galaxy-z-fold7').label, 'Reservable on RTL');
+});
+
+test('Fold7 captures keep exact cover and rotated inner evidence distinct', () => {
+  const captures = [
+    ['cover', 'gesture'],
+    ['cover', 'threeButton'],
+    ['main', 'gesture'],
+    ['main', 'threeButton'],
+  ];
+  for (const [screenId, navMode] of captures) {
+    const raw = readCapture(`measurements/galaxy-z-fold7/${screenId}-${navMode}.json`);
+    const screen = galaxyZFold7.screens.find(candidate => candidate.id === screenId);
+    assert.equal(raw.device.model, 'SM-F966U');
+    assert.equal(raw.screen, screenId);
+    assert.equal(raw.navigation.mode, navMode);
+    assert.equal(screen.captureRotation, raw.display.rotation);
+    assert.deepEqual(screen.logicalSizePx, raw.display.currentWindowPx);
+    assert.deepEqual(screen.logicalSizeDp, raw.display.maximumWindowDp);
+    assert.deepEqual(screen.insets[navMode].systemBars, raw.insets.systemBars.dp);
+    assert.deepEqual(screen.insets[navMode].displayCutout, raw.insets.displayCutout.dp);
+  }
+  const cover = galaxyZFold7.screens.find(screen => screen.id === 'cover');
+  const main = galaxyZFold7.screens.find(screen => screen.id === 'main');
+  assert.deepEqual(cover.resolutionPx, { width: 1080, height: 2520 });
+  assert.deepEqual(main.resolutionPx, { width: 1968, height: 2184 });
+  assert.deepEqual(main.logicalSizePx, { width: 2184, height: 1968 });
+  assert.equal(main.captureOrientation, 'landscape');
+  for (const navMode of ['gesture', 'threeButton']) {
+    const raw = readCapture(`measurements/galaxy-z-fold7/main-${navMode}.json`);
+    assert.equal(raw.hinge.angleDegrees, 0);
+    assert.equal(raw.hinge.foldingFeatures[0].state, 'FLAT');
+    assert.deepEqual(raw.hinge.foldingFeatures[0].bounds.px,
+      { left: 0, top: 984, right: 2184, bottom: 984 });
+  }
 });
 
 test('Fold8 recapture keeps cover and inner evidence distinct in both navigation modes', () => {
@@ -254,6 +290,18 @@ test('published px values and capture orientation remain exact raw evidence', ()
         screenId: 'main',
         navMode,
         capturePath: `measurements/galaxy-z-fold2/main-${navMode}.json`,
+      },
+      {
+        device: galaxyZFold7,
+        screenId: 'cover',
+        navMode,
+        capturePath: `measurements/galaxy-z-fold7/cover-${navMode}.json`,
+      },
+      {
+        device: galaxyZFold7,
+        screenId: 'main',
+        navMode,
+        capturePath: `measurements/galaxy-z-fold7/main-${navMode}.json`,
       },
       {
         device: galaxyZFold8,
@@ -326,6 +374,7 @@ test('published cutout positions preserve raw bounds in both dp and px', () => {
   const cases = [
     [galaxyZFold2, 'cover', 'measurements/galaxy-z-fold2/cover-threeButton.json'],
     [galaxyZFold2, 'main', 'measurements/galaxy-z-fold2/main-threeButton.json'],
+    [galaxyZFold7, 'cover', 'measurements/galaxy-z-fold7/cover-threeButton.json'],
     [galaxyZFold8, 'cover', 'measurements/galaxy-z-fold8/recapture-2026-09-22/cover-threeButton.json'],
     [galaxyZFlip8, 'main', 'measurements/galaxy-z-flip8/main-threeButton.json'],
     [galaxyS25Plus, 'main', 'measurements/galaxy-s25-plus/main-threeButton.json'],
