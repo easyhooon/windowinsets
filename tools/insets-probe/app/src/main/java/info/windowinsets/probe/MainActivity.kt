@@ -10,6 +10,7 @@ import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
 import android.view.Gravity
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
@@ -40,12 +41,14 @@ class MainActivity : ComponentActivity(), SensorEventListener {
     private lateinit var root: LinearLayout
     private lateinit var output: TextView
     private lateinit var screenGroup: RadioGroup
+    private lateinit var navModeGroup: RadioGroup
 
     private var latestInsets: WindowInsetsCompat? = null
     private var hingeAngle: Float? = null
     private var foldingFeatures: List<FoldingFeature> = emptyList()
     private var lastJson: String = ""
     private var autoExport = false
+    private var measureAllInProgress = false
 
     private val layoutTracker by lazy { WindowInfoTrackerCallbackAdapter(WindowInfoTracker.getOrCreate(this)) }
     private val layoutListener = Consumer<WindowLayoutInfo> { info ->
@@ -119,6 +122,40 @@ class MainActivity : ComponentActivity(), SensorEventListener {
         else -> "phone"
     }
 
+    private fun setNavMode(mode: Int) {
+        runCatching {
+            Settings.Secure.putInt(contentResolver, "navigation_mode", mode)
+            Log.i(TAG, "Set navigation_mode to $mode")
+        }.onFailure { Log.e(TAG, "Failed to set navigation_mode", it) }
+    }
+
+    private fun measureAll() {
+        measureAllInProgress = true
+        var filesaved = 0
+        val screens = listOf(ID_COVER, ID_MAIN)
+        val modes = listOf(ID_THREEBUTTON, ID_GESTURE)
+
+        for (screenId in screens) {
+            screenGroup.check(screenId)
+            root.postDelayed({
+                for (modeId in modes) {
+                    navModeGroup.check(modeId)
+                    root.postDelayed({
+                        val file = export()
+                        if (file != null) {
+                            Log.i(TAG, "Saved: ${file.name}")
+                        }
+                    }, 500)
+                }
+            }, 500)
+        }
+
+        root.postDelayed({
+            measureAllInProgress = false
+            Toast.makeText(this, "Saved 4 measurement files", Toast.LENGTH_LONG).show()
+        }, 5000)
+    }
+
     private fun refresh() {
         val insets = latestInsets ?: return
         val json = Probe.collect(this, insets, selectedScreen(), hingeAngle, foldingFeatures)
@@ -139,7 +176,8 @@ class MainActivity : ComponentActivity(), SensorEventListener {
     private fun export(): File? {
         if (lastJson.isEmpty()) return null
         val nav = latestInsets?.let { runCatching { org.json.JSONObject(lastJson).getJSONObject("navigation").getString("mode") }.getOrNull() } ?: "unknown"
-        val name = "probe-${android.os.Build.MODEL}-${selectedScreen()}-$nav.json".replace(Regex("[^A-Za-z0-9._-]"), "_")
+        val screen = selectedScreen()
+        val name = if (screen == "phone") "main-$nav.json" else "$screen-$nav.json"
         val file = File(getExternalFilesDir(null), name).apply { writeText(lastJson) }
         lastJson.lines().chunked(60).forEach { Log.i(TAG, it.joinToString("\n")) }
         return file
@@ -175,11 +213,39 @@ class MainActivity : ComponentActivity(), SensorEventListener {
         }
         root.addView(screenGroup)
 
+        navModeGroup = RadioGroup(this).apply {
+            orientation = RadioGroup.HORIZONTAL
+            setPadding(px(8), 0, px(8), 0)
+            addView(RadioButton(context).apply {
+                id = ID_THREEBUTTON
+                text = "3-Button"
+                setOnCheckedChangeListener { _, isChecked -> if (isChecked && !measureAllInProgress) setNavMode(0) }
+            })
+            addView(RadioButton(context).apply {
+                id = ID_GESTURE
+                text = "Gesture"
+                setOnCheckedChangeListener { _, isChecked -> if (isChecked && !measureAllInProgress) setNavMode(2) }
+            })
+            check(ID_THREEBUTTON)
+        }
+        root.addView(navModeGroup)
+
         val buttons = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.START
             setPadding(px(8), 0, px(8), 0)
         }
+        buttons.addView(Button(this).apply {
+            text = "Measure All"
+            setOnClickListener { measureAll() }
+        })
+        buttons.addView(Button(this).apply {
+            text = "Measure"
+            setOnClickListener {
+                val file = export() ?: return@setOnClickListener
+                Toast.makeText(context, "Saved: ${file.name}", Toast.LENGTH_LONG).show()
+            }
+        })
         buttons.addView(Button(this).apply {
             text = "Copy JSON"
             setOnClickListener {
@@ -219,5 +285,7 @@ class MainActivity : ComponentActivity(), SensorEventListener {
         const val ID_PHONE = 1001
         const val ID_COVER = 1002
         const val ID_MAIN = 1003
+        const val ID_THREEBUTTON = 1004
+        const val ID_GESTURE = 1005
     }
 }

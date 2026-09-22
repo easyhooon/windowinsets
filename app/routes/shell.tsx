@@ -21,7 +21,7 @@ export default function Shell() {
             Developer guide
           </NavLink>
           <NavLink to="/methodology" className="text-muted hover:text-fg">
-            How we measure
+            How I measure
           </NavLink>
           <a href={REPO_URL} className="text-muted hover:text-fg" rel="noopener noreferrer" target="_blank">
             GitHub

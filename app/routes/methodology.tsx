@@ -3,7 +3,7 @@ import { devices, hasVerifiedInsets, REPO_URL, SITE_URL } from "../data/devices"
 import type { Route } from "./+types/methodology";
 
 export function meta(_: Route.MetaArgs) {
-  const title = "How we measure Android window insets | windowinsets.info";
+  const title = "How I measure Android window insets | windowinsets.info";
   const description =
     "Where every number on windowinsets.info comes from: official specs, open-source InsetsProbe measurements, the conditions they are valid for, and known limitations.";
   const url = `${SITE_URL}/methodology`;
@@ -33,7 +33,7 @@ export default function Methodology() {
 
   return (
     <article className="mx-auto max-w-2xl p-4 md:p-8">
-      <h1 className="text-2xl font-semibold">How we measure</h1>
+      <h1 className="text-2xl font-semibold">How I measure</h1>
       <p className="mt-2 text-muted">
         This site is only useful if you can trust its numbers, so here is exactly where each
         one comes from and where it stops being reliable.
@@ -69,7 +69,7 @@ export default function Methodology() {
         <p>
           Samsung publishes screen size, resolution and density, but not status bar height,
           navigation bar height, cutout geometry or corner radii. Those depend on the device
-          and on the software running on it, so we read them from Android itself instead of
+          and on the software running on it, so I read them from Android itself instead of
           estimating.
         </p>
       </Section>
@@ -101,7 +101,7 @@ export default function Methodology() {
           </li>
         </ul>
         <p>
-          It prints the raw values as JSON. We do not edit these files by hand. You can build
+          It prints the raw values as JSON. I do not edit these files by hand. You can build
           the app yourself and reproduce any number.
         </p>
       </Section>
@@ -129,13 +129,13 @@ export default function Methodology() {
         </p>
       </Section>
 
-      <Section title="5. What we never do">
+      <Section title="5. What I never do">
         <ul>
           <li>Estimate or interpolate a value from another device or from resolution alone.</li>
           <li>Fill a value from a source that cannot be linked.</li>
           <li>Overwrite a measurement without keeping the earlier capture in the history.</li>
         </ul>
-        <p>Anything we cannot verify stays visible as <i>pending</i>.</p>
+        <p>Anything I cannot verify stays visible as <i>pending</i>.</p>
       </Section>
 
       <Section title="6. Known limitations">

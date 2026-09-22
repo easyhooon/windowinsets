@@ -26,7 +26,7 @@ export default function Home() {
         <b>community</b>, with its source and the One UI / Android version it applies to.
         Values that are not verified yet are shown as pending, never guessed.{" "}
         <Link to="/methodology" className="text-accent underline">
-          See how we measure.
+          See how I measure.
         </Link>
       </p>
       <h2 className="mt-8 text-sm font-medium text-muted">Devices</h2>
