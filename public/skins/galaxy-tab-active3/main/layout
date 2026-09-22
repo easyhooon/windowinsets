@@ -1,0 +1,72 @@
+parts {
+    portrait {
+        background {
+            image   device_Port.png
+        }
+		foreground {
+			mask	fore_port.png
+		}
+		buttons {
+			volume-up {
+				image 	rocker_up.png
+				x		1552
+				y		471
+			}
+			volume-down {
+				image 	rocker_down.png
+				x		1552
+				y		592
+			}
+			power {
+				image 	rocker_power.png
+				x		1552
+				y		870
+			}
+			soft-left {
+				image 	button_multitask.png
+				x		516
+				y		2359
+			}
+			home {
+				image	button_home.png
+				x		783
+				y		2359
+			}
+			back {
+				image	button_back.png
+				x		1050
+				y		2359
+			}
+		}		
+    }
+
+    device {
+        display {
+            width   1200
+            height  1920
+            x       0
+            y       0
+        }
+    }
+}
+
+layouts {
+    portrait {
+        width     1724
+        height    2674
+        color     0x000000
+        event     EV_SW:0:1
+        
+        part1 {
+            name    portrait
+            x       0
+            y       0
+        }
+
+        part2 {
+            name    device
+            x       260
+            y       378
+        }
+    }
+}

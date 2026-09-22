@@ -77,7 +77,7 @@ export interface Screen {
   sources: Source[];
 }
 
-export type FormFactor = "bar" | "foldable-book" | "foldable-flip";
+export type FormFactor = "bar" | "tablet" | "foldable-book" | "foldable-flip";
 
 export interface Device {
   slug: string;
@@ -85,7 +85,10 @@ export interface Device {
   brand: "Samsung";
   series: string;
   formFactor: FormFactor;
-  releaseYear: number;
+  /** Enable only for models whose animated skin rendering has been implemented. */
+  foldAnimation?: boolean;
+  /** null for artwork-only entries whose product specifications are not sourced. */
+  releaseYear: number | null;
   /** Cover screen (if any) first, then the main screen. */
   screens: Screen[];
   sources: Source[];

@@ -1,0 +1,8 @@
+{
+  "archive": "Galaxy_Z_Fold7.zip",
+  "folder": "Galaxy_Z_Fold7(Cover_Display)",
+  "background": "device_Port-JetBlack.png",
+  "foreground": "fore_port.png",
+  "source": "https://developer.samsung.com/galaxy-emulator-skin",
+  "providedAt": "2026-09-22"
+}

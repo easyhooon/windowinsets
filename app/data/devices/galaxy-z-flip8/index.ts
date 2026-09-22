@@ -20,8 +20,15 @@ export const galaxyZFlip8: Device = {
   brand: "Samsung",
   series: "Galaxy Z Flip",
   formFactor: "foldable-flip",
+  foldAnimation: true,
   releaseYear: 2026,
   screens: [
+    {
+      id: "cover", label: "Cover", diagonalInch: 0,
+      resolutionPx: { width: 0, height: 0 }, ppi: 0,
+      logicalSizeDp: null, densityDpi: null, cornerRadiiDp: null,
+      insets: { gesture: null, threeButton: null }, sources: [],
+    },
     {
       id: "main",
       label: "Main",

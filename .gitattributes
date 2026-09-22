@@ -1,0 +1,2 @@
+# Preserve Samsung emulator layout files exactly as supplied.
+public/skins/**/layout -text -whitespace

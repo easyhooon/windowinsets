@@ -1,0 +1,669 @@
+[
+  {
+    "slug": "galaxy-fold",
+    "name": "Galaxy Fold",
+    "series": "Galaxy Z Fold",
+    "formFactor": "foldable-book",
+    "screens": [
+      "cover",
+      "main"
+    ]
+  },
+  {
+    "slug": "galaxy-s20",
+    "name": "Galaxy S20",
+    "series": "Galaxy S",
+    "formFactor": "bar",
+    "screens": [
+      "main"
+    ]
+  },
+  {
+    "slug": "galaxy-s20-fe",
+    "name": "Galaxy S20 FE",
+    "series": "Galaxy S",
+    "formFactor": "bar",
+    "screens": [
+      "main"
+    ]
+  },
+  {
+    "slug": "galaxy-s20-plus",
+    "name": "Galaxy S20 Plus",
+    "series": "Galaxy S",
+    "formFactor": "bar",
+    "screens": [
+      "main"
+    ]
+  },
+  {
+    "slug": "galaxy-s20-ultra",
+    "name": "Galaxy S20 Ultra",
+    "series": "Galaxy S",
+    "formFactor": "bar",
+    "screens": [
+      "main"
+    ]
+  },
+  {
+    "slug": "galaxy-s21",
+    "name": "Galaxy S21",
+    "series": "Galaxy S",
+    "formFactor": "bar",
+    "screens": [
+      "main"
+    ]
+  },
+  {
+    "slug": "galaxy-s21-fe",
+    "name": "Galaxy S21 FE",
+    "series": "Galaxy S",
+    "formFactor": "bar",
+    "screens": [
+      "main"
+    ]
+  },
+  {
+    "slug": "galaxy-s21-plus",
+    "name": "Galaxy S21 Plus",
+    "series": "Galaxy S",
+    "formFactor": "bar",
+    "screens": [
+      "main"
+    ]
+  },
+  {
+    "slug": "galaxy-s21-ultra",
+    "name": "Galaxy S21 Ultra",
+    "series": "Galaxy S",
+    "formFactor": "bar",
+    "screens": [
+      "main"
+    ]
+  },
+  {
+    "slug": "galaxy-s22",
+    "name": "Galaxy S22",
+    "series": "Galaxy S",
+    "formFactor": "bar",
+    "screens": [
+      "main"
+    ]
+  },
+  {
+    "slug": "galaxy-s22-plus",
+    "name": "Galaxy S22 Plus",
+    "series": "Galaxy S",
+    "formFactor": "bar",
+    "screens": [
+      "main"
+    ]
+  },
+  {
+    "slug": "galaxy-s22-ultra",
+    "name": "Galaxy S22 Ultra",
+    "series": "Galaxy S",
+    "formFactor": "bar",
+    "screens": [
+      "main"
+    ]
+  },
+  {
+    "slug": "galaxy-s23",
+    "name": "Galaxy S23",
+    "series": "Galaxy S",
+    "formFactor": "bar",
+    "screens": [
+      "main"
+    ]
+  },
+  {
+    "slug": "galaxy-s23-fe",
+    "name": "Galaxy S23 FE",
+    "series": "Galaxy S",
+    "formFactor": "bar",
+    "screens": [
+      "main"
+    ]
+  },
+  {
+    "slug": "galaxy-s23-plus",
+    "name": "Galaxy S23 Plus",
+    "series": "Galaxy S",
+    "formFactor": "bar",
+    "screens": [
+      "main"
+    ]
+  },
+  {
+    "slug": "galaxy-s23-ultra",
+    "name": "Galaxy S23 Ultra",
+    "series": "Galaxy S",
+    "formFactor": "bar",
+    "screens": [
+      "main"
+    ]
+  },
+  {
+    "slug": "galaxy-s24",
+    "name": "Galaxy S24",
+    "series": "Galaxy S",
+    "formFactor": "bar",
+    "screens": [
+      "main"
+    ]
+  },
+  {
+    "slug": "galaxy-s24-fe",
+    "name": "Galaxy S24 FE",
+    "series": "Galaxy S",
+    "formFactor": "bar",
+    "screens": [
+      "main"
+    ]
+  },
+  {
+    "slug": "galaxy-s24-plus",
+    "name": "Galaxy S24 Plus",
+    "series": "Galaxy S",
+    "formFactor": "bar",
+    "screens": [
+      "main"
+    ]
+  },
+  {
+    "slug": "galaxy-s24-ultra",
+    "name": "Galaxy S24 Ultra",
+    "series": "Galaxy S",
+    "formFactor": "bar",
+    "screens": [
+      "main"
+    ]
+  },
+  {
+    "slug": "galaxy-s25",
+    "name": "Galaxy S25",
+    "series": "Galaxy S",
+    "formFactor": "bar",
+    "screens": [
+      "main"
+    ]
+  },
+  {
+    "slug": "galaxy-s25-edge",
+    "name": "Galaxy S25 Edge",
+    "series": "Galaxy S",
+    "formFactor": "bar",
+    "screens": [
+      "main"
+    ]
+  },
+  {
+    "slug": "galaxy-s25-fe",
+    "name": "Galaxy S25 FE",
+    "series": "Galaxy S",
+    "formFactor": "bar",
+    "screens": [
+      "main"
+    ]
+  },
+  {
+    "slug": "galaxy-s25-plus",
+    "name": "Galaxy S25 Plus",
+    "series": "Galaxy S",
+    "formFactor": "bar",
+    "screens": [
+      "main"
+    ]
+  },
+  {
+    "slug": "galaxy-s25-ultra",
+    "name": "Galaxy S25 Ultra",
+    "series": "Galaxy S",
+    "formFactor": "bar",
+    "screens": [
+      "main"
+    ]
+  },
+  {
+    "slug": "galaxy-s26",
+    "name": "Galaxy S26",
+    "series": "Galaxy S",
+    "formFactor": "bar",
+    "screens": [
+      "main"
+    ]
+  },
+  {
+    "slug": "galaxy-s26-fe",
+    "name": "Galaxy S26 FE",
+    "series": "Galaxy S",
+    "formFactor": "bar",
+    "screens": [
+      "main"
+    ]
+  },
+  {
+    "slug": "galaxy-s26-plus",
+    "name": "Galaxy S26 Plus",
+    "series": "Galaxy S",
+    "formFactor": "bar",
+    "screens": [
+      "main"
+    ]
+  },
+  {
+    "slug": "galaxy-s26-ultra",
+    "name": "Galaxy S26 Ultra",
+    "series": "Galaxy S",
+    "formFactor": "bar",
+    "screens": [
+      "main"
+    ]
+  },
+  {
+    "slug": "galaxy-tab-a11",
+    "name": "Galaxy Tab A11",
+    "series": "Galaxy Tab",
+    "formFactor": "tablet",
+    "screens": [
+      "main"
+    ]
+  },
+  {
+    "slug": "galaxy-tab-a11-plus",
+    "name": "Galaxy Tab A11 Plus",
+    "series": "Galaxy Tab",
+    "formFactor": "tablet",
+    "screens": [
+      "main"
+    ]
+  },
+  {
+    "slug": "galaxy-tab-a7-10-4-2022",
+    "name": "Galaxy Tab A7 10.4 (2022)",
+    "series": "Galaxy Tab",
+    "formFactor": "tablet",
+    "screens": [
+      "main"
+    ]
+  },
+  {
+    "slug": "galaxy-tab-a7-lite",
+    "name": "Galaxy Tab A7 Lite",
+    "series": "Galaxy Tab",
+    "formFactor": "tablet",
+    "screens": [
+      "main"
+    ]
+  },
+  {
+    "slug": "galaxy-tab-a9",
+    "name": "Galaxy Tab A9",
+    "series": "Galaxy Tab",
+    "formFactor": "tablet",
+    "screens": [
+      "main"
+    ]
+  },
+  {
+    "slug": "galaxy-tab-a9-plus",
+    "name": "Galaxy Tab A9 Plus",
+    "series": "Galaxy Tab",
+    "formFactor": "tablet",
+    "screens": [
+      "main"
+    ]
+  },
+  {
+    "slug": "galaxy-tab-active3",
+    "name": "Galaxy Tab Active3",
+    "series": "Galaxy Tab",
+    "formFactor": "tablet",
+    "screens": [
+      "main"
+    ]
+  },
+  {
+    "slug": "galaxy-tab-active4-pro",
+    "name": "Galaxy Tab Active4 Pro",
+    "series": "Galaxy Tab",
+    "formFactor": "tablet",
+    "screens": [
+      "main"
+    ]
+  },
+  {
+    "slug": "galaxy-tab-active5",
+    "name": "Galaxy Tab Active5",
+    "series": "Galaxy Tab",
+    "formFactor": "tablet",
+    "screens": [
+      "main"
+    ]
+  },
+  {
+    "slug": "galaxy-tab-active5-pro",
+    "name": "Galaxy Tab Active5 Pro",
+    "series": "Galaxy Tab",
+    "formFactor": "tablet",
+    "screens": [
+      "main"
+    ]
+  },
+  {
+    "slug": "galaxy-tab-s10-fe",
+    "name": "Galaxy Tab S10 FE",
+    "series": "Galaxy Tab",
+    "formFactor": "tablet",
+    "screens": [
+      "main"
+    ]
+  },
+  {
+    "slug": "galaxy-tab-s10-fe-plus",
+    "name": "Galaxy Tab S10 FE Plus",
+    "series": "Galaxy Tab",
+    "formFactor": "tablet",
+    "screens": [
+      "main"
+    ]
+  },
+  {
+    "slug": "galaxy-tab-s10-lite",
+    "name": "Galaxy Tab S10 Lite",
+    "series": "Galaxy Tab",
+    "formFactor": "tablet",
+    "screens": [
+      "main"
+    ]
+  },
+  {
+    "slug": "galaxy-tab-s10-plus",
+    "name": "Galaxy Tab S10 Plus",
+    "series": "Galaxy Tab",
+    "formFactor": "tablet",
+    "screens": [
+      "main"
+    ]
+  },
+  {
+    "slug": "galaxy-tab-s10-ultra",
+    "name": "Galaxy Tab S10 Ultra",
+    "series": "Galaxy Tab",
+    "formFactor": "tablet",
+    "screens": [
+      "main"
+    ]
+  },
+  {
+    "slug": "galaxy-tab-s11",
+    "name": "Galaxy Tab S11",
+    "series": "Galaxy Tab",
+    "formFactor": "tablet",
+    "screens": [
+      "main"
+    ]
+  },
+  {
+    "slug": "galaxy-tab-s11-ultra",
+    "name": "Galaxy Tab S11 Ultra",
+    "series": "Galaxy Tab",
+    "formFactor": "tablet",
+    "screens": [
+      "main"
+    ]
+  },
+  {
+    "slug": "galaxy-tab-s4-10-5",
+    "name": "Galaxy Tab S4 10.5",
+    "series": "Galaxy Tab",
+    "formFactor": "tablet",
+    "screens": [
+      "main"
+    ]
+  },
+  {
+    "slug": "galaxy-tab-s6",
+    "name": "Galaxy Tab S6",
+    "series": "Galaxy Tab",
+    "formFactor": "tablet",
+    "screens": [
+      "main"
+    ]
+  },
+  {
+    "slug": "galaxy-tab-s6-lite",
+    "name": "Galaxy Tab S6 Lite",
+    "series": "Galaxy Tab",
+    "formFactor": "tablet",
+    "screens": [
+      "main"
+    ]
+  },
+  {
+    "slug": "galaxy-tab-s7",
+    "name": "Galaxy Tab S7",
+    "series": "Galaxy Tab",
+    "formFactor": "tablet",
+    "screens": [
+      "main"
+    ]
+  },
+  {
+    "slug": "galaxy-tab-s7-fe",
+    "name": "Galaxy Tab S7 FE",
+    "series": "Galaxy Tab",
+    "formFactor": "tablet",
+    "screens": [
+      "main"
+    ]
+  },
+  {
+    "slug": "galaxy-tab-s7-plus",
+    "name": "Galaxy Tab S7 Plus",
+    "series": "Galaxy Tab",
+    "formFactor": "tablet",
+    "screens": [
+      "main"
+    ]
+  },
+  {
+    "slug": "galaxy-tab-s8",
+    "name": "Galaxy Tab S8",
+    "series": "Galaxy Tab",
+    "formFactor": "tablet",
+    "screens": [
+      "main"
+    ]
+  },
+  {
+    "slug": "galaxy-tab-s8-plus",
+    "name": "Galaxy Tab S8 Plus",
+    "series": "Galaxy Tab",
+    "formFactor": "tablet",
+    "screens": [
+      "main"
+    ]
+  },
+  {
+    "slug": "galaxy-tab-s9",
+    "name": "Galaxy Tab S9",
+    "series": "Galaxy Tab",
+    "formFactor": "tablet",
+    "screens": [
+      "main"
+    ]
+  },
+  {
+    "slug": "galaxy-tab-s9-fe",
+    "name": "Galaxy Tab S9 FE",
+    "series": "Galaxy Tab",
+    "formFactor": "tablet",
+    "screens": [
+      "main"
+    ]
+  },
+  {
+    "slug": "galaxy-tab-s9-fe-plus",
+    "name": "Galaxy Tab S9 FE Plus",
+    "series": "Galaxy Tab",
+    "formFactor": "tablet",
+    "screens": [
+      "main"
+    ]
+  },
+  {
+    "slug": "galaxy-tab-s9-plus",
+    "name": "Galaxy Tab S9 Plus",
+    "series": "Galaxy Tab",
+    "formFactor": "tablet",
+    "screens": [
+      "main"
+    ]
+  },
+  {
+    "slug": "galaxy-tab-s9-ultra",
+    "name": "Galaxy Tab S9 Ultra",
+    "series": "Galaxy Tab",
+    "formFactor": "tablet",
+    "screens": [
+      "main"
+    ]
+  },
+  {
+    "slug": "galaxy-z-flip",
+    "name": "Galaxy Z Flip",
+    "series": "Galaxy Z Flip",
+    "formFactor": "foldable-flip",
+    "screens": [
+      "main"
+    ]
+  },
+  {
+    "slug": "galaxy-z-flip3",
+    "name": "Galaxy Z Flip3",
+    "series": "Galaxy Z Flip",
+    "formFactor": "foldable-flip",
+    "screens": [
+      "main"
+    ]
+  },
+  {
+    "slug": "galaxy-z-flip4",
+    "name": "Galaxy Z Flip4",
+    "series": "Galaxy Z Flip",
+    "formFactor": "foldable-flip",
+    "screens": [
+      "main"
+    ]
+  },
+  {
+    "slug": "galaxy-z-flip6",
+    "name": "Galaxy Z Flip6",
+    "series": "Galaxy Z Flip",
+    "formFactor": "foldable-flip",
+    "screens": [
+      "main"
+    ]
+  },
+  {
+    "slug": "galaxy-z-flip7",
+    "name": "Galaxy Z Flip7",
+    "series": "Galaxy Z Flip",
+    "formFactor": "foldable-flip",
+    "screens": [
+      "cover",
+      "main"
+    ]
+  },
+  {
+    "slug": "galaxy-z-flip7-fe",
+    "name": "Galaxy Z Flip7 FE",
+    "series": "Galaxy Z Flip",
+    "formFactor": "foldable-flip",
+    "screens": [
+      "main"
+    ]
+  },
+  {
+    "slug": "galaxy-z-flip8",
+    "name": "Galaxy Z Flip8",
+    "series": "Galaxy Z Flip",
+    "formFactor": "foldable-flip",
+    "screens": [
+      "cover",
+      "main"
+    ]
+  },
+  {
+    "slug": "galaxy-z-fold2",
+    "name": "Galaxy Z Fold2",
+    "series": "Galaxy Z Fold",
+    "formFactor": "foldable-book",
+    "screens": [
+      "cover",
+      "main"
+    ]
+  },
+  {
+    "slug": "galaxy-z-fold4",
+    "name": "Galaxy Z Fold4",
+    "series": "Galaxy Z Fold",
+    "formFactor": "foldable-book",
+    "screens": [
+      "cover",
+      "main"
+    ]
+  },
+  {
+    "slug": "galaxy-z-fold5",
+    "name": "Galaxy Z Fold5",
+    "series": "Galaxy Z Fold",
+    "formFactor": "foldable-book",
+    "screens": [
+      "cover",
+      "main"
+    ]
+  },
+  {
+    "slug": "galaxy-z-fold6",
+    "name": "Galaxy Z Fold6",
+    "series": "Galaxy Z Fold",
+    "formFactor": "foldable-book",
+    "screens": [
+      "cover",
+      "main"
+    ]
+  },
+  {
+    "slug": "galaxy-z-fold7",
+    "name": "Galaxy Z Fold7",
+    "series": "Galaxy Z Fold",
+    "formFactor": "foldable-book",
+    "screens": [
+      "cover",
+      "main"
+    ]
+  },
+  {
+    "slug": "galaxy-z-fold8",
+    "name": "Galaxy Z Fold8",
+    "series": "Galaxy Z Fold",
+    "formFactor": "foldable-book",
+    "screens": [
+      "cover",
+      "main"
+    ]
+  },
+  {
+    "slug": "galaxy-z-fold8-ultra",
+    "name": "Galaxy Z Fold8 Ultra",
+    "series": "Galaxy Z Fold",
+    "formFactor": "foldable-book",
+    "screens": [
+      "cover",
+      "main"
+    ]
+  }
+]

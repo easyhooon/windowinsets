@@ -1,0 +1,8 @@
+{
+  "archive": "Galaxy_Z_Fold8_Ultra.zip",
+  "folder": "Galaxy_Z_Fold8_Ultra/Galaxy_Z_Fold8_Ultra_Main_Screen",
+  "background": "device_Port-Graphite.png",
+  "foreground": "fore_port.png",
+  "source": "https://developer.samsung.com/galaxy-emulator-skin",
+  "providedAt": "2026-09-22"
+}

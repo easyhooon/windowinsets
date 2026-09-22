@@ -20,27 +20,15 @@ export const galaxyZFold8: Device = {
   brand: "Samsung",
   series: "Galaxy Z Fold",
   formFactor: "foldable-book",
+  foldAnimation: true,
   releaseYear: 2026,
   screens: [
     {
       id: "cover",
       label: "Cover",
-      // Not independently verified yet — RTL's remote view only exposes the main
-      // display, so a cover-screen capture would just duplicate the main screen's
-      // values under a different label. Left pending until measured on a physically
-      // folded unit.
-      diagonalInch: 0,
-      resolutionPx: { width: 0, height: 0 },
-      ppi: 0,
-      logicalSizeDp: null,
-      densityDpi: null,
-      cornerRadiiDp: null,
-      insets: { gesture: null, threeButton: null },
-      sources: [],
-    },
-    {
-      id: "main",
-      label: "Main",
+      // Capture is labeled main in immutable raw JSON, but its 1248×1972
+      // resolution exactly matches Samsung's official cover skin layout.
+      // Classified as cover from that evidence; never rotate it into an inner panel.
       diagonalInch: 5.6,
       resolutionPx: { width: 1248, height: 1972 },
       ppi: 420,
@@ -65,6 +53,20 @@ export const galaxyZFold8: Device = {
       },
       sources: [rtlThreeButton, rtlGesture],
     },
+    {
+      id: "main",
+      label: "Main",
+      // No independently verified inner-display capture. Skin is preview-only.
+      diagonalInch: 0,
+      resolutionPx: { width: 0, height: 0 },
+      ppi: 0,
+      logicalSizeDp: null,
+      densityDpi: null,
+      cornerRadiiDp: null,
+      insets: { gesture: null, threeButton: null },
+      sources: [],
+    },
+
   ],
   sources: [rtlThreeButton, rtlGesture],
 };

@@ -1,0 +1,8 @@
+{
+  "archive": "Galaxy_Z_Fold5.zip",
+  "folder": "Galaxy_Z_Fold5/Galaxy_Z_Fold5_Unfolded",
+  "background": "device_Port-PhantomBlack.png",
+  "foreground": "fore_port2.png",
+  "source": "https://developer.samsung.com/galaxy-emulator-skin",
+  "providedAt": "2026-09-22"
+}

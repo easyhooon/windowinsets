@@ -7,20 +7,30 @@ import { galaxyZFlip6 } from "./devices/galaxy-z-flip6";
 import { galaxyZFold7 } from "./devices/galaxy-z-fold7";
 import { galaxyZFold8 } from "./devices/galaxy-z-fold8";
 import { galaxyZFlip8 } from "./devices/galaxy-z-flip8";
+import { skinPreviews } from "./skinPreviews";
+import { isInCoverage } from "./coverage";
 
-/** Newest first; within the same release year, Ultra > Plus > base, matching
- * Samsung's own tier ordering. Add a device by creating a file in ./devices
- * and listing it here. */
-export const devices: Device[] = [
-  galaxyZFold8,
-  galaxyZFlip8,
-  galaxyS25Ultra,
-  galaxyS25Plus,
-  galaxyS25,
-  galaxyZFold7,
-  galaxyZFold6,
-  galaxyZFlip6,
-];
+// Explicit entries own all verified data. Skins can add missing screens, never
+// replace a screen's captures. Add a measured entry here as RTL data arrives.
+const verifiedEntries = [galaxyZFold8, galaxyZFlip8, galaxyS25Ultra, galaxyS25Plus,
+  galaxyS25, galaxyZFold7, galaxyZFold6, galaxyZFlip6];
+const mergedDevices = verifiedEntries.map(device => {
+  const preview = skinPreviews.find(entry => entry.slug === device.slug);
+  const missingScreens = preview?.screens.filter(screen => !device.screens.some(s => s.id === screen.id)) ?? [];
+  return { ...device, screens: [...device.screens, ...missingScreens].sort((a, b) => Number(a.id === "main") - Number(b.id === "main")) };
+}).concat(skinPreviews.filter(preview => !verifiedEntries.some(device => device.slug === preview.slug)));
+
+const groupOrder = (device: Device) => device.formFactor === "foldable-book" ? 0
+  : device.formFactor === "foldable-flip" ? 1 : device.formFactor === "tablet" ? 3
+  : device.series.startsWith("Galaxy Note") ? 4 : device.series === "Galaxy A" ? 5 : 2;
+const generation = (device: Device) => Number(device.slug.match(/(?:fold|flip|s|a|active|note)(\d+)/)?.[1] ?? 1);
+const tier = (device: Device) => device.slug.endsWith("ultra") ? 0 : device.slug.endsWith("plus") ? 1
+  : device.slug.endsWith("edge") ? 2 : device.slug.includes("-fe") ? 4 : 3;
+
+export const devices: Device[] = mergedDevices.filter(isInCoverage).sort((a, b) => groupOrder(a) - groupOrder(b)
+  || generation(b) - generation(a) || tier(a) - tier(b) || a.name.localeCompare(b.name));
+
+export const featuredDevice = devices.find(device => device.slug === "galaxy-z-fold8")!;
 
 export const SITE_URL = "https://windowinsets.info";
 export const REPO_URL = "https://github.com/easyhooon/windowinsets";

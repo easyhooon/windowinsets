@@ -1,0 +1,62 @@
+parts {
+    portrait {
+        background {
+            image   device_Port-Navy.png
+        }
+		foreground {
+			mask	fore_port.png
+		}
+		buttons {
+			volume-up {
+				image 	rocker_up.png
+				x		1254
+				y		808
+			}
+			volume-down {
+				image 	rocker_down.png
+				x		1254
+				y		960
+			}
+			power {
+				image 	rocker_power.png
+				x		1252
+				y		1209
+			}
+		}		
+    }
+
+    device {
+        display {
+            width   968
+            height  2376
+            x       0
+            y       0
+        }
+    }
+}
+
+layouts {
+    portrait {
+        width     1416
+        height    2774
+        color     0x000000
+        event     EV_SW:0:1
+        
+        part1 {
+            name    portrait
+            x       0
+            y       0
+        }
+
+        part2 {
+            name    device
+            x       241
+            y       196
+        }
+    }
+}
+
+network {
+    speed  full
+    delay  none
+}
