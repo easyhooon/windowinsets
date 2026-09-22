@@ -95,15 +95,16 @@ Flip8 cover remain pending.
 
 ## RTL Credits & Cost
 
-Confirmed directly from Samsung's official RTL FAQ (developer.samsung.com/remotetestlab/docs/2/faq):
+Samsung's current policy page says 20 credits per day, but the authenticated UI
+granted only 10 credits on 2026-09-23 and limited that action to once per day.
+Plan from the confirmed live balance, not the published maximum. One credit buys
+15 minutes and the minimum reservation is 30 minutes / 2 credits, so an observed
+10-credit grant supports at most five minimum reservations without refunds.
 
-- **"Is there a charge for using the Remote Test Lab service?"** → *"It's free of charge for Samsung Developer members."*
-- **"What is the Credit?"** → *"The Credit is needed to reserve a remote device on the Remote Test Lab (1 Credit = 15 min.)"*
-- **"How can I get the Credit?"** → *"You can get 20 Credits once a day by signing in the Remote Test Lab web site."*
-
-**No paid credit purchase option exists.** RTL is free for Samsung Developer members with a fixed **20 credits/day (= 5 hours), resetting once every 24 hours by signing in.** There is no way to buy more the same day.
-
-**Pacing**: a full manual capture (main screen, 3-button + gesture) costs ~2 credits (30 min reservation) in practice. At that rate, **up to ~10 devices per day** can be measured within the free daily allowance. Plan device order accordingly — measure the highest-priority/newest devices first each day.
+See [RTL_CREDITS.md](RTL_CREDITS.md) for primary sources, the dated 0→10 UI
+observation, the prior 20-credit booking history, early-close refunds and the
+operational budget rule. The UI exposed no reset countdown or timezone; a fixed
+24-hour reset must not be claimed without evidence.
 
 Other notes:
 - Closing/losing the RTL WebClient session triggers a full device restart (~1–2 min) before it can be reserved again — avoid closing mid-task.

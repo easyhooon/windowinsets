@@ -54,9 +54,11 @@ Treat `Please sign in if you want to use the Remote Test Lab service.` as an exp
 or incomplete RTL session even if the device list remains visible.
 
 For every available target, reserve exactly 30 minutes / 2 credits. This is a
-throughput invariant: Samsung provides 20 credits per day and charges 1 credit per
-15 minutes, so the minimum reservation supports up to 10 distinct devices per daily
-allocation and minimizes the calendar time needed to cover the post-2020 queue.
+throughput invariant because Samsung charges 1 credit per 15 minutes and 30 minutes
+is the minimum reservation. Read `docs/RTL_CREDITS.md` before the first reservation
+of a session: Samsung's published 20-credit daily policy conflicts with a live
+10-credit once-per-day grant observed on 2026-09-23. Budget from the confirmed
+header balance, not the published maximum.
 Prepare the APK and capture checklist before reserving. Do not extend or renew a
 session; preserve completed evidence and requeue unfinished captures for another
 30-minute slot. Confirm the dialog still names the intended model and duration, then
@@ -64,11 +66,12 @@ start the reservation. The user's request to reserve the named queue authorizes 
 ordinary reservation; unexpected paid options, terms, permissions, or a target
 change require a fresh user decision.
 
-Treat the header credit count as remaining allocation only after the latest
-reservation has closed and Usage History has refreshed. A live reservation can
-leave credits visible until the session ends. Before booking, verify the completed
-rows in **Usage History** and sum their credits; stop when the daily 20-credit total
-has been reached.
+If credits are insufficient, use **Get Free Credits** once and record the exact
+notification plus resulting balance. A repeat can report `Available only 1 time a
+day`; stop retrying when it does. Treat the header as the current reservation
+ceiling. Before booking, inspect **Usage History** for booked credits, but keep them
+separate from net consumption because ending early can return unused-time credits.
+Stop when fewer than two credits remain.
 
 If RTL returns 403, first retry after a short interval, then re-enter through the RTL
 landing page or request a fresh manual login as described in
