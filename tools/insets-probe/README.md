@@ -39,6 +39,19 @@ adb pull /sdcard/Android/data/info.windowinsets.probe/files/
 
 `--es screen` accepts `cover` or `main` (default `phone`); `--ez export true` saves the JSON one second after launch. See [sample-output](sample-output) for a real capture.
 
+## Version 1.1.1: verified on Galaxy Z Fold2
+
+Android 13 resource display metrics reported 1768×1976 while the full window was
+1768×2208 (88 px status bar + 144 px navigation bar). `widthPx`/`heightPx` now use
+`currentWindowMetrics`; original resource dimensions remain in `appMetricsPx`.
+`screenWidthDp`/`screenHeightDp` still reflect Android configuration and can exclude
+system bars. Use full-window bounds divided by density for the website diagram.
+See [WindowMetrics bounds](https://developer.android.com/reference/android/view/WindowMetrics#getBounds()).
+
+One UI version now comes from the device's `ro.build.version.oneui` property.
+Fold2 reports 50101 (5.1.1); subtracting 90000 from SEM_PLATFORM_INT 140500 incorrectly
+produced 5.5. The raw platform integer remains recorded; unknown versions stay unknown.
+
 ## Version 1.1.0: capture corrections
 
 - Removed **Measure All**: it iterated labels without changing the physical display,

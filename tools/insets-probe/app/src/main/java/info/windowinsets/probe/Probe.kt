@@ -53,7 +53,7 @@ object Probe {
         json.put("capturedAt", java.time.Instant.now().toString())
         json.put("screen", screen) // phone | cover | main — chosen by the person taking the measurement
         json.put("screenLabelSource", "manual")
-        json.put("probeVersion", "1.1.0")
+        json.put("probeVersion", "1.1.1")
 
         json.put(
             "device",
@@ -67,6 +67,8 @@ object Probe {
                 .put("securityPatch", Build.VERSION.SECURITY_PATCH)
                 .put("buildId", Build.DISPLAY)
                 .put("oneUi", oneUiVersion())
+                .put("oneUiProperty", oneUiProperty ?: JSONObject.NULL)
+                .put("oneUiSource", "ro.build.version.oneui")
                 .put("semPlatformInt", semPlatformInt()),
         )
 
@@ -84,8 +86,13 @@ object Probe {
                     .put("width", activity.window.decorView.width)
                     .put("height", activity.window.decorView.height))
                 .put("refreshRate", display?.refreshRate?.let { round2(it.toDouble()) })
-                .put("widthPx", dm.widthPixels)
-                .put("heightPx", dm.heightPixels)
+                // Resource metrics exclude system bars on older Android versions.
+                // The full-screen window is the coordinate space used by insets.
+                .put("widthPx", curBounds.width())
+                .put("heightPx", curBounds.height())
+                .put("sizeSource", "currentWindowMetrics")
+                .put("appMetricsPx", JSONObject()
+                    .put("width", dm.widthPixels).put("height", dm.heightPixels))
                 .put("xdpi", round2(dm.xdpi.toDouble()))
                 .put("ydpi", round2(dm.ydpi.toDouble()))
                 .put("densityDpi", dm.densityDpi)
@@ -256,12 +263,19 @@ object Probe {
         Build.VERSION::class.java.getField("SEM_PLATFORM_INT").getInt(null)
     }.getOrNull()
 
-    /** One UI 6.1 = SEM_PLATFORM_INT 150100, 7.0 = 160000, ... */
+    // SEM_PLATFORM_INT is not a retail version: Fold2's 140500 is One UI 5.1.1,
+    // not 5.5. Keep the raw platform integer separately instead of guessing.
+    private val oneUiProperty: Int? by lazy {
+        runCatching {
+            ProcessBuilder("/system/bin/getprop", "ro.build.version.oneui")
+                .start().inputStream.bufferedReader().use { it.readText().trim().toIntOrNull() }
+        }.getOrNull()?.takeIf { it > 0 }
+    }
+
     private fun oneUiVersion(): String? {
-        val sem = semPlatformInt() ?: return null
-        if (sem < 90000) return null
-        val v = sem - 90000
-        return "${v / 10000}.${(v % 10000) / 100}"
+        val v = oneUiProperty ?: return null
+        val version = "${v / 10000}.${(v % 10000) / 100}"
+        return if (v % 100 == 0) version else "$version.${v % 100}"
     }
 
     private fun round2(v: Double) = (v * 100).roundToInt() / 100.0
