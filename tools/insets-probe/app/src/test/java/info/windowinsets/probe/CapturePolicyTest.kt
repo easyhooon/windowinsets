@@ -17,4 +17,16 @@ class CapturePolicyTest {
         assertNull(CapturePolicy.blockingReason("main", null, true, false))
         assertNull(CapturePolicy.blockingReason("phone", null, true, false))
     }
+
+    @Test fun flexWindowWidgetLaunchMustOwnTheRequestedDisplay() {
+        assertNull(CapturePolicy.blockingReason("cover", 0f, true, false, 1, 1))
+        assertNotNull(CapturePolicy.blockingReason("cover", 0f, true, false, 1, 0))
+        assertNull(CapturePolicy.blockingReason("cover", 0f, true, false))
+    }
+
+    @Test fun captureMustFillTheActiveDisplaysMaximumBounds() {
+        assertNull(CapturePolicy.blockingReason("cover", 0f, true, false, 1, 1, true))
+        assertNotNull(CapturePolicy.blockingReason("cover", 0f, true, false, 1, 1, false))
+        assertNotNull(CapturePolicy.blockingReason("phone", null, true, false, fullDisplayWindow = false))
+    }
 }

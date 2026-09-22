@@ -48,6 +48,8 @@ class MainActivity : ComponentActivity(), SensorEventListener {
     private var foldingFeatures: List<FoldingFeature> = emptyList()
     private var lastJson: String = ""
     private var autoExport = false
+    private var expectedDisplayId: Int? = null
+    private var screenLabelSource = FlexWindowContract.SCREEN_LABEL_SOURCE_MANUAL
 
     private val layoutTracker by lazy { WindowInfoTrackerCallbackAdapter(WindowInfoTracker.getOrCreate(this)) }
     private val layoutListener = Consumer<WindowLayoutInfo> { info ->
@@ -61,10 +63,15 @@ class MainActivity : ComponentActivity(), SensorEventListener {
         buildUi()
 
         // Automation: adb shell am start -n info.windowinsets.probe/.MainActivity --es screen main --ez export true
-        when (intent.getStringExtra("screen")) {
+        when (intent.getStringExtra(FlexWindowContract.EXTRA_SCREEN)) {
             "cover" -> screenGroup.check(ID_COVER)
             "main" -> screenGroup.check(ID_MAIN)
         }
+        expectedDisplayId = intent.takeIf { it.hasExtra(FlexWindowContract.EXTRA_EXPECTED_DISPLAY_ID) }
+            ?.getIntExtra(FlexWindowContract.EXTRA_EXPECTED_DISPLAY_ID, FlexWindowContract.COVER_DISPLAY_ID)
+        screenLabelSource = FlexWindowContract.screenLabelSource(
+            intent.getStringExtra(FlexWindowContract.EXTRA_SCREEN_LABEL_SOURCE),
+        )
         autoExport = intent.getBooleanExtra("export", false)
 
         // Listen on the root so we see exactly what an app's content root would receive.
@@ -127,13 +134,17 @@ class MainActivity : ComponentActivity(), SensorEventListener {
 
     private fun refresh() {
         val insets = latestInsets ?: return
-        val json = Probe.collect(this, insets, selectedScreen(), hingeAngle, foldingFeatures)
+        val json = Probe.collect(this, insets, selectedScreen(), hingeAngle, foldingFeatures, screenLabelSource)
         lastJson = json.toString(2)
         output.text = lastJson
         val bounds = windowManager.currentWindowMetrics.bounds
-        captureStatus.text = "Active window: ${bounds.width()} × ${bounds.height()} px · " +
+        val maximumBounds = windowManager.maximumWindowMetrics.bounds
+        val displayStatus = display?.displayId?.let { "display $it" } ?: "display unknown"
+        val expectedStatus = expectedDisplayId?.let { " · expected display $it" }.orEmpty()
+        captureStatus.text = "Active window: ${bounds.width()} × ${bounds.height()} px · $displayStatus$expectedStatus · " +
             "hinge: ${hingeAngle?.let { "${it.toInt()}°" } ?: "unavailable"}\n" +
-            "Screen label: ${selectedScreen()} (manual; does not switch displays)"
+            "Full display: ${maximumBounds.width()} × ${maximumBounds.height()} px\n" +
+            "Screen label: ${selectedScreen()} ($screenLabelSource; does not switch displays)"
 
         if (autoExport) {
             autoExport = false
@@ -149,11 +160,15 @@ class MainActivity : ComponentActivity(), SensorEventListener {
     private fun export(): File? {
         val currentInsets = ViewCompat.getRootWindowInsets(root)
         val bounds = windowManager.currentWindowMetrics.bounds
+        val maximumBounds = windowManager.maximumWindowMetrics.bounds
         val reason = CapturePolicy.blockingReason(
             selectedScreen(), hingeAngle,
             currentInsets != null && root.isLaidOut && !root.isLayoutRequested &&
                 root.width == bounds.width() && root.height == bounds.height(),
             isInMultiWindowMode,
+            expectedDisplayId,
+            display?.displayId,
+            bounds.width() == maximumBounds.width() && bounds.height() == maximumBounds.height(),
         )
         if (reason != null) {
             Toast.makeText(this, reason, Toast.LENGTH_LONG).show()
@@ -162,7 +177,14 @@ class MainActivity : ComponentActivity(), SensorEventListener {
             return null
         }
         // A button press must collect now, not export the last callback's JSON.
-        val json = Probe.collect(this, currentInsets!!, selectedScreen(), hingeAngle, foldingFeatures)
+        val json = Probe.collect(
+            this,
+            currentInsets!!,
+            selectedScreen(),
+            hingeAngle,
+            foldingFeatures,
+            screenLabelSource,
+        )
         lastJson = json.toString(2)
         output.text = lastJson
         val nav = json.getJSONObject("navigation").getString("mode")

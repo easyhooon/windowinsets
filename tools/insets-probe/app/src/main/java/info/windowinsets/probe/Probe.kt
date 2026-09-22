@@ -25,6 +25,7 @@ object Probe {
         screen: String,
         hingeAngle: Float?,
         foldingFeatures: List<FoldingFeature>,
+        screenLabelSource: String = FlexWindowContract.SCREEN_LABEL_SOURCE_MANUAL,
     ): JSONObject {
         val res = activity.resources
         val dm = res.displayMetrics
@@ -51,9 +52,9 @@ object Probe {
         val json = JSONObject()
         json.put("schemaVersion", SCHEMA_VERSION)
         json.put("capturedAt", java.time.Instant.now().toString())
-        json.put("screen", screen) // phone | cover | main — chosen by the person taking the measurement
-        json.put("screenLabelSource", "manual")
-        json.put("probeVersion", "1.1.2")
+        json.put("screen", screen) // phone | cover | main — manual or launch-provided; provenance is recorded below
+        json.put("screenLabelSource", screenLabelSource)
+        json.put("probeVersion", BuildConfig.VERSION_NAME)
 
         json.put(
             "device",

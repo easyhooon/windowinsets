@@ -64,6 +64,12 @@ start the reservation. The user's request to reserve the named queue authorizes 
 ordinary reservation; unexpected paid options, terms, permissions, or a target
 change require a fresh user decision.
 
+Treat the header credit count as remaining allocation only after the latest
+reservation has closed and Usage History has refreshed. A live reservation can
+leave credits visible until the session ends. Before booking, verify the completed
+rows in **Usage History** and sum their credits; stop when the daily 20-credit total
+has been reached.
+
 If RTL returns 403, first retry after a short interval, then re-enter through the RTL
 landing page or request a fresh manual login as described in
 `docs/MEASUREMENT_WORKFLOW.md`. Preserve the existing tab and reservation whenever
@@ -109,6 +115,20 @@ step to the user.
 - Lock-screen swipes and authentication are a manual fallback. If one precise
   attempt is unreliable, ask the user to wake/unlock the already-open device and
   resume after they confirm. Never guess a PIN or repeatedly toggle power.
+- For a Flip cover session, set **Settings > Cover screen > Cover screen timeout**
+  to **30 seconds** before folding. The default 10-second timeout can turn the
+  screen off between screenshot and gesture and falsely look like an input failure.
+- Automate a cover gesture only from a fresh screenshot in one coordinate space:
+  wake with one power-button click, wait for the visible cover, then drag through
+  the center of the live display. Use a horizontal right-to-left drag to move from
+  the clock/Now Brief page to favorite apps; do not use an upward swipe for that
+  page change. Verify the result before another action. If one calibrated attempt
+  fails, hand off the unlock/gesture instead of varying coordinates repeatedly.
+- When a real cover long press is required, prefer browser CUA with a stationary
+  drag path (roughly 45 repeated points followed by a 1 px move) over a macOS drag
+  duration. RTL may translate the latter into a short tap and open the app beneath
+  the pointer. Re-read the cover immediately and accept only the visible edit state
+  or **Open phone to continue** prompt.
 
 ### Capture every required state
 
@@ -123,16 +143,25 @@ step to the user.
    - The cover is a separate FlexWindow surface; folding can replace the inner app
      with cover home instead of moving the activity. Starting an app from
      WebClient **Applications** can still target the hidden inner display.
-   - On the unfolded phone open **Settings > Cover screen** and enable **Show the
-     Now brief and favorite apps**. Fold the device, wake the cover, and hand off
-     its unlock gesture after one unreliable automation attempt.
-   - On the live cover, touch and hold an empty area, choose **Edit**, and add
-     `InsetsProbe` to the favorite apps when it is offered. Flip8 supports up to
-     five favorite apps, but Samsung may exclude unsupported apps.
-   - Launch `InsetsProbe` from the cover itself. Accept a cover capture only when
-     Probe visibly owns the active cover window and reports the official cover
-     dimensions. If Probe is absent from the picker, opens only on the inner
-     display, or produces a black cover, record the compatibility blocker and
+   - Install InsetsProbe 1.2.0 or later. On the unfolded phone open **Settings >
+     Cover screen > Widgets** and enable the **InsetsProbe** widget. This uses
+     Samsung's documented `sub_screen` AppWidget metadata and launches Probe with
+     `ActivityOptions.launchDisplayId = 1`.
+   - Fold the device, wake and unlock the cover, swipe horizontally to the
+     InsetsProbe widget, and tap **Open cover probe**. The widget preselects Cover.
+     Accept a capture only when the status line reports `display 1` and the active
+     window matches the official cover dimensions. Flip8 must report 948 x 1048 px.
+     Probe blocks export when the widget launch falls back to another display.
+   - If the widget is absent on that software build, use the device-side fallback:
+     **Good Lock > MultiStar > I ♡ Galaxy Foldable > Cover launcher widget**, add
+     InsetsProbe, then launch it from the cover app tray. Installing Good Lock or
+     MultiStar is a separate software-install step and requires the applicable user
+     approval. The built-in favorite-app picker is a Samsung compatibility list;
+     there is no documented manifest flag that enrolls an arbitrary Activity.
+   - Starting Probe from WebClient **Applications** while folded is only a negative
+     diagnostic: on Flip8 it can start on the hidden inner display and leave the
+     cover black. Never treat that as a cover launch. If neither widget nor
+     MultiStar can open Probe on display 1, document the compatibility blocker and
      requeue the device; inner-display values are not cover evidence.
 4. Select Probe's radio circle matching the physically active display. Cover/Main
    is a manual label and never switches hardware.
