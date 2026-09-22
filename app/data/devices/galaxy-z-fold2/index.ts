@@ -25,7 +25,39 @@ export const galaxyZFold2: Device = {
       "densityDpi": 480,
       "cornerRadiiDp": null,
       "insets": {
-        "gesture": null,
+        "gesture": {
+          "systemBars": {
+            "top": 31,
+            "right": 0,
+            "bottom": 15,
+            "left": 0
+          },
+          "displayCutout": {
+            "top": 30.67,
+            "right": 0,
+            "bottom": 0,
+            "left": 0
+          },
+          "cutoutShape": {
+            "xDp": 148,
+            "yDp": 0,
+            "widthDp": 24,
+            "heightDp": 30.67
+          },
+          "condition": {
+            "oneUi": "5.1.1",
+            "android": "13",
+            "note": "Physical device, closed, portrait; swipe gestures with gesture hints; font scale 0.8; density 480 dpi. Captured app window is 960×2658 px (320×886 dp), while wm reports a physical panel of 816×2260. This cover configuration reappeared automatically after closing; its original source is unverified. Bottom gesture inset is 15 dp. Hinge-angle sensor and rounded corners unavailable."
+          },
+          "sources": [
+            {
+              "kind": "measured",
+              "label": "InsetsProbe 1.1.2 on physical Galaxy Z Fold2 cover, gestures (SM-F916N)",
+              "url": "https://github.com/easyhooon/windowinsets/blob/main/measurements/galaxy-z-fold2/cover-gesture.json",
+              "retrievedAt": "2026-09-22"
+            }
+          ]
+        },
         "threeButton": {
           "systemBars": {
             "top": 31,
@@ -66,6 +98,12 @@ export const galaxyZFold2: Device = {
           "label": "InsetsProbe 1.1.1 on physical Galaxy Z Fold2 cover (SM-F916N)",
           "url": "https://github.com/easyhooon/windowinsets/blob/main/measurements/galaxy-z-fold2/cover-threeButton.json",
           "retrievedAt": "2026-09-22"
+        },
+        {
+          "kind": "measured",
+          "label": "InsetsProbe 1.1.2 on physical Galaxy Z Fold2 cover, gestures (SM-F916N)",
+          "url": "https://github.com/easyhooon/windowinsets/blob/main/measurements/galaxy-z-fold2/cover-gesture.json",
+          "retrievedAt": "2026-09-22"
         }
       ]
     },
@@ -90,7 +128,39 @@ export const galaxyZFold2: Device = {
         "bottomLeft": 20
       },
       "insets": {
-        "gesture": null,
+        "gesture": {
+          "systemBars": {
+            "top": 29.33,
+            "right": 0,
+            "bottom": 48,
+            "left": 0
+          },
+          "displayCutout": {
+            "top": 29.33,
+            "right": 0,
+            "bottom": 0,
+            "left": 0
+          },
+          "cutoutShape": {
+            "xDp": 436.33,
+            "yDp": 0,
+            "widthDp": 25,
+            "heightDp": 29.33
+          },
+          "condition": {
+            "oneUi": "5.1.1",
+            "android": "13",
+            "note": "Physical device, fully open, portrait; font scale 0.8; density 480 dpi. Swipe gestures with gesture hints and persistent taskbar visible: the taskbar contributes 48 dp bottom insets. Probe 1.1.2 verifies gesture mode using the active resource configuration and side system-gesture regions; the bottom-inset heuristic alone reports threeButton. Hinge-angle sensor unavailable; WindowManager reports FLAT."
+          },
+          "sources": [
+            {
+              "kind": "measured",
+              "label": "InsetsProbe 1.1.2 on physical Galaxy Z Fold2 inner, gestures with taskbar (SM-F916N)",
+              "url": "https://github.com/easyhooon/windowinsets/blob/main/measurements/galaxy-z-fold2/main-gesture.json",
+              "retrievedAt": "2026-09-22"
+            }
+          ]
+        },
         "threeButton": {
           "systemBars": {
             "top": 29.33,
@@ -131,6 +201,12 @@ export const galaxyZFold2: Device = {
           "label": "InsetsProbe 1.1.1 on physical Galaxy Z Fold2 (SM-F916N)",
           "url": "https://github.com/easyhooon/windowinsets/blob/main/measurements/galaxy-z-fold2/main-threeButton.json",
           "retrievedAt": "2026-09-22"
+        },
+        {
+          "kind": "measured",
+          "label": "InsetsProbe 1.1.2 on physical Galaxy Z Fold2 inner, gestures with taskbar (SM-F916N)",
+          "url": "https://github.com/easyhooon/windowinsets/blob/main/measurements/galaxy-z-fold2/main-gesture.json",
+          "retrievedAt": "2026-09-22"
         }
       ]
     }
@@ -146,6 +222,18 @@ export const galaxyZFold2: Device = {
       "kind": "measured",
       "label": "InsetsProbe 1.1.1 on physical Galaxy Z Fold2 cover (SM-F916N)",
       "url": "https://github.com/easyhooon/windowinsets/blob/main/measurements/galaxy-z-fold2/cover-threeButton.json",
+      "retrievedAt": "2026-09-22"
+    },
+    {
+      "kind": "measured",
+      "label": "InsetsProbe 1.1.2 on physical Galaxy Z Fold2 inner, gestures with taskbar (SM-F916N)",
+      "url": "https://github.com/easyhooon/windowinsets/blob/main/measurements/galaxy-z-fold2/main-gesture.json",
+      "retrievedAt": "2026-09-22"
+    },
+    {
+      "kind": "measured",
+      "label": "InsetsProbe 1.1.2 on physical Galaxy Z Fold2 cover, gestures (SM-F916N)",
+      "url": "https://github.com/easyhooon/windowinsets/blob/main/measurements/galaxy-z-fold2/cover-gesture.json",
       "retrievedAt": "2026-09-22"
     }
   ]
