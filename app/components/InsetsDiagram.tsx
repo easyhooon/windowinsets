@@ -242,7 +242,7 @@ export function InsetsDiagram({
         )}
 
         {skin?.foreground && showFrame && <image href={skin.foreground} x={0} y={0} width={W} height={H} preserveAspectRatio="none" />}
-        {!measured && <text x={W / 2} y={H / 2} textAnchor="middle" fontSize={12 * labelScale} fill="#59636e">Measurements pending</text>}
+        {!measurement && <text x={W / 2} y={H / 2} textAnchor="middle" fontSize={12 * labelScale} fill="#59636e">Skin preview</text>}
         {/* Corner radius chips */}
         {showDimensions && layers.corners && r && rPx > 0 && (
           <>

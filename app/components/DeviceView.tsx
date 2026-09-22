@@ -9,6 +9,7 @@ import { DiagramViewport } from "./DiagramViewport";
 import { skins } from "../data/skins";
 import { ResizeHandle } from "./ResizeHandle";
 import { Icon } from "./Icon";
+import { getRtlAvailability } from "../data/rtlAvailability";
 
 function Row({ label, value }: { label: string; value: React.ReactNode }) {
   const [status, setStatus] = useState("");
@@ -95,6 +96,7 @@ export function DeviceView({ device }: { device: Device }) {
   const main = device.screens.find(s => s.id === "main")!;
   const screen = device.screens.find(s => s.id === screenId) ?? main;
   const measurement = screen.insets[navMode];
+  const rtl = getRtlAvailability(device.slug);
   const skin = skins[`${device.slug}/${screen.id}`];
   const safe = measurement ? {
     top: Math.max(measurement.systemBars.top, measurement.displayCutout.top),
@@ -130,6 +132,11 @@ export function DeviceView({ device }: { device: Device }) {
       <button className="metrics-toggle" aria-expanded={metricsOpen} onClick={() => setMetricsOpen(!metricsOpen)}>Metrics<Icon name="chevron" /></button>
       <div className="metrics-content">
         <h2>Metrics</h2>
+        <section className="rtl-status" aria-label="Remote Test Lab availability">
+          <a href={rtl.sourceUrl} target="_blank" rel="noreferrer">{rtl.label} ↗</a>
+          <p>{rtl.description}</p>
+          <small>Checked {rtl.checkedAt} · {measurement ? "Measured selection" : "No capture for this selection"}</small>
+        </section>
         {foldable && <div className="screen-tabs" aria-label="Display">{device.screens.map(s => <button key={s.id} aria-pressed={screen.id === s.id} onClick={() => { setScreenId(s.id); setAngle(s.id === "cover" ? 0 : 180); }}>{s.label === "Main" ? "Inner" : "Outer"}</button>)}</div>}
                     <SectionLabel>Dimensions</SectionLabel>
             <dl>
@@ -208,7 +215,7 @@ export function DeviceView({ device }: { device: Device }) {
           zoom={zoom} showFrame={showFrame} showRegions={showRegions} showDimensions={showDimensions} units={units} layers={layers} skin={mainSkin} measured={!!main.logicalSizeDp} cover={outerScreen && outerSkin ? { screen: outerScreen, measurement: outerScreen.insets[navMode], skin: outerSkin } : undefined} />
           : <InsetsDiagram screen={screen} measurement={measurement} zoom={zoom} showFrame={showFrame} showRegions={showRegions} showDimensions={showDimensions} units={units} layers={layers} skin={skin} />}
       </DiagramViewport>
-      {!screen.logicalSizeDp && <p className="pending-notice">{skin ? "Official skin preview · Insets and dimensions pending measurement" : "Measurements pending for this device"}</p>}
+      {!measurement && <p className="pending-notice">{rtl.previewNotice}</p>}
       <div className="region-legend" aria-label="Region legend">
         {([{ key: "safe", label: "Safe Area", color: "#ade7bc" }, { key: "insets", label: "Insets", color: "#ffdab0" }, { key: "cutout", label: "Display Cutout", color: "#c4a0f1" }, { key: "corners", label: "Corner Radius", color: "#e4a6cc" }] as const).map(item => <button key={item.key} aria-pressed={layers[item.key]} onClick={() => setLayers(v => ({ ...v, [item.key]: !v[item.key] }))}><i style={{ background: item.color }} />{item.label}</button>)}
       </div>

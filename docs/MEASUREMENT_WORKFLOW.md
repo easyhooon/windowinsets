@@ -2,6 +2,14 @@
 
 **Last Updated**: 2026-09-22
 
+## RTL collection scope
+
+Keep official skin previews registered, but target new measurement collection at
+RTL-offered models. Track model availability separately from screen/nav-mode
+captures. The full RTL catalog remains inaccessible; do not interpret missing
+models in the featured list as unsupported. See [RTL_COVERAGE.md](RTL_COVERAGE.md)
+and its per-skin comparison for checked sources, unknowns and completion steps.
+
 ## Correction from official skins (2026-09-22)
 
 The old claim that RTL always exposes the main display was not justified. Fold8's
@@ -15,6 +23,11 @@ Flip8's 1080×2520 main captures match its main skin. Its 948×1048 cover skin i
 artwork; cover insets remain pending. A screen radio button labels a capture and
 does not prove which physical display was active. Verify resolution against the
 intended display for every future capture.
+
+Specifically, Flip8 `cover-threeButton.json` reports 1080×2520, hinge angle 180°
+and a horizontal FLAT folding feature. Despite its filename and manual label,
+this is an inner-display capture, not a 948×1048 cover measurement. Keep this
+raw evidence unchanged and leave cover insets pending until a true cover capture.
 
 For current rendering architecture and verification, see
 [REFERENCE_PARITY.md](REFERENCE_PARITY.md). Legacy notes below document the prior

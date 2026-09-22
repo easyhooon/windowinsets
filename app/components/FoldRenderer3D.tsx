@@ -130,7 +130,7 @@ function drawDiagram(
     ctx.fillStyle = "#59636e";
     ctx.textAlign = "center"; ctx.textBaseline = "middle";
     ctx.font = `400 ${12 * px * labelScale}px ${DIAGRAM_FONT}`;
-    ctx.fillText("Measurements pending", W / 2, H / 2);
+    ctx.fillText("Skin preview", W / 2, H / 2);
   }
 
   function chip(x: number, y: number, text: string, color: string, scale = labelScale) {

@@ -3,6 +3,7 @@ import { NavLink, Outlet, useLocation } from "react-router";
 import { devices, featuredDevice, REPO_URL } from "../data/devices";
 import { ResizeHandle } from "../components/ResizeHandle";
 import { Icon } from "../components/Icon";
+import { getRtlAvailability } from "../data/rtlAvailability";
 
 export default function Shell() {
   const [sidebarWidth, setSidebarWidth] = useState(240);
@@ -26,7 +27,7 @@ export default function Shell() {
         <nav className="device-list">
           {series.map(group => <section key={group} aria-label={group}><h2>{group}</h2>
             {filtered.filter(d => groupOf(d) === group).map(d => <NavLink key={d.slug} to={`/${d.slug}`} onClick={() => setMobileOpen(false)} className={`device-link ${current.slug === d.slug ? "selected" : ""}`}>
-              <span className={`device-thumbnail ${d.formFactor}`} /><span>{d.name}<small>{d.releaseYear ?? "Skin preview"}</small></span>
+              <span className={`device-thumbnail ${d.formFactor}`} /><span>{d.name}<small>{d.releaseYear ? `${d.releaseYear} · ` : ""}{getRtlAvailability(d.slug).label}</small></span>
             </NavLink>)}
           </section>)}
           {!filtered.length && <p className="p-3 text-sm text-muted">No devices found.</p>}

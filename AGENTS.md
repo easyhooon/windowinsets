@@ -16,6 +16,13 @@ new imports against `docs/DEVICE_COVERAGE.md`. TriFold remains a separate suppor
 decision, even when its skin is available. Artwork-only entries stay previews;
 missing measurements must not be invented.
 
+RTL collection policy: keep registered skins regardless of RTL availability,
+but collect new measurements from RTL-offered models. Track RTL catalog status
+separately from per-screen captures. Only a complete, dated reservation inventory
+can establish that a model is not listed; 403 responses and featured-only lists
+leave other models unverified. Preserve historical captures. See
+`docs/RTL_COVERAGE.md` for evidence and comparison status.
+
 ## Start here
 
 - `docs/REFERENCE_PARITY.md`: observed reference behavior, implementation and QA.

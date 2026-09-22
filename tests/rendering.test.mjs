@@ -4,6 +4,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { bendPoint, createChassis, rigidPanelPoint } from '../app/components/foldGeometry.ts';
 import { skins } from '../app/data/skins.ts';
 import { isInCoverage } from '../app/data/coverage.ts';
+import { getRtlAvailability, rtlCatalog } from '../app/data/rtlAvailability.ts';
 
 test('folds remain finite and symmetric at closed, intermediate, and flat poses on both axes', () => {
   for (const vertical of [true, false]) for (const angle of [0, 1, 45, 90, 135, 179, 180]) {
@@ -96,4 +97,23 @@ test('2020 coverage keeps boundary models and archives older skins without publi
   }
   assert.equal(isInCoverage({ slug: 'measured-older-device', releaseYear: 2019 }), false);
   assert.equal(isInCoverage({ slug: 'measured-boundary-device', releaseYear: 2020 }), true);
+});
+
+test('RTL comparisons never turn an incomplete inventory into non-support claims', () => {
+  const skins = JSON.parse(readFileSync('app/data/skinCatalog.json', 'utf8'));
+  const snapshot = rtlCatalog;
+  assert.equal(new Set(snapshot.listedSlugs).size, snapshot.listedSlugs.length);
+  for (const slug of snapshot.listedSlugs) {
+    assert.ok(skins.some(device => device.slug === slug));
+    assert.equal(getRtlAvailability(slug).status, 'listed');
+  }
+  const comparison = skins.map(device => getRtlAvailability(device.slug));
+  assert.equal(comparison.filter(result => result.status === 'listed').length, 4);
+  assert.ok(comparison.every(result => result.status !== 'not-listed'));
+  // Existing captures do not imply that a model can still be reserved today.
+  assert.equal(getRtlAvailability('galaxy-s25-plus').status, 'unknown');
+  const complete = { ...snapshot, scope: 'reservation-catalog', complete: true };
+  assert.equal(getRtlAvailability('galaxy-s20', complete).status, 'not-listed');
+  assert.match(getRtlAvailability('galaxy-s20', complete).previewNotice, /Not listed/);
+  assert.equal(getRtlAvailability('galaxy-z-fold8', complete).label, 'Listed on RTL');
 });
