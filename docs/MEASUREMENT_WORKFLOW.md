@@ -133,14 +133,20 @@ Practical sequence per device:
 1. **InsetsProbe** exports raw JSON (schemaVersion 1) with device/display/navigation/insets/displayCutout/roundedCorners/hinge.
 2. **Raw JSON committed** to `measurements/<device-slug>/<screen>-<navMode>.json` — source of truth, never hand-edited.
 3. **TypeScript device file** (`app/data/devices/<slug>.ts`) implements `Device` (see `app/data/types.ts`): dp-converted insets per nav mode, `cornerRadiiDp`, optional `cutoutShape` (real punch-hole position, when the raw capture has `boundingRects`), sources with GitHub links.
-4. **Website**: React Router, statically prerendered. Device pages show:
-   - `InsetsDiagram` — flat 2D diagram with dimension lines/arrows, per-edge inset chips, corner-radius chips, the real cutout shape at its measured position, and schematic (unmeasured) speaker/button marks for visual recognizability.
+4. **Website**: React Router, statically prerendered. `app/components/DeviceView.tsx` holds the full device-detail render (controls, diagram, metrics, sources) shared by both the `/​:slug` route and the home page. Home (`/`) renders `DeviceView` for `devices[0]` (the newest device) directly — safearea.info-style landing straight on its equivalent of iPhone Duo, instead of a separate list-only summary page. It shows:
+   - `InsetsDiagram` — flat 2D diagram with dimension lines/arrows, per-edge inset chips, corner-radius chips, the real cutout shape at its measured position, schematic (unmeasured) speaker/button marks, mouse-wheel + button **zoom** (40–250%), and a **settings menu** (Show Frame / Show Regions / Show Dimensions toggles, dp↔px unit switch) — all modeled on safearea.info's own controls.
    - `FoldPreview` — 3D CSS-transform hinge animation (foldables only) driven by the same hinge-angle convention as Android's `FoldingFeature` (0°=closed, 180°=flat). `axis="vertical"` for book-style folds (Z Fold), `axis="horizontal"` for flip-style (Z Flip). Inset value labels live inside the rotating panels so they stay visible and correctly foreshortened throughout the animation.
+     - **Known gap (raised, not yet resolved):** safearea.info shows ONE unified diagram that both animates and carries all the dimension labels/corner chips/zoom/settings — we currently render `InsetsDiagram` (rich, static) and `FoldPreview` (animated, simpler) as two separate components on foldable pages. Merging them properly means bringing `InsetsDiagram`'s feature set (zoom, settings, corner chips, real cutout) into `FoldPreview`'s already-verified CSS-3D-on-HTML-divs approach and no longer rendering `InsetsDiagram` at all for foldables — deliberately *not* attempting the fold via CSS 3D transforms on nested SVG `<g>` elements, since perspective distance math would need to be reconciled with the SVG viewBox's own scale, risking inconsistent/distorted rendering across devices. This is planned but not done as of this writing.
    - `Metrics` panel — one value per row (Dimensions / Safe Area Insets / Display Cutout / Corner Radii / Measured On), not cramped multi-value lines.
+   - Sidebar (`shell.tsx`) — 3 flat category tabs (**Galaxy S / Galaxy Z Fold / Galaxy Z Flip**), each independently sorted; search overrides tabs and searches everything. `devices.ts` orders newest-first, and within the same release year by Samsung's own tier convention (Ultra > Plus > base).
 
 ## SEO / Sharing
 
-`app/lib/seo.ts` provides a shared `pageMeta()` helper used by all 4 routes: full OG + Twitter Card tags (title, description, type, site_name, image + dimensions/alt, canonical), following safearea.info's pattern. **`og-default.png` (1200×630) itself is not generated yet** — deferred until image-generation tooling is available (planned for when Codex quota is back). The favicon is also still the default `public/favicon.ico`.
+`app/lib/seo.ts` provides a shared `pageMeta()` helper used by all 4 routes: full OG + Twitter Card tags (title, description, type, site_name, image + dimensions/alt, canonical), following safearea.info's pattern.
+
+**Favicon + OG image are done**, hand-authored as SVG and rasterized with `rsvg-convert` (no AI image-gen tooling was available this session, but that CLI tool was on the machine):
+- `public/favicon.svg` (+ `favicon-32.png`, `apple-touch-icon.png`) — a small device silhouette in the site's own color language, linked via `root.tsx`'s `Route.LinksFunction`, layered above the legacy `favicon.ico`.
+- `public/og-default.png` (1200×630) — matches the same Safe Area/Insets/Corner Radius legend used throughout the site. Source kept at `public/og-source.svg` for future edits without needing image tools.
 
 ## Build Verification
 
@@ -174,9 +180,12 @@ RTL's device list/reservation pages are ordinary web pages (browser automation h
 - `tools/insets-probe/app/src/main/java/info/windowinsets/probe/{MainActivity,Probe}.kt` — capture + automation logic
 - `app/data/types.ts` — `Device`, `Screen`, `InsetsMeasurement`, `CutoutShape`, `FormFactor`
 - `app/data/devices/galaxy-z-fold8.ts` — most complete example (foldable, both nav modes, cutout shape, pending-cover comment)
-- `app/components/{InsetsDiagram,FoldPreview}.tsx` — the two visualization components
+- `app/components/DeviceView.tsx` — shared full device-detail render (used by home + `/:slug`)
+- `app/components/{InsetsDiagram,FoldPreview}.tsx` — the two visualization components (see the "known gap" note above about merging these)
 - `app/lib/seo.ts` — shared OG/Twitter meta helper
-- `app/data/devices.ts` — device registry, newest-first
+- `app/routes/shell.tsx` — sidebar layout, category tabs, search
+- `app/data/devices.ts` — device registry, newest-first, Ultra > Plus > base within a year
+- `public/favicon.svg`, `public/og-source.svg` — hand-authored brand assets (edit these, then re-run the `rsvg-convert` commands to regenerate the PNGs)
 
 ### Recommendations
 
@@ -184,3 +193,4 @@ RTL's device list/reservation pages are ordinary web pages (browser automation h
 2. Preserve the "measure 3-button, manually flip Settings, measure gesture again" 2-step pattern per device — Measure All's automation value is now just the screen-radio convenience, not nav-mode switching (which doesn't work on real hardware regardless of code).
 3. Budget ~2 credits (30 min) per device; ~10 devices/day is the real ceiling under the free 20-credit daily allowance.
 4. When adding a device, always run `pnpm typecheck && pnpm build` — malformed `Device` objects fail the prerender step loudly, which is the fastest signal something's wrong before it reaches production.
+5. **Open task**: merge `InsetsDiagram` and `FoldPreview` into one component for foldables (see the "known gap" note above) — bring zoom/settings/corner-chips/real-cutout into the CSS-3D-on-HTML-divs approach rather than trying 3D transforms on SVG.
