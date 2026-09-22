@@ -1,7 +1,6 @@
 import type { InsetsMeasurement, Screen } from "../data/types";
 
-const MAX_W = 340;
-const LABEL_OFFSET = 20;
+const MAX_W = 280;
 
 interface Insets {
   top: number;
@@ -10,7 +9,7 @@ interface Insets {
   left: number;
 }
 
-/** Enhanced insets diagram with dimension labels (like safearea.info) */
+/** Insets diagram with dimension labels (like safearea.info) */
 export function InsetsDiagram({
   screen,
   measurement,
@@ -21,7 +20,7 @@ export function InsetsDiagram({
   const dp = screen.logicalSizeDp;
   if (!dp) {
     return (
-      <div className="flex h-96 w-full max-w-lg items-center justify-center rounded-xl border border-dashed border-line p-4 text-center text-sm text-muted">
+      <div className="flex h-80 w-full max-w-lg items-center justify-center rounded-xl border border-dashed border-line p-4 text-center text-sm text-muted">
         Logical size (dp) for this screen is not verified yet.
       </div>
     );
@@ -43,168 +42,136 @@ export function InsetsDiagram({
       }
     : null;
 
-  // Format dimensions for display
   const formatDim = (val: number) => (val === 0 ? "0" : val.toFixed(2));
 
   return (
     <div className="space-y-4">
-      {/* SVG Diagram */}
-      <svg
-        viewBox={`${-LABEL_OFFSET * 3} ${-LABEL_OFFSET * 3} ${W + LABEL_OFFSET * 6} ${H + LABEL_OFFSET * 6}`}
-        className="w-full max-w-lg border border-line rounded-lg bg-white p-4"
-        role="img"
-        aria-label={`${screen.label} screen insets diagram`}
-      >
-        {/* Device bezel */}
-        <rect x={0} y={0} width={W} height={H} rx={r ? r.topLeft * s : 0} className="fill-slate-900" />
-
-        {/* Safe area & insets */}
-        {safe && (
-          <>
-            {/* Safe area (green) */}
-            <rect
-              x={safe.left * s}
-              y={safe.top * s}
-              width={W - (safe.left + safe.right) * s}
-              height={H - (safe.top + safe.bottom) * s}
-              className="fill-green-400/40"
-            />
-
-            {/* Top inset (orange) */}
-            {safe.top > 0 && (
-              <rect x={0} y={0} width={W} height={safe.top * s} className="fill-orange-400/50" />
-            )}
-
-            {/* Bottom inset (orange) */}
-            {safe.bottom > 0 && (
-              <rect
-                x={0}
-                y={H - safe.bottom * s}
-                width={W}
-                height={safe.bottom * s}
-                className="fill-orange-400/50"
-              />
-            )}
-
-            {/* Right inset (orange) */}
-            {safe.right > 0 && (
-              <rect
-                x={W - safe.right * s}
-                y={0}
-                width={safe.right * s}
-                height={H}
-                className="fill-orange-400/50"
-              />
-            )}
-          </>
+      {/* Device visualization with labels */}
+      <div className="relative inline-block">
+        {/* Top dimension label */}
+        {safe && safe.top > 0 && (
+          <div className="flex justify-center mb-2">
+            <div className="bg-blue-600 text-white px-2 py-1 rounded text-xs font-semibold">
+              {formatDim(safe.top)} dp
+            </div>
+          </div>
         )}
 
-        {/* Dimension lines & labels */}
-        <g stroke="currentColor" strokeWidth="1.5" fill="none" className="text-slate-600">
-          {/* Top dimension */}
-          {safe && safe.top > 0 && (
-            <>
-              <line x1={-LABEL_OFFSET * 1.5} y1={0} x2={-LABEL_OFFSET * 0.5} y2={0} />
-              <line x1={-LABEL_OFFSET} y1={-LABEL_OFFSET * 0.8} x2={-LABEL_OFFSET} y2={safe.top * s} />
-              <line x1={-LABEL_OFFSET * 1.5} y1={safe.top * s} x2={-LABEL_OFFSET * 0.5} y2={safe.top * s} />
-              <text
-                x={-LABEL_OFFSET * 2.5}
-                y={safe.top * s / 2}
-                textAnchor="middle"
-                dominantBaseline="middle"
-                className="fill-slate-600 text-xs font-semibold"
-              >
-                {formatDim(safe.top)}
-              </text>
-            </>
-          )}
-
-          {/* Bottom dimension */}
-          {safe && safe.bottom > 0 && (
-            <>
-              <line x1={-LABEL_OFFSET * 1.5} y1={H} x2={-LABEL_OFFSET * 0.5} y2={H} />
-              <line x1={-LABEL_OFFSET} y1={H - safe.bottom * s} x2={-LABEL_OFFSET} y2={H + LABEL_OFFSET * 0.8} />
-              <line x1={-LABEL_OFFSET * 1.5} y1={H - safe.bottom * s} x2={-LABEL_OFFSET * 0.5} y2={H - safe.bottom * s} />
-              <text
-                x={-LABEL_OFFSET * 2.5}
-                y={H - safe.bottom * s / 2}
-                textAnchor="middle"
-                dominantBaseline="middle"
-                className="fill-slate-600 text-xs font-semibold"
-              >
-                {formatDim(safe.bottom)}
-              </text>
-            </>
-          )}
-
-          {/* Right dimension */}
-          {safe && safe.right > 0 && (
-            <>
-              <line x1={W} y1={-LABEL_OFFSET * 1.5} x2={W} y2={-LABEL_OFFSET * 0.5} />
-              <line x1={W - safe.right * s} y1={-LABEL_OFFSET} x2={W + LABEL_OFFSET * 0.8} y2={-LABEL_OFFSET} />
-              <line x1={W - safe.right * s} y1={-LABEL_OFFSET * 1.5} x2={W - safe.right * s} y2={-LABEL_OFFSET * 0.5} />
-              <text
-                x={W - safe.right * s / 2}
-                y={-LABEL_OFFSET * 2.5}
-                textAnchor="middle"
-                dominantBaseline="middle"
-                className="fill-slate-600 text-xs font-semibold"
-              >
-                {formatDim(safe.right)}
-              </text>
-            </>
-          )}
-
-          {/* Left dimension (if exists) */}
+        {/* Main diagram with side labels */}
+        <div className="flex items-start gap-2">
+          {/* Left dimension label */}
           {safe && safe.left > 0 && (
-            <>
-              <line x1={0} y1={-LABEL_OFFSET * 1.5} x2={0} y2={-LABEL_OFFSET * 0.5} />
-              <line x1={safe.left * s} y1={-LABEL_OFFSET} x2={-LABEL_OFFSET * 0.8} y2={-LABEL_OFFSET} />
-              <line x1={safe.left * s} y1={-LABEL_OFFSET * 1.5} x2={safe.left * s} y2={-LABEL_OFFSET * 0.5} />
-              <text
-                x={safe.left * s / 2}
-                y={-LABEL_OFFSET * 2.5}
-                textAnchor="middle"
-                dominantBaseline="middle"
-                className="fill-slate-600 text-xs font-semibold"
-              >
+            <div className="flex flex-col items-center justify-center pt-12">
+              <div className="bg-blue-600 text-white px-1.5 py-1 rounded text-xs font-semibold whitespace-nowrap">
                 {formatDim(safe.left)}
-              </text>
-            </>
+              </div>
+            </div>
           )}
 
-          {/* Width at top */}
-          <line x1={0} y1={-LABEL_OFFSET * 3.2} x2={W} y2={-LABEL_OFFSET * 3.2} strokeWidth="2" />
-          <line x1={0} y1={-LABEL_OFFSET * 2.8} x2={0} y2={-LABEL_OFFSET * 3.6} strokeWidth="2" />
-          <line x1={W} y1={-LABEL_OFFSET * 2.8} x2={W} y2={-LABEL_OFFSET * 3.6} strokeWidth="2" />
-          <text
-            x={W / 2}
-            y={-LABEL_OFFSET * 3.5}
-            textAnchor="middle"
-            className="fill-slate-900 text-xs font-bold"
+          {/* SVG Diagram */}
+          <svg
+            viewBox={`0 0 ${W} ${H}`}
+            className="border-4 border-slate-900 rounded-lg bg-white flex-shrink-0"
+            role="img"
+            aria-label={`${screen.label} screen insets diagram`}
+            style={{ width: MAX_W, height: "auto" }}
           >
-            {formatDim(dp.width)}
-          </text>
+            {/* Device bezel */}
+            <rect x={0} y={0} width={W} height={H} rx={r ? r.topLeft * s : 0} className="fill-slate-900" />
 
-          {/* Height on right */}
-          <line x1={W + LABEL_OFFSET * 3.2} y1={0} x2={W + LABEL_OFFSET * 3.2} y2={H} strokeWidth="2" />
-          <line x1={W + LABEL_OFFSET * 2.8} y1={0} x2={W + LABEL_OFFSET * 3.6} y2={0} strokeWidth="2" />
-          <line x1={W + LABEL_OFFSET * 2.8} y1={H} x2={W + LABEL_OFFSET * 3.6} y2={H} strokeWidth="2" />
-          <text
-            x={W + LABEL_OFFSET * 3.5}
-            y={H / 2}
-            textAnchor="middle"
-            dominantBaseline="middle"
-            className="fill-slate-900 text-xs font-bold"
-            transform={`rotate(90 ${W + LABEL_OFFSET * 3.5} ${H / 2})`}
-          >
-            {formatDim(dp.height)}
-          </text>
-        </g>
-      </svg>
+            {/* Safe area & insets */}
+            {safe && (
+              <>
+                {/* Safe area (green) */}
+                <rect
+                  x={safe.left * s}
+                  y={safe.top * s}
+                  width={W - (safe.left + safe.right) * s}
+                  height={H - (safe.top + safe.bottom) * s}
+                  className="fill-green-400/40"
+                  stroke="#22c55e"
+                  strokeWidth="0.5"
+                />
+
+                {/* Top inset (orange) */}
+                {safe.top > 0 && (
+                  <rect x={0} y={0} width={W} height={safe.top * s} className="fill-orange-400/50" />
+                )}
+
+                {/* Bottom inset (orange) */}
+                {safe.bottom > 0 && (
+                  <rect
+                    x={0}
+                    y={H - safe.bottom * s}
+                    width={W}
+                    height={safe.bottom * s}
+                    className="fill-orange-400/50"
+                  />
+                )}
+
+                {/* Right inset (orange) */}
+                {safe.right > 0 && (
+                  <rect
+                    x={W - safe.right * s}
+                    y={0}
+                    width={safe.right * s}
+                    height={H}
+                    className="fill-orange-400/50"
+                  />
+                )}
+              </>
+            )}
+          </svg>
+
+          {/* Right dimension label */}
+          {safe && safe.right > 0 && (
+            <div className="flex flex-col items-center justify-center pt-12">
+              <div className="bg-blue-600 text-white px-1.5 py-1 rounded text-xs font-semibold whitespace-nowrap">
+                {formatDim(safe.right)}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Bottom dimension label */}
+        {safe && safe.bottom > 0 && (
+          <div className="flex justify-center mt-2">
+            <div className="bg-blue-600 text-white px-2 py-1 rounded text-xs font-semibold">
+              {formatDim(safe.bottom)} dp
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Detailed metrics display */}
+      {safe && (
+        <div className="space-y-2 text-sm">
+          <div className="grid grid-cols-2 gap-4 p-3 bg-slate-50 rounded">
+            <div className="text-center">
+              <div className="text-xs text-muted">Top</div>
+              <div className="font-semibold">{formatDim(safe.top)} dp</div>
+            </div>
+            <div className="text-center">
+              <div className="text-xs text-muted">Right</div>
+              <div className="font-semibold">{formatDim(safe.right)} dp</div>
+            </div>
+            <div className="text-center">
+              <div className="text-xs text-muted">Bottom</div>
+              <div className="font-semibold">{formatDim(safe.bottom)} dp</div>
+            </div>
+            <div className="text-center">
+              <div className="text-xs text-muted">Left</div>
+              <div className="font-semibold">{formatDim(safe.left)} dp</div>
+            </div>
+          </div>
+          <div className="text-center text-xs text-muted">
+            Logical size: {formatDim(dp.width)} × {formatDim(dp.height)} dp
+          </div>
+        </div>
+      )}
 
       {/* Color Legend */}
-      <div className="flex flex-wrap gap-4 text-xs">
+      <div className="flex flex-wrap gap-4 text-xs border-t pt-3">
         <div className="flex items-center gap-2">
           <div className="h-3 w-3 rounded bg-green-400/40 border border-green-600" />
           <span className="text-muted">Safe Area</span>
