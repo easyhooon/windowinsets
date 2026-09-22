@@ -131,29 +131,30 @@ class MainActivity : ComponentActivity(), SensorEventListener {
 
     private fun measureAll() {
         measureAllInProgress = true
-        var filesaved = 0
         val screens = listOf(ID_COVER, ID_MAIN)
         val modes = listOf(ID_THREEBUTTON, ID_GESTURE)
+        var delay = 0L
 
         for (screenId in screens) {
-            screenGroup.check(screenId)
-            root.postDelayed({
-                for (modeId in modes) {
+            for (modeId in modes) {
+                root.postDelayed({
+                    screenGroup.check(screenId)
                     navModeGroup.check(modeId)
                     root.postDelayed({
                         val file = export()
                         if (file != null) {
                             Log.i(TAG, "Saved: ${file.name}")
                         }
-                    }, 500)
-                }
-            }, 500)
+                    }, 300)
+                }, delay)
+                delay += 1000
+            }
         }
 
         root.postDelayed({
             measureAllInProgress = false
             Toast.makeText(this, "Saved 4 measurement files", Toast.LENGTH_LONG).show()
-        }, 5000)
+        }, delay + 500)
     }
 
     private fun refresh() {
