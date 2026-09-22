@@ -16,5 +16,5 @@ export function meta({ params }: Route.MetaArgs) {
 export default function DevicePage({ params }: Route.ComponentProps) {
   const device = findDevice(params.slug);
   if (!device) throw new Response("Not Found", { status: 404 });
-  return <DeviceView device={device} />;
+  return <DeviceView key={device.slug} device={device} />;
 }

@@ -1,110 +1,40 @@
 import { useState } from "react";
-import { NavLink, Outlet } from "react-router";
-import { devices, REPO_URL } from "../data/devices";
-
-type Category = "bar" | "fold" | "flip";
-
-// "Galaxy" (and "Z" for the foldables) is dropped here since every tab is a
-// Galaxy device — spelling it out on each tab just made "S" look oddly
-// short next to "Galaxy Z Fold"/"Galaxy Z Flip". The full name still shows
-// on each device's own page.
-const CATEGORIES: { id: Category; label: string }[] = [
-  { id: "bar", label: "S" },
-  { id: "fold", label: "Fold" },
-  { id: "flip", label: "Flip" },
-];
-
-function categoryOf(formFactor: (typeof devices)[number]["formFactor"]): Category {
-  if (formFactor === "bar") return "bar";
-  return formFactor === "foldable-flip" ? "flip" : "fold";
-}
+import { NavLink, Outlet, useLocation } from "react-router";
+import { devices, featuredDevice, REPO_URL } from "../data/devices";
+import { ResizeHandle } from "../components/ResizeHandle";
+import { Icon } from "../components/Icon";
 
 export default function Shell() {
+  const [sidebarWidth, setSidebarWidth] = useState(240);
   const [query, setQuery] = useState("");
-  const [category, setCategory] = useState<Category>("bar");
-  const q = query.trim().toLowerCase();
-  const searching = q.length > 0;
-  const filtered = devices.filter(
-    (d) => d.name.toLowerCase().includes(q) && (searching || categoryOf(d.formFactor) === category),
-  );
-
-  return (
-    // data-build-commit is not shown in the UI — inspect it (view-source or devtools)
-    // to confirm you're looking at the latest deploy rather than a cached page.
-    <div className="flex h-dvh flex-col bg-canvas text-fg" data-build-commit={__BUILD_COMMIT__}>
-      <header className="flex items-center gap-3 border-b border-line bg-canvas px-4 py-3">
-        <NavLink to="/" className="text-base font-semibold">
-          windowinsets.info
-        </NavLink>
-        <span className="hidden text-sm text-muted sm:inline">
-          Window insets &amp; display metrics for Galaxy devices
-        </span>
-        <nav className="ml-auto flex items-center gap-4 text-sm">
-          <NavLink to="/developer-guide" className="text-muted hover:text-fg">
-            Developer guide
-          </NavLink>
-          <NavLink to="/methodology" className="text-muted hover:text-fg">
-            How I measure
-          </NavLink>
-          <a href={REPO_URL} className="text-muted hover:text-fg" rel="noopener noreferrer" target="_blank">
-            GitHub
-          </a>
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const location = useLocation();
+  const current = devices.find(d => location.pathname === `/${d.slug}`) ?? featuredDevice;
+  const filtered = devices.filter(d => d.name.toLowerCase().includes(query.trim().toLowerCase()));
+  const groupOf = (d: typeof devices[number]) => d.formFactor === "tablet" ? "Galaxy Tab" : /^Galaxy S\d*$/.test(d.series) ? "Galaxy S" : d.series;
+  const series = [...new Set(filtered.map(groupOf))];
+  return <div style={{ "--sidebar-width": `${sidebarWidth}px` } as React.CSSProperties} className="app-shell" data-build-commit={__BUILD_COMMIT__}>
+    <a href="#device-canvas" className="skip-link">Skip to device canvas</a>
+    <header className="app-header">
+      <NavLink to="/" className="brand"><img src="/favicon.svg" width="28" height="28" alt="" />windowinsets.info</NavLink>
+      <button className="mobile-model" aria-expanded={mobileOpen} onClick={() => setMobileOpen(!mobileOpen)}><span className={`device-thumbnail ${current.formFactor}`} /><span>{current.name}<small>{current.releaseYear ?? "Skin preview"}</small></span><Icon name="chevron" /></button>
+    </header>
+    <div className="app-content">
+      <aside className={`device-sidebar ${mobileOpen ? "is-open" : ""}`} aria-label="Devices">
+        <div className="sidebar-heading"><strong>Devices</strong><span>{devices.length}</span></div>
+        <label className="device-search"><Icon name="search" /><input type="search" aria-label="Search devices" value={query} onChange={e => setQuery(e.target.value)} placeholder="Search devices…" /></label>
+        <nav className="device-list">
+          {series.map(group => <section key={group} aria-label={group}><h2>{group}</h2>
+            {filtered.filter(d => groupOf(d) === group).map(d => <NavLink key={d.slug} to={`/${d.slug}`} onClick={() => setMobileOpen(false)} className={`device-link ${current.slug === d.slug ? "selected" : ""}`}>
+              <span className={`device-thumbnail ${d.formFactor}`} /><span>{d.name}<small>{d.releaseYear ?? "Skin preview"}</small></span>
+            </NavLink>)}
+          </section>)}
+          {!filtered.length && <p className="p-3 text-sm text-muted">No devices found.</p>}
         </nav>
-      </header>
-      <div className="flex min-h-0 flex-1 flex-col md:flex-row">
-        <aside className="flex max-h-48 shrink-0 flex-col border-b border-line bg-surface md:max-h-none md:w-64 md:border-r md:border-b-0">
-          <div className="p-3 pb-0">
-            <input
-              type="search"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search devices…"
-              className="w-full rounded-md border border-line bg-surface px-3 py-1.5 text-sm"
-            />
-          </div>
-          {!searching && (
-            <div className="flex gap-1 p-3 pb-2">
-              {CATEGORIES.map((c) => (
-                <button
-                  key={c.id}
-                  onClick={() => setCategory(c.id)}
-                  className={`flex-1 rounded-md px-2 py-1.5 text-sm font-medium transition ${
-                    category === c.id
-                      ? "bg-accent-subtle text-accent"
-                      : "text-muted hover:bg-canvas"
-                  }`}
-                >
-                  {c.label}
-                </button>
-              ))}
-            </div>
-          )}
-          <nav className="min-h-0 flex-1 overflow-y-auto px-2 pb-3">
-            <p className="px-2 pb-1 text-xs font-medium text-muted">
-              {searching ? "Samsung Galaxy" : CATEGORIES.find((c) => c.id === category)?.label} · {filtered.length}
-            </p>
-            {filtered.map((d) => (
-              <NavLink
-                key={d.slug}
-                to={`/${d.slug}`}
-                className={({ isActive }) =>
-                  `block rounded-md px-2 py-1.5 text-sm ${
-                    isActive
-                      ? "bg-accent-subtle font-medium text-accent"
-                      : "hover:bg-canvas"
-                  }`
-                }
-              >
-                {d.name}
-                <span className="block text-xs text-muted">{d.releaseYear}</span>
-              </NavLink>
-            ))}
-          </nav>
-        </aside>
-        <main className="grid-canvas min-h-0 flex-1 overflow-y-auto">
-          <Outlet />
-        </main>
-      </div>
+        <nav className="sidebar-footer"><NavLink to="/developer-guide" onClick={() => setMobileOpen(false)}>Developer guide</NavLink><NavLink to="/methodology" onClick={() => setMobileOpen(false)}>How we measure</NavLink><a href={REPO_URL} target="_blank" rel="noreferrer">GitHub ↗</a><a href="https://safearea.info" target="_blank" rel="noreferrer">Inspired by safearea.info ↗</a></nav>
+      </aside>
+      <ResizeHandle label="Devices width" value={sidebarWidth} onChange={setSidebarWidth} min={190} max={360} />
+      <main className="workspace"><Outlet /></main>
     </div>
-  );
+  </div>;
 }

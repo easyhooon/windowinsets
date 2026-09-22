@@ -1,78 +1,36 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
+import { Icon } from "./Icon";
 
-/** A single toolbar dropdown button: "Label: Value ▾" that opens a small
- * menu of options with a checkmark on the selected one — the same visual
- * pattern safearea.info uses for every one of its toolbar controls
- * (Orientation / Zoom / Pose / Hinge), used here so ours look uniform too. */
-export function Dropdown({
-  label,
-  value,
-  options,
-  onChange,
-  footer,
-  valueWidthCh,
-}: {
-  label: string;
-  value: string;
+export function Dropdown({ label, value, options, onChange, footer, valueWidthCh }: {
+  label: string; value: string;
   options: { value: string; label: string; disabled?: boolean }[];
   onChange: (value: string) => void;
-  /** Extra content rendered below the option list (e.g. a slider for Hinge). */
-  footer?: React.ReactNode;
-  /** Reserve this many character-widths for the value (tabular digits), so a
-   * live-updating numeric value (hinge degrees, zoom %) doesn't reflow the
-   * whole toolbar as its digit count changes — e.g. "5°" vs "180°" would
-   * otherwise visibly jitter the button (and everything right of it) on
-   * every tick while dragging. Word-valued dropdowns (Navigation, Pose)
-   * don't need this. */
-  valueWidthCh?: number;
+  footer?: React.ReactNode; valueWidthCh?: number;
 }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
-
+  const trigger = useRef<HTMLButtonElement>(null);
+  const id = useId();
   useEffect(() => {
     if (!open) return;
-    const onClick = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
-    };
-    document.addEventListener("mousedown", onClick);
-    return () => document.removeEventListener("mousedown", onClick);
+    const outside = (e: PointerEvent) => { if (!ref.current?.contains(e.target as Node)) setOpen(false); };
+    const escape = (e: KeyboardEvent) => { if (e.key === "Escape") { setOpen(false); trigger.current?.focus(); } };
+    document.addEventListener("pointerdown", outside);
+    document.addEventListener("keydown", escape);
+    return () => { document.removeEventListener("pointerdown", outside); document.removeEventListener("keydown", escape); };
   }, [open]);
-
-  const current = options.find((o) => o.value === value);
-
-  return (
-    <div className="relative" ref={ref}>
-      <button
-        onClick={() => setOpen((o) => !o)}
-        className="flex items-center gap-1.5 rounded-md border border-line bg-surface px-3 py-1.5 text-sm hover:bg-canvas"
-      >
-        <span className="text-muted">{label}:</span>
-        <span
-          className="font-semibold tabular-nums text-left"
-          style={valueWidthCh ? { display: "inline-block", minWidth: `${valueWidthCh}ch` } : undefined}
-        >
-          {current?.label ?? value}
-        </span>
-        <span className="text-subtle text-xs">▾</span>
-      </button>
-      {open && (
-        <div className="absolute left-0 z-20 mt-1 min-w-[10rem] rounded-md border border-line bg-surface py-1 shadow-card">
-          {options.map((o) => (
-            <button
-              key={o.value}
-              disabled={o.disabled}
-              onClick={() => { if (!o.disabled) { onChange(o.value); setOpen(false); } }}
-              className={`flex w-full items-center gap-2 px-3 py-1.5 text-left text-sm ${
-                o.disabled ? "text-subtle" : "hover:bg-canvas"
-              }`}
-            >
-              <span className="w-3 text-accent">{o.value === value ? "✓" : ""}</span>
-              {o.label}
-            </button>
-          ))}
-          {footer && <div className="border-t border-line px-3 pt-2 pb-1">{footer}</div>}
-        </div>
-      )}
-    </div>
-  );
+  const current = options.find(o => o.value === value);
+  return <div className="dropdown" ref={ref}>
+    <button ref={trigger} className="toolbar-button" aria-expanded={open} aria-controls={id} onClick={() => setOpen(!open)}>
+      <span className="text-muted">{label}:</span>
+      <span className="tabular-nums" style={{ minWidth: valueWidthCh ? `${valueWidthCh}ch` : undefined }}>{current?.label ?? value}</span>
+      <Icon name="chevron" />
+    </button>
+    {open && <div id={id} className="dropdown-panel" aria-label={label}>
+      {options.map(o => <button key={o.value} disabled={o.disabled} aria-pressed={o.value === value} onClick={() => { onChange(o.value); setOpen(false); trigger.current?.focus(); }}>
+        <span className="w-4">{o.value === value && <Icon name="check" />}</span>{o.label}
+      </button>)}
+      {footer && <div className="dropdown-footer">{footer}</div>}
+    </div>}
+  </div>;
 }

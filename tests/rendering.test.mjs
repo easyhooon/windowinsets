@@ -1,0 +1,99 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { existsSync, readFileSync } from 'node:fs';
+import { bendPoint, createChassis, rigidPanelPoint } from '../app/components/foldGeometry.ts';
+import { skins } from '../app/data/skins.ts';
+import { isInCoverage } from '../app/data/coverage.ts';
+
+test('folds remain finite and symmetric at closed, intermediate, and flat poses on both axes', () => {
+  for (const vertical of [true, false]) for (const angle of [0, 1, 45, 90, 135, 179, 180]) {
+    const p = bendPoint(vertical ? 1 : 0, vertical ? 0 : 1, 0, angle, vertical, .14);
+    const q = bendPoint(vertical ? -1 : 0, vertical ? 0 : -1, 0, angle, vertical, .14);
+    assert.ok([...p, ...q].every(Number.isFinite));
+    assert.ok(Math.abs(p[vertical ? 0 : 1] + q[vertical ? 0 : 1]) < 1e-10);
+    assert.equal(p[2], q[2]);
+    const behind = bendPoint(vertical ? 1 : 0, vertical ? 0 : 1, -.065, angle, vertical, .14);
+    assert.ok(Math.abs(Math.hypot(...p.map((v,i) => v - behind[i])) - .065) < 1e-10);
+  }
+  assert.deepEqual(bendPoint(1, 2, -.065, 180, true, .14), [1, 2, -.065]);
+});
+
+test('chassis is a closed solid with two triangles per shared edge', () => {
+  const geometry = createChassis(4.2, 3.1, .15, .065);
+  const indices = geometry.index.array;
+  const edges = new Map();
+  for (let i = 0; i < indices.length; i += 3) for (let j = 0; j < 3; j++) {
+    const a = indices[i+j], b = indices[i+(j+1)%3];
+    const key = a < b ? `${a}:${b}` : `${b}:${a}`;
+    edges.set(key, (edges.get(key) ?? 0) + 1);
+  }
+  assert.ok([...edges.values()].every(count => count === 2));
+  geometry.dispose();
+});
+
+test('cover artwork and annotation margins stay on the rigid rear plane throughout folding', () => {
+  const hinge = .147, rearZ = -.069;
+  for (const vertical of [true, false]) for (const angle of [0, 45, 90, 180]) {
+    const phi = (180 - angle) * Math.PI / 360;
+    const surface = bendPoint(vertical ? hinge : 0, vertical ? 0 : hinge, 0, angle, vertical, hinge);
+    for (const u of [-.1, .025, hinge, 1, 2]) {
+      const point = rigidPanelPoint(vertical ? u : 0, vertical ? 0 : u, rearZ, angle, vertical, hinge);
+      const normalDistance = -(point[vertical ? 0 : 1] - surface[vertical ? 0 : 1]) * Math.sin(phi)
+        + (point[2] - surface[2]) * Math.cos(phi);
+      assert.ok(Math.abs(normalDistance - rearZ) < 1e-9,
+        `Cover vertex ${u} at ${angle}° must remain outside the chassis rear plane (${normalDistance})`);
+    }
+  }
+});
+
+test('official skin rectangles match original layout files and preserve the cover/main distinction', () => {
+  for (const [key, skin] of Object.entries(skins)) {
+    assert.ok(existsSync(`public${skin.image}`));
+    if (skin.foreground) assert.ok(existsSync(`public${skin.foreground}`));
+    const png = readFileSync(`public${skin.image}`);
+    assert.deepEqual([skin.width, skin.height], [png.readUInt32BE(16), png.readUInt32BE(20)]);
+    assert.ok(skin.screen.x >= 0 && skin.screen.y >= 0);
+    assert.ok(skin.screen.x + skin.screen.width <= skin.width);
+    assert.ok(skin.screen.y + skin.screen.height <= skin.height);
+    const layout = readFileSync(`public/skins/${key}/layout`, 'utf8');
+    const size = layout.match(/display\s*{\s*width\s+(\d+)\s*height\s+(\d+)/);
+    const offset = layout.match(/part2\s*{\s*name\s+device\s*x\s+(\d+)\s*y\s+(\d+)/);
+    assert.deepEqual([skin.screen.width, skin.screen.height], size.slice(1).map(Number));
+    assert.deepEqual([skin.screen.x, skin.screen.y], offset.slice(1).map(Number));
+  }
+  const raw = JSON.parse(readFileSync('measurements/galaxy-z-fold8/main-threeButton.json','utf8'));
+  assert.deepEqual([raw.display.widthPx, raw.display.heightPx], [skins['galaxy-z-fold8/cover'].screen.width, skins['galaxy-z-fold8/cover'].screen.height]);
+  assert.notEqual(skins['galaxy-z-fold8/main'].screen.width, raw.display.widthPx);
+});
+
+test('preview catalogue has unique models and valid screen assets, excluding TriFold', () => {
+  const catalog = JSON.parse(readFileSync('app/data/skinCatalog.json', 'utf8'));
+  assert.equal(new Set(catalog.map(device => device.slug)).size, catalog.length);
+  assert.ok(catalog.some(device => device.formFactor === 'tablet'));
+  for (const device of catalog) {
+    assert.ok(!device.slug.includes('trifold'));
+    assert.match(device.slug, /^[a-z0-9]+(?:-[a-z0-9]+)*$/);
+    assert.ok(['bar', 'tablet', 'foldable-book', 'foldable-flip'].includes(device.formFactor));
+    assert.ok(device.screens.includes('main'));
+    assert.equal(new Set(device.screens).size, device.screens.length);
+    for (const screen of device.screens) {
+      assert.ok(['main', 'cover'].includes(screen));
+      assert.ok(skins[`${device.slug}/${screen}`]);
+    }
+  }
+});
+
+test('2020 coverage keeps boundary models and archives older skins without publishing them', () => {
+  const catalog = JSON.parse(readFileSync('app/data/skinCatalog.json', 'utf8'));
+  const supported = catalog.filter(device => isInCoverage({ ...device, releaseYear: null }));
+  assert.equal(supported.length, 70);
+  for (const slug of ['galaxy-fold', 'galaxy-tab-s4-10-5', 'galaxy-tab-s6']) {
+    assert.ok(catalog.some(device => device.slug === slug));
+    assert.ok(!supported.some(device => device.slug === slug));
+  }
+  for (const slug of ['galaxy-tab-s6-lite', 'galaxy-z-flip', 'galaxy-s20', 'galaxy-z-fold2']) {
+    assert.ok(supported.some(device => device.slug === slug));
+  }
+  assert.equal(isInCoverage({ slug: 'measured-older-device', releaseYear: 2019 }), false);
+  assert.equal(isInCoverage({ slug: 'measured-boundary-device', releaseYear: 2020 }), true);
+});

@@ -1,5 +1,5 @@
 import { DeviceView } from "../components/DeviceView";
-import { devices, SITE_URL } from "../data/devices";
+import { featuredDevice, SITE_URL } from "../data/devices";
 import { pageMeta } from "../lib/seo";
 import type { Route } from "./+types/home";
 
@@ -16,6 +16,6 @@ export function meta(_: Route.MetaArgs) {
  * safearea.info does the same with iPhone Duo — instead of a separate
  * list-only summary page. Pick any other device from the sidebar. */
 export default function Home() {
-  const featured = devices[0];
-  return <DeviceView device={featured} />;
+  const featured = featuredDevice;
+  return <DeviceView key={featured.slug} device={featured} />;
 }
