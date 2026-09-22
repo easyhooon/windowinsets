@@ -8,7 +8,9 @@ export default function Shell() {
   const filtered = devices.filter((d) => d.name.toLowerCase().includes(q));
 
   return (
-    <div className="flex h-dvh flex-col bg-canvas text-fg">
+    // data-build-commit is not shown in the UI — inspect it (view-source or devtools)
+    // to confirm you're looking at the latest deploy rather than a cached page.
+    <div className="flex h-dvh flex-col bg-canvas text-fg" data-build-commit={__BUILD_COMMIT__}>
       <header className="flex items-center gap-3 border-b border-line bg-canvas px-4 py-3">
         <NavLink to="/" className="text-base font-semibold">
           windowinsets.info

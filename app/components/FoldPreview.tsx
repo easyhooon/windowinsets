@@ -84,6 +84,10 @@ export function FoldPreview({
     height: halfH,
     backfaceVisibility: "hidden",
     transition: "transform 150ms linear",
+    // Keeps these panels on their own compositor layer so Chromium reliably
+    // repaints the 3D transform on every angle change instead of occasionally
+    // leaving a stale flat render after the first paint.
+    willChange: "transform",
   };
 
   const panelA: CSSProperties = isVertical

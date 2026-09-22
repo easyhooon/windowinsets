@@ -1,20 +1,15 @@
 import type { ReactNode } from "react";
 import { REPO_URL, SITE_URL } from "../data/devices";
+import { pageMeta } from "../lib/seo";
 import type { Route } from "./+types/developer-guide";
 
 export function meta(_: Route.MetaArgs) {
-  const title = "How to use window insets in your app | windowinsets.info";
-  const description =
-    "Reading and using window insets, display cutouts, and corner radii in Android apps. Code examples, official docs, and best practices.";
-  const url = `${SITE_URL}/developer-guide`;
-  return [
-    { title },
-    { name: "description", content: description },
-    { property: "og:title", content: title },
-    { property: "og:description", content: description },
-    { property: "og:url", content: url },
-    { tagName: "link", rel: "canonical", href: url },
-  ];
+  return pageMeta({
+    title: "How to use window insets in your app | windowinsets.info",
+    description:
+      "Reading and using window insets, display cutouts, and corner radii in Android apps. Code examples, official docs, and best practices.",
+    url: `${SITE_URL}/developer-guide`,
+  });
 }
 
 function Section({ title, children }: { title: string; children: ReactNode }) {

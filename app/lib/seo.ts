@@ -1,0 +1,42 @@
+import { SITE_URL } from "../data/devices";
+
+export const SITE_NAME = "windowinsets.info";
+
+// TODO: generate an actual 1200x630 OG image (e.g. og-default.png in /public) —
+// deferred until image-generation tooling is available.
+const OG_IMAGE = `${SITE_URL}/og-default.png`;
+const OG_IMAGE_ALT = "windowinsets.info — window insets for Samsung Galaxy devices";
+
+/** Standard <meta>/<link> tags every page should ship, following the pattern
+ * safearea.info uses: og:title/description/type/site_name/image(+dims/alt),
+ * twitter:card/title/description/image(+alt), and a canonical link. */
+export function pageMeta({
+  title,
+  description,
+  url,
+}: {
+  title: string;
+  description: string;
+  url: string;
+}) {
+  return [
+    { title },
+    { name: "description", content: description },
+    { property: "og:title", content: title },
+    { property: "og:description", content: description },
+    { property: "og:type", content: "website" },
+    { property: "og:site_name", content: SITE_NAME },
+    { property: "og:url", content: url },
+    { property: "og:image", content: OG_IMAGE },
+    { property: "og:image:type", content: "image/png" },
+    { property: "og:image:width", content: "1200" },
+    { property: "og:image:height", content: "630" },
+    { property: "og:image:alt", content: OG_IMAGE_ALT },
+    { name: "twitter:card", content: "summary_large_image" },
+    { name: "twitter:title", content: title },
+    { name: "twitter:description", content: description },
+    { name: "twitter:image", content: OG_IMAGE },
+    { name: "twitter:image:alt", content: OG_IMAGE_ALT },
+    { tagName: "link", rel: "canonical", href: url },
+  ];
+}

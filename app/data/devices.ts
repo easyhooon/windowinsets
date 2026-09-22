@@ -5,9 +5,20 @@ import { galaxyS25Ultra } from "./devices/galaxy-s25-ultra";
 import { galaxyZFold6 } from "./devices/galaxy-z-fold6";
 import { galaxyZFlip6 } from "./devices/galaxy-z-flip6";
 import { galaxyZFold7 } from "./devices/galaxy-z-fold7";
+import { galaxyZFold8 } from "./devices/galaxy-z-fold8";
+import { galaxyZFlip8 } from "./devices/galaxy-z-flip8";
 
 /** Newest first. Add a device by creating a file in ./devices and listing it here. */
-export const devices: Device[] = [galaxyS25Plus, galaxyS25Ultra, galaxyS25, galaxyZFold7, galaxyZFold6, galaxyZFlip6];
+export const devices: Device[] = [
+  galaxyZFold8,
+  galaxyZFlip8,
+  galaxyS25Plus,
+  galaxyS25Ultra,
+  galaxyS25,
+  galaxyZFold7,
+  galaxyZFold6,
+  galaxyZFlip6,
+];
 
 export const SITE_URL = "https://windowinsets.info";
 export const REPO_URL = "https://github.com/easyhooon/windowinsets";

@@ -1,20 +1,15 @@
 import type { ReactNode } from "react";
 import { devices, hasVerifiedInsets, REPO_URL, SITE_URL } from "../data/devices";
+import { pageMeta } from "../lib/seo";
 import type { Route } from "./+types/methodology";
 
 export function meta(_: Route.MetaArgs) {
-  const title = "How I measure Android window insets | windowinsets.info";
-  const description =
-    "Where every number on windowinsets.info comes from: official specs, open-source InsetsProbe measurements, the conditions they are valid for, and known limitations.";
-  const url = `${SITE_URL}/methodology`;
-  return [
-    { title },
-    { name: "description", content: description },
-    { property: "og:title", content: title },
-    { property: "og:description", content: description },
-    { property: "og:url", content: url },
-    { tagName: "link", rel: "canonical", href: url },
-  ];
+  return pageMeta({
+    title: "How I measure Android window insets | windowinsets.info",
+    description:
+      "Where every number on windowinsets.info comes from: official specs, open-source InsetsProbe measurements, the conditions they are valid for, and known limitations.",
+    url: `${SITE_URL}/methodology`,
+  });
 }
 
 function Section({ title, children }: { title: string; children: ReactNode }) {

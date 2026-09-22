@@ -4,28 +4,23 @@ import { FoldPreview } from "../components/FoldPreview";
 import { InsetsDiagram } from "../components/InsetsDiagram";
 import { Segmented } from "../components/Segmented";
 import { findDevice, isSpecced, SITE_URL } from "../data/devices";
+import { pageMeta } from "../lib/seo";
 import type { Insets, NavMode, Source } from "../data/types";
 import type { Route } from "./+types/device";
 
 export function meta({ params }: Route.MetaArgs) {
   const device = findDevice(params.slug);
   if (!device) return [{ title: "Not found | windowinsets.info" }];
-  const title = `${device.name} Window Insets & Display Metrics | windowinsets.info`;
-  const description = `Status bar, navigation bar and cutout insets, resolution, density and hinge states for ${device.name}, with sources for every value.`;
-  const url = `${SITE_URL}/${device.slug}`;
-  return [
-    { title },
-    { name: "description", content: description },
-    { property: "og:title", content: title },
-    { property: "og:description", content: description },
-    { property: "og:url", content: url },
-    { tagName: "link", rel: "canonical", href: url },
-  ];
+  return pageMeta({
+    title: `${device.name} Window Insets & Display Metrics | windowinsets.info`,
+    description: `Status bar, navigation bar and cutout insets, resolution, density and hinge states for ${device.name}, with sources for every value.`,
+    url: `${SITE_URL}/${device.slug}`,
+  });
 }
 
 const NAV_OPTIONS: { value: NavMode; label: string }[] = [
-  { value: "gesture", label: "Gesture" },
   { value: "threeButton", label: "3-button" },
+  { value: "gesture", label: "Gesture" },
 ];
 
 const POSES = [
@@ -83,7 +78,7 @@ function SourceList({ sources }: { sources: Source[] }) {
 
 export default function DevicePage({ params }: Route.ComponentProps) {
   const device = findDevice(params.slug);
-  const [navMode, setNavMode] = useState<NavMode>("gesture");
+  const [navMode, setNavMode] = useState<NavMode>("threeButton");
   const [angle, setAngle] = useState(180);
 
   if (!device) throw new Response("Not Found", { status: 404 });
