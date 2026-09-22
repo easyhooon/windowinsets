@@ -126,6 +126,7 @@ export function DeviceView({ device }: { device: Device }) {
           <Dropdown
             label="Hinge"
             value={`${angle}°`}
+            valueWidthCh={4}
             options={[]}
             onChange={() => {}}
             footer={
@@ -145,6 +146,7 @@ export function DeviceView({ device }: { device: Device }) {
         <Dropdown
           label="Zoom"
           value={`${zoom}%`}
+          valueWidthCh={4}
           options={[
             { value: "out", label: "− Zoom Out" },
             { value: "in", label: "+ Zoom In" },

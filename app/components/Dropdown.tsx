@@ -10,6 +10,7 @@ export function Dropdown({
   options,
   onChange,
   footer,
+  valueWidthCh,
 }: {
   label: string;
   value: string;
@@ -17,6 +18,13 @@ export function Dropdown({
   onChange: (value: string) => void;
   /** Extra content rendered below the option list (e.g. a slider for Hinge). */
   footer?: React.ReactNode;
+  /** Reserve this many character-widths for the value (tabular digits), so a
+   * live-updating numeric value (hinge degrees, zoom %) doesn't reflow the
+   * whole toolbar as its digit count changes — e.g. "5°" vs "180°" would
+   * otherwise visibly jitter the button (and everything right of it) on
+   * every tick while dragging. Word-valued dropdowns (Navigation, Pose)
+   * don't need this. */
+  valueWidthCh?: number;
 }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -39,7 +47,12 @@ export function Dropdown({
         className="flex items-center gap-1.5 rounded-md border border-line bg-surface px-3 py-1.5 text-sm hover:bg-canvas"
       >
         <span className="text-muted">{label}:</span>
-        <span className="font-semibold">{current?.label ?? value}</span>
+        <span
+          className="font-semibold tabular-nums text-left"
+          style={valueWidthCh ? { display: "inline-block", minWidth: `${valueWidthCh}ch` } : undefined}
+        >
+          {current?.label ?? value}
+        </span>
         <span className="text-subtle text-xs">▾</span>
       </button>
       {open && (

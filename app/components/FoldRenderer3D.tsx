@@ -4,8 +4,8 @@ import type { CutoutShape } from "../data/types";
 
 const MIN_ZOOM = 25;
 const MAX_ZOOM = 500;
-const TEX_SCALE = 3; // texture px per world-unit-mm-equivalent, for crisp text
 const SEGMENTS = 48; // vertices along the fold axis — higher = smoother curve
+const THICKNESS = 0.09; // world units the "shell" mesh sits behind the front face — a visible edge/bezel, not an infinitely-thin sheet
 
 const INK = "#1e293b";
 const INSET_COLOR = "#c2410c";
@@ -42,7 +42,7 @@ function drawDiagram(
   },
 ) {
   const W = dpW * px, H = dpH * px;
-  const PAD = 34 * px / 4; // margin for outside dimension lines, scaled modestly
+  const PAD = 34 * px; // margin for outside dimension lines, scaled modestly
   ctx.clearRect(0, 0, W + PAD * 2, H + PAD * 2);
   ctx.save();
   ctx.translate(PAD, PAD);
@@ -63,7 +63,7 @@ function drawDiagram(
     roundedRectPath(0, 0, W, H, r);
     ctx.fillStyle = "#ffffff";
     ctx.fill();
-    ctx.lineWidth = 3 * px / 4;
+    ctx.lineWidth = 3 * px;
     ctx.strokeStyle = "#0f172a";
     ctx.stroke();
   }
@@ -105,17 +105,17 @@ function drawDiagram(
       ctx.fillStyle = "#166534";
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
-      ctx.font = `700 ${9 * px / 4}px sans-serif`;
-      ctx.fillText("SAFE AREA", scx, scy - 8 * px / 4);
-      ctx.font = `700 ${12 * px / 4}px sans-serif`;
-      ctx.fillText(`${opts.fmt(safeWDp)} × ${opts.fmt(safeHDp)}`, scx, scy + 9 * px / 4);
+      ctx.font = `700 ${9 * px}px sans-serif`;
+      ctx.fillText("SAFE AREA", scx, scy - 8 * px);
+      ctx.font = `700 ${12 * px}px sans-serif`;
+      ctx.fillText(`${opts.fmt(safeWDp)} × ${opts.fmt(safeHDp)}`, scx, scy + 9 * px);
     }
     ctx.restore();
   }
 
-  function chip(x: number, y: number, text: string, color: string, w = 40 * px / 4, h = 15 * px / 4, fontSize = 10 * px / 4) {
+  function chip(x: number, y: number, text: string, color: string, w = 40 * px, h = 15 * px, fontSize = 10 * px) {
     ctx.fillStyle = color;
-    roundedRectPath(x - w / 2, y - h / 2, w, h, 3 * px / 4);
+    roundedRectPath(x - w / 2, y - h / 2, w, h, 3 * px);
     ctx.fill();
     ctx.fillStyle = "#ffffff";
     ctx.font = `700 ${fontSize}px sans-serif`;
@@ -126,13 +126,13 @@ function drawDiagram(
 
   function arrowLine(x1: number, y1: number, x2: number, y2: number, color: string) {
     ctx.strokeStyle = color;
-    ctx.lineWidth = 1.3 * px / 4;
+    ctx.lineWidth = 1.3 * px;
     ctx.beginPath();
     ctx.moveTo(x1, y1);
     ctx.lineTo(x2, y2);
     ctx.stroke();
     const ang = Math.atan2(y2 - y1, x2 - x1);
-    const size = 5 * px / 4;
+    const size = 5 * px;
     for (const [ex, ey, a] of [[x1, y1, ang + Math.PI], [x2, y2, ang]] as const) {
       ctx.beginPath();
       ctx.moveTo(ex, ey);
@@ -148,8 +148,8 @@ function drawDiagram(
     ctx.save();
     ctx.strokeStyle = color;
     ctx.globalAlpha = 0.6;
-    ctx.lineWidth = 1 * px / 4;
-    ctx.setLineDash([2 * px / 4, 2 * px / 4]);
+    ctx.lineWidth = 1 * px;
+    ctx.setLineDash([2 * px, 2 * px]);
     ctx.beginPath();
     ctx.moveTo(x1, y1);
     ctx.lineTo(x2, y2);
@@ -160,49 +160,49 @@ function drawDiagram(
   if (opts.showDimensions) {
     ctx.globalAlpha = 1;
     // Overall width/height, outside
-    extLine(0, 0, 0, -20 * px / 4, INK); extLine(W, 0, W, -20 * px / 4, INK);
-    arrowLine(0, -20 * px / 4, W, -20 * px / 4, INK);
-    chip(W / 2, -20 * px / 4, opts.fmt(dpW), INK);
+    extLine(0, 0, 0, -20 * px, INK); extLine(W, 0, W, -20 * px, INK);
+    arrowLine(0, -20 * px, W, -20 * px, INK);
+    chip(W / 2, -20 * px, opts.fmt(dpW), INK);
 
-    extLine(0, 0, -20 * px / 4, 0, INK); extLine(0, H, -20 * px / 4, H, INK);
-    arrowLine(-20 * px / 4, 0, -20 * px / 4, H, INK);
-    chip(-20 * px / 4, H / 2, opts.fmt(dpH), INK);
+    extLine(0, 0, -20 * px, 0, INK); extLine(0, H, -20 * px, H, INK);
+    arrowLine(-20 * px, 0, -20 * px, H, INK);
+    chip(-20 * px, H / 2, opts.fmt(dpH), INK);
 
     if (safe) {
       if (safe.top > 0) {
         chip(W / 2, safe.top * px / 2, opts.fmt(safe.top), INSET_COLOR);
-        extLine(W, 0, W + 18 * px / 4, 0, INSET_COLOR); extLine(W, safe.top * px, W + 18 * px / 4, safe.top * px, INSET_COLOR);
-        arrowLine(W + 18 * px / 4, 0, W + 18 * px / 4, safe.top * px, INSET_COLOR);
-        chip(W + 18 * px / 4, safe.top * px / 2, opts.fmt(safe.top), INSET_COLOR, 34 * px / 4, 14 * px / 4, 8.5 * px / 4);
+        extLine(W, 0, W + 18 * px, 0, INSET_COLOR); extLine(W, safe.top * px, W + 18 * px, safe.top * px, INSET_COLOR);
+        arrowLine(W + 18 * px, 0, W + 18 * px, safe.top * px, INSET_COLOR);
+        chip(W + 18 * px, safe.top * px / 2, opts.fmt(safe.top), INSET_COLOR, 34 * px, 14 * px, 8.5 * px);
       }
       if (safe.bottom > 0) {
         chip(W / 2, H - safe.bottom * px / 2, opts.fmt(safe.bottom), INSET_COLOR);
-        extLine(W, H - safe.bottom * px, W + 18 * px / 4, H - safe.bottom * px, INSET_COLOR); extLine(W, H, W + 18 * px / 4, H, INSET_COLOR);
-        arrowLine(W + 18 * px / 4, H - safe.bottom * px, W + 18 * px / 4, H, INSET_COLOR);
-        chip(W + 18 * px / 4, H - safe.bottom * px / 2, opts.fmt(safe.bottom), INSET_COLOR, 34 * px / 4, 14 * px / 4, 8.5 * px / 4);
+        extLine(W, H - safe.bottom * px, W + 18 * px, H - safe.bottom * px, INSET_COLOR); extLine(W, H, W + 18 * px, H, INSET_COLOR);
+        arrowLine(W + 18 * px, H - safe.bottom * px, W + 18 * px, H, INSET_COLOR);
+        chip(W + 18 * px, H - safe.bottom * px / 2, opts.fmt(safe.bottom), INSET_COLOR, 34 * px, 14 * px, 8.5 * px);
       }
       if (safe.left > 0) {
-        extLine(0, 0, 0, -12 * px / 4, INSET_COLOR); extLine(safe.left * px, 0, safe.left * px, -12 * px / 4, INSET_COLOR);
-        arrowLine(0, -12 * px / 4, safe.left * px, -12 * px / 4, INSET_COLOR);
+        extLine(0, 0, 0, -12 * px, INSET_COLOR); extLine(safe.left * px, 0, safe.left * px, -12 * px, INSET_COLOR);
+        arrowLine(0, -12 * px, safe.left * px, -12 * px, INSET_COLOR);
       }
       if (safe.right > 0) {
-        extLine(W - safe.right * px, 0, W - safe.right * px, -12 * px / 4, INSET_COLOR); extLine(W, 0, W, -12 * px / 4, INSET_COLOR);
-        arrowLine(W - safe.right * px, -12 * px / 4, W, -12 * px / 4, INSET_COLOR);
+        extLine(W - safe.right * px, 0, W - safe.right * px, -12 * px, INSET_COLOR); extLine(W, 0, W, -12 * px, INSET_COLOR);
+        arrowLine(W - safe.right * px, -12 * px, W, -12 * px, INSET_COLOR);
       }
     }
 
     if (r > 0 && opts.cornerRadiiDp) {
       const cr = opts.cornerRadiiDp;
-      const rad = 9 * px / 4, fs = 7 * px / 4;
+      const rad = 9 * px, fs = 7 * px;
       const dot = (x: number, y: number, v: number) => {
         ctx.beginPath(); ctx.arc(x, y, rad, 0, Math.PI * 2); ctx.fillStyle = RADIUS_COLOR; ctx.fill();
         ctx.fillStyle = "#fff"; ctx.font = `700 ${fs}px sans-serif`; ctx.textAlign = "center"; ctx.textBaseline = "middle";
         ctx.fillText(opts.fmt(v), x, y + 0.5);
       };
-      dot(-16 * px / 4, -16 * px / 4, cr.topLeft);
-      dot(W + 16 * px / 4, -16 * px / 4, cr.topRight);
-      dot(-16 * px / 4, H + 16 * px / 4, cr.bottomLeft);
-      dot(W + 16 * px / 4, H + 16 * px / 4, cr.bottomRight);
+      dot(-16 * px, -16 * px, cr.topLeft);
+      dot(W + 16 * px, -16 * px, cr.topRight);
+      dot(-16 * px, H + 16 * px, cr.bottomLeft);
+      dot(W + 16 * px, H + 16 * px, cr.bottomRight);
     }
   }
 
@@ -320,8 +320,8 @@ export function FoldRenderer3D({
     const geometry = new THREE.PlaneGeometry(worldW, worldH, segX, segY);
     const basePositions = geometry.attributes.position.array.slice();
 
-    const px = 256 / dpW; // canvas px per dp — fixed texel density, independent of zoom or rotation
-    const PAD = 34 * px / 4;
+    const px = 340 / dpW; // canvas px per dp — fixed texel density, independent of zoom or rotation
+    const PAD = 34 * px;
     // drawDiagram always lays the diagram out in the captured dpW×dpH frame
     // (content box below). When rotating, the canvas's own pixel buffer is
     // swapped to match the silhouette instead, and each redraw rotates the
@@ -342,6 +342,18 @@ export function FoldRenderer3D({
     const material = new THREE.MeshBasicMaterial({ map: texture, transparent: true, side: THREE.DoubleSide });
     const mesh = new THREE.Mesh(geometry, material);
     scene.add(mesh);
+
+    // A plain flat sheet reads as paper-thin, especially mid-fold — real
+    // hardware has a visible edge (glass + frame). Cheap fix: a second,
+    // unlit dark "shell" mesh sharing the same bent topology but pushed
+    // back along the front face's own surface normals by a small constant
+    // — wherever the bend or the camera's slight elevation reveals the
+    // side profile, this shows through as a thin dark rim, giving the
+    // device an actual sense of thickness instead of a zero-depth sheet.
+    const shellGeometry = geometry.clone();
+    const shellMaterial = new THREE.MeshBasicMaterial({ color: "#334155", side: THREE.DoubleSide });
+    const shellMesh = new THREE.Mesh(shellGeometry, shellMaterial);
+    scene.add(shellMesh);
 
     function redrawTexture() {
       const st = stateRef.current;
@@ -408,6 +420,22 @@ export function FoldRenderer3D({
       }
       posAttr.needsUpdate = true;
       geometry.computeVertexNormals();
+
+      // Push the shell mesh's matching vertices back along the just-computed
+      // surface normals — done after computeVertexNormals() above so this
+      // always uses the current (bent) normals, not the flat plane's.
+      const normalAttr = geometry.attributes.normal;
+      const shellPos = shellGeometry.attributes.position;
+      for (let i = 0; i < posAttr.count; i++) {
+        shellPos.setXYZ(
+          i,
+          posAttr.getX(i) - normalAttr.getX(i) * THICKNESS,
+          posAttr.getY(i) - normalAttr.getY(i) * THICKNESS,
+          posAttr.getZ(i) - normalAttr.getZ(i) * THICKNESS,
+        );
+      }
+      shellPos.needsUpdate = true;
+      shellGeometry.computeVertexNormals();
     }
 
     redrawTexture();
@@ -439,6 +467,8 @@ export function FoldRenderer3D({
       geometry.dispose();
       material.dispose();
       texture.dispose();
+      shellGeometry.dispose();
+      shellMaterial.dispose();
       renderer.dispose();
     };
     // Geometry/scene are rebuilt only when the device itself changes; angle
