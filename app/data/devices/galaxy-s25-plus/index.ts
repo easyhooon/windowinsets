@@ -1,4 +1,4 @@
-import type { Device, Source } from "../types";
+import type { Device, Source } from "../../types";
 
 const samsungSpecs: Source = {
   kind: "official",
