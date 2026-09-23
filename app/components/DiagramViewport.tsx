@@ -1,7 +1,7 @@
 import { useEffect, useImperativeHandle, useLayoutEffect, useRef, useState } from "react";
 
 type Bounds = { left: number; top: number; right: number; bottom: number };
-export type DiagramViewportHandle = { fitFoldBounds: (bounds: Bounds) => number; setFoldAngle: (angle: number) => void; effectiveZoom: () => number };
+export type DiagramViewportHandle = { fitFoldBounds: (bounds: Bounds, mobileVerticalReserve?: number) => number; setFoldAngle: (angle: number) => void; effectiveZoom: () => number };
 
 export function DiagramViewport({ viewportRef, autoFit = false, closedFit, children, zoom, setZoom, rotation, fitKey, onUserTransform, onFit, baseWidth = 700, baseHeight = 700, fitWidth = baseWidth, fitHeight = baseHeight }: {
   viewportRef?: React.Ref<DiagramViewportHandle>; autoFit?: boolean; closedFit?: { width: number; height: number };
@@ -20,15 +20,15 @@ export function DiagramViewport({ viewportRef, autoFit = false, closedFit, child
   const fitBounds = useRef({ fitWidth, fitHeight });
   fitBounds.current = { fitWidth, fitHeight };
   const fitCenter = useRef({ x: 0, y: 0 });
-  const projectedBounds = useRef<Bounds | null>(null);
-  const fitFoldBounds = (bounds: Bounds) => {
-      projectedBounds.current = bounds;
+  const projectedFit = useRef<{ bounds: Bounds; mobileVerticalReserve: number } | null>(null);
+  const fitFoldBounds = (bounds: Bounds, mobileVerticalReserve = 160) => {
+      projectedFit.current = { bounds, mobileVerticalReserve };
       if (!live.current.autoFit || !ref.current || !scaleRef.current) return effectiveZoom.current;
       const sideways = Math.abs(live.current.rotation) % 180 === 90;
       const width = bounds.right - bounds.left, height = bounds.bottom - bounds.top;
       const mobile = ref.current.clientWidth < 768;
       const availableW = ref.current.clientWidth - (mobile ? 40 : 52);
-      const availableH = ref.current.clientHeight - (mobile ? 160 : 100);
+      const availableH = ref.current.clientHeight - (mobile ? mobileVerticalReserve : 100);
       effectiveZoom.current = Math.max(25, Math.min(150, 100 * Math.min(availableW / (sideways ? height : width),
         availableH / (sideways ? width : height))));
       const displayedZoom = Math.round(effectiveZoom.current);
@@ -48,7 +48,7 @@ export function DiagramViewport({ viewportRef, autoFit = false, closedFit, child
       ? fitScales.current.closed + (fitScales.current.open - fitScales.current.closed) * progress
       : live.current.zoom;
     if (scaleRef.current) scaleRef.current.style.transform = `scale(${effectiveZoom.current / 100}) rotate(${live.current.rotation}deg) translate(${-fitCenter.current.x}px, ${-fitCenter.current.y}px)`;
-    if (includeBounds && projectedBounds.current) fitFoldBounds(projectedBounds.current);
+    if (includeBounds && projectedFit.current) fitFoldBounds(projectedFit.current.bounds, projectedFit.current.mobileVerticalReserve);
   };
   useImperativeHandle(viewportRef, () => ({
     setFoldAngle: angle => { displayedAngle.current = angle; applyScale(false); },

@@ -246,3 +246,10 @@ reduce the phone to a thumbnail. Some exterior labels require dragging the
 canvas. Partially folded and open poses fit the projected rulers. Short measurements use adjacent badges rather
 than diagonal leaders through the hinge. See `ISSUE_1_REVIEW.md` for the explicit
 navigation/unit/pose/rotation matrix, integer-angle sweep and browser coverage.
+
+The closed mobile view now uses more of the viewport for the official device skin.
+Top corner-radius badges take the lane nearest the body; the display-width and
+cutout lanes sit farther out and can pass behind the collapsed Metrics header,
+as on the reference mobile view. Dragging the canvas reveals these measurements;
+the metrics panel retains their numeric values. This is a visibility tradeoff of
+the narrow viewport, not a missing measurement.

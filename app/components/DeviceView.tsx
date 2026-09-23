@@ -265,9 +265,7 @@ export function DeviceView({ device }: { device: Device }) {
             if (window.innerWidth >= 768 || displayedAngle >= COVER_REVEAL_ANGLE) return viewport.current?.fitFoldBounds(bounds);
             // Closed cover screens have many narrow cutout rulers above the
             // phone. Fitting every badge makes the actual device thumbnail-sized.
-            const cx = (body.left + body.right) / 2, cy = (body.top + body.bottom) / 2;
-            const halfW = (body.right - body.left) * .6, halfH = (body.bottom - body.top) * .6;
-            return viewport.current?.fitFoldBounds({ left: cx - halfW, right: cx + halfW, top: cy - halfH, bottom: cy + halfH });
+            return viewport.current?.fitFoldBounds(body, 120);
           }}
           onDisplayedAngle={value => {
             viewport.current?.setFoldAngle(value);

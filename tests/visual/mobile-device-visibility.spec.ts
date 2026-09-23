@@ -32,11 +32,16 @@ test.use({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 3, isMobile
 test("Fold8 cover stays visible at phone resolution, including transparent WebGL compositing", async ({ page }) => {
   await page.goto("/galaxy-z-fold8");
   await expect(page.locator("[data-displayed-angle]")).toHaveAttribute("data-displayed-angle", "0.00");
-  await expect.poll(() => visibleSafeAreaWidth(page)).toBeGreaterThan(150);
+  await expect.poll(() => visibleSafeAreaWidth(page)).toBeGreaterThan(185);
+  const metrics = await page.getByRole("button", { name: "Metrics", exact: true }).boundingBox();
+  const corner = await page.locator('[data-ruler="Top left radius"] [data-badge]').boundingBox();
+  expect(metrics).not.toBeNull();
+  expect(corner).not.toBeNull();
+  expect(corner!.y).toBeGreaterThan(metrics!.y + metrics!.height);
 
   // Reproduce a GPU surface which composites as transparent without a context-lost event.
   await page.locator("[data-displayed-angle] canvas").first().evaluate(canvas => { (canvas as HTMLCanvasElement).style.opacity = "0"; });
-  await expect.poll(() => visibleSafeAreaWidth(page)).toBeGreaterThan(150);
+  await expect.poll(() => visibleSafeAreaWidth(page)).toBeGreaterThan(185);
 });
 
 test("Fold8 cover still renders when WebGL construction fails", async ({ page }) => {
