@@ -188,12 +188,12 @@ test('preview catalogue has unique models and valid screen assets, excluding Tri
 test('2020 coverage keeps boundary models and archives older skins without publishing them', () => {
   const catalog = JSON.parse(readFileSync('app/data/skinCatalog.json', 'utf8'));
   const supported = catalog.filter(device => isInCoverage({ ...device, releaseYear: null }));
-  assert.equal(supported.length, 70);
+  assert.equal(supported.length, 71);
   for (const slug of ['galaxy-fold', 'galaxy-tab-s4-10-5', 'galaxy-tab-s6']) {
     assert.ok(catalog.some(device => device.slug === slug));
     assert.ok(!supported.some(device => device.slug === slug));
   }
-  for (const slug of ['galaxy-tab-s6-lite', 'galaxy-z-flip', 'galaxy-s20', 'galaxy-z-fold2']) {
+  for (const slug of ['galaxy-tab-s6-lite', 'galaxy-z-flip', 'galaxy-s20', 'galaxy-z-fold2', 'galaxy-z-fold3']) {
     assert.ok(supported.some(device => device.slug === slug));
   }
   assert.equal(isInCoverage({ slug: 'measured-older-device', releaseYear: 2019 }), false);

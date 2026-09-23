@@ -1,0 +1,8 @@
+{
+  "archive": "Galaxy_Z_Fold3.zip",
+  "folder": "Galaxy_Z_Fold3/Galaxy_Z_Fold3_Unfolded",
+  "background": "device_Port-PhantomSilver.png",
+  "foreground": "fore_port.png",
+  "source": "https://developer.samsung.com/galaxy-emulator-skin",
+  "providedAt": "2026-09-23"
+}

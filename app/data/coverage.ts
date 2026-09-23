@@ -8,6 +8,7 @@ export const checkedReleaseYears: Record<string, number> = {
   "galaxy-fold": 2019,
   "galaxy-tab-s6-lite": 2020,
   "galaxy-z-flip": 2020,
+  "galaxy-z-fold3": 2021,
 };
 
 export function isInCoverage(device: { slug: string; releaseYear: number | null }): boolean {

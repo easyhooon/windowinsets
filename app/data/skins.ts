@@ -1581,5 +1581,43 @@ export const skins: Record<string, DeviceSkin> = {
       "height": 2584,
       "radius": 100
     }
+  },
+  "galaxy-z-fold3/cover": {
+    "image": "/skins/galaxy-z-fold3/cover/device.png",
+    "foreground": "/skins/galaxy-z-fold3/cover/foreground.png",
+    "width": 1342,
+    "height": 2708,
+    "screen": {
+      "x": 299,
+      "y": 220,
+      "width": 832,
+      "height": 2268
+    },
+    "body": {
+      "x": 259,
+      "y": 180,
+      "width": 912,
+      "height": 2348,
+      "radius": 100
+    }
+  },
+  "galaxy-z-fold3/main": {
+    "image": "/skins/galaxy-z-fold3/main/device.png",
+    "foreground": "/skins/galaxy-z-fold3/main/foreground.png",
+    "width": 2217,
+    "height": 2640,
+    "screen": {
+      "x": 224,
+      "y": 216,
+      "width": 1768,
+      "height": 2208
+    },
+    "body": {
+      "x": 184,
+      "y": 176,
+      "width": 1848,
+      "height": 2288,
+      "radius": 100
+    }
   }
 };

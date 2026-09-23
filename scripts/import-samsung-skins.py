@@ -6,6 +6,7 @@ Only layout and its referenced background/foreground are copied. Existing entrie
 are preserved. Screen coordinates come from layout; body clips are illustrative.
 """
 import argparse
+from datetime import date
 import json
 from pathlib import Path
 import re
@@ -28,7 +29,9 @@ def import_skins(downloads):
     header, payload = manifest.read_text().split('export const skins: Record<string, DeviceSkin> = ', 1)
     skins = json.loads(payload.strip().removesuffix(';'))
     imported = []
-    catalog = []
+    catalog_path = ROOT / 'app/data/skinCatalog.json'
+    catalog = json.loads(catalog_path.read_text()) if catalog_path.exists() else []
+    catalog_slugs = {entry['slug'] for entry in catalog}
     for archive in sorted(downloads.glob('Galaxy*.zip')):
         if 'TriFold' in archive.stem:
             continue  # Separate product decision; do not register automatically.
@@ -88,7 +91,7 @@ def import_skins(downloads):
                     'archive': archive.name, 'folder': folder,
                     'background': background, 'foreground': foreground,
                     'source': 'https://developer.samsung.com/galaxy-emulator-skin',
-                    'providedAt': '2026-09-22',
+                    'providedAt': date.today().isoformat(),
                 }, indent=2) + '\n')
                 margin = (100 if 'active' in slug else 55) if form == 'tablet' else 40
                 mx, my = min(margin, x), min(margin, y)
@@ -103,10 +106,11 @@ def import_skins(downloads):
                 if slug == 'galaxy-s20':
                     skins[key]['body'] = {'x': 334, 'y': 325, 'width': 1558, 'height': 3368, 'radius': 220}
                 imported.append(key)
-        if screens:
+        if screens and slug not in catalog_slugs:
             catalog.append({'slug': slug, 'name': name, 'series': family, 'formFactor': form,
                             'screens': sorted(screens, key=lambda value: value != 'cover')})
-    (ROOT / 'app/data/skinCatalog.json').write_text(json.dumps(catalog, indent=2) + '\n')
+            catalog_slugs.add(slug)
+    catalog_path.write_text(json.dumps(catalog, indent=2) + '\n')
     manifest.write_text(header + 'export const skins: Record<string, DeviceSkin> = ' + json.dumps(skins, indent=2) + ';\n')
     print(f'Imported {len(imported)} skins: ' + ', '.join(imported))
 

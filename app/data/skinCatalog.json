@@ -665,5 +665,15 @@
       "cover",
       "main"
     ]
+  },
+  {
+    "slug": "galaxy-z-fold3",
+    "name": "Galaxy Z Fold3",
+    "series": "Galaxy Z Fold",
+    "formFactor": "foldable-book",
+    "screens": [
+      "cover",
+      "main"
+    ]
   }
 ]
