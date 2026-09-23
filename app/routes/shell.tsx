@@ -4,6 +4,7 @@ import { devices, featuredDevice, REPO_URL } from "../data/devices";
 import { ResizeHandle } from "../components/ResizeHandle";
 import { Icon } from "../components/Icon";
 import { getRtlAvailability } from "../data/rtlAvailability";
+import { trackDeviceSelection } from "../lib/analytics";
 
 export default function Shell() {
   const [sidebarWidth, setSidebarWidth] = useState(240);
@@ -26,7 +27,7 @@ export default function Shell() {
         <label className="device-search"><Icon name="search" /><input type="search" aria-label="Search devices" value={query} onChange={e => setQuery(e.target.value)} placeholder="Search devices…" /></label>
         <nav className="device-list">
           {series.map(group => <section key={group} aria-label={group}><h2>{group}</h2>
-            {filtered.filter(d => groupOf(d) === group).map(d => <NavLink key={d.slug} to={`/${d.slug}`} onClick={() => setMobileOpen(false)} className={`device-link ${current.slug === d.slug ? "selected" : ""}`}>
+            {filtered.filter(d => groupOf(d) === group).map(d => <NavLink key={d.slug} to={`/${d.slug}`} onClick={() => { trackDeviceSelection(d); setMobileOpen(false); }} onAuxClick={e => { if (e.button === 1) trackDeviceSelection(d); }} className={`device-link ${current.slug === d.slug ? "selected" : ""}`}>
               <span className={`device-thumbnail ${d.formFactor}`} /><span>{d.name}<small>{d.releaseYear ? `${d.releaseYear} · ` : ""}{getRtlAvailability(d.slug).label}</small></span>
             </NavLink>)}
           </section>)}
