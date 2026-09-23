@@ -6,6 +6,7 @@ import { skins } from '../app/data/skins.ts';
 import { isInCoverage } from '../app/data/coverage.ts';
 import { getRtlAvailability, rtlCatalog } from '../app/data/rtlAvailability.ts';
 import { galaxyZFold2 } from '../app/data/devices/galaxy-z-fold2/index.ts';
+import { galaxyZFold6 } from '../app/data/devices/galaxy-z-fold6/index.ts';
 import { galaxyZFold7 } from '../app/data/devices/galaxy-z-fold7/index.ts';
 import { galaxyZFold8 } from '../app/data/devices/galaxy-z-fold8/index.ts';
 import { galaxyZFlip8 } from '../app/data/devices/galaxy-z-flip8/index.ts';
@@ -206,7 +207,8 @@ test('RTL comparisons never turn an incomplete inventory into non-support claims
     assert.equal(getRtlAvailability(slug).status, 'listed');
   }
   const comparison = skins.map(device => getRtlAvailability(device.slug));
-  assert.equal(comparison.filter(result => result.status === 'listed').length, 5);
+  assert.equal(comparison.filter(result => result.status === 'listed').length,
+    new Set([...snapshot.listedSlugs, ...snapshot.reservableSlugs]).size);
   assert.ok(comparison.every(result => result.status !== 'not-listed'));
   // Existing captures do not imply that a model can still be reserved today.
   assert.equal(getRtlAvailability('galaxy-s25-plus').status, 'unknown');
@@ -215,6 +217,7 @@ test('RTL comparisons never turn an incomplete inventory into non-support claims
   assert.match(getRtlAvailability('galaxy-s20', complete).previewNotice, /Not listed/);
   assert.equal(getRtlAvailability('galaxy-z-fold8', complete).label, 'Reservable on RTL');
   assert.equal(getRtlAvailability('galaxy-z-fold7').label, 'Reservable on RTL');
+  assert.equal(getRtlAvailability('galaxy-z-fold6').label, 'Reservable on RTL');
 });
 
 test('Fold7 captures keep exact cover and rotated inner evidence distinct', () => {
@@ -251,6 +254,26 @@ test('Fold7 captures keep exact cover and rotated inner evidence distinct', () =
   }
 });
 
+test('Fold6 publishes only settled cover and inner gesture evidence', () => {
+  for (const [screenId, navMode] of [
+    ['cover', 'gesture'], ['cover', 'threeButton'], ['main', 'gesture'],
+  ]) {
+    const raw = readCapture(`measurements/galaxy-z-fold6/${screenId}-${navMode}.json`);
+    const screen = galaxyZFold6.screens.find(candidate => candidate.id === screenId);
+    assert.equal(raw.device.model, 'SM-F956U');
+    assert.equal(raw.screen, screenId);
+    assert.equal(raw.navigation.mode, navMode);
+    assert.deepEqual(screen.logicalSizePx, raw.display.currentWindowPx);
+    assert.deepEqual(screen.logicalSizeDp, raw.display.maximumWindowDp);
+    assert.deepEqual(screen.insets[navMode].systemBars, raw.insets.systemBars.dp);
+  }
+  const main = galaxyZFold6.screens.find(screen => screen.id === 'main');
+  assert.equal(main.insets.threeButton, null);
+  assert.equal(main.insets.gesture.systemBarsPx.bottom, 39);
+  assert.equal(readCapture('measurements/galaxy-z-fold6/rejected-2026-09-23/main-threeButton.json')
+    .insets.systemBars.px.bottom, 1);
+});
+
 test('Fold8 recapture keeps cover and inner evidence distinct in both navigation modes', () => {
   const captures = [
     ['cover', 'gesture'],
@@ -278,6 +301,9 @@ test('Fold8 recapture keeps cover and inner evidence distinct in both navigation
 
 test('published px values and capture orientation remain exact raw evidence', () => {
   const cases = [
+    { device: galaxyZFold6, screenId: 'cover', navMode: 'gesture', capturePath: 'measurements/galaxy-z-fold6/cover-gesture.json' },
+    { device: galaxyZFold6, screenId: 'cover', navMode: 'threeButton', capturePath: 'measurements/galaxy-z-fold6/cover-threeButton.json' },
+    { device: galaxyZFold6, screenId: 'main', navMode: 'gesture', capturePath: 'measurements/galaxy-z-fold6/main-gesture.json' },
     ...['gesture', 'threeButton'].flatMap(navMode => [
       {
         device: galaxyZFold2,
@@ -379,6 +405,7 @@ test('px presentation prefers exact capture values over rounded dp reconstructio
 
 test('published cutout positions preserve raw bounds in both dp and px', () => {
   const cases = [
+    [galaxyZFold6, 'cover', 'measurements/galaxy-z-fold6/cover-threeButton.json'],
     [galaxyZFold2, 'cover', 'measurements/galaxy-z-fold2/cover-threeButton.json'],
     [galaxyZFold2, 'main', 'measurements/galaxy-z-fold2/main-threeButton.json'],
     [galaxyZFold7, 'cover', 'measurements/galaxy-z-fold7/cover-threeButton.json'],

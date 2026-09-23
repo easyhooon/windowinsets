@@ -1,6 +1,6 @@
 # Samsung RTL credits and reservation budget
 
-**Last live verification:** 2026-09-23 01:20 KST
+**Last live verification:** 2026-09-23 17:40 KST
 
 Samsung's published pages and the current RTL account UI do not agree on the
 daily grant. Keep the published policy, observed behavior and spending history
@@ -52,6 +52,14 @@ reservation was ended with RTL's checked `Return this device to get back 1
 credit(s)` option. The device list then showed **4 Credits**. No measurement from
 this blocked reservation was accepted.
 
+On 2026-09-23, a second Galaxy Z Fold6 reservation reduced the live header
+from **19 to 17 Credits**. After downloading the remaining attempted capture,
+the WebClient still displayed 17 minutes remaining on the 30-minute slot.
+Ending it with `Return this device to get back 1 credit(s)` checked raised the
+header to **18 Credits** and left no active reservation. This is a second direct
+one-credit refund observation, not proof that the threshold is exactly 15
+minutes; the checkbox and resulting balance are the evidence.
+
 The preceding 2026-09-22 Usage History contained these booked reservations:
 
 | Time | Device | Booked credits |
@@ -79,8 +87,10 @@ prove a universal 20-credit grant because the next live grant was only 10.
    published 20-credit figure when the account received less.
 4. Reserve one device for exactly 30 minutes / 2 credits. With a confirmed
    10-credit balance, the no-refund ceiling is five devices; with 20, it is ten.
-5. Do not extend a session. Preserve partial evidence and requeue unfinished
-   captures.
+5. Aim to finish, download and validate within the first 15 minutes. If the
+   early-return dialog offers one credit back once the files are safe, check it,
+   end the slot and verify the balance increase. Do not extend a session;
+   preserve partial evidence and requeue unfinished captures.
 6. After closing a session, refresh the header and Usage History. Record booked
    credits separately from any returned unused-time credits.
 7. Stop when the current balance is below two credits or the UI reports the

@@ -101,15 +101,18 @@ for (const slug of ["galaxy-z-fold8", "galaxy-z-flip8"]) {
   });
 }
 
-test("artwork-only Fold6 keeps pending data when switching screens", async ({ page }) => {
+test("partially measured Fold6 keeps only the unverified mode pending", async ({ page }) => {
   await page.goto("/galaxy-z-fold6");
-  await expect(page.locator(".pending-notice")).toBeVisible();
+  await expect(page.locator(".pending-notice")).toHaveCount(0);
   const toggle = page.getByRole("button", { name: "Metrics", exact: true });
   if (await toggle.isVisible()) await toggle.click();
-  for (const screen of ["Inner", "Outer"]) {
-    await page.locator(".screen-tabs").getByRole("button", { name: screen, exact: true }).click();
-    await expect(page.locator(".pending-notice")).toBeVisible();
-    expect((await page.locator(".diagram-position > div").boundingBox())!.width).toBeGreaterThan(0);
-  }
-  await page.screenshot({ path: test.info().outputPath("fold6-preview.png") });
+  await page.locator(".screen-tabs").getByRole("button", { name: "Inner", exact: true }).click();
+  await expect(page.locator(".pending-notice")).toBeVisible();
+  await choose(page, "Navigation", "Gesture");
+  await expect(page.locator(".pending-notice")).toHaveCount(0);
+  await page.screenshot({ path: test.info().outputPath("fold6-inner-gesture.png") });
+  await page.locator(".screen-tabs").getByRole("button", { name: "Outer", exact: true }).click();
+  await expect(page.locator(".pending-notice")).toHaveCount(0);
+  expect((await page.locator(".diagram-position > div").boundingBox())!.width).toBeGreaterThan(0);
+  await page.screenshot({ path: test.info().outputPath("fold6-partial-measurements.png") });
 });
