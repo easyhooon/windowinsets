@@ -12,7 +12,7 @@ rules are `AGENTS.md`, `docs/RTL_COVERAGE.md`, `docs/MEASUREMENT_WORKFLOW.md`, a
 ## 1. Establish the queue
 
 Inspect `measurements/`, `app/data/devices.ts`, and the skin catalog before opening
-RTL. Select one target at a time in this order:
+RTL. Select one measurement target at a time in this order:
 
 1. Galaxy Z Fold, newest first.
 2. Galaxy Z Flip, newest first.
@@ -23,6 +23,13 @@ model, then prefer an incomplete measured entry over an older untouched preview.
 Include only models covered by the repository's current release policy and
 registered official skin. Keep TriFold outside the queue until its separate product
 decision changes. Missing measurements remain pending.
+
+Measure only one device at a time; this is not a limit on simultaneous
+reservations. Samsung's [Web Client guide](https://developer.samsung.com/remotetestlab/doc/get-started-with-web-client)
+supports multiple reserved devices in separate tabs. After the current device's
+captures are complete and validated, the next requested device may be reserved
+while the previous timer still runs. Account for both timers and credit costs;
+keep measurement sequential, and finish any incomplete capture before switching.
 
 Completion criterion: name the target, the exact missing screen/navigation-mode
 captures, and why no higher-priority eligible target is ahead of it.
@@ -154,11 +161,13 @@ step to the user.
   single deliberate power click may wake or sleep the device, so re-read the same
   coordinate space after every click.
 - Lock-screen swipes and authentication are a manual fallback. If one precise
-  attempt is unreliable, stop live-device actions and send a final response
-  immediately so the app delivers a visible user notification. State the exact
-  action, device state and remaining reservation time. Do not rely on commentary
-  for this blocking handoff, continue unrelated work while the timer runs, guess a
-  PIN, or repeatedly toggle power. Resume only after the user confirms completion.
+  attempt is unreliable, ask the user to unlock the device and state its exact
+  state and remaining reservation time. While the reservation and turn remain
+  active, poll the WebClient screen at short, bounded intervals; resume as soon
+  as the unlocked screen is visible, without waiting for a reply. Do not guess a
+  PIN or repeatedly toggle power. If polling cannot continue in the current
+  turn, send a final response so the required user action appears as a
+  notification; resume when the user reports completion.
 - If the user explicitly says they are unavailable to unlock and at least one
   refundable 15-minute block remains, end the blocked reservation with **Return
   this device to get back 1 credit(s)** selected. Verify the resulting header
