@@ -1619,5 +1619,24 @@ export const skins: Record<string, DeviceSkin> = {
       "height": 2288,
       "radius": 100
     }
+  },
+  "galaxy-z-flip5/main": {
+    "image": "/skins/galaxy-z-flip5/main/device.png",
+    "foreground": "/skins/galaxy-z-flip5/main/foreground.png",
+    "width": 1507,
+    "height": 3062,
+    "screen": {
+      "x": 214,
+      "y": 210,
+      "width": 1080,
+      "height": 2640
+    },
+    "body": {
+      "x": 174,
+      "y": 170,
+      "width": 1160,
+      "height": 2720,
+      "radius": 100
+    }
   }
 };

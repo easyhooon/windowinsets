@@ -13,6 +13,7 @@ import { galaxyZFold7 } from '../app/data/devices/galaxy-z-fold7/index.ts';
 import { galaxyZFold8 } from '../app/data/devices/galaxy-z-fold8/index.ts';
 import { galaxyZFlip8 } from '../app/data/devices/galaxy-z-flip8/index.ts';
 import { galaxyZFlip6 } from '../app/data/devices/galaxy-z-flip6/index.ts';
+import { galaxyZFlip5 } from '../app/data/devices/galaxy-z-flip5/index.ts';
 import { galaxyS25Plus } from '../app/data/devices/galaxy-s25-plus/index.ts';
 import { galaxyS25Ultra } from '../app/data/devices/galaxy-s25-ultra/index.ts';
 import { formatLength, hasExactPx, safeInsetsPx } from '../app/data/measurementUnits.ts';
@@ -189,7 +190,7 @@ test('preview catalogue has unique models and valid screen assets, excluding Tri
 test('2020 coverage keeps boundary models and archives older skins without publishing them', () => {
   const catalog = JSON.parse(readFileSync('app/data/skinCatalog.json', 'utf8'));
   const supported = catalog.filter(device => isInCoverage({ ...device, releaseYear: null }));
-  assert.equal(supported.length, 71);
+  assert.equal(supported.length, 72);
   for (const slug of ['galaxy-fold', 'galaxy-tab-s4-10-5', 'galaxy-tab-s6']) {
     assert.ok(catalog.some(device => device.slug === slug));
     assert.ok(!supported.some(device => device.slug === slug));
@@ -214,6 +215,26 @@ test('Flip6 main captures match both navigation modes without inventing cover me
     assert.deepEqual(screen.insets[mode].systemBarsPx, raw.insets.systemBars.px);
     assert.deepEqual(screen.insets[mode].displayCutoutPx, raw.insets.displayCutout.px);
     assert.equal(raw.hinge.foldingFeatures[0].state, 'FLAT');
+  }
+});
+
+test('Flip5 main captures match both upright navigation modes', () => {
+  assert.equal(galaxyZFlip5.screens.length, 1);
+  for (const mode of ['gesture', 'threeButton']) {
+    const raw = readCapture(`measurements/galaxy-z-flip5/main-${mode}.json`);
+    assert.equal(raw.device.model, 'SM-F731B');
+    assert.equal(raw.screen, 'main');
+    assert.equal(raw.navigation.mode, mode);
+    assert.equal(raw.navigation.settingAgreesWithInsets, true);
+    assert.equal(raw.display.rotation, 0);
+    assert.deepEqual(raw.display.currentWindowPx, raw.display.maximumWindowPx);
+    assert.equal(raw.hinge.foldingFeatures[0].state, 'FLAT');
+    assertExactPixelEvidence({
+      device: galaxyZFlip5,
+      screenId: 'main',
+      navMode: mode,
+      capturePath: `measurements/galaxy-z-flip5/main-${mode}.json`,
+    });
   }
 });
 

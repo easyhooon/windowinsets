@@ -29,15 +29,18 @@ audit also does not establish exact release dates for every imported model.
 
 ## Implementation and future imports
 
-`app/data/skinCatalog.json` and `public/skins/` retain all 74 imported models.
+`app/data/skinCatalog.json` and `public/skins/` retain all 75 imported models.
 `app/data/coverage.ts` applies the 2020 cutoff to known release years and the
 audited boundary models. `devices.ts` filters the merged device list, so device
 navigation, lookup, prerendered routes and the sitemap share the same policy.
-There are 71 public models: 28 S, 28 Tab, 8 Fold and 7 Flip.
+There are 72 public models: 28 S, 28 Tab, 8 Fold and 8 Flip.
 
 The user-supplied `Galaxy_Z_Fold3.zip` was imported on 2026-09-23 with its
 folded cover and unfolded main layouts. It is an artwork-only preview until
 actual inset captures are collected.
+The user-supplied `Galaxy_Z_Flip5.zip` was imported on 2026-09-23 with its
+1080×2640 main display layout. The ZIP has no cover layout; both inset modes
+were measured on RTL on 2026-09-23; cover artwork remains unavailable.
 
 The importer preserves artwork independently of coverage. Before publishing a
 new batch, check its release years using official sources; record older/boundary

@@ -53,10 +53,17 @@ removes a model from its catalog.
   `measurements/galaxy-z-flip7/rtl-recapture-2026-09-23/` and does not replace
   the canonical measurements. Its inset values agree with the physical main
   3-button capture; the newer probe also records a cutout path.
+  Galaxy Z Flip5 (SM-F731BE-VN3, Vietnam/Hanoi) was then reserved. Its
+  official main skin matches upright 1080×2640 captures in both navigation
+  modes. The first gesture export was rotated 180° and retained only in the
+  host download history; the accepted recapture is rotation 0. The imported
+  archive has no cover layout, so cover remains unavailable.
   The full cross-series, cross-region inventory was not completed.
-- The local skin archive contains 74 registered models; 71 are public under
+- The local skin archive contains 75 registered models; 72 are public under
   the release-year policy. All four featured mobile models have registered skins.
-  The other 70 archived models (67 public) remain unverified, not unsupported.
+  The other archived models remain unverified, not unsupported. Galaxy Z Flip5
+  was visible in the 2026-09-23 reservation catalog; its official main skin
+  and two verified main captures are now registered.
 - Existing S25+ and S25 Ultra captures document past measurements. They do not
   establish current reservation availability. Fold8 cover and inner were both
   recaptured from a live reservation in 3-button and gesture modes. Fold7 cover
@@ -68,8 +75,8 @@ removes a model from its catalog.
   the rejected inner 3-button attempt remains historical evidence. Fold5 also
   has accepted captures for both screens and modes, with its rotated first
   cover gesture attempt preserved separately. Fold4 has accepted upright cover
-  and inner captures in both modes after the Taskbar correction. Flip6 main has
-  accepted captures in both modes; its cover remains skin-unavailable. Fold3's
+  and inner captures in both modes after the Taskbar correction. Flip5 and Flip6
+  main have accepted captures in both modes; their covers remain skin-unavailable. Fold3's
   imported cover and main artwork are previews with no measured insets.
 
 The comparison for every registered skin is in [RTL_SKIN_COMPARISON.csv](RTL_SKIN_COMPARISON.csv).

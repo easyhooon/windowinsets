@@ -1,6 +1,6 @@
 # Samsung RTL credits and reservation budget
 
-**Last live verification:** 2026-09-23 21:01 KST
+**Last live verification:** 2026-09-23 21:26 KST
 
 Samsung's published pages and the current RTL account UI do not agree on the
 daily grant. Keep the published policy, observed behavior and spending history
@@ -91,6 +91,14 @@ the one-credit option selected and the header rose to **8 Credits**. Galaxy Z
 Flip7 then reduced it from **8 to 6 Credits**. After one supplemental RTL
 capture was downloaded and checked, the device was returned with the one-credit
 option selected; Reservations showed **7 Credits** and no active test.
+
+A second booking of the same Galaxy Z Flip7 FE unit was ended without a
+capture and returned one credit (7 → 5 → 6). Galaxy Z Flip4 SM-F721U-VN1
+was then booked, but no valid capture was obtained; its early-return option
+restored one credit (6 → 4 → 5). The Galaxy Z Flip5 SM-F731BE-VN3 booking
+reduced the balance from **5 to 3 Credits**. Both main-screen modes were
+captured and validated. With 10 minutes left, the exit dialog offered no
+credit-return checkbox; the session ended without a refund claim.
 
 The preceding 2026-09-22 Usage History contained these booked reservations:
 

@@ -675,5 +675,14 @@
       "cover",
       "main"
     ]
+  },
+  {
+    "slug": "galaxy-z-flip5",
+    "name": "Galaxy Z Flip5",
+    "series": "Galaxy Z Flip",
+    "formFactor": "foldable-flip",
+    "screens": [
+      "main"
+    ]
   }
 ]
