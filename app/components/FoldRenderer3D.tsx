@@ -314,6 +314,7 @@ export function FoldRenderer3D({
   measured = true,
   cover,
   onTransitionEnd,
+  onDisplayedAngle,
 }: {
   angle: number;
   axis: "vertical" | "horizontal";
@@ -338,13 +339,14 @@ export function FoldRenderer3D({
   skinRotation?: QuarterTurns;
   measured?: boolean;
   cover?: { screen: Screen; measurement: InsetsMeasurement | null; skin: DeviceSkin };
+  onDisplayedAngle?: (angle: number) => void;
   onTransitionEnd?: () => void;
 }) {
   const mountRef = useRef<HTMLDivElement>(null);
   const wrapRef = useRef<HTMLDivElement>(null);
 
-  const stateRef = useRef({ angle, safe, safePx, logicalSizePx, cornerRadiiDp: cornerRadiiDp ?? null, cornerRadiiPx: cornerRadiiPx ?? null, cutoutShape, showFrame, showRegions, showDimensions, units, zoom, layers, cover, onTransitionEnd });
-  stateRef.current = { angle, safe, safePx, logicalSizePx, cornerRadiiDp: cornerRadiiDp ?? null, cornerRadiiPx: cornerRadiiPx ?? null, cutoutShape, showFrame, showRegions, showDimensions, units, zoom, layers, cover, onTransitionEnd };
+  const stateRef = useRef({ angle, safe, safePx, logicalSizePx, cornerRadiiDp: cornerRadiiDp ?? null, cornerRadiiPx: cornerRadiiPx ?? null, cutoutShape, showFrame, showRegions, showDimensions, units, zoom, layers, cover, onTransitionEnd, onDisplayedAngle });
+  stateRef.current = { angle, safe, safePx, logicalSizePx, cornerRadiiDp: cornerRadiiDp ?? null, cornerRadiiPx: cornerRadiiPx ?? null, cutoutShape, showFrame, showRegions, showDimensions, units, zoom, layers, cover, onTransitionEnd, onDisplayedAngle };
 
   useEffect(() => {
     const mount = mountRef.current;
@@ -553,6 +555,7 @@ export function FoldRenderer3D({
       lastTime = time;
       displayedAngle = reducedMotion.matches ? target : displayedAngle + (target - displayedAngle) * (1 - Math.exp(-delta / 75));
       if (Math.abs(target - displayedAngle) < 0.05) displayedAngle = target;
+      stateRef.current.onDisplayedAngle?.(displayedAngle);
       if (mount) mount.dataset.displayedAngle = displayedAngle.toFixed(2);
       const pixelRatio = Math.min(4, window.devicePixelRatio * Math.max(1, stateRef.current.zoom / 100));
       if (renderer.getPixelRatio() !== pixelRatio) renderer.setPixelRatio(pixelRatio);
