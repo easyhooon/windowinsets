@@ -122,6 +122,9 @@ recapture in `measurements/galaxy-z-fold6/main-threeButton.json`: its navigation
 mode agrees across Settings, Android configuration and Probe's inset classifier,
 and the navigation/system/tappable bottom insets all measure **126 px (48 dp)**.
 The earlier 1 px file remains unchanged as rejected historical evidence.
+The same final session also produced a 126 px diagnostic capture while the app
+was rotated 180° and still labeled `phone`; it is retained under
+`rejected-2026-09-23/` and was not used for the published portrait `main` values.
 RTL reported a 90° hinge angle in both physical states; classification relies
 on the actively switched display dimensions and the inner folding feature.
 
