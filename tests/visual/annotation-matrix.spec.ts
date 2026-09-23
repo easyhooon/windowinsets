@@ -22,6 +22,7 @@ for(const slug of ['galaxy-z-fold2','galaxy-z-fold7','galaxy-z-fold8','galaxy-z-
   test.setTimeout(180_000);
   await page.emulateMedia({reducedMotion:'reduce'});
   await page.goto('/'+slug);
+  await expect(page.locator('.device-link.selected')).toContainText(slug.replace('galaxy-z-', 'Galaxy Z ').replace('fold', 'Fold').replace('flip', 'Flip'));
   await expect(page.locator('[data-displayed-angle]')).toHaveAttribute('data-displayed-angle','0.00', {timeout:15_000});
   for(const navigation of ['3-button','Gesture']) {
    await choose(page,'Navigation',navigation);
@@ -48,6 +49,7 @@ for (const slug of ['galaxy-z-fold2', 'galaxy-z-fold7', 'galaxy-z-fold8', 'galax
   test.setTimeout(180_000);
   await page.emulateMedia({reducedMotion:'reduce'});
   await page.goto('/'+slug);
+  await expect(page.locator('.device-link.selected')).toContainText(slug.replace('galaxy-z-', 'Galaxy Z ').replace('fold', 'Fold').replace('flip', 'Flip'));
   await expect(page.locator('.projected-rulers')).toBeVisible();
   await page.getByRole('button',{name:/^Hinge:/}).click();
   const hinge=page.getByRole('slider',{name:'Hinge angle in degrees'});

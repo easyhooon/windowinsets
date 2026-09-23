@@ -82,9 +82,9 @@ Unrelated local analytics, merge conflicts and Flip7 collection work were exclud
 The primary layout matrix covers Fold2, Fold7, Fold8 and Flip8, both navigation
 modes, dp/px, Closed/90°/Open and all four view rotations. Bar coverage includes
 S25+ and S25 Ultra, both navigation modes, both units and all four rotations.
-Each runs at desktop 1440×900 and mobile 390×844. The matrix asserts actual badge
-bounds are inside the viewport and do not overlap, rather than accepting only a
-successful build or screenshot refresh.
+Each runs at desktop 1440×900 and mobile 390×844. The matrix first verifies the selected device matches its clean URL, then
+asserts actual badge bounds are inside the viewport and do not overlap, rather
+than accepting only a successful build or screenshot refresh.
 
 A separate sweep exercises all 181 integer hinge settings on all four foldables,
 plus region/layer/frame/dimension toggles. Transition tests cover intermediate

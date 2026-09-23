@@ -3,6 +3,7 @@ for (const slug of ['galaxy-s25-plus', 'galaxy-s25-ultra']) {
  test(`${slug} flat annotation navigation units orientation matrix`, async ({page}) => {
   test.setTimeout(90_000);
   await page.goto('/'+slug);
+  await expect(page.locator('.device-link.selected')).toContainText(slug === 'galaxy-s25-plus' ? 'Galaxy S25+' : 'Galaxy S25 Ultra');
   const choose = async (label: string, option: string) => {
    await page.getByRole('button',{name:new RegExp(`^${label}:`)}).click();
    await page.getByRole('button',{name:option,exact:true}).click();
