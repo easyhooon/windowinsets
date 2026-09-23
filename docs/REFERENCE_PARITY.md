@@ -113,9 +113,14 @@ extra rows are Android-specific substitutions needed to avoid presenting unlike
 measurements as if they were the same safearea.info metric.
 
 Fold/Flip routes fit the selected cover or inner display without clipping. While
-Fit mode is active, a pose change computes the target display's fit at transition
-start so the endpoint does not snap. Explicit user zoom or pan leaves Fit mode and
-is preserved through the hinge transition; Fit to canvas restores automatic fit.
+Fit mode is active, the Zoom control keeps the open-display fit as its stable base
+and a separate automatic scale interpolates the closed/open fits using the actual
+rendered hinge angle. This follows the stable Zoom control observed on safearea.info
+iPhone Duo in issue #2; Samsung endpoint normalization remains device-specific.
+Explicit user zoom or pan leaves Fit mode, preserving the effective scale and pan
+through pose changes. Fit to canvas restores automatic fit. Reduced motion applies
+the hinge and scale endpoints together. `fit-transition.spec.ts` samples both the
+rendered angle and CSS scale every animation frame on desktop and mobile.
 
 ## Verification
 
