@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { CodeBlock } from "../components/CodeBlock";
 import { REPO_URL, SITE_URL } from "../data/devices";
 import { pageMeta } from "../lib/seo";
 import type { Route } from "./+types/developer-guide";
@@ -16,7 +17,7 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
     <section className="mt-8">
       <h2 className="text-lg font-semibold">{title}</h2>
-      <div className="mt-2 space-y-3 text-[15px] leading-relaxed text-muted [&_b]:text-fg [&_code]:rounded [&_code]:bg-canvas [&_code]:px-1.5 [&_code]:font-mono [&_code]:text-[13px] [&_code]:text-fg [&_li]:ml-5 [&_li]:list-disc [&_a]:text-accent [&_a]:underline [&_h3]:mt-4 [&_h3]:font-medium [&_h3]:text-fg">
+      <div className="mt-2 space-y-3 text-[15px] leading-relaxed text-muted [&_b]:text-fg [&_code:not(.hljs)]:rounded [&_code:not(.hljs)]:bg-canvas [&_code:not(.hljs)]:px-1.5 [&_code:not(.hljs)]:font-mono [&_code:not(.hljs)]:text-[13px] [&_code:not(.hljs)]:text-fg [&_li]:ml-5 [&_li]:list-disc [&_a]:text-accent [&_a]:underline [&_h3]:mt-4 [&_h3]:font-medium [&_h3]:text-fg">
         {children}
       </div>
     </section>
@@ -69,8 +70,7 @@ export default function DeveloperGuide() {
           </a>
           :
         </p>
-        <pre className="mt-2 overflow-x-auto rounded-lg bg-canvas p-3 text-sm">
-          <code>{`ViewCompat.setOnApplyWindowInsetsListener(rootView) { view, insets ->
+        <CodeBlock title="Reading window insets">{`ViewCompat.setOnApplyWindowInsetsListener(rootView) { view, insets ->
   val statusBars = insets.getInsets(Type.statusBars())
   val navBars = insets.getInsets(Type.navigationBars())
   val cutout = insets.getInsets(Type.displayCutout())
@@ -81,8 +81,7 @@ export default function DeveloperGuide() {
   // )
 
   insets  // return unhandled insets to others
-}`}</code>
-        </pre>
+}`}</CodeBlock>
 
         <h3>Direct API access</h3>
         <p>
@@ -99,16 +98,14 @@ export default function DeveloperGuide() {
           <b>Safe area</b> = system bars + display cutout. Combine them to find where content is
           always visible and tappable:
         </p>
-        <pre className="mt-2 overflow-x-auto rounded-lg bg-canvas p-3 text-sm">
-          <code>{`val systemBars = insets.getInsets(Type.systemBars())
+        <CodeBlock title="Calculating safe areas">{`val systemBars = insets.getInsets(Type.systemBars())
 val cutout = insets.getInsets(Type.displayCutout())
 val safe = Insets.of(
   max(systemBars.left, cutout.left),
   max(systemBars.top, cutout.top),
   max(systemBars.right, cutout.right),
   max(systemBars.bottom, cutout.bottom)
-)`}</code>
-        </pre>
+)`}</CodeBlock>
       </Section>
 
       <Section title="Foldables: detecting the hinge">
@@ -120,8 +117,7 @@ val safe = Insets.of(
           to detect the hinge and adapt your layout. The hinge angle sensor (API 31+) gives
           real-time rotation:
         </p>
-        <pre className="mt-2 overflow-x-auto rounded-lg bg-canvas p-3 text-sm">
-          <code>{`val hinges = windowLayoutInfo.displayFeatures
+        <CodeBlock title="Detecting the hinge">{`val hinges = windowLayoutInfo.displayFeatures
   .filterIsInstance<FoldingFeature>()
 
 hinges.forEach { hinge ->
@@ -130,8 +126,7 @@ hinges.forEach { hinge ->
     FoldingFeature.State.HALF_OPENED -> /* tent mode */
   }
   // hinge.bounds: pixel coordinates of the fold
-}`}</code>
-        </pre>
+}`}</CodeBlock>
       </Section>
 
       <Section title="Official documentation & resources">

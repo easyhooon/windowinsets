@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "highlight.js/styles/github.css";
 @font-face {
   font-family: "Mona Sans VF";
   src: url("/fonts/mona-sans.woff2") format("woff2");
@@ -23,6 +24,14 @@ html, body { margin:0; background:#f6f8fa; color:#1f2328; color-scheme:light; fo
 button, input, summary { font:inherit; }
 button, summary { cursor:pointer; }
 button:disabled { cursor:default; }
+.code-block { margin-top:8px; overflow:hidden; border:1px solid #d1d9e0; border-radius:8px; background:#fff; }
+.code-block-toolbar { display:flex; align-items:center; justify-content:space-between; padding:4px 12px; border-bottom:1px solid #d1d9e0; background:#f6f8fa; color:#59636e; font-size:12px; font-weight:600; }
+.code-block-toolbar button { display:inline-flex; align-items:center; justify-content:center; gap:6px; min-width:88px; min-height:36px; border:1px solid transparent; border-radius:5px; color:#1f2328; }
+.code-block-toolbar button:hover { border-color:#d1d9e0; background:#fff; }
+.code-block pre { margin:0; padding:16px; overflow-x:auto; font-size:13px; line-height:1.7; tab-size:2; }
+.code-block pre:focus-visible { outline-offset:-3px; }
+.code-block pre code.hljs { display:block; padding:0; overflow:visible; background:transparent; font-family:var(--font-mono); }
+.code-block-error { margin:0; padding:8px 16px; border-top:1px solid #d1d9e0; color:#b42318; font-size:12px; }
 button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visible { outline:2px solid #0969da; outline-offset:3px; }
 .app-shell { height:100dvh; display:flex; flex-direction:column; font-size:13px; }
 .app-header { height:64px; flex-shrink:0; display:flex; align-items:center; padding:0 24px; border-bottom:1px solid #d1d9e0; }

@@ -1,0 +1,51 @@
+import { useEffect, useMemo, useState } from "react";
+import hljs from "highlight.js/lib/core";
+import kotlin from "highlight.js/lib/languages/kotlin";
+
+hljs.registerLanguage("kotlin", kotlin);
+
+export function CodeBlock({ children, title }: { children: string; title: string }) {
+  const [status, setStatus] = useState<"idle" | "copied" | "error">("idle");
+  const highlighted = useMemo(
+    () => hljs.highlight(children, { language: "kotlin" }).value,
+    [children],
+  );
+
+  useEffect(() => {
+    if (status !== "copied") return;
+    const timer = window.setTimeout(() => setStatus("idle"), 2000);
+    return () => window.clearTimeout(timer);
+  }, [status]);
+
+  async function copy() {
+    try {
+      await navigator.clipboard.writeText(children);
+      setStatus("copied");
+    } catch {
+      setStatus("error");
+    }
+  }
+
+  return (
+    <div className="code-block">
+      <div className="code-block-toolbar">
+        <span>Kotlin</span>
+        <button type="button" onClick={copy} aria-label={`Copy ${title} code`}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
+            {status === "copied" ? <path d="m5 12 4 4L19 6" /> : <>
+              <rect x="8" y="8" width="12" height="12" rx="2" />
+              <path d="M16 8V4H4v12h4" />
+            </>}
+          </svg>
+          {status === "copied" ? "Copied!" : "Copy"}
+        </button>
+      </div>
+      <pre tabIndex={0} aria-label={`${title} — Kotlin code`}>
+        <code className="hljs language-kotlin" dangerouslySetInnerHTML={{ __html: highlighted }} />
+      </pre>
+      <p role="status" className={status === "error" ? "code-block-error" : "sr-only"}>
+        {status === "copied" ? "Code copied to clipboard." : status === "error" ? "Could not copy. Select the code and copy it manually." : ""}
+      </p>
+    </div>
+  );
+}
