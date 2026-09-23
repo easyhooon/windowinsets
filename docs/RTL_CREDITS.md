@@ -1,6 +1,6 @@
 # Samsung RTL credits and reservation budget
 
-**Last live verification:** 2026-09-23 19:16 KST
+**Last live verification:** 2026-09-23 21:01 KST
 
 Samsung's published pages and the current RTL account UI do not agree on the
 daily grant. Keep the published policy, observed behavior and spending history
@@ -84,6 +84,13 @@ Both needed Flip6 main-screen captures were downloaded and validated. When the
 WebClient showed 14 minutes remaining, its exit dialog offered no credit-return
 option. The session was ended and displayed `All ongoing tests have ended.`; no
 refund is claimed from this reservation.
+
+A subsequent Galaxy Z Fold3 reservation reduced the header from **9 to 7
+Credits**. Probe installation stayed at 0%, so the device was returned with
+the one-credit option selected and the header rose to **8 Credits**. Galaxy Z
+Flip7 then reduced it from **8 to 6 Credits**. After one supplemental RTL
+capture was downloaded and checked, the device was returned with the one-credit
+option selected; Reservations showed **7 Credits** and no active test.
 
 The preceding 2026-09-22 Usage History contained these booked reservations:
 

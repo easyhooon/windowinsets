@@ -45,6 +45,14 @@ removes a model from its catalog.
   Korea/Gumi) was subsequently reserved. Its official main-screen skin was
   matched to fresh, upright 1080×2640 px captures in both navigation modes;
   the skin archive has no cover layout, so cover values remain pending.
+  Galaxy Z Fold3 (SM-F926B-VN1) was reserved but its Probe installation stayed
+  at 0%; it was returned without a capture. Galaxy Z Flip7 (SM-F766N_KR1) was
+  then reserved and produced an upright 1080×2520 main 3-button capture with
+  Probe 1.3.0. The model already had complete physical-device measurements for
+  both screens and modes, so this RTL file is preserved separately under
+  `measurements/galaxy-z-flip7/rtl-recapture-2026-09-23/` and does not replace
+  the canonical measurements. Its inset values agree with the physical main
+  3-button capture; the newer probe also records a cutout path.
   The full cross-series, cross-region inventory was not completed.
 - The local skin archive contains 74 registered models; 71 are public under
   the release-year policy. All four featured mobile models have registered skins.
