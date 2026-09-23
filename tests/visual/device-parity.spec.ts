@@ -70,6 +70,18 @@ test("per-device JSON export downloads the complete versioned device payload", a
   expect(exported.screens[0].navigationModes.threeButton.status).toBe("measured");
 });
 
+test("Fold5 shows measured cover and inner values on both viewports", async ({ page }) => {
+  await page.goto("/galaxy-z-fold5");
+  await openMetricsIfCollapsed(page);
+  await expect(page.getByRole("heading", { name: /Galaxy Z Fold5 Window Insets/ })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Logical Size 344.38 × 882.29 dp" })).toBeVisible();
+  await page.getByRole("button", { name: "Inner", exact: true }).click();
+  await expect(page.getByRole("button", { name: "Captured Window 2176 × 1812 px" })).toBeVisible();
+  await chooseDropdown(page, "Navigation", "Gesture");
+  await expect(page.getByRole("button", { name: "Bottom 14.86 dp" })).toBeVisible();
+  await expect(page.locator("#device-canvas")).toBeVisible();
+});
+
 for (const device of devices) {
   for (const pose of poses) {
     test(`${device.label} ${pose} remains readable`, async ({ page }, testInfo) => {

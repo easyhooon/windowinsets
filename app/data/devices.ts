@@ -6,6 +6,7 @@ import { galaxyS26Ultra } from "./devices/galaxy-s26-ultra";
 import { galaxyS26Plus } from "./devices/galaxy-s26-plus";
 import { galaxyS26 } from "./devices/galaxy-s26";
 import { galaxyZFold6 } from "./devices/galaxy-z-fold6";
+import { galaxyZFold5 } from "./devices/galaxy-z-fold5";
 import { galaxyZFold2 } from "./devices/galaxy-z-fold2";
 import { galaxyZFlip6 } from "./devices/galaxy-z-flip6";
 import { galaxyZFlip7 } from "./devices/galaxy-z-flip7";
@@ -19,7 +20,7 @@ import { isInCoverage } from "./coverage";
 // Explicit entries own all verified data. Skins can add missing screens, never
 // replace a screen's captures. Add a measured entry here as RTL data arrives.
 const verifiedEntries = [galaxyZFold8Ultra, galaxyZFold8, galaxyZFlip8, galaxyS26Ultra, galaxyS26Plus, galaxyS26,
-  galaxyS25Ultra, galaxyS25Plus, galaxyS25, galaxyZFlip7, galaxyZFold7, galaxyZFold6, galaxyZFlip6, galaxyZFold2];
+  galaxyS25Ultra, galaxyS25Plus, galaxyS25, galaxyZFlip7, galaxyZFold7, galaxyZFold6, galaxyZFold5, galaxyZFlip6, galaxyZFold2];
 const mergedDevices = verifiedEntries.map(device => {
   const preview = skinPreviews.find(entry => entry.slug === device.slug);
   const missingScreens = preview?.screens.filter(screen => !device.screens.some(s => s.id === screen.id)) ?? [];

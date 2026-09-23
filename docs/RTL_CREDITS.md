@@ -1,6 +1,6 @@
 # Samsung RTL credits and reservation budget
 
-**Last live verification:** 2026-09-23 17:40 KST
+**Last live verification:** 2026-09-23 19:16 KST
 
 Samsung's published pages and the current RTL account UI do not agree on the
 daily grant. Keep the published policy, observed behavior and spending history
@@ -59,6 +59,14 @@ Ending it with `Return this device to get back 1 credit(s)` checked raised the
 header to **18 Credits** and left no active reservation. This is a second direct
 one-credit refund observation, not proof that the threshold is exactly 15
 minutes; the checkbox and resulting balance are the evidence.
+
+Two Galaxy Z Fold5 30-minute reservations on 2026-09-23 each ended with the
+WebClient's one-credit return option selected after their needed captures were
+downloaded. The first raised the observed balance from **14 to 15 Credits**;
+the second, used to recapture an upright cover gesture file, reduced the balance
+to **13** on booking and raised it to **14 Credits** on return. The final 14-credit
+header was verified on the RTL device list. These are optional refunds after
+completed work, not a reason to shorten measurement or validation.
 
 The preceding 2026-09-22 Usage History contained these booked reservations:
 

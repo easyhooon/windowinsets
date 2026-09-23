@@ -7,6 +7,7 @@ import { isInCoverage } from '../app/data/coverage.ts';
 import { getRtlAvailability, rtlCatalog } from '../app/data/rtlAvailability.ts';
 import { galaxyZFold2 } from '../app/data/devices/galaxy-z-fold2/index.ts';
 import { galaxyZFold6 } from '../app/data/devices/galaxy-z-fold6/index.ts';
+import { galaxyZFold5 } from '../app/data/devices/galaxy-z-fold5/index.ts';
 import { galaxyZFold7 } from '../app/data/devices/galaxy-z-fold7/index.ts';
 import { galaxyZFold8 } from '../app/data/devices/galaxy-z-fold8/index.ts';
 import { galaxyZFlip8 } from '../app/data/devices/galaxy-z-flip8/index.ts';
@@ -274,6 +275,30 @@ test('Fold6 publishes settled cover and inner evidence in both navigation modes'
     .insets.systemBars.px.bottom, 1);
 });
 
+test('Fold5 publishes upright cover and landscape inner evidence in both modes', () => {
+  for (const [screenId, navMode] of [
+    ['cover', 'gesture'], ['cover', 'threeButton'], ['main', 'gesture'], ['main', 'threeButton'],
+  ]) {
+    const raw = readCapture(`measurements/galaxy-z-fold5/${screenId}-${navMode}.json`);
+    const screen = galaxyZFold5.screens.find(candidate => candidate.id === screenId);
+    assert.equal(raw.device.model, 'SM-F946B');
+    assert.equal(raw.screen, screenId);
+    assert.equal(raw.navigation.mode, navMode);
+    assert.deepEqual(screen.logicalSizePx, raw.display.currentWindowPx);
+    assert.deepEqual(screen.logicalSizeDp, raw.display.maximumWindowDp);
+    assert.equal(screen.captureRotation, raw.display.rotation);
+    assert.deepEqual(screen.insets[navMode].systemBars, raw.insets.systemBars.dp);
+  }
+  const cover = galaxyZFold5.screens.find(screen => screen.id === 'cover');
+  const main = galaxyZFold5.screens.find(screen => screen.id === 'main');
+  assert.deepEqual(cover.logicalSizePx, { width: 904, height: 2316 });
+  assert.deepEqual(main.logicalSizePx, { width: 2176, height: 1812 });
+  assert.equal(readCapture('measurements/galaxy-z-fold5/main-gesture.json')
+    .hinge.foldingFeatures[0].state, 'FLAT');
+  assert.equal(readCapture('measurements/galaxy-z-fold5/rejected-2026-09-23/cover-gesture-landscape.json')
+    .display.rotation, 1);
+});
+
 test('Fold8 recapture keeps cover and inner evidence distinct in both navigation modes', () => {
   const captures = [
     ['cover', 'gesture'],
@@ -301,6 +326,10 @@ test('Fold8 recapture keeps cover and inner evidence distinct in both navigation
 
 test('published px values and capture orientation remain exact raw evidence', () => {
   const cases = [
+    ...['gesture', 'threeButton'].flatMap(navMode => [
+      { device: galaxyZFold5, screenId: 'cover', navMode, capturePath: `measurements/galaxy-z-fold5/cover-${navMode}.json` },
+      { device: galaxyZFold5, screenId: 'main', navMode, capturePath: `measurements/galaxy-z-fold5/main-${navMode}.json` },
+    ]),
     { device: galaxyZFold6, screenId: 'cover', navMode: 'gesture', capturePath: 'measurements/galaxy-z-fold6/cover-gesture.json' },
     { device: galaxyZFold6, screenId: 'cover', navMode: 'threeButton', capturePath: 'measurements/galaxy-z-fold6/cover-threeButton.json' },
     { device: galaxyZFold6, screenId: 'main', navMode: 'gesture', capturePath: 'measurements/galaxy-z-fold6/main-gesture.json' },
@@ -406,6 +435,7 @@ test('px presentation prefers exact capture values over rounded dp reconstructio
 
 test('published cutout positions preserve raw bounds in both dp and px', () => {
   const cases = [
+    [galaxyZFold5, 'cover', 'measurements/galaxy-z-fold5/cover-threeButton.json'],
     [galaxyZFold6, 'cover', 'measurements/galaxy-z-fold6/cover-threeButton.json'],
     [galaxyZFold2, 'cover', 'measurements/galaxy-z-fold2/cover-threeButton.json'],
     [galaxyZFold2, 'main', 'measurements/galaxy-z-fold2/main-threeButton.json'],

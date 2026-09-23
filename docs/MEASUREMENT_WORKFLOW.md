@@ -128,6 +128,26 @@ was rotated 180° and still labeled `phone`; it is retained under
 RTL reported a 90° hinge angle in both physical states; classification relies
 on the actively switched display dimensions and the inner folding feature.
 
+### Verified Fold5 capture and rotated cover recapture
+
+Galaxy Z Fold5 (SM-F946B, RTL Vietnam/Hanoi) was measured with InsetsProbe
+1.3.0 across two reservations on 2026-09-23 at Android 16 / One UI 8.0.
+
+- folded cover: **904×2316 px**, portrait, with a 59×85 px cutout at x=423;
+  3-button and gesture system bars measured 85 px top and 126/39 px bottom;
+- unfolded inner display: **2176×1812 px**, landscape, with a horizontal FLAT
+  folding feature at y=906; both modes measured 79 px top and 126/39 px bottom.
+
+The first cover gesture capture was accidentally rotated to landscape. Its
+original JSON remains under `measurements/galaxy-z-fold5/rejected-2026-09-23/`;
+the second reservation supplied an upright 904×2316 px capture whose gesture
+configuration, Settings value and inset classifier all agree. The inner gesture
+capture has gesture Settings/configuration and 78 px side gesture regions, but
+Probe's inset-only classifier reports `threeButton`; this disagreement is
+disclosed in the published condition. The cover hinge sensor reported 180° with
+no folding feature, so display identity relies on the switched window size and
+the inner display's FLAT folding feature.
+
 ### Verified Flip8 FlexWindow recapture
 
 Galaxy Z Flip8 (SM-F776B) was folded and InsetsProbe 1.2.1 was launched from its
@@ -160,7 +180,7 @@ future slot availability.
 
 windowinsets.info is a reference site for Android window insets, display cutouts, corner radii and foldable hinge states across Samsung Galaxy devices. Every value is labeled **official** (published by Samsung/Google), **measured** (captured with InsetsProbe on RTL or a real device, raw JSON committed), or **community** (unverified).
 
-**Current Status**: Galaxy Z Fold8, Fold7, Fold6 and Flip8 cover and inner displays
+**Current Status**: Galaxy Z Fold8, Fold7, Fold6, Fold5 and Flip8 cover and inner displays
 are measured in both navigation modes from verified live RTL sessions. Galaxy
 S25 Ultra and Galaxy S25+ main screens are measured.
 Galaxy S25 and Flip6 remain pending.
