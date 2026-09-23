@@ -93,21 +93,24 @@ pnpm build      # prerendered HTML in build/client
 
 ## Device coverage and priorities
 
-Decision, 2026-09-22: support Samsung Galaxy models with available official skins,
-released in **2020 or later**, including discontinued and non-flagship models.
-This supersedes the earlier no-cutoff decision. See [release evidence and archive
-policy](docs/DEVICE_COVERAGE.md).
+**Target coverage (WIP): every Samsung Galaxy model released in 2020 or later
+with an official Galaxy Emulator Skin**, including discontinued models and the
+Galaxy A and Note series. Discontinuation and flagship status are not exclusion
+criteria. This supersedes the earlier no-cutoff decision. See [release evidence
+and archive policy](docs/DEVICE_COVERAGE.md).
 
-1. Complete the current Galaxy S, Z Fold and Z Flip experience.
-2. Add Galaxy Tab.
-3. Add Galaxy Note and Galaxy A; neither series takes priority over the other yet.
+1. Improve the current Galaxy S, Z Fold and Z Flip experience.
+2. Improve Galaxy Tab coverage.
+3. Expand Galaxy Note and Galaxy A coverage; neither series takes priority over
+   the other yet.
 
 Galaxy Z TriFold is an explicit exception: its support and animation scope require
 a separate product decision. A downloaded skin does not automatically approve it.
 
 An official skin permits an artwork preview, not a claim of verified inset data.
 Devices without captures remain marked **Skin preview / pending** until measured.
-This is the target coverage roadmap, not a claim that every model is implemented.
+Coverage is still in progress; this target is not a claim that every eligible
+model has already been imported or measured.
 
 ## Adding a device
 
