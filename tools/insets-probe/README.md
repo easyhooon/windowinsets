@@ -32,6 +32,9 @@ Repeat for every screen × navigation mode. Do not edit the JSON by hand.
 
 ## Galaxy Z Flip5 and later: launch on FlexWindow
 
+For the implementation contract, validation rules, and Flip8 failure history,
+see the dedicated [FlexWindow README](FLEXWINDOW_README.md).
+
 Samsung does not document an application manifest flag that enrolls an arbitrary
 activity in the built-in FlexWindow favorite-app list. That list and the optional
 Good Lock / MultiStar launcher are controlled by the device. InsetsProbe instead
