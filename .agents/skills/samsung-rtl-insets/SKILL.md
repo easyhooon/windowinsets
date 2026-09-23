@@ -29,7 +29,9 @@ captures, and why no higher-priority eligible target is ahead of it.
 
 ## 2. Reserve with Computer Use
 
-Use the `computer-use` skill with the user's existing Chrome session. Re-read the
+Use the available Computer Use controls with the user's existing Chrome session.
+If a separate `computer-use` skill is available, follow it; otherwise use the
+connected browser controls directly. Re-read the
 Chrome accessibility tree after every page transition; never reuse stale element
 indexes.
 
@@ -59,10 +61,19 @@ is the minimum reservation. Read `docs/RTL_CREDITS.md` before the first reservat
 of a session: Samsung's published 20-credit daily policy conflicts with a live
 10-credit once-per-day grant observed on 2026-09-23. Budget from the confirmed
 header balance, not the published maximum.
-Prepare the APK and capture checklist before reserving. Do not extend or renew a
-session; preserve completed evidence and requeue unfinished captures for another
-30-minute slot. Confirm the dialog still names the intended model and duration, then
-start the reservation. The user's request to reserve the named queue authorizes this
+Prepare the APK and capture checklist before reserving. Aim to finish capture,
+download and validation within the first 15 minutes. Once every required file is
+safe on the host, close the WebClient with **Return this device to get back 1
+credit(s)** checked while that option is offered; verify the account balance
+actually increases. This makes a 30-minute reservation cost one net credit when
+the unused 15-minute block is refunded. Do not assume a refund merely from the
+elapsed time or the checkbox text. If evidence is incomplete, make one prompt
+recapture attempt while the device responds. If the attempt is blocked (for
+example by a restart) and the refund option is still offered, preserve the
+partial evidence, return the device and mark the missing mode pending. Otherwise
+use the remaining reservation time; do not extend or renew automatically. Confirm the
+reservation dialog still names the intended model and duration before starting.
+The user's request to reserve the named queue authorizes this
 ordinary reservation; unexpected paid options, terms, permissions, or a target
 change require a fresh user decision.
 
@@ -114,8 +125,13 @@ step to the user.
    hand off the WebClient **Applications → install** file selection to the user.
    Do not enable Remote Debug Bridge, rebuild the APK, clear Samsung cookies, or
    book another reservation to work around this browser-side failure.
-4. Open WebClient **Applications** and click its install/upload icon. Prefer the
-   documented browser file-chooser flow when the preflight passed. For a native
+4. Open WebClient **Applications** and click its install/upload icon. Its APK
+   `input[type=file]` is hidden, so click the visible install control while a
+   `filechooser` listener is armed. On 2026-09-23 the listener timed out after
+   clicking both the hidden input and visible control, before `setFiles` ran;
+   that result does not establish whether file-URL permission was enabled. If the
+   chooser does not appear once, use the native picker or hand installation to
+   the user instead of repeating the same browser call. For a native
    macOS file chooser, press **Cmd+Shift+G**, paste the absolute path to
    `tools/insets-probe/app/build/outputs/apk/debug/app-debug.apk`, and choose Open.
 5. Wait for `InsetsProbe info.windowinsets.probe` to appear. Select the application
@@ -232,6 +248,11 @@ step to the user.
 3. RTL may name every browser download `content`, `content (1)`, and so on.
    Classify them only from JSON fields: `screen`, `navigation.mode`,
    `display.currentWindowPx`, model and `capturedAt`.
+4. Before a multi-file export, check whether Chrome permits multiple automatic
+   downloads from the RTL site. On 2026-09-23 the first file arrived but further
+   clicks showed Download without creating host files until the user enabled that
+   site permission. After every click, verify a new host file exists and matches
+   the intended JSON fields; recover missing files while the reservation is live.
 
 When automation cannot complete the live-device portion, ask the user to report the
 downloaded filenames and active display/resolution. State the exact inaccessible
@@ -285,6 +306,12 @@ pnpm build
 
 Review desktop and mobile output for the changed device. Report accepted captures,
 pending screens/modes, validation results, and the next queue item.
+
+After the accepted evidence has been committed and its remote upload is verified,
+clean up only the exact temporary `Downloads/content*` copies already matched by
+hash to committed raw JSON. Move those identified copies to Trash so they can be
+recovered. Keep repository `measurements/` files as permanent raw evidence, and
+leave unrelated or unclassified downloads alone. Report what was moved.
 
 Completion criterion: raw evidence is traceable, registered values come only from
 accepted captures, documentation agrees with code, and all relevant checks pass.
