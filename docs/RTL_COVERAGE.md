@@ -71,3 +71,12 @@ never produce a complete empty inventory. Refresh the CSV from the same snapshot
 Galaxy Z Fold8, Fold7 and Flip8 reservations were made during this comparison.
 They establish those models' availability on their checked dates only; they do not
 make the partial inventory complete.
+
+## Galaxy S26 Ultra measured on 2026-09-23
+
+Samsung RTL Korea/Gumi SM-S948U_KR3 was reserved and its main display captured
+with InsetsProbe 1.2.1 in both 3-button and gesture navigation. Both accepted
+files report an upright 1080×2340 px app window. The physical panel is
+1440×3120 px according to Samsung specifications. This reservation verifies
+that model was offered on the checked date; it does not complete the
+cross-region RTL catalog inventory.

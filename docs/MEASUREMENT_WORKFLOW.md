@@ -385,3 +385,25 @@ screen and navigation-mode identity.
 5. When capturing a foldable's main screen, run the probe app in its natural flat/open rotation if at all possible, so the raw JSON's `orientation`/`screenWidthDp`/`screenHeightDp` already match the physical silhouette (landscape for book-fold, portrait for flip-fold) — this avoids needing `FoldRenderer3D`'s draw-time rotation correction (Bug 5) for new devices.
 6. Set the RTL device's system language to English before capturing, so `display.name` (locale-dependent) doesn't leak non-English text into committed JSON (Bug 6).
 7. **Open backlog, highest priority first** (per explicit product direction): Galaxy Tab support > dark mode > Korean/English site i18n. Tab support should come before either of the other two, not after.
+
+## S26 Ultra accepted capture — 2026-09-23
+
+Samsung RTL Korea/Gumi SM-S948U_KR3, Android 16 / One UI 8.5, build
+BP4A.251205.006.S948USQS4AZG3, InsetsProbe 1.2.1. The normal portrait screen
+was captured at rotation 0 in both navigation modes. The active window is
+1080×2340 px, 384×832 dp, 450 dpi at the device's default FHD+ resolution;
+Samsung publishes the physical panel as 1440×3120 px, 6.9 inches. The captured
+window and physical panel are separate measurements. Both captures report
+37.33 dp top system bar, 36.98 dp top cutout safe inset, a 60×104 px centered
+cutout rectangle, and 79 px / 28.09 dp corner radii. The 3-button bottom bar is
+135 px / 48 dp; gesture is 42 px / 14.93 dp. Android's navigation setting and
+Probe's classification agree for each file. Raw accepted evidence is in
+`measurements/galaxy-s26-ultra/main-{threeButton,gesture}.json`.
+
+An initial gesture export after using RTL's Rotate control recorded rotation 2
+and an upside-down cutout. It was rejected before repository import. Rotating
+back to 0 and recapturing produced the accepted upright file. RTL's screen video
+lagged during Settings transitions, so each destination screen was allowed to
+settle before the next touch. The Samsung WebClient removed the Ultra tab after
+early return but displayed a client-side `postMessage` error; verify any credit
+refund from the account balance rather than assuming it succeeded.
