@@ -94,6 +94,9 @@ If RTL returns 403, first retry after a short interval, then re-enter through th
 landing page or request a fresh manual login as described in
 `docs/MEASUREMENT_WORKFLOW.md`. Preserve the existing tab and reservation whenever
 possible because closing the WebClient can restart the device and waste time.
+Never close the active WebClient tab as a routine cleanup step while a reservation
+is running. Keep it open through download and validation; opening a replacement
+tab can restart the remote device and erase unsaved capture files.
 
 Completion criterion: the 30-minute reservation exists for the intended target, or
 the user has received the exact access blocker and the single action needed to resume.
@@ -240,6 +243,13 @@ step to the user.
    measuring.
 8. Repeat each physical display in gesture mode and require the matching
    `*-gesture.json` toast.
+   On book-fold main displays, inspect Samsung **Settings > Display > Taskbar**
+   before capture. A visible Taskbar can enlarge the bottom navigation/system
+   inset and make the inset-only navigation heuristic report 3-button even when
+   gesture mode is configured. For comparable baseline captures, switch Taskbar
+   off, record that condition, and recapture both main navigation modes with the
+   same setting. Preserve earlier Taskbar-on JSON as separate evidence; never
+   rewrite its values.
 9. Record the visible active-window resolution and hinge/folding-feature state for
    each capture. A hinge angle can be wrong on RTL; screen classification requires
    the actual switched state plus resolution evidence.
