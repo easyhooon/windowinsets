@@ -11,7 +11,7 @@ identified refreshed model can have its own release year.
 
 ## Boundary audit
 
-These are official Samsung sources checked on 2026-09-22. Regional availability
+These are official Samsung sources checked on 2026-09-22 and 2026-09-23. Regional availability
 dates below establish the year; they are not necessarily the first worldwide date.
 
 | Imported model | Release evidence | Public coverage |
@@ -22,18 +22,28 @@ dates below establish the year; they are not necessarily the first worldwide dat
 | Galaxy Tab S6 Lite | [Available April 30, 2020 in the Netherlands](https://news.samsung.com/nl/nieuwe-samsung-galaxy-tab-s6-lite-de-tablet-voor-werk-en-vrije-tijd) | Included |
 | Galaxy Z Flip | [Original model first launched February 2020](https://news.samsung.com/us/galaxy-z-flip-5g-enabled-foldable-smartphone-unpacked/) | Included |
 | Galaxy Z Fold3 | [US availability August 26, 2021](https://news.samsung.com/us/galaxy-z-fold3-5g-galaxy-z-flip3-5g-unpacked-2021-next-mobile-innovation/) | Included |
+| Galaxy Note FE | [Korean release July 7, 2017](https://news.samsung.com/kr/%EC%82%BC%EC%84%B1%EC%A0%84%EC%9E%90-%EB%85%B8%ED%8A%B8-%ED%8C%AC%EC%9D%84-%EC%9C%84%ED%95%9C-%ED%8A%B9%EB%B3%84-%ED%95%9C%EC%A0%95%ED%8C%90-%EA%B0%A4%EB%9F%AD%EC%8B%9C-%EB%85%B8%ED%8A%B8-fan-editi) | Archive only |
+| Galaxy Note8 | [Available from September 2017](https://news.samsung.com/global/do-bigger-things-with-samsung-galaxy-note8-the-next-level-note) | Archive only |
+| Galaxy Note9 | [Global launch August 24, 2018](https://news.samsung.com/global/samsung-electronics-officially-launches-galaxy-note9-in-global-markets) | Archive only |
+| Galaxy Note10 / Note10+ | [Global launch August 23, 2019](https://news.samsung.com/global/galaxy-note10-officially-launches-in-markets-around-the-world) | Archive only |
+| Galaxy Note10 Lite | [India sale February 3, 2020](https://news.samsung.com/in/building-on-the-note-legacy-samsung-introduces-galaxy-note10-lite-in-india) | Included |
+| Galaxy Note20 / Note20 Ultra | [US availability August 21, 2020](https://news.samsung.com/us/galaxy-note20-series-is-available-today-power-your-work-and-play/) | Included |
+| Galaxy A01 Core | [Brazil availability August 10, 2020](https://news.samsung.com/br/samsung-apresenta-galaxy-a01-core-ao-brasil) | Included |
+| Galaxy A11 / A21s / A31 | [Mexico introduction June 29, 2020](https://news.samsung.com/mx/samsung-presenta-en-mexico-tres-nuevos-smartphones-que-complementan-la-serie-galaxy-a) | Included |
+| Galaxy A42 5G | [UK availability November 6, 2020](https://news.samsung.com/uk/samsung-unveils-galaxy-a42-5g-its-most-affordable-5g-smartphone-to-date) | Included |
+| Galaxy A71 | [Brazil availability February 17, 2020](https://news.samsung.com/br/com-tres-opcoes-de-cores-samsung-galaxy-a71-ja-esta-a-venda-no-brasil) | Included |
 
-The downloaded archive therefore reaches back at least to 2018. This is not a
+The downloaded archive therefore reaches back at least to 2017. This is not a
 claim about the oldest model in Samsung's entire skin library. This boundary
 audit also does not establish exact release dates for every imported model.
 
 ## Implementation and future imports
 
-`app/data/skinCatalog.json` and `public/skins/` retain all 75 imported models.
+`app/data/skinCatalog.json` and `public/skins/` retain all 123 imported models.
 `app/data/coverage.ts` applies the 2020 cutoff to known release years and the
 audited boundary models. `devices.ts` filters the merged device list, so device
 navigation, lookup, prerendered routes and the sitemap share the same policy.
-There are 72 public models: 28 S, 28 Tab, 8 Fold and 8 Flip.
+There are 115 public models: 28 S, 28 Tab, 8 Fold, 8 Flip, 3 Note and 40 A.
 
 The user-supplied `Galaxy_Z_Fold3.zip` was imported on 2026-09-23 with its
 folded cover and unfolded main layouts. It is an artwork-only preview until
@@ -42,12 +52,21 @@ The user-supplied `Galaxy_Z_Flip5.zip` was imported on 2026-09-23 with its
 1080×2640 main display layout. The ZIP has no cover layout; both inset modes
 were measured on RTL on 2026-09-23; cover artwork remains unavailable.
 
+The user supplied 48 Galaxy Note and A ZIPs on 2026-09-23. Their original
+layouts and referenced official artwork were imported as main-screen previews.
+Five pre-2020 Note models (FE, 8, 9, 10 and 10+) remain in the asset archive
+without public routes. The 2020 Note and earliest A models have release-year
+evidence above; the later A models are also kept as artwork-only previews.
+The Galaxy A22 5G ZIP's layout names a missing Black background image; the
+importer retains that layout unchanged and uses its included Gray image for
+the preview, recording the selected asset in `source.json`.
+
 The importer preserves artwork independently of coverage. Before publishing a
 new batch, check its release years using official sources; record older/boundary
 models in `coverage.ts` and add the evidence here. Unknown-year preview entries
 are not automatically rejected, so importing assets alone does not certify their
-eligibility. In particular, review older Note/A downloads before publishing.
+eligibility.
 
 Artwork-only models continue to show pending measurements. A supported release
-year or an official skin does not establish WindowInsets values or 3D animation
-support. Raw captures and downloaded originals remain unchanged.
+year or an official skin does not establish WindowInsets values or measured 3D
+geometry. Raw captures and downloaded originals remain unchanged.

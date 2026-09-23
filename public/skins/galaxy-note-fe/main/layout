@@ -1,0 +1,70 @@
+parts {
+    portrait {
+        background {
+            image   device_Port-Silver.png
+        }
+		buttons {
+			volume-up {
+				image 	rocker_up.png
+				x		147
+				y		724
+			}
+			volume-down {
+				image 	rocker_down.png
+				x		147
+				y		1024
+			}
+			power {
+				image 	rocker_power.png
+				x		1636
+				y		1076
+			}
+			back {
+				image 	button_back.png
+				x		1299
+				y		3076
+			}
+			home {
+				image 	button_home.png
+				x		753
+				y		3048
+			}
+			soft-left {
+				image 	button_multiscreen.png
+				x		417
+				y		3073
+			}
+		}
+    }
+
+   device {
+        display {
+            width   1440
+            height  2560
+            x       0
+            y       0
+        }
+    }
+}
+
+layouts {
+    portrait {
+        width     1798
+        height    3390
+        color     0x000000
+        event     EV_SW:0:1
+        
+        part1 {
+            name    portrait
+            x       0
+            y       0
+        }
+
+        part2 {
+            name    device
+            x       179
+            y       424
+        }
+    }
+}
+

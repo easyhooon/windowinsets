@@ -67,8 +67,12 @@ def import_skins(downloads):
                 original_layout = z.read(layout_name)
                 layout = original_layout.decode()
                 background = re.search(r'background\s*{\s*image\s+(\S+)', layout)[1]
-                if slug == 'galaxy-tab-s6' and background == 'device_Port-Black.png':
-                    background = 'device_Port-Grey.png'  # Official ZIP has no Black asset.
+                if f'{folder}/{background}'.lower() not in files:
+                    # Some official layouts name a Black asset omitted from the ZIP.
+                    alternatives = [name for name in ('device_Port-Gray.png', 'device_Port-Grey.png')
+                                    if f'{folder}/{name}'.lower() in files]
+                    assert background.lower() == 'device_port-black.png' and alternatives, archive.name
+                    background = alternatives[0]
                 mask_match = re.search(r'foreground\s*{\s*mask\s+(\S+)', layout)
                 foreground = mask_match[1] if mask_match else None
                 def asset(name):
@@ -108,7 +112,8 @@ def import_skins(downloads):
                 imported.append(key)
         if screens and slug not in catalog_slugs:
             catalog.append({'slug': slug, 'name': name, 'series': family, 'formFactor': form,
-                            'screens': sorted(screens, key=lambda value: value != 'cover')})
+                            'screens': sorted(screens, key=lambda value: value != 'cover'),
+                            'providedAt': date.today().isoformat()})
             catalog_slugs.add(slug)
     catalog_path.write_text(json.dumps(catalog, indent=2) + '\n')
     manifest.write_text(header + 'export const skins: Record<string, DeviceSkin> = ' + json.dumps(skins, indent=2) + ';\n')

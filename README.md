@@ -122,10 +122,11 @@ This is the target coverage roadmap, not a claim that every model is implemented
    existing preview slug. Its screens override preview data; additional skin-only
    screens stay pending. Routes, sitemap and prerendering use the merged catalogue.
 
-Current public catalogue: 70 models (28 S, 28 Tab, 7 Fold, 7 Flip). The skin
-archive retains 73 models, including three pre-2020 models. New Fold/Flip
-entries have static main/cover previews where supplied; animation is separately
-enabled per device. Note/A phone skins were not present in the supplied downloads.
+Current public catalogue: 115 models (28 S, 28 Tab, 8 Fold, 8 Flip, 3 Note,
+40 A). The skin archive retains 123 models, including eight pre-2020 models.
+New Fold/Flip entries have static main/cover previews where supplied; models
+with a main skin also have hinge animation. Note/A artwork is available as static
+previews; inset measurements remain pending.
 
 ## Continuing development in Codex
 

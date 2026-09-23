@@ -684,5 +684,485 @@
     "screens": [
       "main"
     ]
+  },
+  {
+    "slug": "galaxy-a01-core",
+    "name": "Galaxy A01 Core",
+    "series": "Galaxy A",
+    "formFactor": "bar",
+    "screens": [
+      "main"
+    ],
+    "providedAt": "2026-09-23"
+  },
+  {
+    "slug": "galaxy-a02s",
+    "name": "Galaxy A02s",
+    "series": "Galaxy A",
+    "formFactor": "bar",
+    "screens": [
+      "main"
+    ],
+    "providedAt": "2026-09-23"
+  },
+  {
+    "slug": "galaxy-a03s",
+    "name": "Galaxy A03s",
+    "series": "Galaxy A",
+    "formFactor": "bar",
+    "screens": [
+      "main"
+    ],
+    "providedAt": "2026-09-23"
+  },
+  {
+    "slug": "galaxy-a04",
+    "name": "Galaxy A04",
+    "series": "Galaxy A",
+    "formFactor": "bar",
+    "screens": [
+      "main"
+    ],
+    "providedAt": "2026-09-23"
+  },
+  {
+    "slug": "galaxy-a05",
+    "name": "Galaxy A05",
+    "series": "Galaxy A",
+    "formFactor": "bar",
+    "screens": [
+      "main"
+    ],
+    "providedAt": "2026-09-23"
+  },
+  {
+    "slug": "galaxy-a05s",
+    "name": "Galaxy A05s",
+    "series": "Galaxy A",
+    "formFactor": "bar",
+    "screens": [
+      "main"
+    ],
+    "providedAt": "2026-09-23"
+  },
+  {
+    "slug": "galaxy-a06",
+    "name": "Galaxy A06",
+    "series": "Galaxy A",
+    "formFactor": "bar",
+    "screens": [
+      "main"
+    ],
+    "providedAt": "2026-09-23"
+  },
+  {
+    "slug": "galaxy-a07",
+    "name": "Galaxy A07",
+    "series": "Galaxy A",
+    "formFactor": "bar",
+    "screens": [
+      "main"
+    ],
+    "providedAt": "2026-09-23"
+  },
+  {
+    "slug": "galaxy-a11",
+    "name": "Galaxy A11",
+    "series": "Galaxy A",
+    "formFactor": "bar",
+    "screens": [
+      "main"
+    ],
+    "providedAt": "2026-09-23"
+  },
+  {
+    "slug": "galaxy-a12",
+    "name": "Galaxy A12",
+    "series": "Galaxy A",
+    "formFactor": "bar",
+    "screens": [
+      "main"
+    ],
+    "providedAt": "2026-09-23"
+  },
+  {
+    "slug": "galaxy-a13-5g",
+    "name": "Galaxy A13 5G",
+    "series": "Galaxy A",
+    "formFactor": "bar",
+    "screens": [
+      "main"
+    ],
+    "providedAt": "2026-09-23"
+  },
+  {
+    "slug": "galaxy-a14-5g",
+    "name": "Galaxy A14 5G",
+    "series": "Galaxy A",
+    "formFactor": "bar",
+    "screens": [
+      "main"
+    ],
+    "providedAt": "2026-09-23"
+  },
+  {
+    "slug": "galaxy-a15-5g",
+    "name": "Galaxy A15 5G",
+    "series": "Galaxy A",
+    "formFactor": "bar",
+    "screens": [
+      "main"
+    ],
+    "providedAt": "2026-09-23"
+  },
+  {
+    "slug": "galaxy-a16-5g",
+    "name": "Galaxy A16 5G",
+    "series": "Galaxy A",
+    "formFactor": "bar",
+    "screens": [
+      "main"
+    ],
+    "providedAt": "2026-09-23"
+  },
+  {
+    "slug": "galaxy-a17-5g",
+    "name": "Galaxy A17 5G",
+    "series": "Galaxy A",
+    "formFactor": "bar",
+    "screens": [
+      "main"
+    ],
+    "providedAt": "2026-09-23"
+  },
+  {
+    "slug": "galaxy-a21s",
+    "name": "Galaxy A21s",
+    "series": "Galaxy A",
+    "formFactor": "bar",
+    "screens": [
+      "main"
+    ],
+    "providedAt": "2026-09-23"
+  },
+  {
+    "slug": "galaxy-a22",
+    "name": "Galaxy A22",
+    "series": "Galaxy A",
+    "formFactor": "bar",
+    "screens": [
+      "main"
+    ],
+    "providedAt": "2026-09-23"
+  },
+  {
+    "slug": "galaxy-a22-5g",
+    "name": "Galaxy A22 5G",
+    "series": "Galaxy A",
+    "formFactor": "bar",
+    "screens": [
+      "main"
+    ],
+    "providedAt": "2026-09-23"
+  },
+  {
+    "slug": "galaxy-a23-5g",
+    "name": "Galaxy A23 5G",
+    "series": "Galaxy A",
+    "formFactor": "bar",
+    "screens": [
+      "main"
+    ],
+    "providedAt": "2026-09-23"
+  },
+  {
+    "slug": "galaxy-a24",
+    "name": "Galaxy A24",
+    "series": "Galaxy A",
+    "formFactor": "bar",
+    "screens": [
+      "main"
+    ],
+    "providedAt": "2026-09-23"
+  },
+  {
+    "slug": "galaxy-a26-5g",
+    "name": "Galaxy A26 5G",
+    "series": "Galaxy A",
+    "formFactor": "bar",
+    "screens": [
+      "main"
+    ],
+    "providedAt": "2026-09-23"
+  },
+  {
+    "slug": "galaxy-a27-5g",
+    "name": "Galaxy A27 5G",
+    "series": "Galaxy A",
+    "formFactor": "bar",
+    "screens": [
+      "main"
+    ],
+    "providedAt": "2026-09-23"
+  },
+  {
+    "slug": "galaxy-a31",
+    "name": "Galaxy A31",
+    "series": "Galaxy A",
+    "formFactor": "bar",
+    "screens": [
+      "main"
+    ],
+    "providedAt": "2026-09-23"
+  },
+  {
+    "slug": "galaxy-a32",
+    "name": "Galaxy A32",
+    "series": "Galaxy A",
+    "formFactor": "bar",
+    "screens": [
+      "main"
+    ],
+    "providedAt": "2026-09-23"
+  },
+  {
+    "slug": "galaxy-a32-5g",
+    "name": "Galaxy A32 5G",
+    "series": "Galaxy A",
+    "formFactor": "bar",
+    "screens": [
+      "main"
+    ],
+    "providedAt": "2026-09-23"
+  },
+  {
+    "slug": "galaxy-a33-5g",
+    "name": "Galaxy A33 5G",
+    "series": "Galaxy A",
+    "formFactor": "bar",
+    "screens": [
+      "main"
+    ],
+    "providedAt": "2026-09-23"
+  },
+  {
+    "slug": "galaxy-a34-5g",
+    "name": "Galaxy A34 5G",
+    "series": "Galaxy A",
+    "formFactor": "bar",
+    "screens": [
+      "main"
+    ],
+    "providedAt": "2026-09-23"
+  },
+  {
+    "slug": "galaxy-a35-5g",
+    "name": "Galaxy A35 5G",
+    "series": "Galaxy A",
+    "formFactor": "bar",
+    "screens": [
+      "main"
+    ],
+    "providedAt": "2026-09-23"
+  },
+  {
+    "slug": "galaxy-a36-5g",
+    "name": "Galaxy A36 5G",
+    "series": "Galaxy A",
+    "formFactor": "bar",
+    "screens": [
+      "main"
+    ],
+    "providedAt": "2026-09-23"
+  },
+  {
+    "slug": "galaxy-a37-5g",
+    "name": "Galaxy A37 5G",
+    "series": "Galaxy A",
+    "formFactor": "bar",
+    "screens": [
+      "main"
+    ],
+    "providedAt": "2026-09-23"
+  },
+  {
+    "slug": "galaxy-a42-5g",
+    "name": "Galaxy A42 5G",
+    "series": "Galaxy A",
+    "formFactor": "bar",
+    "screens": [
+      "main"
+    ],
+    "providedAt": "2026-09-23"
+  },
+  {
+    "slug": "galaxy-a52",
+    "name": "Galaxy A52",
+    "series": "Galaxy A",
+    "formFactor": "bar",
+    "screens": [
+      "main"
+    ],
+    "providedAt": "2026-09-23"
+  },
+  {
+    "slug": "galaxy-a53-5g",
+    "name": "Galaxy A53 5G",
+    "series": "Galaxy A",
+    "formFactor": "bar",
+    "screens": [
+      "main"
+    ],
+    "providedAt": "2026-09-23"
+  },
+  {
+    "slug": "galaxy-a54-5g",
+    "name": "Galaxy A54 5G",
+    "series": "Galaxy A",
+    "formFactor": "bar",
+    "screens": [
+      "main"
+    ],
+    "providedAt": "2026-09-23"
+  },
+  {
+    "slug": "galaxy-a55-5g",
+    "name": "Galaxy A55 5G",
+    "series": "Galaxy A",
+    "formFactor": "bar",
+    "screens": [
+      "main"
+    ],
+    "providedAt": "2026-09-23"
+  },
+  {
+    "slug": "galaxy-a56-5g",
+    "name": "Galaxy A56 5G",
+    "series": "Galaxy A",
+    "formFactor": "bar",
+    "screens": [
+      "main"
+    ],
+    "providedAt": "2026-09-23"
+  },
+  {
+    "slug": "galaxy-a57-5g",
+    "name": "Galaxy A57 5G",
+    "series": "Galaxy A",
+    "formFactor": "bar",
+    "screens": [
+      "main"
+    ],
+    "providedAt": "2026-09-23"
+  },
+  {
+    "slug": "galaxy-a71",
+    "name": "Galaxy A71",
+    "series": "Galaxy A",
+    "formFactor": "bar",
+    "screens": [
+      "main"
+    ],
+    "providedAt": "2026-09-23"
+  },
+  {
+    "slug": "galaxy-a72",
+    "name": "Galaxy A72",
+    "series": "Galaxy A",
+    "formFactor": "bar",
+    "screens": [
+      "main"
+    ],
+    "providedAt": "2026-09-23"
+  },
+  {
+    "slug": "galaxy-a73-5g",
+    "name": "Galaxy A73 5G",
+    "series": "Galaxy A",
+    "formFactor": "bar",
+    "screens": [
+      "main"
+    ],
+    "providedAt": "2026-09-23"
+  },
+  {
+    "slug": "galaxy-note10",
+    "name": "Galaxy Note10",
+    "series": "Galaxy Note",
+    "formFactor": "bar",
+    "screens": [
+      "main"
+    ],
+    "providedAt": "2026-09-23"
+  },
+  {
+    "slug": "galaxy-note10-lite",
+    "name": "Galaxy Note10 Lite",
+    "series": "Galaxy Note",
+    "formFactor": "bar",
+    "screens": [
+      "main"
+    ],
+    "providedAt": "2026-09-23"
+  },
+  {
+    "slug": "galaxy-note10-plus",
+    "name": "Galaxy Note10 Plus",
+    "series": "Galaxy Note",
+    "formFactor": "bar",
+    "screens": [
+      "main"
+    ],
+    "providedAt": "2026-09-23"
+  },
+  {
+    "slug": "galaxy-note20",
+    "name": "Galaxy Note20",
+    "series": "Galaxy Note",
+    "formFactor": "bar",
+    "screens": [
+      "main"
+    ],
+    "providedAt": "2026-09-23"
+  },
+  {
+    "slug": "galaxy-note20-ultra",
+    "name": "Galaxy Note20 Ultra",
+    "series": "Galaxy Note",
+    "formFactor": "bar",
+    "screens": [
+      "main"
+    ],
+    "providedAt": "2026-09-23"
+  },
+  {
+    "slug": "galaxy-note8",
+    "name": "Galaxy Note8",
+    "series": "Galaxy Note",
+    "formFactor": "bar",
+    "screens": [
+      "main"
+    ],
+    "providedAt": "2026-09-23"
+  },
+  {
+    "slug": "galaxy-note9",
+    "name": "Galaxy Note9",
+    "series": "Galaxy Note",
+    "formFactor": "bar",
+    "screens": [
+      "main"
+    ],
+    "providedAt": "2026-09-23"
+  },
+  {
+    "slug": "galaxy-note-fe",
+    "name": "Galaxy Note FE",
+    "series": "Galaxy Note",
+    "formFactor": "bar",
+    "screens": [
+      "main"
+    ],
+    "providedAt": "2026-09-23"
   }
 ]

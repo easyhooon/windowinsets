@@ -1638,5 +1638,917 @@ export const skins: Record<string, DeviceSkin> = {
       "height": 2720,
       "radius": 100
     }
+  },
+  "galaxy-a01-core/main": {
+    "image": "/skins/galaxy-a01-core/main/device.png",
+    "foreground": "/skins/galaxy-a01-core/main/foreground.png",
+    "width": 977,
+    "height": 1858,
+    "screen": {
+      "x": 128,
+      "y": 189,
+      "width": 720,
+      "height": 1480
+    },
+    "body": {
+      "x": 88,
+      "y": 149,
+      "width": 800,
+      "height": 1560,
+      "radius": 100
+    }
+  },
+  "galaxy-a02s/main": {
+    "image": "/skins/galaxy-a02s/main/device.png",
+    "foreground": "/skins/galaxy-a02s/main/foreground.png",
+    "width": 984,
+    "height": 1898,
+    "screen": {
+      "x": 134,
+      "y": 126,
+      "width": 720,
+      "height": 1600
+    },
+    "body": {
+      "x": 94,
+      "y": 86,
+      "width": 800,
+      "height": 1680,
+      "radius": 100
+    }
+  },
+  "galaxy-a03s/main": {
+    "image": "/skins/galaxy-a03s/main/device.png",
+    "foreground": "/skins/galaxy-a03s/main/foreground.png",
+    "width": 976,
+    "height": 1904,
+    "screen": {
+      "x": 128,
+      "y": 128,
+      "width": 720,
+      "height": 1600
+    },
+    "body": {
+      "x": 88,
+      "y": 88,
+      "width": 800,
+      "height": 1680,
+      "radius": 100
+    }
+  },
+  "galaxy-a04/main": {
+    "image": "/skins/galaxy-a04/main/device.png",
+    "foreground": "/skins/galaxy-a04/main/foreground.png",
+    "width": 990,
+    "height": 1903,
+    "screen": {
+      "x": 136,
+      "y": 131,
+      "width": 720,
+      "height": 1600
+    },
+    "body": {
+      "x": 96,
+      "y": 91,
+      "width": 800,
+      "height": 1680,
+      "radius": 100
+    }
+  },
+  "galaxy-a05/main": {
+    "image": "/skins/galaxy-a05/main/device.png",
+    "foreground": "/skins/galaxy-a05/main/foreground.png",
+    "width": 982,
+    "height": 1886,
+    "screen": {
+      "x": 131,
+      "y": 127,
+      "width": 720,
+      "height": 1600
+    },
+    "body": {
+      "x": 91,
+      "y": 87,
+      "width": 800,
+      "height": 1680,
+      "radius": 100
+    }
+  },
+  "galaxy-a05s/main": {
+    "image": "/skins/galaxy-a05s/main/device.png",
+    "foreground": "/skins/galaxy-a05s/main/foreground.png",
+    "width": 1523,
+    "height": 2890,
+    "screen": {
+      "x": 222,
+      "y": 229,
+      "width": 1080,
+      "height": 2400
+    },
+    "body": {
+      "x": 182,
+      "y": 189,
+      "width": 1160,
+      "height": 2480,
+      "radius": 100
+    }
+  },
+  "galaxy-a06/main": {
+    "image": "/skins/galaxy-a06/main/device.png",
+    "foreground": "/skins/galaxy-a06/main/foreground.png",
+    "width": 971,
+    "height": 1872,
+    "screen": {
+      "x": 125,
+      "y": 122,
+      "width": 720,
+      "height": 1600
+    },
+    "body": {
+      "x": 85,
+      "y": 82,
+      "width": 800,
+      "height": 1680,
+      "radius": 100
+    }
+  },
+  "galaxy-a07/main": {
+    "image": "/skins/galaxy-a07/main/device.png",
+    "foreground": "/skins/galaxy-a07/main/foreground.png",
+    "width": 954,
+    "height": 1897,
+    "screen": {
+      "x": 117,
+      "y": 134,
+      "width": 720,
+      "height": 1600
+    },
+    "body": {
+      "x": 77,
+      "y": 94,
+      "width": 800,
+      "height": 1680,
+      "radius": 100
+    }
+  },
+  "galaxy-a11/main": {
+    "image": "/skins/galaxy-a11/main/device.png",
+    "foreground": "/skins/galaxy-a11/main/foreground.png",
+    "width": 978,
+    "height": 1856,
+    "screen": {
+      "x": 129,
+      "y": 129,
+      "width": 720,
+      "height": 1560
+    },
+    "body": {
+      "x": 89,
+      "y": 89,
+      "width": 800,
+      "height": 1640,
+      "radius": 100
+    }
+  },
+  "galaxy-a12/main": {
+    "image": "/skins/galaxy-a12/main/device.png",
+    "foreground": "/skins/galaxy-a12/main/foreground.png",
+    "width": 974,
+    "height": 1884,
+    "screen": {
+      "x": 125,
+      "y": 124,
+      "width": 720,
+      "height": 1600
+    },
+    "body": {
+      "x": 85,
+      "y": 84,
+      "width": 800,
+      "height": 1680,
+      "radius": 100
+    }
+  },
+  "galaxy-a13-5g/main": {
+    "image": "/skins/galaxy-a13-5g/main/device.png",
+    "foreground": "/skins/galaxy-a13-5g/main/foreground.png",
+    "width": 1529,
+    "height": 2917,
+    "screen": {
+      "x": 225,
+      "y": 228,
+      "width": 1080,
+      "height": 2408
+    },
+    "body": {
+      "x": 185,
+      "y": 188,
+      "width": 1160,
+      "height": 2488,
+      "radius": 100
+    }
+  },
+  "galaxy-a14-5g/main": {
+    "image": "/skins/galaxy-a14-5g/main/device.png",
+    "foreground": "/skins/galaxy-a14-5g/main/foreground.png",
+    "width": 1547,
+    "height": 2939,
+    "screen": {
+      "x": 234,
+      "y": 242,
+      "width": 1080,
+      "height": 2408
+    },
+    "body": {
+      "x": 194,
+      "y": 202,
+      "width": 1160,
+      "height": 2488,
+      "radius": 100
+    }
+  },
+  "galaxy-a15-5g/main": {
+    "image": "/skins/galaxy-a15-5g/main/device.png",
+    "foreground": "/skins/galaxy-a15-5g/main/foreground.png",
+    "width": 1525,
+    "height": 2813,
+    "screen": {
+      "x": 221,
+      "y": 216,
+      "width": 1080,
+      "height": 2340
+    },
+    "body": {
+      "x": 181,
+      "y": 176,
+      "width": 1160,
+      "height": 2420,
+      "radius": 100
+    }
+  },
+  "galaxy-a16-5g/main": {
+    "image": "/skins/galaxy-a16-5g/main/device.png",
+    "foreground": "/skins/galaxy-a16-5g/main/foreground.png",
+    "width": 1525,
+    "height": 2834,
+    "screen": {
+      "x": 222,
+      "y": 221,
+      "width": 1080,
+      "height": 2340
+    },
+    "body": {
+      "x": 182,
+      "y": 181,
+      "width": 1160,
+      "height": 2420,
+      "radius": 100
+    }
+  },
+  "galaxy-a17-5g/main": {
+    "image": "/skins/galaxy-a17-5g/main/device.png",
+    "foreground": "/skins/galaxy-a17-5g/main/foreground.png",
+    "width": 1510,
+    "height": 2807,
+    "screen": {
+      "x": 215,
+      "y": 207,
+      "width": 1080,
+      "height": 2340
+    },
+    "body": {
+      "x": 175,
+      "y": 167,
+      "width": 1160,
+      "height": 2420,
+      "radius": 100
+    }
+  },
+  "galaxy-a21s/main": {
+    "image": "/skins/galaxy-a21s/main/device.png",
+    "foreground": "/skins/galaxy-a21s/main/foreground.png",
+    "width": 970,
+    "height": 1875,
+    "screen": {
+      "x": 125,
+      "y": 124,
+      "width": 720,
+      "height": 1600
+    },
+    "body": {
+      "x": 85,
+      "y": 84,
+      "width": 800,
+      "height": 1680,
+      "radius": 100
+    }
+  },
+  "galaxy-a22/main": {
+    "image": "/skins/galaxy-a22/main/device.png",
+    "foreground": "/skins/galaxy-a22/main/foreground.png",
+    "width": 974,
+    "height": 1891,
+    "screen": {
+      "x": 126,
+      "y": 130,
+      "width": 720,
+      "height": 1600
+    },
+    "body": {
+      "x": 86,
+      "y": 90,
+      "width": 800,
+      "height": 1680,
+      "radius": 100
+    }
+  },
+  "galaxy-a22-5g/main": {
+    "image": "/skins/galaxy-a22-5g/main/device.png",
+    "foreground": "/skins/galaxy-a22-5g/main/foreground.png",
+    "width": 1529,
+    "height": 2948,
+    "screen": {
+      "x": 224,
+      "y": 245,
+      "width": 1080,
+      "height": 2400
+    },
+    "body": {
+      "x": 184,
+      "y": 205,
+      "width": 1160,
+      "height": 2480,
+      "radius": 100
+    }
+  },
+  "galaxy-a23-5g/main": {
+    "image": "/skins/galaxy-a23-5g/main/device.png",
+    "foreground": "/skins/galaxy-a23-5g/main/foreground.png",
+    "width": 1531,
+    "height": 2905,
+    "screen": {
+      "x": 226,
+      "y": 231,
+      "width": 1080,
+      "height": 2408
+    },
+    "body": {
+      "x": 186,
+      "y": 191,
+      "width": 1160,
+      "height": 2488,
+      "radius": 100
+    }
+  },
+  "galaxy-a24/main": {
+    "image": "/skins/galaxy-a24/main/device.png",
+    "foreground": "/skins/galaxy-a24/main/foreground.png",
+    "width": 1523,
+    "height": 2829,
+    "screen": {
+      "x": 221,
+      "y": 220,
+      "width": 1080,
+      "height": 2340
+    },
+    "body": {
+      "x": 181,
+      "y": 180,
+      "width": 1160,
+      "height": 2420,
+      "radius": 100
+    }
+  },
+  "galaxy-a26-5g/main": {
+    "image": "/skins/galaxy-a26-5g/main/device.png",
+    "foreground": "/skins/galaxy-a26-5g/main/foreground.png",
+    "width": 1504,
+    "height": 2801,
+    "screen": {
+      "x": 212,
+      "y": 205,
+      "width": 1080,
+      "height": 2340
+    },
+    "body": {
+      "x": 172,
+      "y": 165,
+      "width": 1160,
+      "height": 2420,
+      "radius": 100
+    }
+  },
+  "galaxy-a27-5g/main": {
+    "image": "/skins/galaxy-a27-5g/main/device.png",
+    "foreground": "/skins/galaxy-a27-5g/main/foreground.png",
+    "width": 1514,
+    "height": 2776,
+    "screen": {
+      "x": 219,
+      "y": 208,
+      "width": 1080,
+      "height": 2340
+    },
+    "body": {
+      "x": 179,
+      "y": 168,
+      "width": 1160,
+      "height": 2420,
+      "radius": 100
+    }
+  },
+  "galaxy-a31/main": {
+    "image": "/skins/galaxy-a31/main/device.png",
+    "foreground": "/skins/galaxy-a31/main/foreground.png",
+    "width": 1508,
+    "height": 2882,
+    "screen": {
+      "x": 215,
+      "y": 205,
+      "width": 1080,
+      "height": 2400
+    },
+    "body": {
+      "x": 175,
+      "y": 165,
+      "width": 1160,
+      "height": 2480,
+      "radius": 100
+    }
+  },
+  "galaxy-a32/main": {
+    "image": "/skins/galaxy-a32/main/device.png",
+    "foreground": "/skins/galaxy-a32/main/foreground.png",
+    "width": 1527,
+    "height": 2900,
+    "screen": {
+      "x": 224,
+      "y": 210,
+      "width": 1080,
+      "height": 2400
+    },
+    "body": {
+      "x": 184,
+      "y": 170,
+      "width": 1160,
+      "height": 2480,
+      "radius": 100
+    }
+  },
+  "galaxy-a32-5g/main": {
+    "image": "/skins/galaxy-a32-5g/main/device.png",
+    "foreground": "/skins/galaxy-a32-5g/main/foreground.png",
+    "width": 974,
+    "height": 1889,
+    "screen": {
+      "x": 128,
+      "y": 132,
+      "width": 720,
+      "height": 1600
+    },
+    "body": {
+      "x": 88,
+      "y": 92,
+      "width": 800,
+      "height": 1680,
+      "radius": 100
+    }
+  },
+  "galaxy-a33-5g/main": {
+    "image": "/skins/galaxy-a33-5g/main/device.png",
+    "foreground": "/skins/galaxy-a33-5g/main/foreground.png",
+    "width": 1514,
+    "height": 2887,
+    "screen": {
+      "x": 216,
+      "y": 221,
+      "width": 1080,
+      "height": 2400
+    },
+    "body": {
+      "x": 176,
+      "y": 181,
+      "width": 1160,
+      "height": 2480,
+      "radius": 100
+    }
+  },
+  "galaxy-a34-5g/main": {
+    "image": "/skins/galaxy-a34-5g/main/device.png",
+    "foreground": "/skins/galaxy-a34-5g/main/foreground.png",
+    "width": 1534,
+    "height": 2805,
+    "screen": {
+      "x": 227,
+      "y": 225,
+      "width": 1080,
+      "height": 2340
+    },
+    "body": {
+      "x": 187,
+      "y": 185,
+      "width": 1160,
+      "height": 2420,
+      "radius": 100
+    }
+  },
+  "galaxy-a35-5g/main": {
+    "image": "/skins/galaxy-a35-5g/main/device.png",
+    "foreground": "/skins/galaxy-a35-5g/main/foreground.png",
+    "width": 1519,
+    "height": 2783,
+    "screen": {
+      "x": 218,
+      "y": 216,
+      "width": 1080,
+      "height": 2340
+    },
+    "body": {
+      "x": 178,
+      "y": 176,
+      "width": 1160,
+      "height": 2420,
+      "radius": 100
+    }
+  },
+  "galaxy-a36-5g/main": {
+    "image": "/skins/galaxy-a36-5g/main/device.png",
+    "foreground": "/skins/galaxy-a36-5g/main/foreground.png",
+    "width": 1506,
+    "height": 2769,
+    "screen": {
+      "x": 210,
+      "y": 205,
+      "width": 1080,
+      "height": 2340
+    },
+    "body": {
+      "x": 170,
+      "y": 165,
+      "width": 1160,
+      "height": 2420,
+      "radius": 100
+    }
+  },
+  "galaxy-a37-5g/main": {
+    "image": "/skins/galaxy-a37-5g/main/device.png",
+    "foreground": "/skins/galaxy-a37-5g/main/foreground.png",
+    "width": 1506,
+    "height": 2770,
+    "screen": {
+      "x": 213,
+      "y": 206,
+      "width": 1080,
+      "height": 2340
+    },
+    "body": {
+      "x": 173,
+      "y": 166,
+      "width": 1160,
+      "height": 2420,
+      "radius": 100
+    }
+  },
+  "galaxy-a42-5g/main": {
+    "image": "/skins/galaxy-a42-5g/main/device.png",
+    "foreground": "/skins/galaxy-a42-5g/main/foreground.png",
+    "width": 966,
+    "height": 1861,
+    "screen": {
+      "x": 124,
+      "y": 114,
+      "width": 720,
+      "height": 1600
+    },
+    "body": {
+      "x": 84,
+      "y": 74,
+      "width": 800,
+      "height": 1680,
+      "radius": 100
+    }
+  },
+  "galaxy-a52/main": {
+    "image": "/skins/galaxy-a52/main/device.png",
+    "foreground": "/skins/galaxy-a52/main/foreground.png",
+    "width": 1507,
+    "height": 2849,
+    "screen": {
+      "x": 214,
+      "y": 218,
+      "width": 1080,
+      "height": 2400
+    },
+    "body": {
+      "x": 174,
+      "y": 178,
+      "width": 1160,
+      "height": 2480,
+      "radius": 100
+    }
+  },
+  "galaxy-a53-5g/main": {
+    "image": "/skins/galaxy-a53-5g/main/device.png",
+    "foreground": "/skins/galaxy-a53-5g/main/foreground.png",
+    "width": 1515,
+    "height": 2857,
+    "screen": {
+      "x": 218,
+      "y": 218,
+      "width": 1080,
+      "height": 2400
+    },
+    "body": {
+      "x": 178,
+      "y": 178,
+      "width": 1160,
+      "height": 2480,
+      "radius": 100
+    }
+  },
+  "galaxy-a54-5g/main": {
+    "image": "/skins/galaxy-a54-5g/main/device.png",
+    "foreground": "/skins/galaxy-a54-5g/main/foreground.png",
+    "width": 1530,
+    "height": 2808,
+    "screen": {
+      "x": 228,
+      "y": 224,
+      "width": 1080,
+      "height": 2340
+    },
+    "body": {
+      "x": 188,
+      "y": 184,
+      "width": 1160,
+      "height": 2420,
+      "radius": 100
+    }
+  },
+  "galaxy-a55-5g/main": {
+    "image": "/skins/galaxy-a55-5g/main/device.png",
+    "foreground": "/skins/galaxy-a55-5g/main/foreground.png",
+    "width": 1508,
+    "height": 2780,
+    "screen": {
+      "x": 214,
+      "y": 214,
+      "width": 1080,
+      "height": 2340
+    },
+    "body": {
+      "x": 174,
+      "y": 174,
+      "width": 1160,
+      "height": 2420,
+      "radius": 100
+    }
+  },
+  "galaxy-a56-5g/main": {
+    "image": "/skins/galaxy-a56-5g/main/device.png",
+    "foreground": "/skins/galaxy-a56-5g/main/foreground.png",
+    "width": 1493,
+    "height": 2755,
+    "screen": {
+      "x": 205,
+      "y": 199,
+      "width": 1080,
+      "height": 2340
+    },
+    "body": {
+      "x": 165,
+      "y": 159,
+      "width": 1160,
+      "height": 2420,
+      "radius": 100
+    }
+  },
+  "galaxy-a57-5g/main": {
+    "image": "/skins/galaxy-a57-5g/main/device.png",
+    "foreground": "/skins/galaxy-a57-5g/main/foreground.png",
+    "width": 1486,
+    "height": 2750,
+    "screen": {
+      "x": 204,
+      "y": 192,
+      "width": 1080,
+      "height": 2340
+    },
+    "body": {
+      "x": 164,
+      "y": 152,
+      "width": 1160,
+      "height": 2420,
+      "radius": 100
+    }
+  },
+  "galaxy-a71/main": {
+    "image": "/skins/galaxy-a71/main/device.png",
+    "foreground": "/skins/galaxy-a71/main/foreground.png",
+    "width": 1494,
+    "height": 2835,
+    "screen": {
+      "x": 207,
+      "y": 206,
+      "width": 1080,
+      "height": 2400
+    },
+    "body": {
+      "x": 167,
+      "y": 166,
+      "width": 1160,
+      "height": 2480,
+      "radius": 100
+    }
+  },
+  "galaxy-a72/main": {
+    "image": "/skins/galaxy-a72/main/device.png",
+    "foreground": "/skins/galaxy-a72/main/foreground.png",
+    "width": 1506,
+    "height": 2844,
+    "screen": {
+      "x": 213,
+      "y": 221,
+      "width": 1080,
+      "height": 2400
+    },
+    "body": {
+      "x": 173,
+      "y": 181,
+      "width": 1160,
+      "height": 2480,
+      "radius": 100
+    }
+  },
+  "galaxy-a73-5g/main": {
+    "image": "/skins/galaxy-a73-5g/main/device.png",
+    "foreground": "/skins/galaxy-a73-5g/main/foreground.png",
+    "width": 1497,
+    "height": 2843,
+    "screen": {
+      "x": 207,
+      "y": 210,
+      "width": 1080,
+      "height": 2400
+    },
+    "body": {
+      "x": 167,
+      "y": 170,
+      "width": 1160,
+      "height": 2480,
+      "radius": 100
+    }
+  },
+  "galaxy-note10/main": {
+    "image": "/skins/galaxy-note10/main/device.png",
+    "foreground": "/skins/galaxy-note10/main/foreground.png",
+    "width": 1707,
+    "height": 2930,
+    "screen": {
+      "x": 312,
+      "y": 314,
+      "width": 1080,
+      "height": 2280
+    },
+    "body": {
+      "x": 272,
+      "y": 274,
+      "width": 1160,
+      "height": 2360,
+      "radius": 100
+    }
+  },
+  "galaxy-note10-lite/main": {
+    "image": "/skins/galaxy-note10-lite/main/device.png",
+    "foreground": "/skins/galaxy-note10-lite/main/foreground.png",
+    "width": 1548,
+    "height": 2884,
+    "screen": {
+      "x": 234,
+      "y": 232,
+      "width": 1080,
+      "height": 2400
+    },
+    "body": {
+      "x": 194,
+      "y": 192,
+      "width": 1160,
+      "height": 2480,
+      "radius": 100
+    }
+  },
+  "galaxy-note10-plus/main": {
+    "image": "/skins/galaxy-note10-plus/main/device.png",
+    "foreground": "/skins/galaxy-note10-plus/main/foreground.png",
+    "width": 1834,
+    "height": 3473,
+    "screen": {
+      "x": 195,
+      "y": 199,
+      "width": 1440,
+      "height": 3040
+    },
+    "body": {
+      "x": 155,
+      "y": 159,
+      "width": 1520,
+      "height": 3120,
+      "radius": 100
+    }
+  },
+  "galaxy-note20/main": {
+    "image": "/skins/galaxy-note20/main/device.png",
+    "foreground": "/skins/galaxy-note20/main/foreground.png",
+    "width": 1528,
+    "height": 2853,
+    "screen": {
+      "x": 223,
+      "y": 217,
+      "width": 1080,
+      "height": 2400
+    },
+    "body": {
+      "x": 183,
+      "y": 177,
+      "width": 1160,
+      "height": 2480,
+      "radius": 100
+    }
+  },
+  "galaxy-note20-ultra/main": {
+    "image": "/skins/galaxy-note20-ultra/main/device.png",
+    "foreground": "/skins/galaxy-note20-ultra/main/foreground.png",
+    "width": 1794,
+    "height": 3488,
+    "screen": {
+      "x": 177,
+      "y": 190,
+      "width": 1440,
+      "height": 3088
+    },
+    "body": {
+      "x": 137,
+      "y": 150,
+      "width": 1520,
+      "height": 3168,
+      "radius": 100
+    }
+  },
+  "galaxy-note8/main": {
+    "image": "/skins/galaxy-note8/main/device.png",
+    "foreground": "/skins/galaxy-note8/main/foreground.png",
+    "width": 1832,
+    "height": 3582,
+    "screen": {
+      "x": 194,
+      "y": 312,
+      "width": 1440,
+      "height": 2960
+    },
+    "body": {
+      "x": 154,
+      "y": 272,
+      "width": 1520,
+      "height": 3040,
+      "radius": 100
+    }
+  },
+  "galaxy-note9/main": {
+    "image": "/skins/galaxy-note9/main/device.png",
+    "foreground": "/skins/galaxy-note9/main/foreground.png",
+    "width": 1849,
+    "height": 3570,
+    "screen": {
+      "x": 201,
+      "y": 306,
+      "width": 1440,
+      "height": 2960
+    },
+    "body": {
+      "x": 161,
+      "y": 266,
+      "width": 1520,
+      "height": 3040,
+      "radius": 100
+    }
+  },
+  "galaxy-note-fe/main": {
+    "image": "/skins/galaxy-note-fe/main/device.png",
+    "foreground": null,
+    "width": 1798,
+    "height": 3390,
+    "screen": {
+      "x": 179,
+      "y": 424,
+      "width": 1440,
+      "height": 2560
+    },
+    "body": {
+      "x": 139,
+      "y": 384,
+      "width": 1520,
+      "height": 2640,
+      "radius": 100
+    }
   }
 };

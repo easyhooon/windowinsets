@@ -17,7 +17,7 @@ export const skinPreviews: Device[] = catalog.map(entry => ({
     id: id as Screen["id"], label: id === "cover" ? "Cover" : "Main",
     diagonalInch: 0, resolutionPx: { width: 0, height: 0 }, ppi: 0,
     logicalSizeDp: null, densityDpi: null, cornerRadiiDp: null,
-    insets: { gesture: null, threeButton: null }, sources: [source],
+    insets: { gesture: null, threeButton: null }, sources: [{ ...source, retrievedAt: entry.providedAt ?? source.retrievedAt }],
   })),
-  sources: [source],
+  sources: [{ ...source, retrievedAt: entry.providedAt ?? source.retrievedAt }],
 }));

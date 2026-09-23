@@ -187,15 +187,35 @@ test('preview catalogue has unique models and valid screen assets, excluding Tri
   }
 });
 
+test('Note and A imports retain original layouts and source provenance', () => {
+  const catalog = JSON.parse(readFileSync('app/data/skinCatalog.json', 'utf8'));
+  const imported = catalog.filter(device => ['Galaxy Note', 'Galaxy A'].includes(device.series));
+  assert.equal(imported.length, 48);
+  for (const device of imported) {
+    const base = `public/skins/${device.slug}/main`;
+    const provenance = JSON.parse(readFileSync(`${base}/source.json`, 'utf8'));
+    assert.match(provenance.archive, /^Galaxy_(?:Note|A).*\.zip$/);
+    assert.equal(provenance.providedAt, device.providedAt);
+    assert.ok(existsSync(`${base}/layout`));
+    assert.ok(existsSync(`${base}/device.png`));
+  }
+  const a22 = JSON.parse(readFileSync('public/skins/galaxy-a22-5g/main/source.json', 'utf8'));
+  const layout = readFileSync('public/skins/galaxy-a22-5g/main/layout', 'utf8');
+  assert.equal(a22.background, 'device_Port-Gray.png');
+  assert.match(layout, /device_Port-Black\.png/);
+});
+
 test('2020 coverage keeps boundary models and archives older skins without publishing them', () => {
   const catalog = JSON.parse(readFileSync('app/data/skinCatalog.json', 'utf8'));
   const supported = catalog.filter(device => isInCoverage({ ...device, releaseYear: null }));
-  assert.equal(supported.length, 72);
-  for (const slug of ['galaxy-fold', 'galaxy-tab-s4-10-5', 'galaxy-tab-s6']) {
+  assert.equal(supported.length, 115);
+  for (const slug of ['galaxy-fold', 'galaxy-tab-s4-10-5', 'galaxy-tab-s6',
+    'galaxy-note-fe', 'galaxy-note8', 'galaxy-note9', 'galaxy-note10', 'galaxy-note10-plus']) {
     assert.ok(catalog.some(device => device.slug === slug));
     assert.ok(!supported.some(device => device.slug === slug));
   }
-  for (const slug of ['galaxy-tab-s6-lite', 'galaxy-z-flip', 'galaxy-s20', 'galaxy-z-fold2', 'galaxy-z-fold3']) {
+  for (const slug of ['galaxy-tab-s6-lite', 'galaxy-z-flip', 'galaxy-s20', 'galaxy-z-fold2', 'galaxy-z-fold3',
+    'galaxy-note10-lite', 'galaxy-note20', 'galaxy-note20-ultra', 'galaxy-a01-core', 'galaxy-a71']) {
     assert.ok(supported.some(device => device.slug === slug));
   }
   assert.equal(isInCoverage({ slug: 'measured-older-device', releaseYear: 2019 }), false);
