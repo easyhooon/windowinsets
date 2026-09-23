@@ -58,6 +58,14 @@ removes a model from its catalog.
   modes. The first gesture export was rotated 180° and retained only in the
   host download history; the accepted recapture is rotation 0. The imported
   archive has no cover layout, so cover remains unavailable.
+  Galaxy Z Flip3 (SM-F711B-VN2, Vietnam/Hanoi) was reserved on 2026-09-23.
+  Its upright main 3-button capture was downloaded and verified at 1080×2640.
+  Probe also saved a main gesture capture on the device, but WebClient stopped
+  delivering subsequent downloads despite Chrome automatic downloads being
+  allowed. Samsung's Device to Host clipboard notification was selected, but
+  the host clipboard remained empty. The gesture mode is therefore not yet
+  accepted or registered; neither file deletion nor a new reservation is
+  evidence of that missing capture.
   The full cross-series, cross-region inventory was not completed.
 - The local skin archive contains 75 registered models; 72 are public under
   the release-year policy. All four featured mobile models have registered skins.
@@ -76,7 +84,8 @@ removes a model from its catalog.
   has accepted captures for both screens and modes, with its rotated first
   cover gesture attempt preserved separately. Fold4 has accepted upright cover
   and inner captures in both modes after the Taskbar correction. Flip5 and Flip6
-  main have accepted captures in both modes; their covers remain skin-unavailable. Fold3's
+  main have accepted captures in both modes; their covers remain skin-unavailable. Flip3
+  has an accepted 3-button raw capture but no registered device values yet. Fold3's
   imported cover and main artwork are previews with no measured insets.
 
 The comparison for every registered skin is in [RTL_SKIN_COMPARISON.csv](RTL_SKIN_COMPARISON.csv).

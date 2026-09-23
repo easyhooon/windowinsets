@@ -360,6 +360,7 @@ Do not use Measure All. Capture each active display and navigation mode explicit
 | Galaxy Z Fold6 | SM-F956U | Cover + inner | ✓ both | ✓ both | Complete |
 | Galaxy Z Flip6 | SM-F741U | Main | ✓ | ✓ | Main complete; no cover skin |
 | Galaxy Z Flip5 | SM-F731B | Main | ✓ | ✓ | Main complete; no cover skin |
+| Galaxy Z Flip3 | SM-F711B | Main | ✓ raw | Pending host transfer | 3-button raw preserved; gesture remains on RTL device, not registered |
 
 **Measurement Conditions**: full screen, default Display/Font size and One UI +
 Android version are recorded per capture. Orientation is evidence, not a default:

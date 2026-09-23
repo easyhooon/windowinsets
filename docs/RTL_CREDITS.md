@@ -100,6 +100,12 @@ reduced the balance from **5 to 3 Credits**. Both main-screen modes were
 captured and validated. With 10 minutes left, the exit dialog offered no
 credit-return checkbox; the session ended without a refund claim.
 
+Galaxy Z Flip3 SM-F711B-VN2 was then booked for 30 minutes, reducing the
+visible balance from **3 to 1 Credit**. The main 3-button capture reached the
+host. A gesture capture was saved on the device, but subsequent WebClient
+downloads and the device-to-host clipboard transfer did not reach the host.
+No refund is claimed for this booking.
+
 The preceding 2026-09-22 Usage History contained these booked reservations:
 
 | Time | Device | Booked credits |
