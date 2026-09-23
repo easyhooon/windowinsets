@@ -148,6 +148,26 @@ disclosed in the published condition. The cover hinge sensor reported 180° with
 no folding feature, so display identity relies on the switched window size and
 the inner display's FLAT folding feature.
 
+### Verified Fold4 capture and taskbar correction
+
+Galaxy Z Fold4 (SM-F936B; RTL Vietnam, SM-F936BE-VN2) was measured on
+2026-09-23 with InsetsProbe 1.3.0, Android 14 / One UI 6.1. All four accepted
+files have portrait rotation 0 and agree with the selected navigation mode:
+
+- folded cover: **904×2316 px**, 68×87 px cutout at x=418, 87 px top
+  system/cutout safe inset and 126/39 px bottom bar for 3-button/gesture;
+- unfolded main: **1812×2176 px**, vertical FLAT folding feature at x=906,
+  82 px top system bar and 126/39 px bottom for 3-button/gesture.
+
+The first main 3-button capture was rotated landscape and the first cover
+gesture capture was rotated 180°; both remain under `rejected-2026-09-23/`.
+The first portrait main gesture capture had Samsung Taskbar enabled, giving a
+168 px bottom navigation/system inset and an inset-only 3-button classification
+despite gesture Settings/configuration. It is also retained as rejected evidence.
+After disabling Taskbar, both accepted main captures were taken in the same
+portrait conditions and all mode classifiers agree. The cover camera bounds
+come from the raw DisplayCutout rectangle, not the artwork.
+
 ### Verified Flip8 FlexWindow recapture
 
 Galaxy Z Flip8 (SM-F776B) was folded and InsetsProbe 1.2.1 was launched from its

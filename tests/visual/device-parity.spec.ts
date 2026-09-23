@@ -82,6 +82,18 @@ test("Fold5 shows measured cover and inner values on both viewports", async ({ p
   await expect(page.locator("#device-canvas")).toBeVisible();
 });
 
+test("Fold4 shows upright cover and Taskbar-free inner measurements", async ({ page }) => {
+  await page.goto("/galaxy-z-fold4");
+  await openMetricsIfCollapsed(page);
+  await expect(page.getByRole("heading", { name: /Galaxy Z Fold4 Window Insets/ })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Logical Size 344.38 × 882.29 dp" })).toBeVisible();
+  await page.getByRole("button", { name: "Inner", exact: true }).click();
+  await expect(page.getByRole("button", { name: "Resolution 1812 × 2176 px" })).toBeVisible();
+  await chooseDropdown(page, "Navigation", "Gesture");
+  await expect(page.getByRole("button", { name: "Bottom 14.86 dp" })).toBeVisible();
+  await expect(page.locator("#device-canvas")).toBeVisible();
+});
+
 for (const device of devices) {
   for (const pose of poses) {
     test(`${device.label} ${pose} remains readable`, async ({ page }, testInfo) => {

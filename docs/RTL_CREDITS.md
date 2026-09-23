@@ -68,6 +68,11 @@ to **13** on booking and raised it to **14 Credits** on return. The final 14-cre
 header was verified on the RTL device list. These are optional refunds after
 completed work, not a reason to shorten measurement or validation.
 
+A Galaxy Z Fold4 30-minute reservation later reduced the observed balance from
+**14 to 12 Credits**. All four accepted captures were downloaded and checked;
+the taskbar and rotation recaptures used most of the slot, so no early-return
+refund was assumed or claimed. The next booking must read the live header again.
+
 The preceding 2026-09-22 Usage History contained these booked reservations:
 
 | Time | Device | Booked credits |

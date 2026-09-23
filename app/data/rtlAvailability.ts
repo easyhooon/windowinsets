@@ -5,12 +5,13 @@ export const rtlCatalog = {
   "scope": "featured-devices",
   "complete": false,
   "reservationCatalogUrl": "https://developer.samsung.com/remotetestlab/devices",
-  "reservationCatalogResult": "Accessible after manual sign-in. Galaxy Z inventory was inspected; Galaxy Z Fold8, Fold7, Fold6 and Fold5 were successfully reserved. The full cross-series and cross-region inventory is still incomplete.",
+  "reservationCatalogResult": "Accessible after manual sign-in. Galaxy Z inventory was inspected; Galaxy Z Fold8, Fold7, Fold6, Fold5 and Fold4 were successfully reserved. The full cross-series and cross-region inventory is still incomplete.",
   "reservableSlugs": [
     "galaxy-z-fold8",
     "galaxy-z-fold7",
     "galaxy-z-fold6",
-    "galaxy-z-fold5"
+    "galaxy-z-fold5",
+    "galaxy-z-fold4"
   ],
   "listedSlugs": [
     "galaxy-z-fold8",

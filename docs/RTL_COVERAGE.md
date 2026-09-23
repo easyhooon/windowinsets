@@ -34,6 +34,10 @@ removes a model from its catalog.
   2026-09-23. Both screens were measured in both navigation modes; the first
   cover gesture capture was rotated and retained as rejected evidence, then
   recaptured upright in the second reservation.
+  Galaxy Z Fold4 (SM-F936BE-VN2, Vietnam/Hanoi) was reserved on 2026-09-23.
+  Both screens were measured upright in both navigation modes. Rotated first
+  attempts and a main gesture attempt with Taskbar enabled are retained as
+  rejected evidence; the accepted main captures have Taskbar off.
   The full cross-series, cross-region inventory was not completed.
 - The local skin archive contains 73 registered models; 70 are public under
   the release-year policy. All four featured mobile models have registered skins.
@@ -48,7 +52,8 @@ removes a model from its catalog.
   Fold6 now has accepted cover and inner captures in both navigation modes;
   the rejected inner 3-button attempt remains historical evidence. Fold5 also
   has accepted captures for both screens and modes, with its rotated first
-  cover gesture attempt preserved separately.
+  cover gesture attempt preserved separately. Fold4 has accepted upright cover
+  and inner captures in both modes after the Taskbar correction.
 
 The comparison for every registered skin is in [RTL_SKIN_COMPARISON.csv](RTL_SKIN_COMPARISON.csv).
 It includes archived pre-2020 models for inventory completeness; it does not
@@ -81,7 +86,7 @@ Replace the featured-only snapshot with that verified inventory, set
 `scope: "reservation-catalog"`, and set `complete: true` only after all models
 and regions have been checked. A 403, an empty shell or a filtered page must
 never produce a complete empty inventory. Refresh the CSV from the same snapshot.
-Galaxy Z Fold8, Fold7, Fold6, Fold5 and Flip8 reservations were made during this comparison.
+Galaxy Z Fold8, Fold7, Fold6, Fold5, Fold4 and Flip8 reservations were made during this comparison.
 They establish those models' availability on their checked dates only; they do not
 make the partial inventory complete.
 
