@@ -16,7 +16,11 @@ export interface ProjectedMeasurements {
  * instead of a distant badge with a diagonal leader through another measurement. */
 export function layoutProjectedRulers({ rulers, body, scale, format }: ProjectedMeasurements) {
   const lanes = new Map<string, Array<Array<{ interval: [number, number]; kind: Ruler['kind'] }>>>();
-  return rulers.map(ruler => {
+  // Put the corner radii nearest the upper corners, as on the reference
+  // diagram. The full-width measurement can use the next lane out.
+  const topRadii = rulers.filter(ruler => ruler.side === 'top' && ruler.kind === 'radius');
+  const others = rulers.filter(ruler => ruler.side !== 'top' || ruler.kind !== 'radius');
+  return [...topRadii, ...others].map(ruler => {
     const horizontal = ruler.side === 'top' || ruler.side === 'bottom';
     const text = (ruler.kind === 'radius' ? 'R ' : '') + format(ruler.value);
     const width = (text.length * 7.2 + 10) * scale;

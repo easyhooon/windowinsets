@@ -26,6 +26,15 @@ intermediate side shapes remain illustrative. See the README for sources.
 The live site's deployment and a physical-device check must be evaluated
 separately after this correction is merged.
 
+The merged follow-up was verified on the live site with a 390 px / DPR 3 Chrome
+capture. A further visual comparison with safearea.info found that its closed
+mobile device occupies more of the canvas. The subsequent framing adjustment
+enlarges the Fold/Flip body and gives top corner-radius labels the nearest
+exterior lane. The reference mobile view also masks some more distant labels
+under its collapsed Metrics header; those values remain available in Metrics
+and can be exposed on the canvas by dragging. This comparison is browser
+emulation and does not establish physical-device parity.
+
 2026-09-23. The follow-up replaces folded texture rulers with projected SVG
 annotations. The previously outstanding hinge-leader congestion is addressed.
 PR #5 links `Closes #1`; closure happens when the PR is merged.
