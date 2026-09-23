@@ -50,7 +50,7 @@ export function ProjectedRulers({ measurements }: { measurements: ProjectedMeasu
   const { scale, units, screen } = measurements;
   const colors = { size: DIAGRAM_COLORS.ink, inset: DIAGRAM_COLORS.inset, radius: DIAGRAM_COLORS.radius, cutout: '#8950e8' };
   return <svg className="projected-rulers" width="700" height="700" viewBox="0 0 700 700"
-    aria-label={`${screen} measured dimensions`} style={{ position: 'absolute', inset: 0, overflow: 'visible', pointerEvents: 'none' }}>
+    aria-label={`${screen} measured dimensions`} style={{ position: 'absolute', inset: 0, zIndex: 2, overflow: 'visible', pointerEvents: 'none' }}>
     {layoutProjectedRulers(measurements).map(ruler => {
       const color = colors[ruler.kind];
       const { p, q } = ruler;

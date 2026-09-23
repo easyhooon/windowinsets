@@ -10,7 +10,7 @@ const devices = [
 const poses = ["Closed", "Partially Folded", "Open"] as const;
 
 async function waitForDiagram(page: Page) {
-  await page.locator("canvas").waitFor({ state: "visible" });
+  await page.locator("canvas[data-engine]").waitFor({ state: "visible" });
   await page.evaluate(() => document.fonts.ready);
   await page.waitForTimeout(1_000);
 }

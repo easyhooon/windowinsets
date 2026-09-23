@@ -169,8 +169,12 @@ rendered angle and CSS scale every animation frame on desktop and mobile.
   The cover uses the rigid rear-panel transform; applying the inner cylindrical
   bend to its annotation margins previously pulled it inside the opaque chassis.
   This caused Fold8's half-hidden cover and Flip8's stray band at 90°. Both were
-  checked after the fix in Chrome. Back/side thickness remains illustrative,
-  not a measured CAD model.
+  checked after the fix in Chrome. Samsung's 2D emulator skin and layout provide
+  front artwork, a screen rectangle and button positions, but no side mesh. The
+  unfolded panel depth-to-width ratio now uses published Fold8, Fold7 and Flip8
+  physical dimensions (see README). Hinge curvature and the folded gap are still
+  illustrative; the rendering is not a CAD-accurate side profile. See
+  [Samsung's emulator skin guide](https://developer.samsung.com/galaxy-emulator-skin/guide.html).
 - The S-series import adds 26 skins and 25 artwork-only catalogue entries. Existing
   S25-series specification/measurement entries take priority over skin previews.
   Unknown specifications and insets remain pending; skin pixels are not dp data.
@@ -235,7 +239,10 @@ main frame-synchronized WebGL fold transition is preserved.
 
 External WebGL texture rulers have been replaced by screen-space SVG rulers whose
 attachment points use the device's current hinge transform and camera projection.
-The labels and arrows remain flat and outside the projected body. Automatic Fit
-includes these annotations, and short measurements use adjacent badges rather
+The labels and arrows remain flat and outside the projected body. Desktop Fit
+includes these annotations. On narrow mobile viewports, a closed cover fits
+the device body with breathing room; stacked cutout labels would otherwise
+reduce the phone to a thumbnail. Some exterior labels require dragging the
+canvas. Partially folded and open poses fit the projected rulers. Short measurements use adjacent badges rather
 than diagonal leaders through the hinge. See `ISSUE_1_REVIEW.md` for the explicit
 navigation/unit/pose/rotation matrix, integer-angle sweep and browser coverage.

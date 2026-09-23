@@ -9,6 +9,13 @@ const samsungSkinPage: Source = {
   retrievedAt: "2026-09-22",
 };
 
+const chassisSource: Source = {
+  kind: "official",
+  label: "Samsung Galaxy Z Fold7 specifications",
+  url: "https://www.samsung.com/es/smartphones/galaxy-z-fold7/",
+  retrievedAt: "2026-09-23",
+};
+
 const coverThreeButton: Source = {
   kind: "measured",
   label: "InsetsProbe 1.2.0 on Samsung RTL Galaxy Z Fold7 cover, 3-button (SM-F966U)",
@@ -71,6 +78,7 @@ export const galaxyZFold7: Device = {
   series: "Galaxy Z Fold",
   formFactor: "foldable-book",
   foldAnimation: true,
+  chassisMm: { unfoldedWidth: 143.2, unfoldedDepth: 4.2, foldedDepth: 8.9, source: chassisSource },
   releaseYear: 2025,
   screens: [
     {
@@ -142,5 +150,5 @@ export const galaxyZFold7: Device = {
       sources: [samsungSkinPage, mainThreeButton, mainGesture],
     },
   ],
-  sources: [samsungSkinPage, coverThreeButton, coverGesture, mainThreeButton, mainGesture],
+  sources: [chassisSource, samsungSkinPage, coverThreeButton, coverGesture, mainThreeButton, mainGesture],
 };

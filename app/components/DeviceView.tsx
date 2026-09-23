@@ -259,7 +259,16 @@ export function DeviceView({ device }: { device: Device }) {
           widthDp={main.logicalSizeDp?.width ?? (mainSkin ? mainSkin.screen.width / 3 : 0)} heightDp={main.logicalSizeDp?.height ?? (mainSkin ? mainSkin.screen.height / 3 : 0)}
           safe={mainSafe} safePx={mainSafePx} logicalSizePx={main.logicalSizePx} cornerRadiiDp={main.cornerRadiiDp} cornerRadiiPx={main.cornerRadiiPx} cutoutShape={mainMeasurement?.cutoutShape}
           zoom={zoom} showFrame={showFrame} showRegions={showRegions} showDimensions={showDimensions} units={units} layers={layers} skin={mainSkin} skinRotation={main.captureRotation ?? 0} viewRotation={rotation} measured={!!main.logicalSizeDp} cover={outerScreen && outerSkin ? { screen: outerScreen, measurement: outerScreen.insets[navMode], skin: outerSkin } : undefined}
-          onMeasurementBounds={bounds => viewport.current?.fitFoldBounds(bounds)}
+          fallbackMain={{ screen: main, measurement: mainMeasurement }}
+          chassisMm={device.chassisMm}
+          onMeasurementBounds={(bounds, body, displayedAngle) => {
+            if (window.innerWidth >= 768 || displayedAngle >= COVER_REVEAL_ANGLE) return viewport.current?.fitFoldBounds(bounds);
+            // Closed cover screens have many narrow cutout rulers above the
+            // phone. Fitting every badge makes the actual device thumbnail-sized.
+            const cx = (body.left + body.right) / 2, cy = (body.top + body.bottom) / 2;
+            const halfW = (body.right - body.left) * .6, halfH = (body.bottom - body.top) * .6;
+            return viewport.current?.fitFoldBounds({ left: cx - halfW, right: cx + halfW, top: cy - halfH, bottom: cy + halfH });
+          }}
           onDisplayedAngle={value => {
             viewport.current?.setFoldAngle(value);
             const visible = value < COVER_REVEAL_ANGLE && outerScreen ? "cover" : "main";

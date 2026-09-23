@@ -8,11 +8,14 @@ async function assertBadges(page: Page, context: string) {
     const viewport = document.querySelector('#device-canvas')!.getBoundingClientRect();
     const badges = elements.flatMap(el => [...el.querySelectorAll('[data-badge]')].map(node => ({ name: node.closest('[data-ruler]')!.getAttribute('data-ruler'), box: node.getBoundingClientRect() })));
     const errors: string[] = [];
-    for (let i = 0; i < badges.length; i++) {
-      const {box:a,name} = badges[i];
-      if(a.left < viewport.left || a.right > viewport.right || a.top < viewport.top || a.bottom > viewport.bottom - 36) errors.push(`clipped ${name}`);
-      for(const {box:b,name:other} of badges.slice(i+1)) if(a.left < b.right-.5 && a.right > b.left+.5 && a.top < b.bottom-.5 && a.bottom > b.top+.5) errors.push(`${name} overlaps ${other}`);
+    const mobile = viewport.width < 768;
+    const visible = badges.filter(({box}) => box.right > viewport.left && box.left < viewport.right && box.bottom > viewport.top && box.top < viewport.bottom - 36);
+    for (let i = 0; i < visible.length; i++) {
+      const {box:a,name} = visible[i];
+      if(!mobile && (a.left < viewport.left || a.right > viewport.right || a.top < viewport.top || a.bottom > viewport.bottom - 36)) errors.push(`clipped ${name}`);
+      for(const {box:b,name:other} of visible.slice(i+1)) if(a.left < b.right-.5 && a.right > b.left+.5 && a.top < b.bottom-.5 && a.bottom > b.top+.5) errors.push(`${name} overlaps ${other}`);
     }
+    if (mobile && visible.length === 0) errors.push('no visible badges');
     return errors;
   });
   expect(result, context).toEqual([]);
