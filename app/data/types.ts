@@ -107,8 +107,6 @@ export interface Device {
   brand: "Samsung";
   series: string;
   formFactor: FormFactor;
-  /** Enable only for models whose animated skin rendering has been implemented. */
-  foldAnimation?: boolean;
   /** Manufacturer dimensions; 3D side silhouette still uses illustrative geometry. */
   chassisMm?: { unfoldedWidth: number; unfoldedDepth: number; foldedDepth: number; source: Source };
   /** null for artwork-only entries whose product specifications are not sourced. */

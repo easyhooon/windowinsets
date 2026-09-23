@@ -129,7 +129,7 @@ export function DeviceView({ device }: { device: Device }) {
   const mainMeasurement = main.insets[navMode];
   const mainSafe = mainMeasurement ? safeInsets(mainMeasurement) : null;
   const mainSafePx = mainMeasurement ? safeInsetsPx(mainMeasurement) : null;
-  const useFold = foldable && !!device.foldAnimation && !!mainSkin;
+  const useFold = foldable && !!mainSkin;
   const exactPxAvailable = hasExactPx(screen, measurement);
   useEffect(() => { if (units === "px" && !exactPxAvailable) setUnits("dp"); }, [exactPxAvailable, units]);
   const pose = (value: string) => {

@@ -48,7 +48,6 @@ export const galaxyZFlip8: Device = {
   brand: "Samsung",
   series: "Galaxy Z Flip",
   formFactor: "foldable-flip",
-  foldAnimation: true,
   chassisMm: { unfoldedWidth: 75.4, unfoldedDepth: 6.1, foldedDepth: 13.1, source: chassisSource },
   releaseYear: 2026,
   screens: [

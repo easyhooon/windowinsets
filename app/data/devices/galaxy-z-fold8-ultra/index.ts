@@ -7,7 +7,6 @@ export const galaxyZFold8Ultra: Device = {
   "brand": "Samsung",
   "series": "Galaxy Z Fold",
   "formFactor": "foldable-book",
-  "foldAnimation": true,
   "releaseYear": null,
   "screens": [
     {

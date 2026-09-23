@@ -38,6 +38,9 @@ test('every public device export validates against the published schema', async 
   for (const device of devices) {
     const exported = createDeviceExport(device);
     assert.equal(validate(exported), true, `${device.slug}: ${JSON.stringify(validate.errors)}`);
+    if (device.formFactor === 'foldable-book' || device.formFactor === 'foldable-flip') {
+      assert.equal(exported.device.foldAnimation, true, `${device.slug}: fold animation must be available`);
+    }
   }
 });
 

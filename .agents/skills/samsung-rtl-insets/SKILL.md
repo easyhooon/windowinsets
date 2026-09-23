@@ -325,6 +325,12 @@ pnpm build
 Review desktop and mobile output for the changed device. Report accepted captures,
 pending screens/modes, validation results, and the next queue item.
 
+For each registered Galaxy Fold or Flip, confirm the device page shows both Pose
+and Hinge controls on desktop and mobile, and that moving the Hinge slider updates
+the 3D pose. This also applies to artwork-only previews and models with no cover
+skin; a missing measurement remains pending while the hinge animation stays
+available. Treat a missing control or static pose as incomplete registration.
+
 After the accepted evidence has been committed and its remote upload is verified,
 clean up only the exact temporary `Downloads/content*` copies already matched by
 hash to committed raw JSON. Move those identified copies to Trash so they can be

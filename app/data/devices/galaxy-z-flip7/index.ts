@@ -7,7 +7,6 @@ export const galaxyZFlip7: Device = {
   "brand": "Samsung",
   "series": "Galaxy Z Flip",
   "formFactor": "foldable-flip",
-  "foldAnimation": true,
   "releaseYear": 2025,
   "screens": [
     {

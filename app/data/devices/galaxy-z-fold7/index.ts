@@ -77,7 +77,6 @@ export const galaxyZFold7: Device = {
   brand: "Samsung",
   series: "Galaxy Z Fold",
   formFactor: "foldable-book",
-  foldAnimation: true,
   chassisMm: { unfoldedWidth: 143.2, unfoldedDepth: 4.2, foldedDepth: 8.9, source: chassisSource },
   releaseYear: 2025,
   screens: [
