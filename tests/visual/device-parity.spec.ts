@@ -125,7 +125,7 @@ test("Flip8 gesture diagrams and exact inner px remain readable", async ({ page 
 
 test("S25 Ultra exposes exact captured px separately from panel resolution", async ({ page }) => {
   await page.goto("/galaxy-s25-ultra");
-  await expect(page.locator("svg text").filter({ hasText: /^34\.13$/ })).toHaveCount(1);
+  await expect(page.getByRole("button", { name: "Top inset: 34.13 dp. Copy 34.13", exact: true })).toBeVisible();
   await openMetricsIfCollapsed(page);
   await page.getByRole("button", { name: "View settings" }).click();
   await page.getByRole("radio", { name: "px" }).click();
@@ -234,6 +234,8 @@ test("Fold cover dimension labels copy their displayed value", async ({ page, co
   const canvas = page.locator("canvas");
   const box = await canvas.boundingBox();
   expect(box).not.toBeNull();
-  await canvas.click({ position: { x: box!.width * 0.5, y: box!.height * 0.22 } });
+  await page.evaluate(() => navigator.clipboard.writeText(""));
+  // The width ruler now sits above the full folded chassis.
+  await canvas.click({ position: { x: box!.width * 0.495, y: box!.height * 0.265 } });
   await expect.poll(() => page.evaluate(() => navigator.clipboard.readText())).toBe("475.43");
 });
