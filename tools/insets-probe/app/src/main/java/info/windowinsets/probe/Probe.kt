@@ -153,6 +153,26 @@ object Probe {
                     )
                     .put("boundingRects", JSONArray().also { a -> cutout.boundingRects.forEach { a.put(rectJson(it)) } })
                     .put("waterfallInsets", insetsJson(cutout.waterfallInsets))
+                    .put("path", insets.toWindowInsets()?.displayCutout?.cutoutPath?.let { path ->
+                        // API 31 (our minSdk). Preserve fractions as well as coordinates:
+                        // equal adjacent fractions can indicate a move between contours.
+                        // This is OS cutout geometry, not individual physical lens geometry.
+                        val tolerancePx = 0.25f
+                        JSONObject()
+                            .put("coordinateSpace", "display")
+                            .put("units", "px")
+                            .put("fillType", path.fillType.name)
+                            .put("approximationTolerancePx", tolerancePx.toDouble())
+                            .put("approximation", JSONArray().also { points ->
+                                val samples = path.approximate(tolerancePx)
+                                for (i in samples.indices step 3) {
+                                    points.put(JSONObject()
+                                        .put("fraction", samples[i].toDouble())
+                                        .put("x", samples[i + 1].toDouble())
+                                        .put("y", samples[i + 2].toDouble()))
+                                }
+                            })
+                    } ?: JSONObject.NULL)
             },
         )
 

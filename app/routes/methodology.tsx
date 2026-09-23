@@ -81,7 +81,7 @@ export default function Methodology() {
             (px and dp, with and without visibility).
           </li>
           <li>
-            <code>DisplayCutout</code>: safe insets, bounding rectangles, waterfall insets.
+            <code>DisplayCutout</code>: safe insets, bounding rectangles, waterfall insets, and an OS cutout path when returned (probe 1.3.0+).
           </li>
           <li>
             <code>RoundedCorner</code> for all four corners.
@@ -100,6 +100,36 @@ export default function Methodology() {
           the app yourself and reproduce any number.
         </p>
       </Section>
+
+      <div id="camera-cutouts">
+        <Section title="Camera cutouts: what can be measured">
+          <p>
+            Cover displays support the same Android cutout APIs when the probe is running on
+            that display. The diagram shows the reported exclusion rectangle's width, height
+            and distances to the captured window's four edges. These are app-layout measurements,
+            not the physical diameter of a camera lens.
+          </p>
+          <p>
+            For example, the verified Flip8 cover capture reports one 520 × 209 px rectangle
+            at (428, 839) in a 948 × 1048 px window. Its edge distances are left 428, top 839,
+            right 0 and bottom 0 px. Android groups that camera area into one rectangle;
+            it does not identify each lens or the gap between lenses.
+          </p>
+          <p>
+            <a href="https://developer.android.com/reference/android/view/DisplayCutout#getCutoutPath()">Android 12+ also exposes a cutout path</a>.
+            Probe 1.3.0+ saves it when returned, with display coordinates and a 0.25 px
+            polyline approximation tolerance. Published captures do not yet contain this path;
+            detailed contour dimensions remain pending a new, verified capture. A returned
+            path still describes the OS cutout and is not guaranteed to separate physical lenses.
+          </p>
+          <p>
+            A missing path in an older JSON means it was not collected. A null path in a new
+            capture means the API did not return one. Neither is evidence of a zero-size lens.
+            Camera artwork is illustrative; we do not infer measured lens diameters or spacing
+            from skin pixels. Browser safe-area values cannot provide the missing geometry.
+          </p>
+        </Section>
+      </div>
 
       <Section title="4. Conditions a measurement is valid for">
         <ul>

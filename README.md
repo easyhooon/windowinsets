@@ -22,6 +22,29 @@ Manufacturers don't publish insets, so I measure them with [InsetsProbe](tools/i
 
 Put raw captures in `measurements/<device-slug>/<screen>-<navMode>.json` and reference them from the device's `Source` so anyone can re-check them.
 
+## Camera cutouts and cover-screen limits
+
+Android can report cover-screen cutout bounds through
+[`DisplayCutout.getBoundingRects()`](https://developer.android.com/reference/android/view/DisplayCutout#getBoundingRects()).
+The site shows width, height and all four distances to the captured window edges.
+For example, the [verified Flip8 cover capture](measurements/galaxy-z-flip8/recapture-2026-09-23/cover-threeButton.json)
+has one rectangle at `(428, 839)` sized **520 × 209 px**, inside a 948 × 1048 px window.
+This covers the OS exclusion area, not separate measurements of each camera lens.
+
+Android reports at most one bounding region per display edge. Lens diameter,
+lens-to-lens spacing and physical camera identification cannot be recovered from
+that combined rectangle alone. Do not estimate them from Samsung skin pixels.
+
+[`getCutoutPath()`](https://developer.android.com/reference/android/view/DisplayCutout#getCutoutPath())
+(API 31+) can provide finer OS contour geometry. InsetsProbe 1.3.0+ now records it
+when available, using display-space px and `Path.approximate(0.25f)`. Existing
+captures did not record it, so contour dimensions remain **pending recapture**.
+Even a returned path is not a guarantee of separate physical lens outlines.
+Missing old fields mean not collected; a new null path means not returned, not
+zero geometry. Run the probe on the actual full-screen cover display: selecting
+its label or rotating an inner-screen capture cannot measure the cover.
+See the [site methodology](https://windowinsets.info/methodology#camera-cutouts).
+
 ## Stack
 
 React Router (framework mode) with build-time prerendering (`ssr: false` + `prerender`), Tailwind CSS. Output is a static site.

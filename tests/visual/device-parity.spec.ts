@@ -239,3 +239,15 @@ test("Fold cover dimension labels copy their displayed value", async ({ page, co
   await canvas.click({ position: { x: box!.width * 0.495, y: box!.height * 0.265 } });
   await expect.poll(() => page.evaluate(() => navigator.clipboard.readText())).toBe("475.43");
 });
+
+test("cover cutout bounds distinguish OS geometry from unmeasured lenses", async ({ page }) => {
+  await page.goto("/galaxy-z-flip8");
+  await openMetricsIfCollapsed(page);
+  await chooseUnits(page, "px");
+  await expect(page.getByRole("button", { name: "Size 520 × 209 px", exact: true })).toBeVisible();
+  await expect(page.getByText("individual lens diameters and spacing are not measured.", { exact: false })).toBeVisible();
+  await page.getByRole("link", { name: "Cutout measurement limits →" }).click();
+  await expect(page).toHaveURL(/methodology#camera-cutouts$/);
+  await expect(page.getByRole("heading", { name: "Camera cutouts: what can be measured" })).toBeVisible();
+  await expect(page.locator("#camera-cutouts")).toContainText("pending a new, verified capture");
+});

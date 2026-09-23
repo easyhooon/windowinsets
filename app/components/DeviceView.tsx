@@ -198,7 +198,7 @@ export function DeviceView({ device }: { device: Device }) {
             </dl>
 
             {measurement?.cutoutShape && <>
-              <SectionLabel>Reserved Regions</SectionLabel>
+              <SectionLabel>Display Cutout Bounds</SectionLabel>
               <dl>
                 <Row label="Size" value={`${fmt(measurement.cutoutShape.widthDp, measurement.cutoutShape.widthPx)} × ${fmt(measurement.cutoutShape.heightDp, measurement.cutoutShape.heightPx)} ${units}`} />
                 <Row label="Left" value={`${fmt(measurement.cutoutShape.xDp, measurement.cutoutShape.xPx)} ${units}`} />
@@ -206,6 +206,11 @@ export function DeviceView({ device }: { device: Device }) {
                 <Row label="Right" value={`${fmt(measurement.cutoutShape.rightDp, measurement.cutoutShape.rightPx)} ${units}`} />
                 <Row label="Bottom" value={`${fmt(measurement.cutoutShape.bottomDp, measurement.cutoutShape.bottomPx)} ${units}`} />
               </dl>
+              <p className="mt-2 text-xs leading-relaxed text-muted">
+                Android-reported exclusion rectangle. Camera lenses may share one region;
+                individual lens diameters and spacing are not measured.
+                {" "}<Link to="/methodology#camera-cutouts" className="text-accent underline">Cutout measurement limits →</Link>
+              </p>
             </>}
 
             {screen.cornerRadiiDp && (

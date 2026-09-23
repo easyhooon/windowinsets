@@ -8,7 +8,7 @@ Dumps everything [windowinsets.info](https://windowinsets.info) needs for one sc
 - Display: pixel size, `densityDpi` vs the device's default density, font scale, window size in dp
 - Navigation mode (gesture / 3-button / 2-button)
 - `WindowInsets`: status bars, navigation bars, system bars, display cutout, caption bar, system gestures, mandatory system gestures, tappable element — in px and dp, with and without visibility
-- `DisplayCutout`: safe insets, bounding rects, waterfall insets
+- `DisplayCutout`: safe insets, bounding rects, waterfall insets, optional OS cutout path (1.3.0+)
 - `RoundedCorner` for all four corners (from window insets and from `Display`)
 - Foldables: `FoldingFeature` (state, orientation, occlusion, bounds) and the hinge angle sensor
 
@@ -123,3 +123,23 @@ See [Android inset definitions](https://developer.android.com/develop/ui/compose
   system opens a widget launch on a different display or a non-full-display window.
 - Records `screenLabelSource: flexWindowWidget` for captures launched by the
   widget instead of incorrectly describing that label as manual.
+
+## Version 1.3.0: optional cutout contour capture
+
+`displayCutout.path` records `getCutoutPath()` when returned by Android (API 31+).
+It contains `coordinateSpace: display`, `units: px`, the Android `fillType`,
+`approximationTolerancePx: 0.25`, and `approximation` entries with `fraction`, `x`,
+and `y`. These are `Path.approximate` samples, not exact Bézier commands. Preserve
+fractions: consecutive equal fractions can mark moves between disconnected contours.
+Do not join all points into one polygon or confuse display-space path coordinates
+with window-relative rectangle coordinates in a non-full-screen capture.
+
+A null path means the API returned none; an absent field in a pre-1.3.0 capture
+means it was not collected. The existing captures are unchanged. No claim of
+real-device contour availability is made until a new capture is collected.
+Bounding rectangles may group several cameras on one edge. An OS path may help
+measure a finer contour, but does not identify cameras or guarantee individual
+lens diameters/spacing. Artwork pixels remain illustrative.
+
+References: [DisplayCutout](https://developer.android.com/reference/android/view/DisplayCutout#getCutoutPath())
+and [Path.approximate](https://developer.android.com/reference/android/graphics/Path#approximate(float)).
