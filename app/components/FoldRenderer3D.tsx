@@ -1,14 +1,14 @@
+import { diagramAnnotations, placeRulerLabels } from "./diagramAnnotations";
 import { DIAGRAM_FONT, DIAGRAM_COLORS } from "./diagramStyle";
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
 import { bendPoint, createChassis, rigidPanelPoint } from "./foldGeometry";
 import type { DeviceSkin } from "../data/skins";
 import type { CutoutShape, Screen, InsetsMeasurement } from "../data/types";
-import { cornerPairs, formatLengthFromPairs, insetPairs, safeInsets, safeInsetsPx } from "../data/measurementUnits";
+import { cutoutPairs, cornerPairs, formatLengthFromPairs, insetPairs, safeInsets, safeInsetsPx } from "../data/measurementUnits";
 
 const SEGMENTS = 96; // vertices along the fold axis — higher = smoother curve
 const THICKNESS = 0.065; // Stylized world-space thickness, not measured hardware data.
-const ANNOTATION_PAD_DP = 80;
 
 const INK = DIAGRAM_COLORS.ink;
 const INSET_COLOR = DIAGRAM_COLORS.inset;
@@ -86,20 +86,13 @@ function drawDiagram(
     artwork?: HTMLImageElement;
     foreground?: HTMLImageElement;
     annotationScale: number;
+    chassis?: { left: number; top: number; right: number; bottom: number };
     hits: { x: number; y: number; width: number; height: number; text: string }[];
   },
 ) {
   const W = dpW * px, H = dpH * px;
-  let labelScale = opts.annotationScale;
-  const PAD = ANNOTATION_PAD_DP * px;
-  // Labels grow as the viewport zooms out. Clamp them to the available annotation
-  // margin so long dimensions (for example 932.57) are never texture-clipped.
-  const outsideLabels = [opts.fmt(dpW), opts.fmt(dpH)];
-  if (opts.safe) outsideLabels.push(opts.fmt(opts.safe.top), opts.fmt(opts.safe.right), opts.fmt(opts.safe.bottom), opts.fmt(opts.safe.left));
-  if (opts.cornerRadiiDp) outsideLabels.push(...Object.values(opts.cornerRadiiDp).map(opts.fmt));
-  const longest = Math.max(...outsideLabels.map(label => label.length), 1);
-  const marginScale = (2 * (ANNOTATION_PAD_DP - 20) - 8) / (longest * 7.2);
-  labelScale = Math.min(labelScale, marginScale);
+  const labelScale = opts.annotationScale;
+  const PAD = dpW * .9 * px;
   ctx.clearRect(0, 0, W + PAD * 2, H + PAD * 2);
   ctx.save();
   ctx.translate(PAD, PAD);
@@ -217,21 +210,19 @@ function drawDiagram(
 
   function arrowLine(x1: number, y1: number, x2: number, y2: number, color: string) {
     ctx.strokeStyle = color;
-    ctx.lineWidth = 1.3 * px;
+    ctx.lineWidth = .7 * px * labelScale;
     ctx.beginPath();
     ctx.moveTo(x1, y1);
     ctx.lineTo(x2, y2);
     ctx.stroke();
     const ang = Math.atan2(y2 - y1, x2 - x1);
-    const size = 5 * px;
-    for (const [ex, ey, a] of [[x1, y1, ang + Math.PI], [x2, y2, ang]] as const) {
+    const size = 3 * px * labelScale;
+    for (const [ex, ey, a] of [[x1, y1, ang], [x2, y2, ang + Math.PI]] as const) {
       ctx.beginPath();
-      ctx.moveTo(ex, ey);
-      ctx.lineTo(ex + size * Math.cos(a - 0.4), ey + size * Math.sin(a - 0.4));
-      ctx.lineTo(ex + size * Math.cos(a + 0.4), ey + size * Math.sin(a + 0.4));
-      ctx.closePath();
-      ctx.fillStyle = color;
-      ctx.fill();
+      ctx.moveTo(ex + size * Math.cos(a - 0.7), ey + size * Math.sin(a - 0.7));
+      ctx.lineTo(ex, ey);
+      ctx.lineTo(ex + size * Math.cos(a + 0.7), ey + size * Math.sin(a + 0.7));
+      ctx.stroke();
     }
   }
 
@@ -239,8 +230,8 @@ function drawDiagram(
     ctx.save();
     ctx.strokeStyle = color;
     ctx.globalAlpha = 0.6;
-    ctx.lineWidth = 1 * px;
-    ctx.setLineDash([2 * px, 2 * px]);
+    ctx.lineWidth = .7 * px * labelScale;
+    ctx.setLineDash([2 * px * labelScale, 2 * px * labelScale]);
     ctx.beginPath();
     ctx.moveTo(x1, y1);
     ctx.lineTo(x2, y2);
@@ -250,39 +241,30 @@ function drawDiagram(
 
   if (opts.showDimensions) {
     ctx.globalAlpha = 1;
-    // Overall width/height, outside
-    extLine(0, 0, 0, -20 * px, INK); extLine(W, 0, W, -20 * px, INK);
-    arrowLine(0, -20 * px, W, -20 * px, INK);
-    chip(W / 2, -20 * px, opts.fmt(dpW), INK);
-
-    extLine(0, 0, -20 * px, 0, INK); extLine(0, H, -20 * px, H, INK);
-    arrowLine(-20 * px, 0, -20 * px, H, INK);
-    chip(-20 * px, H / 2, opts.fmt(dpH), INK);
-
-    if (safe && opts.layers.insets) {
-      if (safe.top > 0) {
-        regionLabel(W * .25, safe.top * px / 2, "TOP", opts.fmt(safe.top), INSET_COLOR, W / 2, safe.top * px, true);
+    const { rulers, body } = diagramAnnotations(dpW, dpH, px, opts.showFrame ? opts.skin : undefined, safe, opts.cornerRadiiDp, opts.cutoutShape, opts.skinRotation, opts.chassis);
+    const colors = { size: INK, inset: INSET_COLOR, radius: RADIUS_COLOR, cutout: "#8950e8" };
+    for (const ruler of placeRulerLabels(rulers, px * labelScale, opts.fmt, { left: -PAD + px, top: -PAD + px, right: W + PAD - px, bottom: H + PAD - px }, body)) {
+      if (ruler.kind !== "size" && !opts.layers[ruler.kind === "inset" ? "insets" : ruler.kind === "radius" ? "corners" : "cutout"]) continue;
+      const color = colors[ruler.kind];
+      for (const guide of ruler.guides) extLine(...guide, color);
+      arrowLine(ruler.x1, ruler.y1, ruler.x2, ruler.y2, color);
+      if (ruler.kind === "radius") {
+        ctx.strokeStyle = color;
+        ctx.beginPath(); ctx.moveTo(ruler.x1, ruler.guides[0][1]);
+        ctx.lineTo(ruler.x2, ruler.guides[0][1]);
+        ctx.lineTo(ruler.x2, ruler.guides[0][1] < H / 2 ? 0 : H); ctx.stroke();
       }
-      if (safe.bottom > 0) {
-        regionLabel(W / 2, H - safe.bottom * px / 2, "BOTTOM", opts.fmt(safe.bottom), INSET_COLOR, W, safe.bottom * px, true);
-      }
-      if (safe.left > 0) {
-        extLine(0, 0, 0, -12 * px, INSET_COLOR); extLine(safe.left * px, 0, safe.left * px, -12 * px, INSET_COLOR);
-        arrowLine(0, -12 * px, safe.left * px, -12 * px, INSET_COLOR);
-      }
-      if (safe.right > 0) {
-        extLine(W - safe.right * px, 0, W - safe.right * px, -12 * px, INSET_COLOR); extLine(W, 0, W, -12 * px, INSET_COLOR);
-        arrowLine(W - safe.right * px, -12 * px, W, -12 * px, INSET_COLOR);
-      }
+      ctx.beginPath(); ctx.moveTo(ruler.labelX, ruler.labelY);
+      ctx.lineTo((ruler.x1 + ruler.x2) / 2, (ruler.y1 + ruler.y2) / 2); ctx.stroke();
+      chip(ruler.labelX, ruler.labelY, (ruler.kind === "radius" ? "R " : "") + opts.fmt(ruler.value), color);
     }
-
-    if (opts.layers.corners && r > 0 && opts.cornerRadiiDp) {
-      const cr = opts.cornerRadiiDp;
-      const dot = (x: number, y: number, v: number) => chip(x, y, opts.fmt(v), RADIUS_COLOR);
-      dot(-16 * px, -16 * px, cr.topLeft);
-      dot(W + 16 * px, -16 * px, cr.topRight);
-      dot(-16 * px, H + 16 * px, cr.bottomLeft);
-      dot(W + 16 * px, H + 16 * px, cr.bottomRight);
+    if (safe && opts.layers.insets) {
+      if (safe.top > 0) regionLabel(W * .25, safe.top * px / 2, "TOP", opts.fmt(safe.top), INSET_COLOR, W / 2, safe.top * px, true);
+      if (safe.bottom > 0) {
+        const c = opts.cutoutShape;
+        const freeWidth = c && c.yDp + c.heightDp >= dpH - safe.bottom && c.xDp > 0 ? c.xDp * px : W;
+        regionLabel(freeWidth / 2, H - safe.bottom * px / 2, "BOTTOM", opts.fmt(safe.bottom), INSET_COLOR, freeWidth, safe.bottom * px, true);
+      }
     }
   }
 
@@ -339,7 +321,7 @@ export function FoldRenderer3D({
   skinRotation?: QuarterTurns;
   measured?: boolean;
   cover?: { screen: Screen; measurement: InsetsMeasurement | null; skin: DeviceSkin };
-  onDisplayedAngle?: (angle: number) => void;
+  onDisplayedAngle?: (angle: number) => number | undefined;
   onTransitionEnd?: () => void;
 }) {
   const mountRef = useRef<HTMLDivElement>(null);
@@ -353,7 +335,7 @@ export function FoldRenderer3D({
     const wrap = wrapRef.current;
     if (!mount || !wrap || !widthDp || !heightDp) return;
 
-    const containerW = axis === "horizontal" ? 380 : 700, containerH = 700;
+    const containerW = 700, containerH = 700;
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setSize(containerW, containerH);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -372,7 +354,7 @@ export function FoldRenderer3D({
     const camera = new THREE.PerspectiveCamera(32, containerW / containerH, 0.1, 100);
     // Slightly elevated/angled viewpoint (not a flat head-on view) so the
     // fold's depth is actually visible instead of just its silhouette.
-    camera.position.set(0, 1.1, 8.4);
+    camera.position.set(0, 1.1, 11);
     camera.lookAt(0, 0, 0.3);
 
     const isVertical = axis === "vertical";
@@ -383,14 +365,14 @@ export function FoldRenderer3D({
     // measurements must never be rotated/stretched to stand in for the inside.
     const silW = dpW, silH = dpH;
 
-    const annotationMargin = ANNOTATION_PAD_DP * 2;
-    const aspect = (silW + annotationMargin) / (silH + annotationMargin);
+    const margin = dpW * 1.8;
+    const aspect = (silW + margin) / (silH + margin);
     // Keep the LONGER silhouette edge pinned to a constant world size so the
     // camera framing stays consistent whichever way the panel ends up
     // oriented — otherwise a landscape silhouette (book fold) would blow
     // past the frustum tuned for the old always-portrait assumption and get
     // clipped down to just its green center.
-    const target = 4.2;
+    const target = 6 * 2.8 / 2.2;
     const worldW = aspect >= 1 ? target : target * aspect;
     const worldH = aspect >= 1 ? target / aspect : target;
     const segX = isVertical ? SEGMENTS : 2;
@@ -399,7 +381,7 @@ export function FoldRenderer3D({
     const basePositions = geometry.attributes.position.array.slice();
 
     const px = 1200 / dpW; // canvas px per dp — fixed texel density, independent of zoom or rotation
-    const PAD = ANNOTATION_PAD_DP * px;
+    const PAD = margin / 2 * px;
     // Annotation margins remain outside the physical chassis.
     const contentW = dpW * px + PAD * 2;
     const contentH = dpH * px + PAD * 2;
@@ -417,8 +399,8 @@ export function FoldRenderer3D({
 
     // The annotation texture includes margins; the solid ends at the display.
     const skinRotated = skinRotation % 2 === 1;
-    const bodyW = worldW * silW / (silW + annotationMargin) * (skin ? (skinRotated ? skin.body.height / skin.screen.height : skin.body.width / skin.screen.width) : 1);
-    const bodyH = worldH * silH / (silH + annotationMargin) * (skin ? (skinRotated ? skin.body.width / skin.screen.width : skin.body.height / skin.screen.height) : 1);
+    const bodyW = worldW * silW / (silW + margin) * (skin ? (skinRotated ? skin.body.height / skin.screen.height : skin.body.width / skin.screen.width) : 1);
+    const bodyH = worldH * silH / (silH + margin) * (skin ? (skinRotated ? skin.body.width / skin.screen.width : skin.body.height / skin.screen.height) : 1);
     const skinBodyWidth = skinRotated ? skin?.body.height : skin?.body.width;
     const radius = skin && skinBodyWidth ? skin.body.radius / skinBodyWidth * bodyW : (cornerRadiiDp?.topLeft ?? 8) * bodyW / silW;
     const shellGeometry = createChassis(bodyW, bodyH, radius, THICKNESS);
@@ -432,7 +414,7 @@ export function FoldRenderer3D({
     // The outer display is a real rear-facing textured panel, so closing the
     // hinge reveals it without replacing the renderer or resetting animation.
     const coverCanvas = document.createElement("canvas");
-    coverCanvas.width = 1000; coverCanvas.height = 1600;
+    coverCanvas.width = 1800; coverCanvas.height = 1600;
     const coverCtx = coverCanvas.getContext("2d")!;
     const coverTexture = new THREE.CanvasTexture(coverCanvas);
     coverTexture.colorSpace = THREE.SRGBColorSpace;
@@ -446,6 +428,7 @@ export function FoldRenderer3D({
     const coverForeground = new Image();
     const coverHits: { x: number; y: number; width: number; height: number; text: string }[] = [];
 
+    let annotationZoom = zoom;
     function redrawCover() {
       const st = stateRef.current;
       const data = st.cover;
@@ -453,13 +436,14 @@ export function FoldRenderer3D({
       if (!data) { coverMesh.visible = false; return; }
       const { screen, measurement, skin: outerSkin } = data;
       const size = screen.logicalSizeDp ?? { width: outerSkin.screen.width / 3, height: outerSkin.screen.height / 3 };
-      const factor = 1000 / (size.width + annotationMargin);
-      coverCanvas.width = 1000;
-      coverCanvas.height = Math.ceil((size.height + annotationMargin) * factor);
+      const coverMargin = size.width * 1.8;
+      const factor = 1800 / (size.width + coverMargin);
+      coverCanvas.width = 1800;
+      coverCanvas.height = Math.ceil((size.height + coverMargin) * factor);
       const physicalPanelW = isVertical ? bodyW / 2 - hingeZoneHalfWidth : bodyW;
       const physicalPanelH = isVertical ? bodyH : bodyH / 2 - hingeZoneHalfWidth;
-      const fullW = (size.width + annotationMargin) * outerSkin.screen.width / size.width;
-      const fullH = (size.height + annotationMargin) * outerSkin.screen.height / size.height;
+      const fullW = (size.width + coverMargin) * outerSkin.screen.width / size.width;
+      const fullH = (size.height + coverMargin) * outerSkin.screen.height / size.height;
       const scale = Math.min(physicalPanelW / outerSkin.body.width, physicalPanelH / outerSkin.body.height);
       const panelW = fullW * scale, panelH = fullH * scale;
       const positions = coverGeometry.attributes.position;
@@ -485,9 +469,18 @@ export function FoldRenderer3D({
           ] as Array<[number, number]> : []),
           ...insetPairs(outerSafe, outerSafePx),
           ...cornerPairs(screen.cornerRadiiDp, screen.cornerRadiiPx),
+          ...cutoutPairs(measurement?.cutoutShape),
         ]), layers: st.layers, skin: outerSkin, skinRotation: screen.captureRotation ?? 0,
         artwork: coverArtwork, foreground: coverForeground, hits: coverHits,
-        annotationScale: worldPerCssPixel / (panelW / (size.width + annotationMargin)) * 100 / st.zoom,
+        // The folded inner chassis can extend beyond the cover artwork. Rulers
+        // must clear its full silhouette, not just the inset cover texture.
+        chassis: {
+          left: (size.width - (isVertical ? bodyW / 2 : bodyW) * (size.width + coverMargin) / panelW) / 2,
+          right: (size.width + (isVertical ? bodyW / 2 : bodyW) * (size.width + coverMargin) / panelW) / 2,
+          top: (size.height - (isVertical ? bodyH : bodyH / 2) * (size.height + coverMargin) / panelH) / 2,
+          bottom: (size.height + (isVertical ? bodyH : bodyH / 2) * (size.height + coverMargin) / panelH) / 2,
+        },
+        annotationScale: worldPerCssPixel / (panelW / (size.width + coverMargin)) * 100 / annotationZoom,
       });
       coverTexture.needsUpdate = true;
     }
@@ -507,12 +500,13 @@ export function FoldRenderer3D({
         ] as Array<[number, number]> : []),
         ...insetPairs(st.safe, st.safePx),
         ...cornerPairs(st.cornerRadiiDp, st.cornerRadiiPx),
+        ...cutoutPairs(st.cutoutShape),
       ]);
       ctx.save();
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       drawDiagram(ctx, dpW, dpH, px, {
         safe: st.safe, cornerRadiiDp: st.cornerRadiiDp, cutoutShape: st.cutoutShape,
-        showFrame: st.showFrame, showRegions: st.showRegions, showDimensions: st.showDimensions && measured, fmt, layers: st.layers, skin, skinRotation, artwork, foreground, hits, annotationScale: worldPerCssPixel / (worldW / (dpW + annotationMargin)) * 100 / st.zoom,
+        showFrame: st.showFrame, showRegions: st.showRegions, showDimensions: st.showDimensions && measured, fmt, layers: st.layers, skin, skinRotation, artwork, foreground, hits, annotationScale: worldPerCssPixel / (worldW / (dpW + margin)) * 100 / annotationZoom,
       });
       ctx.restore();
       texture.needsUpdate = true;
@@ -555,7 +549,11 @@ export function FoldRenderer3D({
       lastTime = time;
       displayedAngle = reducedMotion.matches ? target : displayedAngle + (target - displayedAngle) * (1 - Math.exp(-delta / 75));
       if (Math.abs(target - displayedAngle) < 0.05) displayedAngle = target;
-      stateRef.current.onDisplayedAngle?.(displayedAngle);
+      const effectiveZoom = stateRef.current.onDisplayedAngle?.(displayedAngle) ?? stateRef.current.zoom;
+      if (Math.abs(effectiveZoom - annotationZoom) > .1) {
+        annotationZoom = effectiveZoom;
+        redrawTexture(); redrawCover();
+      }
       if (mount) mount.dataset.displayedAngle = displayedAngle.toFixed(2);
       const pixelRatio = Math.min(4, window.devicePixelRatio * Math.max(1, stateRef.current.zoom / 100));
       if (renderer.getPixelRatio() !== pixelRatio) renderer.setPixelRatio(pixelRatio);
@@ -597,7 +595,7 @@ export function FoldRenderer3D({
       const targetHits = isCover ? coverHits : hits;
       const x = uv.x * targetCanvas.width, y = (1 - uv.y) * targetCanvas.height;
       const hit = targetHits.find(h => x >= h.x && x <= h.x + h.width && y >= h.y && y <= h.y + h.height);
-      if (hit) { e.stopPropagation(); try { await navigator.clipboard.writeText(hit.text); } catch {} }
+      if (hit) { e.stopPropagation(); try { await navigator.clipboard.writeText(hit.text.replace(/^R /, "")); } catch {} }
     };
     renderer.domElement.addEventListener("pointerdown", copyLabel);
 
@@ -635,7 +633,7 @@ export function FoldRenderer3D({
     );
   }
 
-  return <div ref={wrapRef} style={{ width: axis === "horizontal" ? 380 : 700, height: 700 }}>
-    <div ref={mountRef} role="img" aria-label={`${axis === "vertical" ? "Book" : "Flip"} fold diagram, ${angle} degrees`} style={{ width: axis === "horizontal" ? 380 : 700, height: 700 }} />
+  return <div ref={wrapRef} style={{ width: 700, height: 700 }}>
+    <div ref={mountRef} role="img" aria-label={`${axis === "vertical" ? "Book" : "Flip"} fold diagram, ${angle} degrees`} style={{ width: 700, height: 700 }} />
   </div>;
 }

@@ -1,3 +1,5 @@
+import { flatDiagramSize } from "./diagramAnnotations";
+import { preciseScreen } from "../data/measurementUnits";
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router";
 import type { Device, Insets, NavMode, Source } from "../data/types";
@@ -112,8 +114,8 @@ export function DeviceView({ device }: { device: Device }) {
     return () => { document.removeEventListener("pointerdown", close); document.removeEventListener("keydown", escape); };
   }, [settingsOpen]);
   const foldable = device.formFactor === "foldable-book" || device.formFactor === "foldable-flip";
-  const main = device.screens.find(s => s.id === "main")!;
-  const screen = device.screens.find(s => s.id === screenId) ?? main;
+  const main = preciseScreen(device.screens.find(s => s.id === "main")!);
+  const screen = preciseScreen(device.screens.find(s => s.id === screenId) ?? main);
   const measurement = screen.insets[navMode];
   const rtl = getRtlAvailability(device.slug);
   const skin = skins[`${device.slug}/${screen.id}`];
@@ -122,7 +124,8 @@ export function DeviceView({ device }: { device: Device }) {
   const fmt = (v: number, px?: number | null) => formatLength({ dp: v, px, units });
   const mainSkin = skins[`${device.slug}/main`];
   const outerSkin = skins[`${device.slug}/cover`];
-  const outerScreen = device.screens.find(s => s.id === "cover");
+  const outerSource = device.screens.find(s => s.id === "cover");
+  const outerScreen = outerSource ? preciseScreen(outerSource) : undefined;
   const mainMeasurement = main.insets[navMode];
   const mainSafe = mainMeasurement ? safeInsets(mainMeasurement) : null;
   const mainSafePx = mainMeasurement ? safeInsetsPx(mainMeasurement) : null;
@@ -148,8 +151,8 @@ export function DeviceView({ device }: { device: Device }) {
   ] : orientations;
 
   const diagramWidth = useFold
-    ? device.formFactor === "foldable-flip" ? 380 : 700
-    : size ? 700 * (260 + 128) / (260 * size.height / size.width + 84) : 440;
+    ? 700
+    : size ? flatDiagramSize(size.width, size.height, showFrame ? skin : undefined).width : 440;
   const diagramHeight = 700;
   const exportJson = () => {
     try {
@@ -245,13 +248,13 @@ export function DeviceView({ device }: { device: Device }) {
         closedFit={useFold ? { width: device.formFactor === "foldable-flip" ? 380 : 340, height: device.formFactor === "foldable-flip" ? 390 : 500 } : undefined}
         zoom={zoom} setZoom={setZoom} rotation={rotation} fitKey={fitKey}
         onUserTransform={() => { setZoom(viewport.current?.effectiveZoom() ?? zoom); setAutoFit(false); }} onFit={() => setAutoFit(true)}
-        baseWidth={useFold ? (device.formFactor === "foldable-flip" ? 380 : 700) : diagramWidth}
+        baseWidth={diagramWidth}
         baseHeight={700} fitWidth={diagramWidth} fitHeight={diagramHeight}>
         {useFold ? <FoldRenderer3D angle={angle} axis={device.formFactor === "foldable-flip" ? "horizontal" : "vertical"}
           widthDp={main.logicalSizeDp?.width ?? (mainSkin ? mainSkin.screen.width / 3 : 0)} heightDp={main.logicalSizeDp?.height ?? (mainSkin ? mainSkin.screen.height / 3 : 0)}
           safe={mainSafe} safePx={mainSafePx} logicalSizePx={main.logicalSizePx} cornerRadiiDp={main.cornerRadiiDp} cornerRadiiPx={main.cornerRadiiPx} cutoutShape={mainMeasurement?.cutoutShape}
           zoom={zoom} showFrame={showFrame} showRegions={showRegions} showDimensions={showDimensions} units={units} layers={layers} skin={mainSkin} skinRotation={main.captureRotation ?? 0} measured={!!main.logicalSizeDp} cover={outerScreen && outerSkin ? { screen: outerScreen, measurement: outerScreen.insets[navMode], skin: outerSkin } : undefined}
-          onDisplayedAngle={value => viewport.current?.setFoldAngle(value)}
+          onDisplayedAngle={value => { viewport.current?.setFoldAngle(value); return viewport.current?.effectiveZoom(); }}
           onTransitionEnd={() => { if (transitionTarget) { setScreenId(transitionTarget); setTransitionTarget(null); } }} />
           : <InsetsDiagram screen={screen} measurement={measurement} zoom={zoom} showFrame={showFrame} showRegions={showRegions} showDimensions={showDimensions} units={units} layers={layers} skin={skin} />}
       </DiagramViewport>

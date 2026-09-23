@@ -31,10 +31,14 @@ export function DiagramViewport({ viewportRef, autoFit = false, closedFit, child
     effectiveZoom: () => effectiveZoom.current,
   }));
   useLayoutEffect(applyScale);
+  const fitting = useRef(false);
+  const [fitRevision, setFitRevision] = useState(0);
   const fit = useRef(() => {});
   useEffect(() => {
     const el = ref.current!;
     const fitCanvas = () => {
+      fitting.current = true;
+      setFitRevision(value => value + 1);
       const bounds = fitBounds.current;
       const sideways = Math.abs(rotation) % 180 === 90;
       const w = sideways ? bounds.fitHeight : bounds.fitWidth, h = sideways ? bounds.fitWidth : bounds.fitHeight;
@@ -54,6 +58,27 @@ export function DiagramViewport({ viewportRef, autoFit = false, closedFit, child
     return () => observer.disconnect();
   }, [rotation]);
   useEffect(() => { fit.current(); }, [fitKey]);
+  useEffect(() => {
+    if (!fitting.current) return;
+    const frame = requestAnimationFrame(() => {
+      const el = ref.current!;
+      const svg = el.querySelector('svg[role="group"]');
+      if (!svg) { fitting.current = false; return; }
+      // Badges have a constant on-screen font size and can extend beyond the
+      // SVG viewBox after collision avoidance. Fit their actual rotated bounds.
+      const boxes = [svg, ...svg.querySelectorAll('[role="button"]')].map(node => node.getBoundingClientRect());
+      const left = Math.min(...boxes.map(box => box.left)), right = Math.max(...boxes.map(box => box.right));
+      const top = Math.min(...boxes.map(box => box.top)), bottom = Math.max(...boxes.map(box => box.bottom));
+      const viewport = el.getBoundingClientRect();
+      const ratio = Math.min((viewport.width - 52) / (right - left), (viewport.height - 100) / (bottom - top), 1);
+      setPan(previous => ({ x: previous.x + viewport.left + viewport.width / 2 - (left + right) / 2,
+        y: previous.y + viewport.top + viewport.height / 2 - (top + bottom) / 2 }));
+      const next = Math.max(25, Math.floor(zoom * ratio));
+      if (next < zoom) setZoom(next); else fitting.current = false;
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [zoom, rotation, baseWidth, baseHeight, fitKey, fitRevision, setZoom]);
+
   useEffect(() => {
     const el = ref.current!;
     const changeZoom = (value: number) => {

@@ -220,3 +220,13 @@ Flip8 90° remains visually intact with the shared material change.
 Typecheck, all 9 rendering tests, and static build pass. The browser logged an
 existing hydration warning for an injected `cz-shortcut-listen` body attribute.
 These pose angles are illustrative controls, not newly captured hinge measurements.
+
+## Independent readability re-check (2026-09-23)
+
+The earlier typography changes did **not** establish annotation readability:
+Fold8's WebGL rulers still intersected the official frame, and radius chips had
+no dimension construction. See [the issue 1 re-check](ISSUE_1_REVIEW.md) for the
+confirmed defects, current fixes, historical checklist and remaining validation
+limits. Flat SVG diagrams share body-relative annotation geometry with folded textures;
+SVG fit includes numeric badges rather than only the original box. The current
+main frame-synchronized WebGL fold transition is preserved.
