@@ -4,6 +4,18 @@ Window insets, display cutouts, corner radii and foldable hinge states for Samsu
 
 Its interface is inspired by [safearea.info](https://safearea.info), adapted for measured Android data and Samsung foldables.
 
+## Fold it. Measure it.
+
+Explore Galaxy Fold and Flip hinge states in **real-time 3D, built with Three.js and WebGL**. Official Samsung artwork wraps a lit device chassis, while exterior SVG rulers track the display through the fold.
+
+| Galaxy Z Fold8 · book fold | Galaxy Z Flip8 · clamshell fold |
+| :---: | :---: |
+| [![Galaxy Z Fold8 opening from 0 to 180 degrees and closing, with projected inset dimensions](docs/media/galaxy-z-fold8-hinge.gif)](https://windowinsets.info/galaxy-z-fold8) | [![Galaxy Z Flip8 opening from 0 to 180 degrees and closing, with projected inset dimensions](docs/media/galaxy-z-flip8-hinge.gif)](https://windowinsets.info/galaxy-z-flip8) |
+
+**0° → 180° → 0°** · Recorded from the live renderer. Try the hinge slider, drag to pan, or pinch to zoom on [windowinsets.info](https://windowinsets.info).
+
+The animation illustrates device geometry. Insets remain the recorded Android measurements for the selected cover or inner display; moving the hinge does not create new measurements.
+
 ## How I measure
 
 The full write-up lives on the site at [/methodology](https://windowinsets.info/methodology) (source: [`app/routes/methodology.tsx`](app/routes/methodology.tsx)). In short:
@@ -63,7 +75,14 @@ physical measurement.
 
 ## Stack
 
-React Router (framework mode) with build-time prerendering (`ssr: false` + `prerender`), Tailwind CSS. Output is a static site.
+React, TypeScript and React Router (framework mode), styled with Tailwind CSS. Build-time prerendering (`ssr: false` + `prerender`) produces a static site.
+
+- **Three.js + WebGL:** textured displays, a lit solid chassis, and continuous hinge geometry for both book and clamshell folds.
+- **SVG measurement overlays:** display dimensions, safe-area insets, cutout bounds and corner radii projected from the same 3D transforms, with readable screen-space labels.
+- **Synchronized interaction:** cover/inner metrics follow the rendered hinge angle; automatic fit, manual pan/zoom and reduced-motion support share the same view state.
+- **Rendering fallback:** flat endpoint backing protects against transparent WebGL compositing; an SVG diagram remains available when the WebGL context fails.
+
+Rendering lives in [`FoldRenderer3D.tsx`](app/components/FoldRenderer3D.tsx), [`foldGeometry.ts`](app/components/foldGeometry.ts) and [`ProjectedRulers.tsx`](app/components/ProjectedRulers.tsx). See [device thickness and artwork limits](#device-thickness-and-artwork-limits) for the boundary between published dimensions and illustrative geometry.
 
 ```bash
 pnpm install
