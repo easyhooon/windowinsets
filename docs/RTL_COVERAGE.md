@@ -38,10 +38,17 @@ removes a model from its catalog.
   Both screens were measured upright in both navigation modes. Rotated first
   attempts and a main gesture attempt with Taskbar enabled are retained as
   rejected evidence; the accepted main captures have Taskbar off.
+  Galaxy Z Flip7 FE (SM-F761B-VN4, Vietnam/Hanoi) was reserved on
+  2026-09-23, but InsetsProbe installation stayed at 0% even after reconnecting
+  following a device restart. The reservation was returned with one credit
+  refunded; no measurement was accepted. Galaxy Z Flip6 (SM-F741U-KR10,
+  Korea/Gumi) was subsequently reserved. Its official main-screen skin was
+  matched to fresh, upright 1080×2640 px captures in both navigation modes;
+  the skin archive has no cover layout, so cover values remain pending.
   The full cross-series, cross-region inventory was not completed.
-- The local skin archive contains 73 registered models; 70 are public under
+- The local skin archive contains 74 registered models; 71 are public under
   the release-year policy. All four featured mobile models have registered skins.
-  The other 69 archived models (66 public) remain unverified, not unsupported.
+  The other 70 archived models (67 public) remain unverified, not unsupported.
 - Existing S25+ and S25 Ultra captures document past measurements. They do not
   establish current reservation availability. Fold8 cover and inner were both
   recaptured from a live reservation in 3-button and gesture modes. Fold7 cover
@@ -53,7 +60,9 @@ removes a model from its catalog.
   the rejected inner 3-button attempt remains historical evidence. Fold5 also
   has accepted captures for both screens and modes, with its rotated first
   cover gesture attempt preserved separately. Fold4 has accepted upright cover
-  and inner captures in both modes after the Taskbar correction.
+  and inner captures in both modes after the Taskbar correction. Flip6 main has
+  accepted captures in both modes; its cover remains skin-unavailable. Fold3's
+  imported cover and main artwork are previews with no measured insets.
 
 The comparison for every registered skin is in [RTL_SKIN_COMPARISON.csv](RTL_SKIN_COMPARISON.csv).
 It includes archived pre-2020 models for inventory completeness; it does not

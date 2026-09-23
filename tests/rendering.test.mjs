@@ -12,6 +12,7 @@ import { galaxyZFold4 } from '../app/data/devices/galaxy-z-fold4/index.ts';
 import { galaxyZFold7 } from '../app/data/devices/galaxy-z-fold7/index.ts';
 import { galaxyZFold8 } from '../app/data/devices/galaxy-z-fold8/index.ts';
 import { galaxyZFlip8 } from '../app/data/devices/galaxy-z-flip8/index.ts';
+import { galaxyZFlip6 } from '../app/data/devices/galaxy-z-flip6/index.ts';
 import { galaxyS25Plus } from '../app/data/devices/galaxy-s25-plus/index.ts';
 import { galaxyS25Ultra } from '../app/data/devices/galaxy-s25-ultra/index.ts';
 import { formatLength, hasExactPx, safeInsetsPx } from '../app/data/measurementUnits.ts';
@@ -198,6 +199,22 @@ test('2020 coverage keeps boundary models and archives older skins without publi
   }
   assert.equal(isInCoverage({ slug: 'measured-older-device', releaseYear: 2019 }), false);
   assert.equal(isInCoverage({ slug: 'measured-boundary-device', releaseYear: 2020 }), true);
+});
+
+test('Flip6 main captures match both navigation modes without inventing cover measurements', () => {
+  const screen = galaxyZFlip6.screens.find(candidate => candidate.id === 'main');
+  assert.equal(galaxyZFlip6.screens.length, 1);
+  for (const mode of ['gesture', 'threeButton']) {
+    const raw = readCapture(`measurements/galaxy-z-flip6/main-${mode}.json`);
+    assert.equal(raw.device.model, 'SM-F741U');
+    assert.equal(raw.screen, 'main');
+    assert.equal(raw.navigation.mode, mode);
+    assert.equal(raw.display.rotation, 0);
+    assert.deepEqual(screen.logicalSizePx, raw.display.currentWindowPx);
+    assert.deepEqual(screen.insets[mode].systemBarsPx, raw.insets.systemBars.px);
+    assert.deepEqual(screen.insets[mode].displayCutoutPx, raw.insets.displayCutout.px);
+    assert.equal(raw.hinge.foldingFeatures[0].state, 'FLAT');
+  }
 });
 
 test('RTL comparisons never turn an incomplete inventory into non-support claims', () => {

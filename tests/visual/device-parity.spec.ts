@@ -94,6 +94,26 @@ test("Fold4 shows upright cover and Taskbar-free inner measurements", async ({ p
   await expect(page.locator("#device-canvas")).toBeVisible();
 });
 
+test("Fold3 official cover and inner artwork remain measurement-pending", async ({ page }) => {
+  await page.goto("/galaxy-z-fold3");
+  await openMetricsIfCollapsed(page);
+  await expect(page.getByRole("heading", { name: /Galaxy Z Fold3 Window Insets/ })).toBeVisible();
+  await expect(page.locator("#device-canvas")).toBeVisible();
+  await expect(page.getByRole("button", { name: "Outer", exact: true })).toBeVisible();
+  await page.getByRole("button", { name: "Inner", exact: true }).click();
+  await expect(page.locator("#device-canvas")).toBeVisible();
+  await expect(page.getByText("No measurement available", { exact: false })).toBeVisible();
+});
+
+test("Flip6 main shows both measured navigation modes", async ({ page }) => {
+  await page.goto("/galaxy-z-flip6");
+  await openMetricsIfCollapsed(page);
+  await expect(page.getByRole("heading", { name: /Galaxy Z Flip6 Window Insets/ })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Resolution 1080 × 2640 px" })).toBeVisible();
+  await chooseDropdown(page, "Navigation", "Gesture");
+  await expect(page.getByRole("button", { name: "Bottom 15 dp" })).toBeVisible();
+});
+
 for (const device of devices) {
   for (const pose of poses) {
     test(`${device.label} ${pose} remains readable`, async ({ page }, testInfo) => {

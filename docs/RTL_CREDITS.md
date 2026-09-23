@@ -73,6 +73,18 @@ A Galaxy Z Fold4 30-minute reservation later reduced the observed balance from
 the taskbar and rotation recaptures used most of the slot, so no early-return
 refund was assumed or claimed. The next booking must read the live header again.
 
+On 2026-09-23, a Galaxy Z Flip7 FE 30-minute reservation reduced the header
+from **12 to 10 Credits**. InsetsProbe installation remained at 0% across
+retries, including after reconnecting to the same reservation following a device
+restart. No capture was made. Ending the reservation with the displayed
+`Return this device to get back 1 credit(s)` option checked raised the header
+to **11 Credits**, and Reservations showed no active device. A subsequent
+Galaxy Z Flip6 30-minute reservation reduced the balance to **9 Credits**.
+Both needed Flip6 main-screen captures were downloaded and validated. When the
+WebClient showed 14 minutes remaining, its exit dialog offered no credit-return
+option. The session was ended and displayed `All ongoing tests have ended.`; no
+refund is claimed from this reservation.
+
 The preceding 2026-09-22 Usage History contained these booked reservations:
 
 | Time | Device | Booked credits |

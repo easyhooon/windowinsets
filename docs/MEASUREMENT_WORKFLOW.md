@@ -200,10 +200,10 @@ future slot availability.
 
 windowinsets.info is a reference site for Android window insets, display cutouts, corner radii and foldable hinge states across Samsung Galaxy devices. Every value is labeled **official** (published by Samsung/Google), **measured** (captured with InsetsProbe on RTL or a real device, raw JSON committed), or **community** (unverified).
 
-**Current Status**: Galaxy Z Fold8, Fold7, Fold6, Fold5 and Flip8 cover and inner displays
-are measured in both navigation modes from verified live RTL sessions. Galaxy
-S25 Ultra and Galaxy S25+ main screens are measured.
-Galaxy S25 and Flip6 remain pending.
+**Current Status**: Galaxy Z Fold8, Fold7, Fold6, Fold5, Fold4 and Flip8 cover and inner displays
+are measured in both navigation modes from verified live RTL sessions. Flip6's
+main screen is measured in both modes; no official cover skin was supplied.
+Galaxy S25 Ultra and Galaxy S25+ main screens are measured. Galaxy S25 remains pending.
 
 ## RTL Credits & Cost
 
@@ -358,7 +358,7 @@ Do not use Measure All. Capture each active display and navigation mode explicit
 | Galaxy S25 | SM-S931N | Main | Pending | Pending | Queued |
 | Galaxy Z Fold7 | SM-F966U | Cover + inner | ✓ both | ✓ both | Complete |
 | Galaxy Z Fold6 | SM-F956U | Cover + inner | ✓ both | ✓ both | Complete |
-| Galaxy Z Flip6 | TBD | Main | Pending | Pending | Queued |
+| Galaxy Z Flip6 | SM-F741U | Main | ✓ | ✓ | Main complete; no cover skin |
 
 **Measurement Conditions**: full screen, default Display/Font size and One UI +
 Android version are recorded per capture. Orientation is evidence, not a default:
