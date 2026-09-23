@@ -45,6 +45,22 @@ zero geometry. Run the probe on the actual full-screen cover display: selecting
 its label or rotating an inner-screen capture cannot measure the cover.
 See the [site methodology](https://windowinsets.info/methodology#camera-cutouts).
 
+## Device thickness and artwork limits
+
+Samsung's [Galaxy Emulator Skin guide](https://developer.samsung.com/galaxy-emulator-skin/guide.html)
+describes skins as the appearance and controls of an Android virtual device.
+The Fold8 skin bundled here has flat `device.png` and `foreground.png` artwork;
+its `layout` gives the screen rectangle and button positions, but no depth,
+side profile or 3D mesh. The animated Fold8, Fold7 and Flip8 chassis now use
+[Samsung Fold8](https://www.samsung.com/sec/smartphones/galaxy-z-fold8/specs/),
+[Fold7](https://www.samsung.com/es/smartphones/galaxy-z-fold7/) and
+[Flip8](https://www.samsung.com/sec/smartphones/galaxy-z-flip8/specs/) published
+open-body widths and depths to scale the unfolded panel thickness. Samsung also
+publishes folded thickness (9.7, 8.9 and 13.1 mm respectively), but the skin
+does not specify hinge cross-section, side curvature or the gap at intermediate
+angles. Those portions of the 3D fold remain illustrative, not a CAD-accurate
+physical measurement.
+
 ## Stack
 
 React Router (framework mode) with build-time prerendering (`ssr: false` + `prerender`), Tailwind CSS. Output is a static site.

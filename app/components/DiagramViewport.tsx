@@ -26,11 +26,16 @@ export function DiagramViewport({ viewportRef, autoFit = false, closedFit, child
       if (!live.current.autoFit || !ref.current || !scaleRef.current) return effectiveZoom.current;
       const sideways = Math.abs(live.current.rotation) % 180 === 90;
       const width = bounds.right - bounds.left, height = bounds.bottom - bounds.top;
-      const availableW = ref.current.clientWidth - 52;
-      const availableH = ref.current.clientHeight - (ref.current.clientWidth < 768 ? 160 : 100);
-      const ratio = Math.min(1, availableW / ((sideways ? height : width) * effectiveZoom.current / 100),
-        availableH / ((sideways ? width : height) * effectiveZoom.current / 100));
-      effectiveZoom.current *= ratio;
+      const mobile = ref.current.clientWidth < 768;
+      const availableW = ref.current.clientWidth - (mobile ? 40 : 52);
+      const availableH = ref.current.clientHeight - (mobile ? 160 : 100);
+      effectiveZoom.current = Math.max(25, Math.min(150, 100 * Math.min(availableW / (sideways ? height : width),
+        availableH / (sideways ? width : height))));
+      const displayedZoom = Math.round(effectiveZoom.current);
+      if (live.current.zoom !== displayedZoom) {
+        live.current.zoom = displayedZoom;
+        live.current.setZoom(displayedZoom);
+      }
       const x = (bounds.left + bounds.right) / 2 - 350, y = (bounds.top + bounds.bottom) / 2 - 350;
       fitCenter.current = { x, y };
       scaleRef.current.style.transform = `scale(${effectiveZoom.current / 100}) rotate(${live.current.rotation}deg) translate(${-x}px, ${-y}px)`;

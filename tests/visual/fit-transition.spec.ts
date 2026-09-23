@@ -21,7 +21,6 @@ for (const slug of ["galaxy-z-fold8", "galaxy-z-flip8"]) {
   test(`${slug} automatic fit follows every hinge frame`, async ({ page }) => {
     await page.goto(`/${slug}`);
     await settled(page, 0);
-    const zoom = await page.getByRole("button", { name: /^Zoom:/ }).textContent();
     const closed = await sample(page);
     await choose(page, "Pose", "Open");
     await settled(page, 180);
@@ -53,7 +52,8 @@ for (const slug of ["galaxy-z-fold8", "galaxy-z-flip8"]) {
         expect(frame.scale).toBeLessThanOrEqual(1.5);
       }
       await settled(page, target);
-      await expect(page.getByRole("button", { name: /^Zoom:/ })).toHaveText(zoom!);
+      const displayedZoom = await page.getByRole("button", { name: /^Zoom:/ }).textContent();
+      expect(displayedZoom).toBe(`Zoom:${Math.round((await sample(page)).scale * 100)}%`);
     }
     await page.screenshot({ path: test.info().outputPath(`${slug}-closed.png`) });
     await choose(page, "Pose", "Open");

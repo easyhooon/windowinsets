@@ -30,6 +30,12 @@ const coverGesture: Source = {
   retrievedAt: "2026-09-23",
 };
 
+const chassisSource: Source = {
+  kind: "official", label: "Samsung Galaxy Z Flip8 specifications",
+  url: "https://www.samsung.com/sec/smartphones/galaxy-z-flip8/specs/",
+  retrievedAt: "2026-09-23",
+};
+
 const coverCondition = {
   oneUi: "9.0",
   android: "17",
@@ -43,6 +49,7 @@ export const galaxyZFlip8: Device = {
   series: "Galaxy Z Flip",
   formFactor: "foldable-flip",
   foldAnimation: true,
+  chassisMm: { unfoldedWidth: 75.4, unfoldedDepth: 6.1, foldedDepth: 13.1, source: chassisSource },
   releaseYear: 2026,
   screens: [
     {
@@ -109,5 +116,5 @@ export const galaxyZFlip8: Device = {
       sources: [rtlThreeButton, rtlGesture],
     },
   ],
-  sources: [coverThreeButton, coverGesture, rtlThreeButton, rtlGesture],
+  sources: [chassisSource, coverThreeButton, coverGesture, rtlThreeButton, rtlGesture],
 };

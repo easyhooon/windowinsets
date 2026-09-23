@@ -30,6 +30,12 @@ const mainGesture: Source = {
   retrievedAt: "2026-09-22",
 };
 
+const chassisSource: Source = {
+  kind: "official", label: "Samsung Galaxy Z Fold8 specifications",
+  url: "https://www.samsung.com/sec/smartphones/galaxy-z-fold8/specs/",
+  retrievedAt: "2026-09-23",
+};
+
 const coverCondition = {
   oneUi: "9.0",
   android: "17",
@@ -49,6 +55,7 @@ export const galaxyZFold8: Device = {
   series: "Galaxy Z Fold",
   formFactor: "foldable-book",
   foldAnimation: true,
+  chassisMm: { unfoldedWidth: 161.4, unfoldedDepth: 4.5, foldedDepth: 9.7, source: chassisSource },
   releaseYear: 2026,
   screens: [
     {
@@ -118,5 +125,5 @@ export const galaxyZFold8: Device = {
       sources: [mainThreeButton, mainGesture],
     },
   ],
-  sources: [coverThreeButton, coverGesture, mainThreeButton, mainGesture],
+  sources: [chassisSource, coverThreeButton, coverGesture, mainThreeButton, mainGesture],
 };

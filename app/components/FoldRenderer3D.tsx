@@ -1,5 +1,6 @@
 import { ProjectedRulers, layoutProjectedRulers, type ProjectedMeasurements, type Point } from "./ProjectedRulers";
 import { diagramAnnotations } from "./diagramAnnotations";
+import { InsetsDiagram } from "./InsetsDiagram";
 import { DIAGRAM_FONT, DIAGRAM_COLORS } from "./diagramStyle";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
@@ -11,7 +12,7 @@ import { cutoutPairs, cornerPairs, formatLengthFromPairs, insetPairs, safeInsets
 export const COVER_REVEAL_ANGLE = 60; // Illustrative primary surface, not a measured hinge state.
 
 const SEGMENTS = 96; // vertices along the fold axis — higher = smoother curve
-const THICKNESS = 0.065; // Stylized world-space thickness, not measured hardware data.
+const DEFAULT_THICKNESS = 0.065; // Preview fallback when no published chassis dimensions exist.
 
 const INK = DIAGRAM_COLORS.ink;
 const INSET_COLOR = DIAGRAM_COLORS.inset;
@@ -89,13 +90,14 @@ function drawDiagram(
     skinRotation?: QuarterTurns;
     artwork?: HTMLImageElement;
     foreground?: HTMLImageElement;
+    paddingDp: number;
     annotationScale: number;
     hits: { x: number; y: number; width: number; height: number; text: string }[];
   },
 ) {
   const W = dpW * px, H = dpH * px;
   const labelScale = opts.annotationScale;
-  const PAD = dpW * .9 * px;
+  const PAD = opts.paddingDp * px;
   ctx.clearRect(0, 0, W + PAD * 2, H + PAD * 2);
   ctx.save();
   ctx.translate(PAD, PAD);
@@ -250,6 +252,8 @@ export function FoldRenderer3D({
   viewRotation = 0,
   measured = true,
   cover,
+  fallbackMain,
+  chassisMm,
   onTransitionEnd,
   onDisplayedAngle,
   onMeasurementBounds,
@@ -278,11 +282,14 @@ export function FoldRenderer3D({
   viewRotation?: number;
   measured?: boolean;
   cover?: { screen: Screen; measurement: InsetsMeasurement | null; skin: DeviceSkin };
-  onMeasurementBounds?: (bounds: { left: number; top: number; right: number; bottom: number }) => number | undefined;
+  fallbackMain?: { screen: Screen; measurement: InsetsMeasurement | null };
+  chassisMm?: { unfoldedWidth: number; unfoldedDepth: number; foldedDepth: number };
+  onMeasurementBounds?: (bounds: { left: number; top: number; right: number; bottom: number }, body: { left: number; top: number; right: number; bottom: number }, angle: number) => number | undefined;
   onDisplayedAngle?: (angle: number) => number | undefined;
   onTransitionEnd?: () => void;
 }) {
   const [measurements, setMeasurements] = useState<ProjectedMeasurements | null>(null);
+  const [webglUnavailable, setWebglUnavailable] = useState(false);
   const mountRef = useRef<HTMLDivElement>(null);
   const wrapRef = useRef<HTMLDivElement>(null);
 
@@ -290,15 +297,22 @@ export function FoldRenderer3D({
   stateRef.current = { angle, safe, safePx, logicalSizePx, cornerRadiiDp: cornerRadiiDp ?? null, cornerRadiiPx: cornerRadiiPx ?? null, cutoutShape, showFrame, showRegions, showDimensions, units, zoom, layers, cover, onTransitionEnd, onDisplayedAngle, onMeasurementBounds };
 
   useEffect(() => {
+    if (webglUnavailable) return;
     const mount = mountRef.current;
     const wrap = wrapRef.current;
     if (!mount || !wrap || !widthDp || !heightDp) return;
 
     const containerW = 700, containerH = 700;
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    let renderer: THREE.WebGLRenderer;
+    try { renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true }); }
+    catch { setWebglUnavailable(true); return; }
     renderer.setSize(containerW, containerH);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.domElement.style.cssText = "position:absolute;inset:0;z-index:1;width:700px;height:700px";
+    mount.style.position = "relative";
     mount.appendChild(renderer.domElement);
+    const contextLost = (event: Event) => { event.preventDefault(); setWebglUnavailable(true); };
+    renderer.domElement.addEventListener("webglcontextlost", contextLost);
 
     const scene = new THREE.Scene();
     const deviceGroup = new THREE.Group();
@@ -324,14 +338,16 @@ export function FoldRenderer3D({
     // measurements must never be rotated/stretched to stand in for the inside.
     const silW = dpW, silH = dpH;
 
-    const margin = dpW * 1.8;
+    // Exterior rulers are projected SVG now. Keep only enough texture padding
+    // for the official bezel instead of shrinking the display into empty texels.
+    const margin = dpW * .25;
     const aspect = (silW + margin) / (silH + margin);
     // Keep the LONGER silhouette edge pinned to a constant world size so the
     // camera framing stays consistent whichever way the panel ends up
     // oriented — otherwise a landscape silhouette (book fold) would blow
     // past the frustum tuned for the old always-portrait assumption and get
     // clipped down to just its green center.
-    const target = 6 * 2.8 / 2.2;
+    const target = 5.2;
     const worldW = aspect >= 1 ? target : target * aspect;
     const worldH = aspect >= 1 ? target / aspect : target;
     const segX = isVertical ? SEGMENTS : 2;
@@ -347,6 +363,9 @@ export function FoldRenderer3D({
     const canvas = document.createElement("canvas");
     canvas.width = Math.ceil(contentW);
     canvas.height = Math.ceil(contentH);
+    canvas.style.cssText = "position:absolute;z-index:0;pointer-events:none";
+    canvas.setAttribute("aria-hidden", "true");
+    mount.appendChild(canvas);
     const ctx = canvas.getContext("2d")!;
     const texture = new THREE.CanvasTexture(canvas);
     texture.colorSpace = THREE.SRGBColorSpace;
@@ -360,9 +379,12 @@ export function FoldRenderer3D({
     const skinRotated = skinRotation % 2 === 1;
     const bodyW = worldW * silW / (silW + margin) * (skin ? (skinRotated ? skin.body.height / skin.screen.height : skin.body.width / skin.screen.width) : 1);
     const bodyH = worldH * silH / (silH + margin) * (skin ? (skinRotated ? skin.body.width / skin.screen.width : skin.body.height / skin.screen.height) : 1);
+    // Match the published open-panel depth-to-width ratio. The hinge contour
+    // remains illustrative because the 2D skin provides no side geometry.
+    const shellThickness = chassisMm ? bodyW * chassisMm.unfoldedDepth / chassisMm.unfoldedWidth : DEFAULT_THICKNESS;
     const skinBodyWidth = skinRotated ? skin?.body.height : skin?.body.width;
     const radius = skin && skinBodyWidth ? skin.body.radius / skinBodyWidth * bodyW : (cornerRadiiDp?.topLeft ?? 8) * bodyW / silW;
-    const shellGeometry = createChassis(bodyW, bodyH, radius, THICKNESS);
+    const shellGeometry = createChassis(bodyW, bodyH, radius, shellThickness);
     const shellBase = shellGeometry.attributes.position.array.slice();
     const shellMaterial = new THREE.MeshStandardMaterial({
       color: "#424a53", metalness: 0.65, roughness: 0.3,
@@ -374,6 +396,9 @@ export function FoldRenderer3D({
     // hinge reveals it without replacing the renderer or resetting animation.
     const coverCanvas = document.createElement("canvas");
     coverCanvas.width = 1800; coverCanvas.height = 1600;
+    coverCanvas.style.cssText = "position:absolute;z-index:0;pointer-events:none";
+    coverCanvas.setAttribute("aria-hidden", "true");
+    mount.appendChild(coverCanvas);
     const coverCtx = coverCanvas.getContext("2d")!;
     const coverTexture = new THREE.CanvasTexture(coverCanvas);
     coverTexture.colorSpace = THREE.SRGBColorSpace;
@@ -397,7 +422,7 @@ export function FoldRenderer3D({
       if (!data) { coverMesh.visible = false; return; }
       const { screen, measurement, skin: outerSkin } = data;
       const size = screen.logicalSizeDp ?? { width: outerSkin.screen.width / 3, height: outerSkin.screen.height / 3 };
-      const coverMargin = size.width * 1.8;
+      const coverMargin = size.width * .25;
       const factor = 1800 / (size.width + coverMargin);
       coverCanvas.width = 1800;
       coverCanvas.height = Math.ceil((size.height + coverMargin) * factor);
@@ -415,7 +440,7 @@ export function FoldRenderer3D({
         const u = uv.getX(i), v = uv.getY(i);
         const x = (isVertical ? .5 - u : u - .5) * panelW + (isVertical ? bodyW / 4 + hingeZoneHalfWidth / 2 : 0);
         const y = (isVertical ? v - .5 : .5 - v) * panelH + (isVertical ? 0 : bodyH / 4 + hingeZoneHalfWidth / 2);
-        positions.setXYZ(i, x, y, -THICKNESS - .004);
+        positions.setXYZ(i, x, y, -shellThickness - .004);
       }
       coverBase = positions.array.slice();
       const outerSafe = measurement ? safeInsets(measurement) : null;
@@ -433,7 +458,7 @@ export function FoldRenderer3D({
           ...cornerPairs(screen.cornerRadiiDp, screen.cornerRadiiPx),
           ...cutoutPairs(measurement?.cutoutShape),
         ]), layers: st.layers, skin: outerSkin, skinRotation: screen.captureRotation ?? 0,
-        artwork: coverArtwork, foreground: coverForeground, hits: coverHits,
+        artwork: coverArtwork, foreground: coverForeground, hits: coverHits, paddingDp: coverMargin / 2,
         annotationScale: worldPerCssPixel / (panelW / (size.width + coverMargin)) * 100 / annotationZoom,
       });
       coverTexture.needsUpdate = true;
@@ -460,7 +485,7 @@ export function FoldRenderer3D({
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       drawDiagram(ctx, dpW, dpH, px, {
         safe: st.safe, cornerRadiiDp: st.cornerRadiiDp, cutoutShape: st.cutoutShape,
-        showFrame: st.showFrame, showRegions: st.showRegions, showDimensions: st.showDimensions && measured, fmt, layers: st.layers, skin, skinRotation, artwork, foreground, hits, annotationScale: worldPerCssPixel / (worldW / (dpW + margin)) * 100 / annotationZoom,
+        showFrame: st.showFrame, showRegions: st.showRegions, showDimensions: st.showDimensions && measured, fmt, layers: st.layers, skin, skinRotation, artwork, foreground, hits, paddingDp: margin / 2, annotationScale: worldPerCssPixel / (worldW / (dpW + margin)) * 100 / annotationZoom,
       });
       ctx.restore();
       texture.needsUpdate = true;
@@ -521,10 +546,10 @@ export function FoldRenderer3D({
       };
       const project = (x: number, y: number) => {
         if (outer) {
-          const pad = w * .9, u = (x + pad) / (w + 2 * pad), v = 1 - (y + pad) / (h + 2 * pad);
+          const pad = w * .125, u = (x + pad) / (w + 2 * pad), v = 1 - (y + pad) / (h + 2 * pad);
           const bx = (isVertical ? .5 - u : u - .5) * coverPanel.width + (isVertical ? bodyW / 4 + hingeZoneHalfWidth / 2 : 0);
           const by = (isVertical ? v - .5 : .5 - v) * coverPanel.height + (isVertical ? 0 : bodyH / 4 + hingeZoneHalfWidth / 2);
-          return projectWorld(...rigidPanelPoint(bx, by, -THICKNESS - .004, displayedAngle, isVertical, hingeZoneHalfWidth));
+          return projectWorld(...rigidPanelPoint(bx, by, -shellThickness - .004, displayedAngle, isVertical, hingeZoneHalfWidth));
         }
         return projectWorld(...bendPoint((x - w / 2) * worldW / (w + margin), (h / 2 - y) * worldH / (h + margin), 0, displayedAngle, isVertical, hingeZoneHalfWidth));
       };
@@ -555,7 +580,7 @@ export function FoldRenderer3D({
           right: Math.max(body.right, ...labels.map(r => Math.max(r.p.x, r.q.x, r.x + r.width / 2))),
           top: Math.min(body.top, ...labels.map(r => Math.min(r.p.y, r.q.y, r.y - r.height / 2))),
           bottom: Math.max(body.bottom, ...labels.map(r => Math.max(r.p.y, r.q.y, r.y + r.height / 2))) };
-        const fitted = st.onMeasurementBounds?.(bounds) ?? annotationZoom;
+        const fitted = st.onMeasurementBounds?.(bounds, body, displayedAngle) ?? annotationZoom;
         const difference = Math.abs(fitted - annotationZoom);
         annotationZoom = fitted;
         next.scale = 100 / fitted;
@@ -581,6 +606,29 @@ export function FoldRenderer3D({
       applyBend();
       camera.position.y = (180 - displayedAngle) / 180 * 1.1;
       camera.lookAt(0, 0, 0);
+      // Keep a DOM copy of the same measured texture behind WebGL. Some Android
+      // GPUs composite a transparent WebGL canvas as blank without reporting a
+      // lost context; the flat cover then remains visible under the SVG rulers.
+      // A flat DOM canvas cannot follow the bending mesh. Show the compositor
+      // backup only at planar endpoints; between them it causes a second phone.
+      coverCanvas.style.display = coverMesh.visible && displayedAngle < 1 ? "block" : "none";
+      canvas.style.display = mesh.visible && displayedAngle > 179 ? "block" : "none";
+      if (coverCanvas.style.display === "block" || canvas.style.display === "block") {
+        deviceGroup.updateMatrixWorld(true);
+        camera.updateMatrixWorld(true);
+        const placeBackup = (source: HTMLCanvasElement, geo: THREE.BufferGeometry) => {
+          const pos = geo.attributes.position;
+          const points = Array.from({ length: pos.count }, (_, i) => new THREE.Vector3(pos.getX(i), pos.getY(i), pos.getZ(i))
+            .applyMatrix4(deviceGroup.matrixWorld).project(camera));
+          const left = Math.min(...points.map(p => (p.x + 1) * 350));
+          const right = Math.max(...points.map(p => (p.x + 1) * 350));
+          const top = Math.min(...points.map(p => (1 - p.y) * 350));
+          const bottom = Math.max(...points.map(p => (1 - p.y) * 350));
+          Object.assign(source.style, { left: `${left}px`, top: `${top}px`, width: `${right - left}px`, height: `${bottom - top}px` });
+        };
+        if (coverCanvas.style.display === "block") placeBackup(coverCanvas, coverGeometry);
+        if (canvas.style.display === "block") placeBackup(canvas, geometry);
+      }
       projectMeasurements();
       if (Math.abs(textureZoom - annotationZoom) > .1) {
         redrawTexture(); redrawCover();
@@ -588,7 +636,8 @@ export function FoldRenderer3D({
         // redrawCover updates its unbent vertices.
         applyBend();
       }
-      renderer.render(scene, camera);
+      try { renderer.render(scene, camera); }
+      catch { setWebglUnavailable(true); return; }
       if (displayedAngle !== target) raf = requestAnimationFrame(render);
       else { lastTime = 0; stateRef.current.onTransitionEnd?.(); }
     }
@@ -633,7 +682,10 @@ export function FoldRenderer3D({
       coverArtwork.onload = null; coverForeground.onload = null;
       delete (mount as HTMLDivElement & { __update?: () => void }).__update;
       renderer.domElement.removeEventListener("pointerdown", copyLabel);
+      renderer.domElement.removeEventListener("webglcontextlost", contextLost);
       mount.removeChild(renderer.domElement);
+      mount.removeChild(canvas);
+      mount.removeChild(coverCanvas);
       geometry.dispose();
       material.dispose();
       texture.dispose();
@@ -645,7 +697,7 @@ export function FoldRenderer3D({
     // Geometry/scene are rebuilt only when the device itself changes; angle
     // and display toggles update in place via the ref-backed redraw below.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [widthDp, heightDp, axis, skin, skinRotation, measured]);
+  }, [widthDp, heightDp, axis, skin, skinRotation, measured, chassisMm, webglUnavailable]);
 
   // Cheap updates (no scene rebuild) whenever angle or display options change.
   useEffect(() => {
@@ -659,6 +711,15 @@ export function FoldRenderer3D({
         Main screen logical size is not verified yet.
       </div>
     );
+  }
+
+  if (webglUnavailable) {
+    const visible = angle < COVER_REVEAL_ANGLE && cover ? cover : fallbackMain;
+    if (visible) return <div role="img" aria-label={`${axis === "vertical" ? "Book" : "Flip"} fold flat fallback diagram`} style={{ width: 700, height: 700 }}>
+      <InsetsDiagram screen={visible.screen} measurement={visible.measurement} zoom={100} showFrame={showFrame}
+        showRegions={showRegions} showDimensions={showDimensions} units={units} layers={layers}
+        skin={angle < COVER_REVEAL_ANGLE && cover ? cover.skin : skin} />
+    </div>;
   }
 
   return <div ref={wrapRef} style={{ width: 700, height: 700, position: "relative" }}>

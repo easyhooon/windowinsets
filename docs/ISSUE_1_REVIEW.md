@@ -1,5 +1,31 @@
 # Issue 1: annotation readability and combination verification
 
+## Correction after the merged release (2026-09-23)
+
+The prior "Mobile Fold/Flip framing: Resolved" and visual-regression claims were
+too strong. The merged Fold8 mobile screenshot could show only SVG rulers while
+the WebGL device was absent; desktop showed a very small device. The previous
+matrix asserted ruler badge geometry but did not assert that **the composed
+page actually painted a device**, and used desktop-browser mobile viewports at
+device scale factor 1. Passing it was not proof of safearea.info visual parity.
+
+The follow-up reduces unused transparent margins in the 3D textures, makes
+closed-cover mobile Fit use the device body rather than distant exterior badges;
+partially folded/open poses fit the projected rulers. Some closed-cover labels
+extend beyond the initial mobile viewport and remain reachable by drag. A flat
+copy of the cover/open texture sits behind the WebGL canvas at planar endpoints
+only, avoiding a doubled phone at intermediate angles. A context
+construction failure or loss switches to the existing SVG diagram. The new
+mobile test samples pixels from the rendered screenshot at 390 px / DPR 3,
+including a transparent WebGL surface and a blocked WebGL context. This checks
+for a substantial visible safe-area width rather than the presence of labels.
+It is still browser emulation, not a claim of a verified physical Samsung phone.
+Fold8, Fold7 and Flip8 now scale unfolded panel depth from Samsung's published
+body dimensions; the skin supplies no hinge cross-section, so folded and
+intermediate side shapes remain illustrative. See the README for sources.
+The live site's deployment and a physical-device check must be evaluated
+separately after this correction is merged.
+
 2026-09-23. The follow-up replaces folded texture rulers with projected SVG
 annotations. The previously outstanding hinge-leader congestion is addressed.
 PR #5 links `Closes #1`; closure happens when the PR is merged.
