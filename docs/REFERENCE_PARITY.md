@@ -71,7 +71,7 @@ from https://developer.samsung.com/galaxy-emulator-skin.
 | --- | --- | --- |
 | Desktop layout | Device list, Metrics, large canvas; controls in header | Same three columns, independent scrolling and draggable/keyboard width handles |
 | Mobile | Model selector, collapsible Metrics, bottom controls | Implemented, checked at 390×844 |
-| Device navigation | Searchable grouped list with selected model | Android series groups, search across groups, active model on home and detail routes |
+| Device navigation | Searchable grouped list with selected model | Android family tabs (All/Z/S/Tab/Note/A), collapsible series groups, cross-family search, active model on home and detail routes |
 | Viewport | Scroll/drag pan, pinch zoom, +/−, 0 fit | Pointer pan/touch pinch, native wheel pan/Ctrl-wheel zoom, bounded 25–500% zoom, ResizeObserver fit |
 | Orientation | Portrait, left/right landscape, upside down | All four view rotations; recorded Android insets are not relabeled as landscape captures |
 | Fold | Closed/partial/open, arbitrary hinge | Presets and slider, eased three.js hinge, rigid outer panels, closed solid shell, reduced-motion support |
@@ -159,6 +159,11 @@ rendered angle and CSS scale every animation frame on desktop and mobile.
 
 ## Remaining differences
 
+- **Device family tabs and collapsible groups** are an intentional navigation
+  divergence. The Android catalogue has substantially more form factors and
+  models than the reference. The dedicated A tab avoids a long scroll to its
+  entries; groups begin with the active model's series open, can be toggled
+  independently, and search shows matches across all families.
 - **Export JSON** is an intentional product divergence from the observed
   safearea.info UI. Android consumers need exact probe dp/px, navigation-mode,
   display and provenance data outside the visual tool. The action stays secondary
@@ -178,11 +183,11 @@ rendered angle and CSS scale every animation frame on desktop and mobile.
 - The S-series import adds 26 skins and 25 artwork-only catalogue entries. Existing
   S25-series specification/measurement entries take priority over skin previews.
   Unknown specifications and insets remain pending; skin pixels are not dp data.
-- Remaining downloaded Tab/Z skins are now registered: 73 archived models,
-  70 public models after the 2020 release-year cutoff (see `DEVICE_COVERAGE.md`), with
-  separate static main/cover previews where supplied. New models do not enable
-  fold animation automatically. TriFold is excluded pending a separate decision;
-  Note/A phone archives were not present. No measurements are borrowed across models.
+- Downloaded Tab/Z/Note/A skins are registered: 123 archived models,
+  115 public models after the 2020 release-year cutoff (see `DEVICE_COVERAGE.md`),
+  with separate static main/cover previews where supplied. Fold/Flip models
+  with a main skin have hinge animation; TriFold is excluded pending a separate
+  decision. No measurements are borrowed across models.
 - Native Android landscape insets require new captures. Current rotation is visual.
 - OG/favicon have been replaced with generated Android inset artwork and a matching
   corner mark. Production assets and the exact generation prompt are documented in
