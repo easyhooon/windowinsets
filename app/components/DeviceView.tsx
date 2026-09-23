@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router";
 import type { Device, Insets, NavMode, Source } from "../data/types";
 import { Dropdown } from "./Dropdown";
-import { FoldRenderer3D } from "./FoldRenderer3D";
+import { COVER_REVEAL_ANGLE, FoldRenderer3D } from "./FoldRenderer3D";
 import { InsetsDiagram } from "./InsetsDiagram";
 import { DiagramViewport, type DiagramViewportHandle } from "./DiagramViewport";
 import { skins } from "../data/skins";
@@ -134,7 +134,7 @@ export function DeviceView({ device }: { device: Device }) {
   useEffect(() => { if (units === "px" && !exactPxAvailable) setUnits("dp"); }, [exactPxAvailable, units]);
   const pose = (value: string) => {
     const nextAngle = Number(value);
-    const target = nextAngle === 0 && device.screens.some(s => s.id === "cover") ? "cover" : "main";
+    const target = nextAngle < COVER_REVEAL_ANGLE && device.screens.some(s => s.id === "cover") ? "cover" : "main";
     setAngle(nextAngle);
     if (useFold) {
       setTransitionTarget(target);
@@ -258,8 +258,14 @@ export function DeviceView({ device }: { device: Device }) {
         {useFold ? <FoldRenderer3D angle={angle} axis={device.formFactor === "foldable-flip" ? "horizontal" : "vertical"}
           widthDp={main.logicalSizeDp?.width ?? (mainSkin ? mainSkin.screen.width / 3 : 0)} heightDp={main.logicalSizeDp?.height ?? (mainSkin ? mainSkin.screen.height / 3 : 0)}
           safe={mainSafe} safePx={mainSafePx} logicalSizePx={main.logicalSizePx} cornerRadiiDp={main.cornerRadiiDp} cornerRadiiPx={main.cornerRadiiPx} cutoutShape={mainMeasurement?.cutoutShape}
-          zoom={zoom} showFrame={showFrame} showRegions={showRegions} showDimensions={showDimensions} units={units} layers={layers} skin={mainSkin} skinRotation={main.captureRotation ?? 0} measured={!!main.logicalSizeDp} cover={outerScreen && outerSkin ? { screen: outerScreen, measurement: outerScreen.insets[navMode], skin: outerSkin } : undefined}
-          onDisplayedAngle={value => { viewport.current?.setFoldAngle(value); return viewport.current?.effectiveZoom(); }}
+          zoom={zoom} showFrame={showFrame} showRegions={showRegions} showDimensions={showDimensions} units={units} layers={layers} skin={mainSkin} skinRotation={main.captureRotation ?? 0} viewRotation={rotation} measured={!!main.logicalSizeDp} cover={outerScreen && outerSkin ? { screen: outerScreen, measurement: outerScreen.insets[navMode], skin: outerSkin } : undefined}
+          onMeasurementBounds={bounds => viewport.current?.fitFoldBounds(bounds)}
+          onDisplayedAngle={value => {
+            viewport.current?.setFoldAngle(value);
+            const visible = value < COVER_REVEAL_ANGLE && outerScreen ? "cover" : "main";
+            setScreenId(current => current === visible ? current : visible);
+            return viewport.current?.effectiveZoom();
+          }}
           onTransitionEnd={() => { if (transitionTarget) { setScreenId(transitionTarget); setTransitionTarget(null); } }} />
           : <InsetsDiagram screen={screen} measurement={measurement} zoom={zoom} showFrame={showFrame} showRegions={showRegions} showDimensions={showDimensions} units={units} layers={layers} skin={skin} />}
       </DiagramViewport>
