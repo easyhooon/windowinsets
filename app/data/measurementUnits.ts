@@ -76,3 +76,30 @@ export function safeInsetsPx(measurement: InsetsMeasurement): Insets | null {
     left: Math.max(measurement.systemBarsPx.left, measurement.displayCutoutPx.left),
   };
 }
+
+/** Reconstruct dp geometry from verified px; round only when printing a label. */
+export function preciseScreen(screen: Screen): Screen {
+  if (!screen.densityDpi || !screen.logicalSizePx) return screen;
+  const factor = screen.densityDpi / 160;
+  const dp = <T extends object>(values: T): T => Object.fromEntries(Object.entries(values).map(([key, value]) => [key, value / factor])) as T;
+  const insets = { ...screen.insets };
+  for (const mode of ["gesture", "threeButton"] as const) {
+    const m = insets[mode];
+    if (!m) continue;
+    const c = m.cutoutShape;
+    insets[mode] = { ...m,
+      systemBars: m.systemBarsPx ? dp(m.systemBarsPx) : m.systemBars,
+      displayCutout: m.displayCutoutPx ? dp(m.displayCutoutPx) : m.displayCutout,
+      cutoutShape: c && c.xPx != null && c.yPx != null && c.widthPx != null && c.heightPx != null
+        ? { ...c, xDp: c.xPx / factor, yDp: c.yPx / factor, widthDp: c.widthPx / factor, heightDp: c.heightPx / factor,
+          rightDp: (screen.logicalSizePx.width - c.xPx - c.widthPx) / factor,
+          bottomDp: (screen.logicalSizePx.height - c.yPx - c.heightPx) / factor } : c,
+    };
+  }
+  return { ...screen, logicalSizeDp: dp(screen.logicalSizePx),
+    cornerRadiiDp: screen.cornerRadiiPx ? dp(screen.cornerRadiiPx) : screen.cornerRadiiDp, insets };
+}
+
+export function cutoutPairs(c: InsetsMeasurement["cutoutShape"]): ExactLengthPair[] {
+  return c ? [[c.xDp, c.xPx], [c.yDp, c.yPx], [c.widthDp, c.widthPx], [c.heightDp, c.heightPx], [c.rightDp, c.rightPx], [c.bottomDp, c.bottomPx]] : [];
+}

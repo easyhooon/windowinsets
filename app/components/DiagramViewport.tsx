@@ -1,6 +1,7 @@
 import { useEffect, useImperativeHandle, useLayoutEffect, useRef, useState } from "react";
 
-export type DiagramViewportHandle = { setFoldAngle: (angle: number) => void; effectiveZoom: () => number };
+type Bounds = { left: number; top: number; right: number; bottom: number };
+export type DiagramViewportHandle = { fitFoldBounds: (bounds: Bounds) => number; setFoldAngle: (angle: number) => void; effectiveZoom: () => number };
 
 export function DiagramViewport({ viewportRef, autoFit = false, closedFit, children, zoom, setZoom, rotation, fitKey, onUserTransform, onFit, baseWidth = 700, baseHeight = 700, fitWidth = baseWidth, fitHeight = baseHeight }: {
   viewportRef?: React.Ref<DiagramViewportHandle>; autoFit?: boolean; closedFit?: { width: number; height: number };
@@ -18,23 +19,46 @@ export function DiagramViewport({ viewportRef, autoFit = false, closedFit, child
   live.current = { zoom, pan, setZoom, onUserTransform, onFit, autoFit, closedFit, rotation };
   const fitBounds = useRef({ fitWidth, fitHeight });
   fitBounds.current = { fitWidth, fitHeight };
-  const applyScale = () => {
+  const fitCenter = useRef({ x: 0, y: 0 });
+  const projectedBounds = useRef<Bounds | null>(null);
+  const fitFoldBounds = (bounds: Bounds) => {
+      projectedBounds.current = bounds;
+      if (!live.current.autoFit || !ref.current || !scaleRef.current) return effectiveZoom.current;
+      const sideways = Math.abs(live.current.rotation) % 180 === 90;
+      const width = bounds.right - bounds.left, height = bounds.bottom - bounds.top;
+      const availableW = ref.current.clientWidth - 52;
+      const availableH = ref.current.clientHeight - (ref.current.clientWidth < 768 ? 160 : 100);
+      const ratio = Math.min(1, availableW / ((sideways ? height : width) * effectiveZoom.current / 100),
+        availableH / ((sideways ? width : height) * effectiveZoom.current / 100));
+      effectiveZoom.current *= ratio;
+      const x = (bounds.left + bounds.right) / 2 - 350, y = (bounds.top + bounds.bottom) / 2 - 350;
+      fitCenter.current = { x, y };
+      scaleRef.current.style.transform = `scale(${effectiveZoom.current / 100}) rotate(${live.current.rotation}deg) translate(${-x}px, ${-y}px)`;
+      return effectiveZoom.current;
+    };
+  const applyScale = (includeBounds = true) => {
     const progress = displayedAngle.current / 180;
     // Use the renderer's actual angle, including interrupted and reduced-motion frames.
     effectiveZoom.current = live.current.autoFit && live.current.closedFit
       ? fitScales.current.closed + (fitScales.current.open - fitScales.current.closed) * progress
       : live.current.zoom;
-    if (scaleRef.current) scaleRef.current.style.transform = `scale(${effectiveZoom.current / 100}) rotate(${live.current.rotation}deg)`;
+    if (scaleRef.current) scaleRef.current.style.transform = `scale(${effectiveZoom.current / 100}) rotate(${live.current.rotation}deg) translate(${-fitCenter.current.x}px, ${-fitCenter.current.y}px)`;
+    if (includeBounds && projectedBounds.current) fitFoldBounds(projectedBounds.current);
   };
   useImperativeHandle(viewportRef, () => ({
-    setFoldAngle: angle => { displayedAngle.current = angle; applyScale(); },
+    setFoldAngle: angle => { displayedAngle.current = angle; applyScale(false); },
     effectiveZoom: () => effectiveZoom.current,
+    fitFoldBounds,
   }));
-  useLayoutEffect(applyScale);
+  useLayoutEffect(() => applyScale(), [zoom, rotation, autoFit]);
+  const fitting = useRef(false);
+  const [fitRevision, setFitRevision] = useState(0);
   const fit = useRef(() => {});
   useEffect(() => {
     const el = ref.current!;
     const fitCanvas = () => {
+      fitting.current = true;
+      setFitRevision(value => value + 1);
       const bounds = fitBounds.current;
       const sideways = Math.abs(rotation) % 180 === 90;
       const w = sideways ? bounds.fitHeight : bounds.fitWidth, h = sideways ? bounds.fitWidth : bounds.fitHeight;
@@ -54,6 +78,27 @@ export function DiagramViewport({ viewportRef, autoFit = false, closedFit, child
     return () => observer.disconnect();
   }, [rotation]);
   useEffect(() => { fit.current(); }, [fitKey]);
+  useEffect(() => {
+    if (!fitting.current) return;
+    const frame = requestAnimationFrame(() => {
+      const el = ref.current!;
+      const svg = el.querySelector('svg[role="group"]');
+      if (!svg) { fitting.current = false; return; }
+      // Badges have a constant on-screen font size and can extend beyond the
+      // SVG viewBox after collision avoidance. Fit their actual rotated bounds.
+      const boxes = [svg, ...svg.querySelectorAll('[role="button"]')].map(node => node.getBoundingClientRect());
+      const left = Math.min(...boxes.map(box => box.left)), right = Math.max(...boxes.map(box => box.right));
+      const top = Math.min(...boxes.map(box => box.top)), bottom = Math.max(...boxes.map(box => box.bottom));
+      const viewport = el.getBoundingClientRect();
+      const ratio = Math.min((viewport.width - 52) / (right - left), (viewport.height - 100) / (bottom - top), 1);
+      setPan(previous => ({ x: previous.x + viewport.left + viewport.width / 2 - (left + right) / 2,
+        y: previous.y + viewport.top + viewport.height / 2 - (top + bottom) / 2 }));
+      const next = Math.max(25, Math.floor(zoom * ratio));
+      if (next < zoom) setZoom(next); else fitting.current = false;
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [zoom, rotation, baseWidth, baseHeight, fitKey, fitRevision, setZoom]);
+
   useEffect(() => {
     const el = ref.current!;
     const changeZoom = (value: number) => {
@@ -81,11 +126,16 @@ export function DiagramViewport({ viewportRef, autoFit = false, closedFit, child
     return () => { el.removeEventListener("wheel", wheel); window.removeEventListener("keydown", keys); };
   }, []);
   const pointers = useRef(new Map<number, { x: number; y: number }>());
+  const pinchStart = useRef<{ distance: number; zoom: number } | null>(null);
   return <div id="device-canvas" ref={ref} className="diagram-viewport" tabIndex={0} aria-label="Zoomable device canvas"
     onPointerDown={e => {
       if ((e.target as Element).closest("button,a,[role=button]")) return;
       e.currentTarget.setPointerCapture(e.pointerId);
       pointers.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      if (pointers.current.size === 2) {
+        const [a, b] = [...pointers.current.values()];
+        pinchStart.current = { distance: Math.hypot(a.x - b.x, a.y - b.y), zoom: effectiveZoom.current };
+      }
     }}
     onPointerMove={e => {
       const previous = pointers.current.get(e.pointerId);
@@ -94,14 +144,14 @@ export function DiagramViewport({ viewportRef, autoFit = false, closedFit, child
       const others = [...pointers.current.entries()].filter(([id]) => id !== e.pointerId);
       if (others.length) {
         const other = others[0][1];
-        const before = Math.hypot(previous.x - other.x, previous.y - other.y);
         const after = Math.hypot(e.clientX - other.x, e.clientY - other.y);
-        if (before > 0) setZoom(Math.max(25, Math.min(500, effectiveZoom.current * after / before)));
+        const start = pinchStart.current;
+        if (start && start.distance > 0) setZoom(Math.max(25, Math.min(500, start.zoom * after / start.distance)));
       } else setPan(p => ({ x: p.x + e.clientX - previous.x, y: p.y + e.clientY - previous.y }));
       pointers.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
     }}
-    onPointerUp={e => pointers.current.delete(e.pointerId)} onPointerCancel={e => pointers.current.delete(e.pointerId)}
-    onLostPointerCapture={e => pointers.current.delete(e.pointerId)}>
+    onPointerUp={e => { pointers.current.delete(e.pointerId); pinchStart.current = null; }} onPointerCancel={e => { pointers.current.delete(e.pointerId); pinchStart.current = null; }}
+    onLostPointerCapture={e => { pointers.current.delete(e.pointerId); pinchStart.current = null; }}>
     <div className="diagram-position" style={{ transform: `translate(${pan.x}px, ${pan.y}px)` }}>
       <div ref={scaleRef} style={{ width: baseWidth, height: baseHeight, transformOrigin: "center" }}>{children}</div>
     </div>

@@ -125,7 +125,7 @@ test("Flip8 gesture diagrams and exact inner px remain readable", async ({ page 
 
 test("S25 Ultra exposes exact captured px separately from panel resolution", async ({ page }) => {
   await page.goto("/galaxy-s25-ultra");
-  await expect(page.locator("svg text").filter({ hasText: /^34\.13$/ })).toHaveCount(1);
+  await expect(page.getByRole("button", { name: "Top inset: 34.13 dp. Copy 34.13", exact: true })).toBeVisible();
   await openMetricsIfCollapsed(page);
   await page.getByRole("button", { name: "View settings" }).click();
   await page.getByRole("radio", { name: "px" }).click();
@@ -208,11 +208,19 @@ test("animated hinge keeps outer metrics until the inner display is visible", as
   await page.getByRole("button", { name: "Pose: Closed" }).click();
   await page.getByRole("button", { name: "Open", exact: true }).click();
   await expect(page.locator(".metrics-panel")).toHaveAttribute("aria-busy", "true");
-  await expect(page.locator(".screen-tabs button").filter({ hasText: "Outer" })).toHaveAttribute("aria-pressed", "true");
-  await expect.poll(async () => Number(await page.getByRole("img", { name: /Book fold diagram/ }).getAttribute("data-displayed-angle")))
-    .toBeGreaterThan(0);
-  const intermediateAngle = Number(await page.getByRole("img", { name: /Book fold diagram/ }).getAttribute("data-displayed-angle"));
-  expect(intermediateAngle).toBeLessThan(180);
+  const samples = await page.evaluate(() => new Promise<Array<{ angle: number; metrics: string; diagram: string }>>(resolve => {
+    const values: Array<{ angle: number; metrics: string; diagram: string }> = [];
+    const start = performance.now();
+    const tick = () => {
+      values.push({ angle: Number(document.querySelector<HTMLElement>("[data-displayed-angle]")!.dataset.displayedAngle),
+        metrics: document.querySelector('.screen-tabs button[aria-pressed="true"]')!.textContent!,
+        diagram: document.querySelector('.projected-rulers')!.getAttribute('aria-label')! });
+      if (performance.now() - start < 1000) requestAnimationFrame(tick); else resolve(values);
+    };
+    requestAnimationFrame(tick);
+  }));
+  expect(samples.some(sample => sample.angle > 60 && sample.angle < 179 && sample.metrics === 'Inner')).toBe(true);
+  for (const sample of samples) expect(sample.metrics).toBe(sample.diagram.startsWith('Cover') ? 'Outer' : 'Inner');
   await expect(page.locator(".metrics-panel")).toHaveAttribute("aria-busy", "false", { timeout: 5_000 });
   await expect(page.getByRole("img", { name: /Book fold diagram/ })).toHaveAttribute("data-displayed-angle", "180.00");
   await expect(page.locator(".screen-tabs button").filter({ hasText: "Inner" })).toHaveAttribute("aria-pressed", "true");
@@ -231,9 +239,19 @@ test("Fold cover dimension labels copy their displayed value", async ({ page, co
   await context.grantPermissions(["clipboard-read", "clipboard-write"]);
   await page.goto("/galaxy-z-fold8");
   await waitForDiagram(page);
-  const canvas = page.locator("canvas");
-  const box = await canvas.boundingBox();
-  expect(box).not.toBeNull();
-  await canvas.click({ position: { x: box!.width * 0.5, y: box!.height * 0.22 } });
+  await page.evaluate(() => navigator.clipboard.writeText(""));
+  await page.getByRole("button", { name: "Copy Display width: 475.43 dp", exact: true }).click();
   await expect.poll(() => page.evaluate(() => navigator.clipboard.readText())).toBe("475.43");
+});
+
+test("cover cutout bounds distinguish OS geometry from unmeasured lenses", async ({ page }) => {
+  await page.goto("/galaxy-z-flip8");
+  await openMetricsIfCollapsed(page);
+  await chooseUnits(page, "px");
+  await expect(page.getByRole("button", { name: "Size 520 × 209 px", exact: true })).toBeVisible();
+  await expect(page.getByText("individual lens diameters and spacing are not measured.", { exact: false })).toBeVisible();
+  await page.getByRole("link", { name: "Cutout measurement limits →" }).click();
+  await expect(page).toHaveURL(/methodology#camera-cutouts$/);
+  await expect(page.getByRole("heading", { name: "Camera cutouts: what can be measured" })).toBeVisible();
+  await expect(page.locator("#camera-cutouts")).toContainText("pending a new, verified capture");
 });

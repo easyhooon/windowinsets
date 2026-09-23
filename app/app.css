@@ -164,3 +164,12 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
 }
 
 .device-thumbnail.tablet { width:23px; height:30px; background:linear-gradient(135deg,#bddbd1,#538e83); }
+
+/* Fold controls need three full rows at phone widths; current pose stays legible. */
+@media (max-width:767px) {
+  .canvas-controls.is-foldable { grid-template-columns:repeat(2,minmax(0,1fr)); min-height:130px; }
+  .canvas-controls.is-foldable>.dropdown:nth-child(n) { grid-column:span 1; }
+  .canvas-controls.is-foldable .toolbar-button { min-height:34px; white-space:normal; }
+  .canvas-controls.is-foldable .toolbar-button>span { overflow:visible; text-overflow:clip; }
+  .device-workspace:has(.canvas-controls.is-foldable) { padding-bottom:154px; }
+}

@@ -1,14 +1,17 @@
+import { ProjectedRulers, layoutProjectedRulers, type ProjectedMeasurements, type Point } from "./ProjectedRulers";
+import { diagramAnnotations } from "./diagramAnnotations";
 import { DIAGRAM_FONT, DIAGRAM_COLORS } from "./diagramStyle";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { bendPoint, createChassis, rigidPanelPoint } from "./foldGeometry";
 import type { DeviceSkin } from "../data/skins";
 import type { CutoutShape, Screen, InsetsMeasurement } from "../data/types";
-import { cornerPairs, formatLengthFromPairs, insetPairs, safeInsets, safeInsetsPx } from "../data/measurementUnits";
+import { cutoutPairs, cornerPairs, formatLengthFromPairs, insetPairs, safeInsets, safeInsetsPx } from "../data/measurementUnits";
+
+export const COVER_REVEAL_ANGLE = 60; // Illustrative primary surface, not a measured hinge state.
 
 const SEGMENTS = 96; // vertices along the fold axis — higher = smoother curve
 const THICKNESS = 0.065; // Stylized world-space thickness, not measured hardware data.
-const ANNOTATION_PAD_DP = 80;
 
 const INK = DIAGRAM_COLORS.ink;
 const INSET_COLOR = DIAGRAM_COLORS.inset;
@@ -67,9 +70,10 @@ function drawForeground(
 }
 
 /** Draws the full flat measurement diagram (bezel, safe/inset regions, real
- * cutout, corner-radius chips, outside dimension arrows) onto a 2D canvas —
+ * cutout and region labels) onto a 2D canvas —
  * this canvas becomes the WebGL texture, so every pixel (including the
- * dimension lines) bends along with the mesh automatically. Coordinates are
+ * region labels) bends along with the mesh automatically. External rulers are
+ * projected separately so their labels and leaders never bend through the hinge. Coordinates are
  * in device dp, scaled by `px` to canvas pixels. */
 function drawDiagram(
   ctx: CanvasRenderingContext2D,
@@ -90,16 +94,8 @@ function drawDiagram(
   },
 ) {
   const W = dpW * px, H = dpH * px;
-  let labelScale = opts.annotationScale;
-  const PAD = ANNOTATION_PAD_DP * px;
-  // Labels grow as the viewport zooms out. Clamp them to the available annotation
-  // margin so long dimensions (for example 932.57) are never texture-clipped.
-  const outsideLabels = [opts.fmt(dpW), opts.fmt(dpH)];
-  if (opts.safe) outsideLabels.push(opts.fmt(opts.safe.top), opts.fmt(opts.safe.right), opts.fmt(opts.safe.bottom), opts.fmt(opts.safe.left));
-  if (opts.cornerRadiiDp) outsideLabels.push(...Object.values(opts.cornerRadiiDp).map(opts.fmt));
-  const longest = Math.max(...outsideLabels.map(label => label.length), 1);
-  const marginScale = (2 * (ANNOTATION_PAD_DP - 20) - 8) / (longest * 7.2);
-  labelScale = Math.min(labelScale, marginScale);
+  const labelScale = opts.annotationScale;
+  const PAD = dpW * .9 * px;
   ctx.clearRect(0, 0, W + PAD * 2, H + PAD * 2);
   ctx.save();
   ctx.translate(PAD, PAD);
@@ -215,74 +211,14 @@ function drawDiagram(
     ctx.fillText(value, valueX, valueY);
   }
 
-  function arrowLine(x1: number, y1: number, x2: number, y2: number, color: string) {
-    ctx.strokeStyle = color;
-    ctx.lineWidth = 1.3 * px;
-    ctx.beginPath();
-    ctx.moveTo(x1, y1);
-    ctx.lineTo(x2, y2);
-    ctx.stroke();
-    const ang = Math.atan2(y2 - y1, x2 - x1);
-    const size = 5 * px;
-    for (const [ex, ey, a] of [[x1, y1, ang + Math.PI], [x2, y2, ang]] as const) {
-      ctx.beginPath();
-      ctx.moveTo(ex, ey);
-      ctx.lineTo(ex + size * Math.cos(a - 0.4), ey + size * Math.sin(a - 0.4));
-      ctx.lineTo(ex + size * Math.cos(a + 0.4), ey + size * Math.sin(a + 0.4));
-      ctx.closePath();
-      ctx.fillStyle = color;
-      ctx.fill();
-    }
-  }
-
-  function extLine(x1: number, y1: number, x2: number, y2: number, color: string) {
-    ctx.save();
-    ctx.strokeStyle = color;
-    ctx.globalAlpha = 0.6;
-    ctx.lineWidth = 1 * px;
-    ctx.setLineDash([2 * px, 2 * px]);
-    ctx.beginPath();
-    ctx.moveTo(x1, y1);
-    ctx.lineTo(x2, y2);
-    ctx.stroke();
-    ctx.restore();
-  }
-
   if (opts.showDimensions) {
-    ctx.globalAlpha = 1;
-    // Overall width/height, outside
-    extLine(0, 0, 0, -20 * px, INK); extLine(W, 0, W, -20 * px, INK);
-    arrowLine(0, -20 * px, W, -20 * px, INK);
-    chip(W / 2, -20 * px, opts.fmt(dpW), INK);
-
-    extLine(0, 0, -20 * px, 0, INK); extLine(0, H, -20 * px, H, INK);
-    arrowLine(-20 * px, 0, -20 * px, H, INK);
-    chip(-20 * px, H / 2, opts.fmt(dpH), INK);
-
     if (safe && opts.layers.insets) {
-      if (safe.top > 0) {
-        regionLabel(W * .25, safe.top * px / 2, "TOP", opts.fmt(safe.top), INSET_COLOR, W / 2, safe.top * px, true);
-      }
+      if (safe.top > 0) regionLabel(W * .25, safe.top * px / 2, "TOP", opts.fmt(safe.top), INSET_COLOR, W / 2, safe.top * px, true);
       if (safe.bottom > 0) {
-        regionLabel(W / 2, H - safe.bottom * px / 2, "BOTTOM", opts.fmt(safe.bottom), INSET_COLOR, W, safe.bottom * px, true);
+        const c = opts.cutoutShape;
+        const freeWidth = c && c.yDp + c.heightDp >= dpH - safe.bottom && c.xDp > 0 ? c.xDp * px : W;
+        regionLabel(freeWidth / 2, H - safe.bottom * px / 2, "BOTTOM", opts.fmt(safe.bottom), INSET_COLOR, freeWidth, safe.bottom * px, true);
       }
-      if (safe.left > 0) {
-        extLine(0, 0, 0, -12 * px, INSET_COLOR); extLine(safe.left * px, 0, safe.left * px, -12 * px, INSET_COLOR);
-        arrowLine(0, -12 * px, safe.left * px, -12 * px, INSET_COLOR);
-      }
-      if (safe.right > 0) {
-        extLine(W - safe.right * px, 0, W - safe.right * px, -12 * px, INSET_COLOR); extLine(W, 0, W, -12 * px, INSET_COLOR);
-        arrowLine(W - safe.right * px, -12 * px, W, -12 * px, INSET_COLOR);
-      }
-    }
-
-    if (opts.layers.corners && r > 0 && opts.cornerRadiiDp) {
-      const cr = opts.cornerRadiiDp;
-      const dot = (x: number, y: number, v: number) => chip(x, y, opts.fmt(v), RADIUS_COLOR);
-      dot(-16 * px, -16 * px, cr.topLeft);
-      dot(W + 16 * px, -16 * px, cr.topRight);
-      dot(-16 * px, H + 16 * px, cr.bottomLeft);
-      dot(W + 16 * px, H + 16 * px, cr.bottomRight);
     }
   }
 
@@ -311,10 +247,12 @@ export function FoldRenderer3D({
   layers,
   skin,
   skinRotation = 0,
+  viewRotation = 0,
   measured = true,
   cover,
   onTransitionEnd,
   onDisplayedAngle,
+  onMeasurementBounds,
 }: {
   angle: number;
   axis: "vertical" | "horizontal";
@@ -337,23 +275,26 @@ export function FoldRenderer3D({
   layers: { safe: boolean; insets: boolean; cutout: boolean; corners: boolean };
   skin?: DeviceSkin;
   skinRotation?: QuarterTurns;
+  viewRotation?: number;
   measured?: boolean;
   cover?: { screen: Screen; measurement: InsetsMeasurement | null; skin: DeviceSkin };
-  onDisplayedAngle?: (angle: number) => void;
+  onMeasurementBounds?: (bounds: { left: number; top: number; right: number; bottom: number }) => number | undefined;
+  onDisplayedAngle?: (angle: number) => number | undefined;
   onTransitionEnd?: () => void;
 }) {
+  const [measurements, setMeasurements] = useState<ProjectedMeasurements | null>(null);
   const mountRef = useRef<HTMLDivElement>(null);
   const wrapRef = useRef<HTMLDivElement>(null);
 
-  const stateRef = useRef({ angle, safe, safePx, logicalSizePx, cornerRadiiDp: cornerRadiiDp ?? null, cornerRadiiPx: cornerRadiiPx ?? null, cutoutShape, showFrame, showRegions, showDimensions, units, zoom, layers, cover, onTransitionEnd, onDisplayedAngle });
-  stateRef.current = { angle, safe, safePx, logicalSizePx, cornerRadiiDp: cornerRadiiDp ?? null, cornerRadiiPx: cornerRadiiPx ?? null, cutoutShape, showFrame, showRegions, showDimensions, units, zoom, layers, cover, onTransitionEnd, onDisplayedAngle };
+  const stateRef = useRef({ angle, safe, safePx, logicalSizePx, cornerRadiiDp: cornerRadiiDp ?? null, cornerRadiiPx: cornerRadiiPx ?? null, cutoutShape, showFrame, showRegions, showDimensions, units, zoom, layers, cover, onTransitionEnd, onDisplayedAngle, onMeasurementBounds });
+  stateRef.current = { angle, safe, safePx, logicalSizePx, cornerRadiiDp: cornerRadiiDp ?? null, cornerRadiiPx: cornerRadiiPx ?? null, cutoutShape, showFrame, showRegions, showDimensions, units, zoom, layers, cover, onTransitionEnd, onDisplayedAngle, onMeasurementBounds };
 
   useEffect(() => {
     const mount = mountRef.current;
     const wrap = wrapRef.current;
     if (!mount || !wrap || !widthDp || !heightDp) return;
 
-    const containerW = axis === "horizontal" ? 380 : 700, containerH = 700;
+    const containerW = 700, containerH = 700;
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setSize(containerW, containerH);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -372,7 +313,7 @@ export function FoldRenderer3D({
     const camera = new THREE.PerspectiveCamera(32, containerW / containerH, 0.1, 100);
     // Slightly elevated/angled viewpoint (not a flat head-on view) so the
     // fold's depth is actually visible instead of just its silhouette.
-    camera.position.set(0, 1.1, 8.4);
+    camera.position.set(0, 1.1, 11);
     camera.lookAt(0, 0, 0.3);
 
     const isVertical = axis === "vertical";
@@ -383,14 +324,14 @@ export function FoldRenderer3D({
     // measurements must never be rotated/stretched to stand in for the inside.
     const silW = dpW, silH = dpH;
 
-    const annotationMargin = ANNOTATION_PAD_DP * 2;
-    const aspect = (silW + annotationMargin) / (silH + annotationMargin);
+    const margin = dpW * 1.8;
+    const aspect = (silW + margin) / (silH + margin);
     // Keep the LONGER silhouette edge pinned to a constant world size so the
     // camera framing stays consistent whichever way the panel ends up
     // oriented — otherwise a landscape silhouette (book fold) would blow
     // past the frustum tuned for the old always-portrait assumption and get
     // clipped down to just its green center.
-    const target = 4.2;
+    const target = 6 * 2.8 / 2.2;
     const worldW = aspect >= 1 ? target : target * aspect;
     const worldH = aspect >= 1 ? target / aspect : target;
     const segX = isVertical ? SEGMENTS : 2;
@@ -399,7 +340,7 @@ export function FoldRenderer3D({
     const basePositions = geometry.attributes.position.array.slice();
 
     const px = 1200 / dpW; // canvas px per dp — fixed texel density, independent of zoom or rotation
-    const PAD = ANNOTATION_PAD_DP * px;
+    const PAD = margin / 2 * px;
     // Annotation margins remain outside the physical chassis.
     const contentW = dpW * px + PAD * 2;
     const contentH = dpH * px + PAD * 2;
@@ -417,8 +358,8 @@ export function FoldRenderer3D({
 
     // The annotation texture includes margins; the solid ends at the display.
     const skinRotated = skinRotation % 2 === 1;
-    const bodyW = worldW * silW / (silW + annotationMargin) * (skin ? (skinRotated ? skin.body.height / skin.screen.height : skin.body.width / skin.screen.width) : 1);
-    const bodyH = worldH * silH / (silH + annotationMargin) * (skin ? (skinRotated ? skin.body.width / skin.screen.width : skin.body.height / skin.screen.height) : 1);
+    const bodyW = worldW * silW / (silW + margin) * (skin ? (skinRotated ? skin.body.height / skin.screen.height : skin.body.width / skin.screen.width) : 1);
+    const bodyH = worldH * silH / (silH + margin) * (skin ? (skinRotated ? skin.body.width / skin.screen.width : skin.body.height / skin.screen.height) : 1);
     const skinBodyWidth = skinRotated ? skin?.body.height : skin?.body.width;
     const radius = skin && skinBodyWidth ? skin.body.radius / skinBodyWidth * bodyW : (cornerRadiiDp?.topLeft ?? 8) * bodyW / silW;
     const shellGeometry = createChassis(bodyW, bodyH, radius, THICKNESS);
@@ -432,7 +373,7 @@ export function FoldRenderer3D({
     // The outer display is a real rear-facing textured panel, so closing the
     // hinge reveals it without replacing the renderer or resetting animation.
     const coverCanvas = document.createElement("canvas");
-    coverCanvas.width = 1000; coverCanvas.height = 1600;
+    coverCanvas.width = 1800; coverCanvas.height = 1600;
     const coverCtx = coverCanvas.getContext("2d")!;
     const coverTexture = new THREE.CanvasTexture(coverCanvas);
     coverTexture.colorSpace = THREE.SRGBColorSpace;
@@ -446,6 +387,9 @@ export function FoldRenderer3D({
     const coverForeground = new Image();
     const coverHits: { x: number; y: number; width: number; height: number; text: string }[] = [];
 
+    let coverPanel = { width: 0, height: 0 };
+    let annotationZoom = zoom;
+    let textureZoom = zoom;
     function redrawCover() {
       const st = stateRef.current;
       const data = st.cover;
@@ -453,15 +397,17 @@ export function FoldRenderer3D({
       if (!data) { coverMesh.visible = false; return; }
       const { screen, measurement, skin: outerSkin } = data;
       const size = screen.logicalSizeDp ?? { width: outerSkin.screen.width / 3, height: outerSkin.screen.height / 3 };
-      const factor = 1000 / (size.width + annotationMargin);
-      coverCanvas.width = 1000;
-      coverCanvas.height = Math.ceil((size.height + annotationMargin) * factor);
+      const coverMargin = size.width * 1.8;
+      const factor = 1800 / (size.width + coverMargin);
+      coverCanvas.width = 1800;
+      coverCanvas.height = Math.ceil((size.height + coverMargin) * factor);
       const physicalPanelW = isVertical ? bodyW / 2 - hingeZoneHalfWidth : bodyW;
       const physicalPanelH = isVertical ? bodyH : bodyH / 2 - hingeZoneHalfWidth;
-      const fullW = (size.width + annotationMargin) * outerSkin.screen.width / size.width;
-      const fullH = (size.height + annotationMargin) * outerSkin.screen.height / size.height;
+      const fullW = (size.width + coverMargin) * outerSkin.screen.width / size.width;
+      const fullH = (size.height + coverMargin) * outerSkin.screen.height / size.height;
       const scale = Math.min(physicalPanelW / outerSkin.body.width, physicalPanelH / outerSkin.body.height);
       const panelW = fullW * scale, panelH = fullH * scale;
+      coverPanel = { width: panelW, height: panelH };
       const positions = coverGeometry.attributes.position;
       // Front UVs are mirrored on the back of the upper/right panel.
       const uv = coverGeometry.attributes.uv;
@@ -485,9 +431,10 @@ export function FoldRenderer3D({
           ] as Array<[number, number]> : []),
           ...insetPairs(outerSafe, outerSafePx),
           ...cornerPairs(screen.cornerRadiiDp, screen.cornerRadiiPx),
+          ...cutoutPairs(measurement?.cutoutShape),
         ]), layers: st.layers, skin: outerSkin, skinRotation: screen.captureRotation ?? 0,
         artwork: coverArtwork, foreground: coverForeground, hits: coverHits,
-        annotationScale: worldPerCssPixel / (panelW / (size.width + annotationMargin)) * 100 / st.zoom,
+        annotationScale: worldPerCssPixel / (panelW / (size.width + coverMargin)) * 100 / annotationZoom,
       });
       coverTexture.needsUpdate = true;
     }
@@ -507,12 +454,13 @@ export function FoldRenderer3D({
         ] as Array<[number, number]> : []),
         ...insetPairs(st.safe, st.safePx),
         ...cornerPairs(st.cornerRadiiDp, st.cornerRadiiPx),
+        ...cutoutPairs(st.cutoutShape),
       ]);
       ctx.save();
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       drawDiagram(ctx, dpW, dpH, px, {
         safe: st.safe, cornerRadiiDp: st.cornerRadiiDp, cutoutShape: st.cutoutShape,
-        showFrame: st.showFrame, showRegions: st.showRegions, showDimensions: st.showDimensions && measured, fmt, layers: st.layers, skin, skinRotation, artwork, foreground, hits, annotationScale: worldPerCssPixel / (worldW / (dpW + annotationMargin)) * 100 / st.zoom,
+        showFrame: st.showFrame, showRegions: st.showRegions, showDimensions: st.showDimensions && measured, fmt, layers: st.layers, skin, skinRotation, artwork, foreground, hits, annotationScale: worldPerCssPixel / (worldW / (dpW + margin)) * 100 / annotationZoom,
       });
       ctx.restore();
       texture.needsUpdate = true;
@@ -546,6 +494,76 @@ export function FoldRenderer3D({
       deviceGroup.position.set(isVertical ? Math.sin(turn) * bodyW / 4 : 0, isVertical ? 0 : Math.sin(turn) * bodyH / 4, 0);
     }
 
+    function projectMeasurements() {
+      const st = stateRef.current;
+      if (!st.showDimensions) { setMeasurements(null); return; }
+      // Only annotate the front-facing display. Never show hidden inner values
+      // through the cover, or use cover captures as inner measurements.
+      const outer = displayedAngle < COVER_REVEAL_ANGLE ? st.cover : undefined;
+      const size = outer?.screen.logicalSizeDp;
+      if (displayedAngle < COVER_REVEAL_ANGLE ? !size : !measured) { setMeasurements(null); return; }
+      const w = size?.width ?? dpW, h = size?.height ?? dpH;
+      const inset = outer ? (outer.measurement ? safeInsets(outer.measurement) : null) : st.safe;
+      const insetPx = outer ? (outer.measurement ? safeInsetsPx(outer.measurement) : null) : st.safePx;
+      const corners = outer ? outer.screen.cornerRadiiDp : st.cornerRadiiDp;
+      const cornersPx = outer ? outer.screen.cornerRadiiPx : st.cornerRadiiPx;
+      const cutout = outer ? outer.measurement?.cutoutShape : st.cutoutShape;
+      const logicalPx = outer ? outer.screen.logicalSizePx : st.logicalSizePx;
+      const format = formatLengthFromPairs(st.units, [[w, logicalPx?.width], [h, logicalPx?.height],
+        ...insetPairs(inset, insetPx), ...cornerPairs(corners, cornersPx), ...cutoutPairs(cutout)]);
+      const layout = diagramAnnotations(w, h, 1, st.showFrame ? (outer?.skin ?? skin) : undefined,
+        inset, corners, cutout, outer ? outer.screen.captureRotation ?? 0 : skinRotation);
+      deviceGroup.updateMatrixWorld(true);
+      camera.updateMatrixWorld(true);
+      const projectWorld = (x: number, y: number, z: number): Point => {
+        const v = new THREE.Vector3(x, y, z).applyMatrix4(deviceGroup.matrixWorld).project(camera);
+        return { x: (v.x + 1) * 350, y: (1 - v.y) * 350 };
+      };
+      const project = (x: number, y: number) => {
+        if (outer) {
+          const pad = w * .9, u = (x + pad) / (w + 2 * pad), v = 1 - (y + pad) / (h + 2 * pad);
+          const bx = (isVertical ? .5 - u : u - .5) * coverPanel.width + (isVertical ? bodyW / 4 + hingeZoneHalfWidth / 2 : 0);
+          const by = (isVertical ? v - .5 : .5 - v) * coverPanel.height + (isVertical ? 0 : bodyH / 4 + hingeZoneHalfWidth / 2);
+          return projectWorld(...rigidPanelPoint(bx, by, -THICKNESS - .004, displayedAngle, isVertical, hingeZoneHalfWidth));
+        }
+        return projectWorld(...bendPoint((x - w / 2) * worldW / (w + margin), (h / 2 - y) * worldH / (h + margin), 0, displayedAngle, isVertical, hingeZoneHalfWidth));
+      };
+      const points: Point[] = [];
+      // Include the actual bent shell and artwork perimeter in screen-space bounds.
+      if (st.showFrame) {
+        const positions = shellGeometry.attributes.position;
+        for (let i = 0; i < positions.count; i++) points.push(projectWorld(positions.getX(i), positions.getY(i), positions.getZ(i)));
+      }
+      for (let i = 0; i <= 32; i++) {
+        const x = layout.body.left + (layout.body.right - layout.body.left) * i / 32;
+        const y = layout.body.top + (layout.body.bottom - layout.body.top) * i / 32;
+        points.push(project(x, layout.body.top), project(x, layout.body.bottom), project(layout.body.left, y), project(layout.body.right, y));
+      }
+      const body = { left: Math.min(...points.map(p => p.x)), right: Math.max(...points.map(p => p.x)),
+        top: Math.min(...points.map(p => p.y)), bottom: Math.max(...points.map(p => p.y)) };
+      const next: ProjectedMeasurements = { body, scale: 100 / annotationZoom, format, units: st.units, screen: outer ? 'Cover' : 'Inner',
+        rulers: layout.rulers.filter(r => r.kind === 'size' || st.layers[r.kind === 'inset' ? 'insets' : r.kind === 'radius' ? 'corners' : 'cutout']).map(r => ({ ...r,
+          start: project(r.guides[0][0], r.guides[0][1]), end: project(r.guides[1][0], r.guides[1][1]),
+          bracket: r.kind === 'radius' ? project(r.guides[1][0], r.guides[1][1] > h / 2 ? h : 0) : undefined,
+          side: r.y1 === r.y2 ? (r.y1 < 0 ? 'top' : 'bottom') : (r.x1 < 0 ? 'left' : 'right'),
+        })) };
+      // Constant screen-size labels can change lanes as the model shrinks.
+      // Converge within this frame, including nearly edge-on cover displays.
+      for (let pass = 0; pass < 32; pass++) {
+        const labels = layoutProjectedRulers(next);
+        const bounds = { left: Math.min(body.left, ...labels.map(r => Math.min(r.p.x, r.q.x, r.x - r.width / 2))),
+          right: Math.max(body.right, ...labels.map(r => Math.max(r.p.x, r.q.x, r.x + r.width / 2))),
+          top: Math.min(body.top, ...labels.map(r => Math.min(r.p.y, r.q.y, r.y - r.height / 2))),
+          bottom: Math.max(body.bottom, ...labels.map(r => Math.max(r.p.y, r.q.y, r.y + r.height / 2))) };
+        const fitted = st.onMeasurementBounds?.(bounds) ?? annotationZoom;
+        const difference = Math.abs(fitted - annotationZoom);
+        annotationZoom = fitted;
+        next.scale = 100 / fitted;
+        if (difference < .01) break;
+      }
+      setMeasurements(next);
+    }
+
     let raf = 0;
     let lastTime = 0;
     function render(time: number) {
@@ -555,13 +573,21 @@ export function FoldRenderer3D({
       lastTime = time;
       displayedAngle = reducedMotion.matches ? target : displayedAngle + (target - displayedAngle) * (1 - Math.exp(-delta / 75));
       if (Math.abs(target - displayedAngle) < 0.05) displayedAngle = target;
-      stateRef.current.onDisplayedAngle?.(displayedAngle);
+      const effectiveZoom = stateRef.current.onDisplayedAngle?.(displayedAngle) ?? stateRef.current.zoom;
+      annotationZoom = effectiveZoom;
       if (mount) mount.dataset.displayedAngle = displayedAngle.toFixed(2);
       const pixelRatio = Math.min(4, window.devicePixelRatio * Math.max(1, stateRef.current.zoom / 100));
       if (renderer.getPixelRatio() !== pixelRatio) renderer.setPixelRatio(pixelRatio);
       applyBend();
       camera.position.y = (180 - displayedAngle) / 180 * 1.1;
       camera.lookAt(0, 0, 0);
+      projectMeasurements();
+      if (Math.abs(textureZoom - annotationZoom) > .1) {
+        redrawTexture(); redrawCover();
+        textureZoom = annotationZoom;
+        // redrawCover updates its unbent vertices.
+        applyBend();
+      }
       renderer.render(scene, camera);
       if (displayedAngle !== target) raf = requestAnimationFrame(render);
       else { lastTime = 0; stateRef.current.onTransitionEnd?.(); }
@@ -597,7 +623,7 @@ export function FoldRenderer3D({
       const targetHits = isCover ? coverHits : hits;
       const x = uv.x * targetCanvas.width, y = (1 - uv.y) * targetCanvas.height;
       const hit = targetHits.find(h => x >= h.x && x <= h.x + h.width && y >= h.y && y <= h.y + h.height);
-      if (hit) { e.stopPropagation(); try { await navigator.clipboard.writeText(hit.text); } catch {} }
+      if (hit) { e.stopPropagation(); try { await navigator.clipboard.writeText(hit.text.replace(/^R /, "")); } catch {} }
     };
     renderer.domElement.addEventListener("pointerdown", copyLabel);
 
@@ -625,7 +651,7 @@ export function FoldRenderer3D({
   useEffect(() => {
     const mount = mountRef.current as (HTMLDivElement & { __update?: () => void }) | null;
     mount?.__update?.();
-  }, [angle, safe, safePx, logicalSizePx, cornerRadiiDp, cornerRadiiPx, cutoutShape, showFrame, showRegions, showDimensions, units, zoom, layers, cover, onTransitionEnd]);
+  }, [viewRotation, angle, safe, safePx, logicalSizePx, cornerRadiiDp, cornerRadiiPx, cutoutShape, showFrame, showRegions, showDimensions, units, zoom, layers, cover, onTransitionEnd]);
 
   if (!widthDp || !heightDp) {
     return (
@@ -635,7 +661,8 @@ export function FoldRenderer3D({
     );
   }
 
-  return <div ref={wrapRef} style={{ width: axis === "horizontal" ? 380 : 700, height: 700 }}>
-    <div ref={mountRef} role="img" aria-label={`${axis === "vertical" ? "Book" : "Flip"} fold diagram, ${angle} degrees`} style={{ width: axis === "horizontal" ? 380 : 700, height: 700 }} />
+  return <div ref={wrapRef} style={{ width: 700, height: 700, position: "relative" }}>
+    <div ref={mountRef} role="img" aria-label={`${axis === "vertical" ? "Book" : "Flip"} fold diagram, ${angle} degrees`} style={{ width: 700, height: 700 }} />
+    <ProjectedRulers measurements={measurements} />
   </div>;
 }
