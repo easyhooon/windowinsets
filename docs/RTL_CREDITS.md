@@ -87,10 +87,12 @@ prove a universal 20-credit grant because the next live grant was only 10.
    published 20-credit figure when the account received less.
 4. Reserve one device for exactly 30 minutes / 2 credits. With a confirmed
    10-credit balance, the no-refund ceiling is five devices; with 20, it is ten.
-5. Aim to finish, download and validate within the first 15 minutes. If the
-   early-return dialog offers one credit back once the files are safe, check it,
-   end the slot and verify the balance increase. Do not extend a session;
-   preserve partial evidence and requeue unfinished captures.
+5. Complete and validate the captures at a sound pace; 15 minutes is not a
+   measurement deadline. Only if the work happens to finish while the
+   early-return dialog offers one credit back, optionally check it, end the
+   slot and verify the balance increase. Never sacrifice a needed capture or
+   validation for a refund. Do not extend a session; preserve partial evidence
+   and requeue unfinished captures.
 6. After closing a session, refresh the header and Usage History. Record booked
    credits separately from any returned unused-time credits.
 7. Stop when the current balance is below two credits or the UI reports the

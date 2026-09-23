@@ -61,17 +61,16 @@ is the minimum reservation. Read `docs/RTL_CREDITS.md` before the first reservat
 of a session: Samsung's published 20-credit daily policy conflicts with a live
 10-credit once-per-day grant observed on 2026-09-23. Budget from the confirmed
 header balance, not the published maximum.
-Prepare the APK and capture checklist before reserving. Aim to finish capture,
-download and validation within the first 15 minutes. Once every required file is
-safe on the host, close the WebClient with **Return this device to get back 1
-credit(s)** checked while that option is offered; verify the account balance
-actually increases. This makes a 30-minute reservation cost one net credit when
-the unused 15-minute block is refunded. Do not assume a refund merely from the
-elapsed time or the checkbox text. If evidence is incomplete, make one prompt
-recapture attempt while the device responds. If the attempt is blocked (for
-example by a restart) and the refund option is still offered, preserve the
-partial evidence, return the device and mark the missing mode pending. Otherwise
-use the remaining reservation time; do not extend or renew automatically. Confirm the
+Prepare the APK and capture checklist before reserving. Prioritize complete,
+settled captures, downloads and validation; there is no 15-minute deadline for
+the measurements. If all required evidence is already safe on the host and the
+WebClient still offers **Return this device to get back 1 credit(s)**, an early
+return can save a credit. Check the option and verify the balance increase if
+choosing to return. Do not assume a refund from elapsed time or checkbox text,
+and do not rush, skip validation, or end a productive reservation just to meet
+a presumed refund cutoff. When evidence is incomplete, use the reserved time
+while further progress is possible; preserve unresolved captures and their
+limitations. Do not extend or renew automatically. Confirm the
 reservation dialog still names the intended model and duration before starting.
 The user's request to reserve the named queue authorizes this
 ordinary reservation; unexpected paid options, terms, permissions, or a target
