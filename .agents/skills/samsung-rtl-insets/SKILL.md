@@ -94,12 +94,33 @@ step to the user.
 1. Build before spending reservation time:
    `cd tools/insets-probe && ./gradlew :app:testDebugUnitTest :app:assembleDebug`.
    Record the APK checksum when traceability matters.
-2. Open WebClient **Applications** and click its install/upload icon.
-3. In the macOS file chooser press **Cmd+Shift+G**, paste the absolute path to
+2. On a Chrome setup that has returned `Not allowed`, check file selection **before
+   reserving**. Use a temporary local page with a plain `input[type=file]` and no
+   upload endpoint, in the same Chrome browser session used for RTL. Start
+   `waitForEvent('filechooser')` before clicking the input, then call the returned
+   chooser's `setFiles` with a small local test file. A successful selection is
+   enough; do not submit it anywhere. Do not combine a tab opened through one
+   browser session with a chooser obtained through another.
+3. If the chooser returns `Not allowed`, treat it as a Chrome/Computer Use file
+   selection failure, not a Samsung response or an APK build failure. On
+   2026-09-23 the same error occurred on a local page for both the APK and a
+   tiny text file, even with tab and chooser in the same session; the user had
+   already reported file-URL access enabled. The exact permission or bridge
+   failure was not observable. OpenAI's [Chrome extension upload guide](https://learn.chatgpt.com/docs/chrome-extension#upload-files)
+   says to enable **Allow access to file URLs** in the extension's Details and
+   start the Chrome task again after changing it. Ask the user to verify this in
+   the exact active Chrome profile; do not claim the toggle is off when they say
+   it is on. If a fresh task still fails one local preflight, stop retries and
+   hand off the WebClient **Applications → install** file selection to the user.
+   Do not enable Remote Debug Bridge, rebuild the APK, clear Samsung cookies, or
+   book another reservation to work around this browser-side failure.
+4. Open WebClient **Applications** and click its install/upload icon. Prefer the
+   documented browser file-chooser flow when the preflight passed. For a native
+   macOS file chooser, press **Cmd+Shift+G**, paste the absolute path to
    `tools/insets-probe/app/build/outputs/apk/debug/app-debug.apk`, and choose Open.
-4. Wait for `InsetsProbe info.windowinsets.probe` to appear. Select the application
+5. Wait for `InsetsProbe info.windowinsets.probe` to appear. Select the application
    row itself, then click the Start/play control.
-5. Do not enable Remote Debug Bridge or grant Chrome access to other apps/services
+6. Do not enable Remote Debug Bridge or grant Chrome access to other apps/services
    unless the user explicitly authorizes that permission. The visible WebClient
    workflow does not require RDB.
 
