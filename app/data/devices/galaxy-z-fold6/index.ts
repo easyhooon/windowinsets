@@ -32,6 +32,12 @@ const mainGesture: Source = {
   url: `${captureBase}/main-gesture.json`,
   retrievedAt: "2026-09-23",
 };
+const mainThreeButton: Source = {
+  kind: "measured",
+  label: "InsetsProbe 1.3.0 on Samsung RTL Galaxy Z Fold6 inner display, 3-button (SM-F956U)",
+  url: `${captureBase}/main-threeButton.json`,
+  retrievedAt: "2026-09-23",
+};
 
 const coverCondition = {
   oneUi: "8.5",
@@ -42,6 +48,11 @@ const mainGestureCondition = {
   oneUi: "8.5",
   android: "16",
   note: "Samsung RTL, fully unfolded, portrait. Active window 1856×2160 px and a vertical FLAT folding feature. Gesture mode is supported by settings, configuration, side-gesture insets and a 39 px navigation inset, although Probe's modeFromInsets heuristic reported 3-button.",
+};
+const mainThreeButtonCondition = {
+  oneUi: "8.5",
+  android: "16",
+  note: "Samsung RTL, fully unfolded, portrait. Active window 1856×2160 px with a vertical FLAT folding feature. Recaptured after an earlier transient 1 px navigation-bar reading; system, navigation, tappable and gesture bottoms all agree at 126 px.",
 };
 const coverCutout = {
   xDp: 172.57,
@@ -123,10 +134,17 @@ export const galaxyZFold6: Device = {
           condition: mainGestureCondition,
           sources: [mainGesture],
         },
-        threeButton: null,
+        threeButton: {
+          systemBars: { top: 35.81, right: 0, bottom: 48, left: 0 },
+          systemBarsPx: { top: 94, right: 0, bottom: 126, left: 0 },
+          displayCutout: { top: 0, right: 0, bottom: 0, left: 0 },
+          displayCutoutPx: { top: 0, right: 0, bottom: 0, left: 0 },
+          condition: mainThreeButtonCondition,
+          sources: [mainThreeButton],
+        },
       },
-      sources: [samsungSpecs, samsungSkinPage, mainGesture],
+      sources: [samsungSpecs, samsungSkinPage, mainGesture, mainThreeButton],
     },
   ],
-  sources: [samsungSpecs, samsungSkinPage, coverThreeButton, coverGesture, mainGesture],
+  sources: [samsungSpecs, samsungSkinPage, coverThreeButton, coverGesture, mainGesture, mainThreeButton],
 };

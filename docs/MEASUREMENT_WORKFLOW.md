@@ -97,27 +97,31 @@ capture because WindowManager supplied a real FLAT folding feature across the
 display midpoint. All four raw files are preserved under
 `measurements/galaxy-z-fold7/`.
 
-### Partial Fold6 capture and rejected 3-button attempt
+### Verified Fold6 capture and rejected earlier 3-button attempt
 
 Galaxy Z Fold6 (SM-F956U-KR10) was measured on Samsung RTL on 2026-09-23
-with InsetsProbe 1.3.0 across two 30-minute reservations. Both active windows
+with InsetsProbe 1.3.0 across three 30-minute reservations. Both active windows
 matched the official skin display rectangles at Android density 420 dpi:
 
 - folded cover: **968×2376 px**, portrait, with a 62×95 px cutout at x=453;
   3-button and gesture system bars were 95 px top and 126/39 px bottom;
 - unfolded inner display: **1856×2160 px**, portrait, with a vertical FLAT
-  folding feature at x=928; the accepted gesture capture reported 94 px top
-  and 39 px bottom system bars.
+  folding feature at x=928; the accepted gesture/3-button captures reported
+  94 px top and 39/126 px bottom system bars respectively.
 
 The inner gesture file reports gesture mode from Settings and Android's nav
 configuration, with 78 px side gesture regions and a 39 px navigation bar.
 Probe's separate inset-only classifier reported `threeButton`, so this
 disagreement is disclosed in the device condition rather than hidden.
-The later inner 3-button attempt had Settings/configuration set to 3-button,
+An earlier inner 3-button attempt had Settings/configuration set to 3-button,
 but the navigation bar/system bar bottom was only **1 px** while other gesture
 and tappable regions were 126 px. It is preserved in
 `measurements/galaxy-z-fold6/rejected-2026-09-23/` and **not published** as an
-inset measurement. A settled inner 3-button recapture is still required.
+inset measurement. A third reservation produced a settled inner 3-button
+recapture in `measurements/galaxy-z-fold6/main-threeButton.json`: its navigation
+mode agrees across Settings, Android configuration and Probe's inset classifier,
+and the navigation/system/tappable bottom insets all measure **126 px (48 dp)**.
+The earlier 1 px file remains unchanged as rejected historical evidence.
 RTL reported a 90° hinge angle in both physical states; classification relies
 on the actively switched display dimensions and the inner folding feature.
 
@@ -153,10 +157,9 @@ future slot availability.
 
 windowinsets.info is a reference site for Android window insets, display cutouts, corner radii and foldable hinge states across Samsung Galaxy devices. Every value is labeled **official** (published by Samsung/Google), **measured** (captured with InsetsProbe on RTL or a real device, raw JSON committed), or **community** (unverified).
 
-**Current Status**: Galaxy Z Fold8, Fold7 and Flip8 cover and inner displays are
-measured in both navigation modes from verified live RTL sessions. Fold6 cover is
-measured in both modes and its inner display in gesture mode; inner 3-button
-remains pending. Galaxy S25 Ultra and Galaxy S25+ main screens are measured.
+**Current Status**: Galaxy Z Fold8, Fold7, Fold6 and Flip8 cover and inner displays
+are measured in both navigation modes from verified live RTL sessions. Galaxy
+S25 Ultra and Galaxy S25+ main screens are measured.
 Galaxy S25 and Flip6 remain pending.
 
 ## RTL Credits & Cost
@@ -311,7 +314,7 @@ Do not use Measure All. Capture each active display and navigation mode explicit
 | Galaxy S25+ | SM-S936N | Main | ✓ | ✓ | Complete (real device, Korea — not RTL) |
 | Galaxy S25 | SM-S931N | Main | Pending | Pending | Queued |
 | Galaxy Z Fold7 | SM-F966U | Cover + inner | ✓ both | ✓ both | Complete |
-| Galaxy Z Fold6 | TBD | Main | Pending | Pending | Queued |
+| Galaxy Z Fold6 | SM-F956U | Cover + inner | ✓ both | ✓ both | Complete |
 | Galaxy Z Flip6 | TBD | Main | Pending | Pending | Queued |
 
 **Measurement Conditions**: full screen, default Display/Font size and One UI +

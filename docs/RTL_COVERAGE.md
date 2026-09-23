@@ -25,10 +25,11 @@ removes a model from its catalog.
   Galaxy Z Fold8 Ultra (SM-F976U, Korea/Gumi) was reservable on 2026-09-23. An
   earlier session was returned before capture because the lock screen required
   manual handoff; later captures in the repository measured both displays.
-  Galaxy Z Fold6 (SM-F956U-KR10, Korea/Gumi) was reserved twice on 2026-09-23.
-  Its cover was measured in both navigation modes and its inner display in
-  gesture mode; the inner 3-button capture was retained but not published
-  because the navigation bar was transiently reported as 1 px.
+  Galaxy Z Fold6 (SM-F956U-KR10, Korea/Gumi) was reserved three times on
+  2026-09-23. Its cover and inner display were measured in both navigation
+  modes. An earlier inner 3-button attempt was retained but not published
+  because the navigation bar was transiently reported as 1 px; a later
+  recapture reported a settled 126 px navigation bar.
   The full cross-series, cross-region inventory was not completed.
 - The local skin archive contains 73 registered models; 70 are public under
   the release-year policy. All four featured mobile models have registered skins.
@@ -40,8 +41,8 @@ removes a model from its catalog.
   build. Flip8 cover and inner are now measured in both modes; its accepted cover
   captures report display 1 and 948×1048 px, while the older mislabeled
   `cover-threeButton.json` remains preserved as historical inner-display evidence.
-  Fold6 now has accepted cover captures in both modes and an accepted inner
-  gesture capture. Inner 3-button remains pending a settled recapture.
+  Fold6 now has accepted cover and inner captures in both navigation modes;
+  the rejected inner 3-button attempt remains historical evidence.
 
 The comparison for every registered skin is in [RTL_SKIN_COMPARISON.csv](RTL_SKIN_COMPARISON.csv).
 It includes archived pre-2020 models for inventory completeness; it does not

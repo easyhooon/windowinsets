@@ -254,9 +254,9 @@ test('Fold7 captures keep exact cover and rotated inner evidence distinct', () =
   }
 });
 
-test('Fold6 publishes only settled cover and inner gesture evidence', () => {
+test('Fold6 publishes settled cover and inner evidence in both navigation modes', () => {
   for (const [screenId, navMode] of [
-    ['cover', 'gesture'], ['cover', 'threeButton'], ['main', 'gesture'],
+    ['cover', 'gesture'], ['cover', 'threeButton'], ['main', 'gesture'], ['main', 'threeButton'],
   ]) {
     const raw = readCapture(`measurements/galaxy-z-fold6/${screenId}-${navMode}.json`);
     const screen = galaxyZFold6.screens.find(candidate => candidate.id === screenId);
@@ -268,7 +268,7 @@ test('Fold6 publishes only settled cover and inner gesture evidence', () => {
     assert.deepEqual(screen.insets[navMode].systemBars, raw.insets.systemBars.dp);
   }
   const main = galaxyZFold6.screens.find(screen => screen.id === 'main');
-  assert.equal(main.insets.threeButton, null);
+  assert.equal(main.insets.threeButton.systemBarsPx.bottom, 126);
   assert.equal(main.insets.gesture.systemBarsPx.bottom, 39);
   assert.equal(readCapture('measurements/galaxy-z-fold6/rejected-2026-09-23/main-threeButton.json')
     .insets.systemBars.px.bottom, 1);
@@ -304,6 +304,7 @@ test('published px values and capture orientation remain exact raw evidence', ()
     { device: galaxyZFold6, screenId: 'cover', navMode: 'gesture', capturePath: 'measurements/galaxy-z-fold6/cover-gesture.json' },
     { device: galaxyZFold6, screenId: 'cover', navMode: 'threeButton', capturePath: 'measurements/galaxy-z-fold6/cover-threeButton.json' },
     { device: galaxyZFold6, screenId: 'main', navMode: 'gesture', capturePath: 'measurements/galaxy-z-fold6/main-gesture.json' },
+    { device: galaxyZFold6, screenId: 'main', navMode: 'threeButton', capturePath: 'measurements/galaxy-z-fold6/main-threeButton.json' },
     ...['gesture', 'threeButton'].flatMap(navMode => [
       {
         device: galaxyZFold2,
