@@ -1,6 +1,6 @@
 # Samsung RTL credits and reservation budget
 
-**Last live verification:** 2026-09-24 11:23 KST
+**Last live verification:** 2026-09-24 23:26 KST
 
 Samsung's published pages and the current RTL account UI do not agree on the
 daily grant. Keep the published policy, observed behavior and spending history
@@ -131,9 +131,15 @@ showed 28 minutes remaining at the first check. Its accepted main 3-button and
 gesture captures are in `measurements/galaxy-s24-ultra/recapture-2026-09-24/`.
 
 Galaxy S24+ SM-S926N-KR3 and Galaxy S24 SM-S921N-KR3 were each booked for
-30 minutes on 2026-09-24 (2 credits apiece). The S24+ reservation produced one
-accepted main 3-button capture; its gesture export remained pending. The S24
-reservation produced accepted main captures in both navigation modes.
+30 minutes on 2026-09-24 (2 credits apiece). The S24+ reservation produced
+accepted main captures in both navigation modes; the gesture capture was
+downloaded and validated after a fresh reservation. The S24 reservation also
+produced accepted main captures in both navigation modes.
+
+The additional 30-minute S24+ reservation reduced the live header from **10 to
+8 Credits** and produced the fresh gesture capture at 2026-09-24T14:26:26Z.
+The 8-credit balance was visible after booking; no early-return refund is
+claimed.
 
 The preceding 2026-09-22 Usage History contained these booked reservations:
 

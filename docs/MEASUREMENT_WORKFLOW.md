@@ -361,7 +361,7 @@ Do not use Measure All. Capture each active display and navigation mode explicit
 | Galaxy S25 Ultra | SM-S938N | Main | ✓ | ✓ | Complete |
 | Galaxy S24 Ultra | SM-S928N-KR3 | Main | ✓ | ✓ | Complete (RTL, Korea/Gumi, Android 16 / One UI 8.5) |
 | Galaxy S24 | SM-S921N-KR3 | Main | ✓ | ✓ | Complete (RTL, Korea/Gumi, Android 16 / One UI 8.5) |
-| Galaxy S24+ | SM-S926N-KR3 | Main | ✓ | — | Partial (RTL, Korea/Gumi; gesture export pending; see issue #12) |
+| Galaxy S24+ | SM-S926N-KR3 | Main | ✓ | ✓ | Complete (RTL, Korea/Gumi, Android 16 / One UI 8.5) |
 | Galaxy S25+ | SM-S936N | Main | ✓ | ✓ | Complete (real device, Korea — not RTL) |
 | Galaxy S25 Edge | SM-S937N | Main | ✓ | ✓ | Complete (RTL, Korea/Gumi, Android 16) |
 | Galaxy S25 FE | SM-S731N | Main | ✓ | ✓ | Complete (RTL, Korea/Gumi, Android 16) |
@@ -530,18 +530,17 @@ on Android 16 / One UI 8.5, build `BP4A.251205.006.S731NKSS8BZG3`. Both main
 navigation modes report display 0, rotation 0, full-screen 1080×2340 px window,
 450 dpi and font scale 1. Screen timeout was set to 10 minutes.
 
-## Galaxy S24+ partial RTL capture — 2026-09-24
+## Galaxy S24+ RTL capture — 2026-09-24
 
-Samsung RTL Korea/Gumi SM-S926N-KR3 (Android 16 / One UI 8.5) produced one
-accepted main 3-button capture at 1080×2340 px / 450 dpi. Its JSON reports
-`threeButton`, and the system setting agrees. After selecting Swipe gestures,
-InsetsProbe showed a newer preview timestamp, but the WebClient File Browser
-continued to list only `main-threeButton.json`; a second download was
-byte-identical to the first and still reported the original 11:51:57Z capture.
-Do not accept that stale export as a gesture measurement. The saved capture is
-`measurements/galaxy-s24-plus/main-threeButton.json`; the missing gesture file
-keeps the device registered with 3-button data only and gesture pending. The
-stale export symptom is tracked in [issue #12](https://github.com/easyhooon/windowinsets/issues/12).
+Samsung RTL Korea/Gumi SM-S926N-KR3 (Android 16 / One UI 8.5) produced main
+3-button and gesture captures at 1080×2340 px / 450 dpi. Both files report
+matching navigation settings and inset classifications, portrait rotation 0,
+font scale 1 and the centered cutout bounds. InsetsProbe labels the non-folding
+display `phone`; the accepted file uses the site's `main` screen filename and
+keeps the raw label unchanged. The gesture file was downloaded as `content (33)`
+and validated from its JSON fields before being copied unchanged to
+`measurements/galaxy-s24-plus/main-gesture.json`. The earlier stale-export symptom
+is tracked in [issue #12](https://github.com/easyhooon/windowinsets/issues/12).
 
 ## Galaxy S24 RTL capture — 2026-09-24
 

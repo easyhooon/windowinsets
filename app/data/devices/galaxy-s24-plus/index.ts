@@ -23,6 +23,13 @@ const buttonSource: Source = {
   retrievedAt: "2026-09-24",
 };
 
+const gestureSource: Source = {
+  kind: "measured",
+  label: "InsetsProbe 1.3.0 on Samsung RTL Galaxy S24+ (SM-S926N-KR3), main gesture",
+  url: "https://github.com/easyhooon/windowinsets/blob/main/measurements/galaxy-s24-plus/main-gesture.json",
+  retrievedAt: "2026-09-24",
+};
+
 const buttonInsets: InsetsMeasurement = {
   systemBars: { top: 33.78, right: 0, bottom: 48, left: 0 },
   systemBarsPx: { top: 95, right: 0, bottom: 135, left: 0 },
@@ -39,6 +46,24 @@ const buttonInsets: InsetsMeasurement = {
     note: "Samsung RTL Korea/Gumi, SM-S926N-KR3, build BP4A.251205.006.S926NKSSGDZG1. Portrait rotation 0, FHD+ display setting, 450 dpi and font scale 1. InsetsProbe reported a settled full-screen 1080×2340 px window on display 0. Only 3-button navigation is captured.",
   },
   sources: [buttonSource],
+};
+
+const gestureInsets: InsetsMeasurement = {
+  systemBars: { top: 33.78, right: 0, bottom: 14.93, left: 0 },
+  systemBarsPx: { top: 95, right: 0, bottom: 42, left: 0 },
+  displayCutout: { top: 33.42, right: 0, bottom: 0, left: 0 },
+  displayCutoutPx: { top: 94, right: 0, bottom: 0, left: 0 },
+  cutoutShape: {
+    xDp: 183.11, yDp: 0, widthDp: 18.13, heightDp: 33.42,
+    rightDp: 182.76, bottomDp: 798.58,
+    xPx: 515, yPx: 0, widthPx: 51, heightPx: 94, rightPx: 514, bottomPx: 2246,
+  },
+  condition: {
+    oneUi: "8.5",
+    android: "16",
+    note: "Samsung RTL Korea/Gumi, SM-S926N-KR3, build BP4A.251205.006.S926NKSSGDZG1. Portrait rotation 0, FHD+ display setting, 450 dpi and font scale 1. InsetsProbe reported a settled full-screen 1080×2340 px window on display 0. Swipe gestures are confirmed by both the Android setting and inset classification.",
+  },
+  sources: [gestureSource],
 };
 
 export const galaxyS24Plus: Device = {
@@ -61,8 +86,8 @@ export const galaxyS24Plus: Device = {
     densityDpi: 450,
     cornerRadiiDp: { topLeft: 35.91, topRight: 35.91, bottomRight: 35.91, bottomLeft: 35.91 },
     cornerRadiiPx: { topLeft: 101, topRight: 101, bottomRight: 101, bottomLeft: 101 },
-    insets: { gesture: null, threeButton: buttonInsets },
-    sources: [samsungSpecs, samsungResolution, buttonSource],
+    insets: { gesture: gestureInsets, threeButton: buttonInsets },
+    sources: [samsungSpecs, samsungResolution, buttonSource, gestureSource],
   }],
   sources: [samsungSpecs, samsungResolution, buttonSource],
 };

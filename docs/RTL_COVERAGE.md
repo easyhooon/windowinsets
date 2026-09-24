@@ -105,16 +105,15 @@ removes a model from its catalog.
   display in both navigation modes at 1080×2340 px / 450 dpi. Settings and inset
   evidence agree; raw captures omit the cutout bounding rectangle, so only the
   top cutout inset is registered. This confirms availability on that date only.
-- Galaxy S24+ (SM-S926N-KR3, Korea/Gumi) was reserved for 30 minutes on
-  2026-09-24 with Android 16 / One UI 8.5. One upright main 3-button capture
-  was downloaded and validated at 1080×2340 px / 450 dpi; InsetsProbe and
-  Android's navigation setting agree. After Swipe gestures was selected, the
-  Probe preview showed a newer timestamp, but the WebClient file browser still
-  listed only `main-threeButton.json`; a repeated download returned the same
-  11:51:57Z three-button JSON. No gesture capture is accepted, so this device
-  is registered with the verified 3-button measurement only; gesture remains
-  pending until a fresh file is verified. The reservation confirms this exact
-  model was offered in Korea on this date only.
+- Galaxy S24+ (SM-S926N-KR3, Korea/Gumi) was reserved twice for 30 minutes on
+  2026-09-24 with Android 16 / One UI 8.5. Its initial reservation produced an
+  upright main 3-button capture; a second reservation produced the gesture
+  capture. Both were downloaded and validated at 1080×2340 px / 450 dpi, and
+  InsetsProbe and Android's navigation setting agree in both files. The gesture
+  capture was generated at 2026-09-24T14:26:26Z and saved unchanged as
+  `main-gesture.json`. The earlier stale-export symptom is tracked in issue #12.
+  These reservations confirm this exact model was offered in Korea on this date
+  only.
 - Galaxy S24 (SM-S921N-KR3, Korea/Gumi) was reserved on 2026-09-24 with
   Android 16 / One UI 8.5. InsetsProbe 1.3.0 captured the main display in both
   navigation modes at 1080×2340 px / 480 dpi; the downloaded files report
