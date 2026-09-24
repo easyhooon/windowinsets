@@ -5,7 +5,7 @@
 > Coverage priorities are recorded in [README.md](../README.md#device-coverage-and-priorities):
 > current S/Fold/Flip quality → Tab → Note/A; all officially skinned models are in
 > scope from release year 2020 onward. Older artwork stays archived; see
-> [DEVICE_COVERAGE.md](DEVICE_COVERAGE.md). TriFold requires a separate decision.
+> [DEVICE_COVERAGE.md](DEVICE_COVERAGE.md). TriFold artwork and two-hinge animation were separately approved on 2026-09-24.
 > Official Samsung skins are now provided for Fold8/Flip8 and 28 S-series models; lit solid
 > fold geometry, content-sized corner badges, responsive layout and SVG toolbar
 > icons are implemented. OG artwork and favicon were replaced with the generated

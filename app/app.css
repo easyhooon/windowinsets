@@ -61,6 +61,8 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
 .device-link.selected { background:#ddf4ff; color:#0969da; font-weight:600; }
 .device-thumbnail { flex-shrink:0; display:block; width:15px; height:30px; border:2px solid #48515d; border-radius:3px; background:linear-gradient(135deg,#9bd4e4,#367fbd); box-shadow:1px 1px 2px #0003; }
 .device-thumbnail.foldable-book { width:23px; height:28px; background:linear-gradient(90deg,#789fad 48%,#344b5a 50%,#9bd4e4 53%,#5b91b4); }
+.device-thumbnail.foldable-trifold { width:30px; height:24px; background:linear-gradient(90deg,#789fad 31%,#344b5a 33%,#9bd4e4 35%,#9bd4e4 64%,#344b5a 66%,#5b91b4 68%); }
+.hinge-sequence-note { margin:4px 12px 8px; font-size:12px; line-height:1.6; color:var(--color-muted); }
 .device-thumbnail.foldable-flip { background:linear-gradient(#bfb4ce 48%,#736980 50%,#c6b6d3 53%); }
 .sidebar-footer { padding:12px 8px; border-top:1px solid #d1d9e0; display:grid; gap:7px; color:#59636e; font-size:11px; }
 .sidebar-footer-community { display:flex; align-items:center; gap:10px; }

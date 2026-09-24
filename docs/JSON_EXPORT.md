@@ -16,6 +16,11 @@ The root object identifies the stable public format with:
 The referenced JSON Schema is served with the site and can be used by validators
 and generated clients.
 
+`device.formFactor` also accepts `foldable-trifold` for Galaxy Z TriFold. Its
+`foldAnimation: true` indicates visualization support, not measured hinge geometry
+or inset availability. Both artwork-only screens retain explicit pending capture
+and navigation-mode values.
+
 Each export contains device metadata, every registered main/cover screen, both
 `gesture` and `threeButton` navigation modes, capture conditions and traceable
 sources. A mode that has not been captured is emitted as

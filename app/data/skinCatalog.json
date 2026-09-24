@@ -1184,5 +1184,16 @@
       "main"
     ],
     "providedAt": "2026-09-24"
+  },
+  {
+    "slug": "galaxy-z-trifold",
+    "name": "Galaxy Z TriFold",
+    "series": "Galaxy Z TriFold",
+    "formFactor": "foldable-trifold",
+    "screens": [
+      "cover",
+      "main"
+    ],
+    "providedAt": "2026-09-24"
   }
 ]

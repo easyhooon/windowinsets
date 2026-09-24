@@ -21,8 +21,9 @@ RTL. Select one measurement target at a time in this order:
 Put a known wrong or suspect published measurement ahead of collecting any new
 model, then prefer an incomplete measured entry over an older untouched preview.
 Include only models covered by the repository's current release policy and
-registered official skin. Keep TriFold outside the queue until its separate product
-decision changes. Missing measurements remain pending.
+registered official skin. TriFold is supported; apply the same RTL-availability
+and capture-evidence rules when collecting its measurements. Missing measurements
+remain pending.
 
 Measure only one device at a time; this is not a limit on simultaneous
 reservations. Samsung's [Web Client guide](https://developer.samsung.com/remotetestlab/doc/get-started-with-web-client)

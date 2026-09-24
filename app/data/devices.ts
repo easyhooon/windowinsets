@@ -31,7 +31,7 @@ const mergedDevices = verifiedEntries.map(device => {
   return { ...device, screens: [...device.screens, ...missingScreens].sort((a, b) => Number(a.id === "main") - Number(b.id === "main")) };
 }).concat(skinPreviews.filter(preview => !verifiedEntries.some(device => device.slug === preview.slug)));
 
-const groupOrder = (device: Device) => device.formFactor === "foldable-book" ? 0
+const groupOrder = (device: Device) => device.formFactor === "foldable-trifold" ? -1 : device.formFactor === "foldable-book" ? 0
   : device.formFactor === "foldable-flip" ? 1 : device.formFactor === "tablet" ? 3
   : device.series.startsWith("Galaxy Note") ? 4 : device.series === "Galaxy A" ? 5 : 2;
 const generation = (device: Device) => Number(device.slug.match(/(?:fold|flip|s|a|active|note)(\d+)/)?.[1] ?? 1);

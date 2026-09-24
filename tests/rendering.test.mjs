@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
-import { bendPoint, createChassis, createFoldHousings, hingeHalfWidth, rigidPanelPoint } from '../app/components/foldGeometry.ts';
+import { bendPoint, createChassis, createFoldHousings, hingeHalfWidth, rigidPanelPoint, triFoldAngles, triFoldPoint, triFoldHinges, createTriFoldHousings, createTriFoldDisplay } from '../app/components/foldGeometry.ts';
 import { skins } from '../app/data/skins.ts';
 import { isInCoverage } from '../app/data/coverage.ts';
 import { getRtlAvailability, rtlCatalog } from '../app/data/rtlAvailability.ts';
@@ -21,6 +21,47 @@ import { formatLength, hasExactPx, safeInsetsPx } from '../app/data/measurementU
 function readCapture(path) {
   return JSON.parse(readFileSync(path, 'utf8'));
 }
+
+test('TriFold folds left before right with three rigid, separated housings', () => {
+  assert.deepEqual(triFoldAngles(180), { left: 180, right: 180 });
+  assert.deepEqual(triFoldAngles(135), { left: 90, right: 180 });
+  assert.deepEqual(triFoldAngles(90), { left: 0, right: 180 });
+  assert.deepEqual(triFoldAngles(45), { left: 0, right: 90 });
+  assert.deepEqual(triFoldAngles(0), { left: 0, right: 0 });
+  const width = 4.2, thickness = .065;
+  const h = triFoldHinges(thickness);
+  for (let sequence = 0; sequence <= 180; sequence++) {
+    assert.deepEqual(triFoldPoint(0, 1, -.02, sequence, width, thickness), [0, 1, -.02]);
+    for (const sign of [-1, 1]) {
+      const a = triFoldPoint(sign * 1.2, .2, -.01, sequence, width, thickness);
+      const b = triFoldPoint(sign * 1.8, .2, -.01, sequence, width, thickness);
+      assert.ok(Math.abs(Math.hypot(...a.map((v, i) => v - b[i])) - .6) < 1e-9);
+      const half = sign < 0 ? h.left : h.right;
+      for (const edge of [width / 6 - half, width / 6 + half]) {
+        const before = triFoldPoint(sign * (edge - 1e-7), 0, 0, sequence, width, thickness);
+        const after = triFoldPoint(sign * (edge + 1e-7), 0, 0, sequence, width, thickness);
+        assert.ok(Math.hypot(...before.map((v, i) => v - after[i])) < 3e-7);
+      }
+    }
+  }
+  const leftFront = triFoldPoint(-1.4, 0, 0, 0, width, thickness)[2];
+  const leftBack = triFoldPoint(-1.4, 0, -thickness, 0, width, thickness)[2];
+  const rightFront = triFoldPoint(1.4, 0, 0, 0, width, thickness)[2];
+  assert.ok(leftFront > 0 && leftBack < rightFront, 'closed panels must nest without intersecting');
+  const housing = createTriFoldHousings(width, 3, .05, thickness);
+  const display = createTriFoldDisplay(5.2, 4, width, thickness);
+  for (const geometry of [housing, display]) {
+    for (let i = 0; i < geometry.attributes.position.count; i++) {
+      const p = geometry.attributes.position;
+      const original = [p.getX(i), p.getY(i), p.getZ(i)];
+      assert.deepEqual(triFoldPoint(...original, 180, width, thickness), original);
+      for (const sequence of [0, 45, 90, 135]) {
+        assert.ok(triFoldPoint(...original, sequence, width, thickness).every(Number.isFinite));
+      }
+    }
+    geometry.dispose();
+  }
+});
 
 function rawCornerRadii(raw) {
   const corners = raw.roundedCorners?.windowInsets;
@@ -170,14 +211,13 @@ test('official skin rectangles match original layout files and preserve the cove
   assert.notEqual(skins['galaxy-z-fold8/main'].screen.width, raw.display.widthPx);
 });
 
-test('preview catalogue has unique models and valid screen assets, excluding TriFold', () => {
+test('preview catalogue has unique models and valid screen assets, including TriFold', () => {
   const catalog = JSON.parse(readFileSync('app/data/skinCatalog.json', 'utf8'));
   assert.equal(new Set(catalog.map(device => device.slug)).size, catalog.length);
   assert.ok(catalog.some(device => device.formFactor === 'tablet'));
   for (const device of catalog) {
-    assert.ok(!device.slug.includes('trifold'));
     assert.match(device.slug, /^[a-z0-9]+(?:-[a-z0-9]+)*$/);
-    assert.ok(['bar', 'tablet', 'foldable-book', 'foldable-flip'].includes(device.formFactor));
+    assert.ok(['bar', 'tablet', 'foldable-book', 'foldable-flip', 'foldable-trifold'].includes(device.formFactor));
     assert.ok(device.screens.includes('main'));
     assert.equal(new Set(device.screens).size, device.screens.length);
     for (const screen of device.screens) {
@@ -208,7 +248,7 @@ test('Note and A imports retain original layouts and source provenance', () => {
 test('Fold and Flip coverage overrides the 2020 cutoff while older bar and tablet skins stay archived', () => {
   const catalog = JSON.parse(readFileSync('app/data/skinCatalog.json', 'utf8'));
   const supported = catalog.filter(device => isInCoverage({ ...device, releaseYear: null }));
-  assert.equal(supported.length, 118);
+  assert.equal(supported.length, 119);
   assert.ok(supported.some(device => device.slug === 'galaxy-fold'));
   for (const slug of ['galaxy-tab-s4-10-5', 'galaxy-tab-s6',
     'galaxy-note-fe', 'galaxy-note8', 'galaxy-note9', 'galaxy-note10', 'galaxy-note10-plus']) {
@@ -223,7 +263,7 @@ test('Fold and Flip coverage overrides the 2020 cutoff while older bar and table
   assert.equal(isInCoverage({ slug: 'measured-boundary-device', formFactor: 'bar', releaseYear: 2020 }), true);
   assert.equal(isInCoverage({ slug: 'older-fold', formFactor: 'foldable-book', releaseYear: 2019 }), true);
   assert.equal(isInCoverage({ slug: 'older-flip', formFactor: 'foldable-flip', releaseYear: 2019 }), true);
-  assert.equal(isInCoverage({ slug: 'galaxy-z-trifold', formFactor: 'foldable-book', releaseYear: 2025 }), false);
+  assert.equal(isInCoverage({ slug: 'galaxy-z-trifold', formFactor: 'foldable-trifold', releaseYear: 2025 }), true);
 });
 
 test('Flip6 main captures match both navigation modes without inventing cover measurements', () => {

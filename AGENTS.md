@@ -18,8 +18,8 @@ and Flip models with official skins are in scope at any release year. Discontinu
 and flagship status do not affect coverage. Follow
 the priority order in README: current S/Fold/Flip quality → Tab → Note and A.
 Keep other pre-2020 artwork archived but exclude it from public devices/routes. Check
-new imports against `docs/DEVICE_COVERAGE.md`. TriFold remains a separate support/animation
-decision, even when its skin is available. Artwork-only entries stay previews;
+new imports against `docs/DEVICE_COVERAGE.md`. TriFold supports official cover/inner
+artwork and a two-hinge 3D animation (approved 2026-09-24). Artwork-only entries stay previews;
 missing measurements must not be invented.
 
 RTL collection policy: keep registered skins regardless of RTL availability,

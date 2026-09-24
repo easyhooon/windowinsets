@@ -31,8 +31,11 @@ Added 51 screen assets for the remaining Tab and Fold/Flip downloads. The full
 archive contains 73 models: 28 S, 30 Tab, 8 Fold and 7 Flip. Public coverage
 starts at release year 2020, with a Fold/Flip exception: 71 models (28 S, 28 Tab,
 8 Fold, 7 Flip). Tab S4 and Tab S6 remain archived; the original Fold is public
-through `app/data/coverage.ts`. See `docs/DEVICE_COVERAGE.md` for release sources. TriFold remains
-excluded pending the separate product decision. No Note/A phone ZIPs were found.
+through `app/data/coverage.ts`. See `docs/DEVICE_COVERAGE.md` for release sources.
+No Note/A phone ZIPs were found in this batch.
+
+Update, 2026-09-24: TriFold now supports official cover/inner artwork and a
+two-hinge 3D animation. Its inset measurements remain pending.
 
 Folded/Cover folders map to `cover`; Unfolded/Main folders map to `main`. Some older
 Flip ZIPs supply only the main display; no cover artwork is invented. Tab S4 10.5

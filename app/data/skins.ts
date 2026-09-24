@@ -2588,5 +2588,43 @@ export const skins: Record<string, DeviceSkin> = {
       "height": 3070,
       "radius": 70
     }
+  },
+  "galaxy-z-trifold/cover": {
+    "image": "/skins/galaxy-z-trifold/cover/device.png",
+    "foreground": "/skins/galaxy-z-trifold/cover/foreground.png",
+    "width": 1562,
+    "height": 2946,
+    "screen": {
+      "x": 236,
+      "y": 208,
+      "width": 1080,
+      "height": 2520
+    },
+    "body": {
+      "x": 180,
+      "y": 154,
+      "width": 1190,
+      "height": 2640,
+      "radius": 24
+    }
+  },
+  "galaxy-z-trifold/main": {
+    "image": "/skins/galaxy-z-trifold/main/device.png",
+    "foreground": "/skins/galaxy-z-trifold/main/foreground.png",
+    "width": 2591,
+    "height": 1988,
+    "screen": {
+      "x": 216,
+      "y": 204,
+      "width": 2160,
+      "height": 1584
+    },
+    "body": {
+      "x": 160,
+      "y": 154,
+      "width": 2270,
+      "height": 1680,
+      "radius": 24
+    }
   }
 };

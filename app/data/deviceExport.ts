@@ -217,7 +217,7 @@ export function createDeviceExport(device: Device): PublicDeviceExport {
       brand: device.brand,
       series: device.series,
       formFactor: device.formFactor,
-      foldAnimation: device.formFactor === "foldable-book" || device.formFactor === "foldable-flip",
+      foldAnimation: device.formFactor === "foldable-book" || device.formFactor === "foldable-flip" || device.formFactor === "foldable-trifold",
       releaseYear: device.releaseYear,
     },
     screens: device.screens.map(screen => {

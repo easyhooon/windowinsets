@@ -5,13 +5,22 @@ Galaxy models first released in **2020 or later**, plus **all Galaxy Fold and
 Flip models regardless of release year**. This replaces the earlier no-cutoff
 decision and adds the Fold/Flip exception.
 Discontinued and non-flagship models remain eligible. Priority is current
-S/Fold/Flip quality → Tab → Note and A. TriFold awaits a separate decision.
+S/Fold/Flip quality → Tab → Note and A. The owner separately approved TriFold
+artwork and two-hinge animation on 2026-09-24; measurements remain pending.
 
 Use the model's first commercial release year, not the skin upload date, ZIP
 timestamp, announcement of a refresh, or inferred generation number. A separately
 identified refreshed model can have its own release year.
 
 ## Boundary audit
+
+The supplied `Galaxy_Z_TriFold.zip` was registered on 2026-09-24 with separate
+2160×1584 main and 1080×2520 cover display layouts. Original image, foreground
+mask and layout bytes remain in `public/skins/galaxy-z-trifold/`, with provenance.
+Samsung's [launch announcement](https://news.samsung.com/global/introducing-galaxy-z-trifold-the-shape-of-whats-next-in-mobile-innovation)
+places Korean availability in December 2025, establishing coverage eligibility.
+The public form factor is `foldable-trifold`, distinct from a single-hinge book
+fold. No RTL reservation or capture was made for this addition.
 
 These are official Samsung sources checked on 2026-09-22 through 2026-09-24. Regional availability
 dates below establish the year; they are not necessarily the first worldwide date.
@@ -43,12 +52,12 @@ audit also does not establish exact release dates for every imported model.
 
 ## Implementation and future imports
 
-`app/data/skinCatalog.json` and `public/skins/` retain all 125 imported models.
+`app/data/skinCatalog.json` and `public/skins/` retain all 126 imported models.
 `app/data/coverage.ts` includes Fold/Flip models at any release year and applies
 the 2020 cutoff to other known release years and audited boundary models.
 `devices.ts` filters the merged device list, so device
 navigation, lookup, prerendered routes and the sitemap share the same policy.
-There are 118 public models: 29 S, 29 Tab, 9 Fold, 8 Flip, 3 Note and 40 A.
+There are 119 public models: 29 S, 29 Tab, 9 Fold, 8 Flip, 1 TriFold, 3 Note and 40 A.
 
 The user-supplied `Galaxy_S10_Lite.zip` and `Galaxy_Tab_S8_Ultra.zip` were imported
 on 2026-09-24 as main-screen artwork previews. Their official release years meet

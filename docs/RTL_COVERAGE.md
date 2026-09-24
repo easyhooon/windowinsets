@@ -82,7 +82,7 @@ removes a model from its catalog.
   No Fold3 insets were captured. The device-specific installation failure is
   tracked in [issue #11](https://github.com/easyhooon/windowinsets/issues/11).
   The full cross-series, cross-region inventory was not completed.
-- The local skin archive contains 125 registered models; 117 are public under
+- The local skin archive contains 126 registered models; 119 are public under
   the release-year policy. All four featured mobile models have registered skins.
   The other archived models remain unverified, not unsupported. Galaxy Z Flip5
   was visible in the 2026-09-23 reservation catalog; its official main skin
@@ -105,8 +105,8 @@ removes a model from its catalog.
 
 The comparison for every registered skin is in [RTL_SKIN_COMPARISON.csv](RTL_SKIN_COMPARISON.csv).
 It includes pre-2020 models for inventory completeness. Galaxy Fold is public
-under the Fold/Flip exception; other pre-2020 entries remain archived. The
-separate TriFold decision is unchanged.
+under the Fold/Flip exception; other pre-2020 entries remain archived. TriFold artwork and two-hinge animation were separately approved on 2026-09-24.
+Its RTL availability is unverified; neither screen has an accepted capture.
 
 ## Data and presentation
 

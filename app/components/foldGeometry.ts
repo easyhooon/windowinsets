@@ -99,3 +99,78 @@ export function bendPoint(x: number, y: number, z: number, angle: number, vertic
   const depth = radius * (1 - Math.cos(phi)) + beyond * Math.sin(phi) + z * Math.cos(phi);
   return vertical ? [along, y, depth] as const : [x, along, depth] as const;
 }
+
+/** One coordinated sequence: close the left wing first, then the right wing.
+ * The control is a sequence position, not a measured Android hinge angle. */
+export function triFoldAngles(sequence: number) {
+  return { left: Math.max(0, Math.min(180, sequence * 2 - 180)),
+    right: Math.max(0, Math.min(180, sequence * 2)) };
+}
+
+/** Illustrative unequal hinge strips leave room for the nested left housing. */
+export function triFoldHinges(thickness: number) {
+  const gap = thickness * .12;
+  return { left: gap * Math.PI / 4, right: (thickness + 2 * gap) * Math.PI / 4 };
+}
+
+/** Fixed middle panel, with two inward cylindrical bends and rigid outer wings.
+ * Each cylinder starts tangent to the middle panel and ends tangent to its wing. */
+export function triFoldPoint(x: number, y: number, z: number, sequence: number, width: number, thickness: number) {
+  const sign = x < 0 ? -1 : 1;
+  const side = sign < 0 ? "left" : "right";
+  const hinge = triFoldHinges(thickness)[side];
+  const start = width / 6 - hinge;
+  const distance = Math.abs(x) - start;
+  const bend = (180 - triFoldAngles(sequence)[side]) * Math.PI / 180;
+  if (distance <= 0 || bend < .00001) return [x, y, z] as const;
+  const radius = 2 * hinge / bend;
+  const phi = Math.min(distance, 2 * hinge) / radius;
+  const beyond = Math.max(0, distance - 2 * hinge);
+  return [sign * (start + radius * Math.sin(phi) + beyond * Math.cos(phi) - z * Math.sin(phi)),
+    y, radius * (1 - Math.cos(phi)) + beyond * Math.sin(phi) + z * Math.cos(phi)] as const;
+}
+
+export function createTriFoldHousings(width: number, height: number, radius: number, thickness: number) {
+  const h = triFoldHinges(thickness);
+  const cuts = [-width / 2, -width / 6 - h.left, -width / 6 + h.left,
+    width / 6 - h.right, width / 6 + h.right, width / 2];
+  const panels = [0, 2, 4].map(i => {
+    const panel = createChassis(cuts[i + 1] - cuts[i], height, radius, thickness);
+    panel.translate((cuts[i] + cuts[i + 1]) / 2, 0, 0);
+    return panel;
+  });
+  const geometry = mergeGeometries(panels);
+  panels.forEach(panel => panel.dispose());
+  return geometry;
+}
+
+export function createTriFoldHingeStrips(width: number, height: number, thickness: number) {
+  const h = triFoldHinges(thickness);
+  const strips = ([-1, 1] as const).map(sign => {
+    const strip = createChassis(2 * (sign < 0 ? h.left : h.right), height, 0, thickness);
+    strip.translate(sign * width / 6, 0, 0);
+    return strip;
+  });
+  const geometry = mergeGeometries(strips);
+  strips.forEach(strip => strip.dispose());
+  return geometry;
+}
+
+/** Put vertices on both hinge boundaries; uniform tessellation misses narrow arcs. */
+export function createTriFoldDisplay(width: number, height: number, bodyWidth: number, thickness: number) {
+  const h = triFoldHinges(thickness);
+  const x = [-width / 2];
+  for (const sign of [-1, 1]) {
+    const half = sign < 0 ? h.left : h.right;
+    for (let i = 0; i <= 24; i++) x.push(sign * bodyWidth / 6 - half + 2 * half * i / 24);
+  }
+  x.push(width / 2);
+  const geometry = new THREE.PlaneGeometry(width, height, x.length - 1, 2);
+  const p = geometry.attributes.position, uv = geometry.attributes.uv;
+  for (let i = 0; i < p.count; i++) {
+    const along = x[i % x.length];
+    p.setX(i, along);
+    uv.setX(i, along / width + .5);
+  }
+  return geometry;
+}

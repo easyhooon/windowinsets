@@ -5,7 +5,7 @@ import { InsetsDiagram } from "./InsetsDiagram";
 import { DIAGRAM_FONT, DIAGRAM_COLORS } from "./diagramStyle";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
-import { bendPoint, createChassis, createFoldHousings, hingeHalfWidth, rigidPanelPoint, verticalHinge, coverPoint } from "./foldGeometry";
+import { bendPoint, createChassis, createFoldHousings, hingeHalfWidth, rigidPanelPoint, verticalHinge, coverPoint, triFoldPoint, triFoldAngles, createTriFoldDisplay, createTriFoldHousings, createTriFoldHingeStrips } from "./foldGeometry";
 import type { DeviceSkin } from "../data/skins";
 import type { CutoutShape, Screen, InsetsMeasurement } from "../data/types";
 import { cutoutPairs, cornerPairs, formatLengthFromPairs, insetPairs, safeInsets, safeInsetsPx } from "../data/measurementUnits";
@@ -217,6 +217,7 @@ function drawDiagram(
 export function FoldRenderer3D({
   angle,
   axis,
+  triFold = false,
   widthDp,
   heightDp,
   safe,
@@ -244,6 +245,7 @@ export function FoldRenderer3D({
 }: {
   angle: number;
   axis: "vertical" | "horizontal";
+  triFold?: boolean;
   widthDp: number;
   heightDp: number;
   safe: Insets | null;
@@ -336,9 +338,17 @@ export function FoldRenderer3D({
     const target = 5.2;
     const worldW = aspect >= 1 ? target : target * aspect;
     const worldH = aspect >= 1 ? target / aspect : target;
+    // The annotation texture includes margins; the solid ends at the display.
+    const skinRotated = skinRotation % 2 === 1;
+    const bodyW = worldW * silW / (silW + margin) * (skin ? (skinRotated ? skin.body.height / skin.screen.height : skin.body.width / skin.screen.width) : 1);
+    const bodyH = worldH * silH / (silH + margin) * (skin ? (skinRotated ? skin.body.width / skin.screen.width : skin.body.height / skin.screen.height) : 1);
+    // Match the published open-panel depth-to-width ratio. The hinge contour
+    // remains illustrative because the 2D skin provides no side geometry.
+    const shellThickness = chassisMm ? (rotatedBook ? bodyH : bodyW) * chassisMm.unfoldedDepth / chassisMm.unfoldedWidth : DEFAULT_THICKNESS;
     const segX = isVertical ? SEGMENTS : 2;
     const segY = isVertical ? 2 : SEGMENTS;
-    const geometry = new THREE.PlaneGeometry(worldW, worldH, segX, segY);
+    const geometry = triFold ? createTriFoldDisplay(worldW, worldH, bodyW, shellThickness)
+      : new THREE.PlaneGeometry(worldW, worldH, segX, segY);
     const basePositions = geometry.attributes.position.array.slice();
 
     const px = 1200 / dpW; // canvas px per dp — fixed texel density, independent of zoom or rotation
@@ -354,29 +364,25 @@ export function FoldRenderer3D({
     texture.colorSpace = THREE.SRGBColorSpace;
     texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
 
-    const material = new THREE.MeshBasicMaterial({ map: texture, transparent: true, side: THREE.FrontSide, depthWrite: false });
+    const displayMaterial = { map: texture, transparent: true, side: THREE.FrontSide, depthWrite: false };
+    const material = triFold
+      ? new THREE.MeshStandardMaterial({ ...displayMaterial, roughness: .72, metalness: 0 })
+      : new THREE.MeshBasicMaterial(displayMaterial);
     const mesh = new THREE.Mesh(geometry, material);
     deviceGroup.add(mesh);
 
-    // The annotation texture includes margins; the solid ends at the display.
-    const skinRotated = skinRotation % 2 === 1;
-    const bodyW = worldW * silW / (silW + margin) * (skin ? (skinRotated ? skin.body.height / skin.screen.height : skin.body.width / skin.screen.width) : 1);
-    const bodyH = worldH * silH / (silH + margin) * (skin ? (skinRotated ? skin.body.width / skin.screen.width : skin.body.height / skin.screen.height) : 1);
-    // Match the published open-panel depth-to-width ratio. The hinge contour
-    // remains illustrative because the 2D skin provides no side geometry.
-    const shellThickness = chassisMm ? (rotatedBook ? bodyH : bodyW) * chassisMm.unfoldedDepth / chassisMm.unfoldedWidth : DEFAULT_THICKNESS;
     const skinBodyWidth = skinRotated ? skin?.body.height : skin?.body.width;
     const radius = skin && skinBodyWidth ? skin.body.radius / skinBodyWidth * bodyW : (cornerRadiiDp?.topLeft ?? 8) * bodyW / silW;
     const foldedDepth = chassisMm ? (rotatedBook ? bodyH : bodyW) * chassisMm.foldedDepth / chassisMm.unfoldedWidth : undefined;
     const hingeZoneHalfWidth = hingeHalfWidth(shellThickness, foldedDepth);
-    const shellGeometry = createFoldHousings(bodyW, bodyH, radius, shellThickness, hingeZoneHalfWidth, isVertical);
+    const shellGeometry = triFold ? createTriFoldHousings(bodyW, bodyH, radius, shellThickness) : createFoldHousings(bodyW, bodyH, radius, shellThickness, hingeZoneHalfWidth, isVertical);
     const shellBase = shellGeometry.attributes.position.array.slice();
     const shellMaterial = new THREE.MeshStandardMaterial({
       color: "#424a53", metalness: 0.65, roughness: 0.3,
     });
     const shellMesh = new THREE.Mesh(shellGeometry, shellMaterial);
     deviceGroup.add(shellMesh);
-    const hingeGeometry = createChassis(isVertical ? hingeZoneHalfWidth * 2 : bodyW - radius * 2,
+    const hingeGeometry = triFold ? createTriFoldHingeStrips(bodyW, bodyH - radius * 2, shellThickness) : createChassis(isVertical ? hingeZoneHalfWidth * 2 : bodyW - radius * 2,
       isVertical ? bodyH - radius * 2 : hingeZoneHalfWidth * 2, 0, shellThickness);
     const hingeBase = hingeGeometry.attributes.position.array.slice();
     const hingeMaterial = new THREE.MeshStandardMaterial({ color: "#252b32", metalness: .7, roughness: .38 });
@@ -400,6 +406,16 @@ export function FoldRenderer3D({
     const coverForeground = new Image();
     const coverHits: { x: number; y: number; width: number; height: number; text: string }[] = [];
 
+    // TriFold's cover is on the fixed middle panel's rear, not either wing.
+    const outerPoint = (u: number, v: number, width: number, height: number) => triFold
+      ? [(0.5 - u) * width, (v - 0.5) * height] as const
+      : coverPoint(u, v, width, height, bodyW, bodyH, hingeZoneHalfWidth, isVertical, rotatedBook);
+    const innerTransform = (x: number, y: number, z: number, value: number) => triFold
+      ? triFoldPoint(x, y, z, value, bodyW, shellThickness)
+      : bendPoint(x, y, z, value, isVertical, hingeZoneHalfWidth);
+    const outerTransform = (x: number, y: number, z: number, value: number) => triFold
+      ? [x, y, z] as const : rigidPanelPoint(x, y, z, value, isVertical, hingeZoneHalfWidth);
+
     let coverPanel = { width: 0, height: 0 };
     let annotationZoom = zoom;
     let textureZoom = zoom;
@@ -414,7 +430,7 @@ export function FoldRenderer3D({
       const factor = 1800 / (size.width + coverMargin);
       coverCanvas.width = 1800;
       coverCanvas.height = Math.ceil((size.height + coverMargin) * factor);
-      const physicalPanelW = isVertical ? bodyW / 2 - hingeZoneHalfWidth : bodyW;
+      const physicalPanelW = triFold ? bodyW / 3 : isVertical ? bodyW / 2 - hingeZoneHalfWidth : bodyW;
       const physicalPanelH = isVertical ? bodyH : bodyH / 2 - hingeZoneHalfWidth;
       const fullW = (size.width + coverMargin) * outerSkin.screen.width / size.width;
       const fullH = (size.height + coverMargin) * outerSkin.screen.height / size.height;
@@ -428,7 +444,7 @@ export function FoldRenderer3D({
       const uv = coverGeometry.attributes.uv;
       for (let i = 0; i < positions.count; i++) {
         const u = uv.getX(i), v = uv.getY(i);
-        const [x, y] = coverPoint(u, v, panelW, panelH, bodyW, bodyH, hingeZoneHalfWidth, isVertical, rotatedBook);
+        const [x, y] = outerPoint(u, v, panelW, panelH);
         positions.setXYZ(i, x, y, -shellThickness - .004);
       }
       coverBase = positions.array.slice();
@@ -488,12 +504,12 @@ export function FoldRenderer3D({
       const seat = Math.max(0, 1 - displayedAngle / COVER_REVEAL_ANGLE);
       for (const [geo, base] of [[geometry, basePositions], [shellGeometry, shellBase], [hingeGeometry, hingeBase], [coverGeometry, coverBase]] as const) {
         const positions = geo.attributes.position;
-        const transform = geo === coverGeometry ? rigidPanelPoint : bendPoint;
+        const transform = geo === coverGeometry ? outerTransform : innerTransform;
         for (let i = 0; i < positions.count; i++) {
-          const point = transform(base[i * 3], base[i * 3 + 1], base[i * 3 + 2], displayedAngle, isVertical, hingeZoneHalfWidth);
+          const point = transform(base[i * 3], base[i * 3 + 1], base[i * 3 + 2], displayedAngle);
           // Seat the hinge barrel inside the ends of the housings, rather
           // than letting its radius protrude like a flap beyond the cover.
-          const hingeInset = geo === hingeGeometry ? shellThickness * seat * seat * (3 - 2 * seat) : 0;
+          const hingeInset = !triFold && geo === hingeGeometry ? shellThickness * seat * seat * (3 - 2 * seat) : 0;
           positions.setXYZ(i, point[0], point[1], point[2] + hingeInset);
         }
         positions.needsUpdate = true;
@@ -506,6 +522,12 @@ export function FoldRenderer3D({
       mesh.visible = displayedAngle > 0.5;
       coverMesh.visible = !!stateRef.current.cover && displayedAngle < 100;
       const reveal = Math.max(0, 1 - displayedAngle / 100);
+      if (triFold) {
+        const turn = reveal * reveal * (3 - 2 * reveal) * Math.PI;
+        deviceGroup.rotation.set(0, -turn, 0);
+        deviceGroup.position.set(0, 0, 0);
+        return;
+      }
       const turn = reveal * reveal * (3 - 2 * reveal) * Math.PI / 2;
       deviceGroup.rotation.set(isVertical ? 0 : turn, isVertical ? -turn : 0, rotatedBook ? turn : 0, "ZYX");
       // Center the folded depth after rotating the chassis into the outer view.
@@ -541,10 +563,10 @@ export function FoldRenderer3D({
       const project = (x: number, y: number) => {
         if (outer) {
           const pad = w * .125, u = (x + pad) / (w + 2 * pad), v = 1 - (y + pad) / (h + 2 * pad);
-          const [bx, by] = coverPoint(u, v, coverPanel.width, coverPanel.height, bodyW, bodyH, hingeZoneHalfWidth, isVertical, rotatedBook);
-          return projectWorld(...rigidPanelPoint(bx, by, -shellThickness - .004, displayedAngle, isVertical, hingeZoneHalfWidth));
+          const [bx, by] = outerPoint(u, v, coverPanel.width, coverPanel.height);
+          return projectWorld(...outerTransform(bx, by, -shellThickness - .004, displayedAngle));
         }
-        return projectWorld(...bendPoint((x - w / 2) * worldW / (w + margin), (h / 2 - y) * worldH / (h + margin), 0, displayedAngle, isVertical, hingeZoneHalfWidth));
+        return projectWorld(...innerTransform((x - w / 2) * worldW / (w + margin), (h / 2 - y) * worldH / (h + margin), 0, displayedAngle));
       };
       const points: Point[] = [];
       // Include the actual bent shell and artwork perimeter in screen-space bounds.
@@ -595,13 +617,41 @@ export function FoldRenderer3D({
       if (Math.abs(target - displayedAngle) < 0.05) displayedAngle = target;
       const effectiveZoom = stateRef.current.onDisplayedAngle?.(displayedAngle) ?? stateRef.current.zoom;
       annotationZoom = effectiveZoom;
-      if (mount) mount.dataset.displayedAngle = displayedAngle.toFixed(2);
+      if (mount) {
+        mount.dataset.displayedAngle = displayedAngle.toFixed(2);
+        if (triFold) {
+          const hinges = triFoldAngles(displayedAngle);
+          mount.dataset.leftAngle = hinges.left.toFixed(2);
+          mount.dataset.rightAngle = hinges.right.toFixed(2);
+        }
+      }
       const pixelRatio = Math.min(4, window.devicePixelRatio * Math.max(1, stateRef.current.zoom / 100));
       if (renderer.getPixelRatio() !== pixelRatio) renderer.setPixelRatio(pixelRatio);
       applyBend();
       const closedView = 1 - displayedAngle / 180;
       camera.position.set((rotatedBook ? -3.5 : 3.5) * closedView, 2.1 * closedView, 11);
+      if (triFold) {
+        const depthView = Math.sin(displayedAngle * Math.PI / 180);
+        camera.position.x += 5 * depthView;
+        camera.position.y += 2 * depthView;
+      }
       camera.lookAt(0, 0, 0);
+      if (triFold && !measured) {
+        // Artwork-only TriFold still needs a centered fit as each wing opens.
+        // These projected housing bounds are view geometry, never inset data.
+        deviceGroup.updateMatrixWorld(true);
+        camera.updateMatrixWorld(true);
+        const bounds = { left: Infinity, top: Infinity, right: -Infinity, bottom: -Infinity };
+        const point = new THREE.Vector3();
+        const positions = shellGeometry.attributes.position;
+        for (let i = 0; i < positions.count; i++) {
+          point.fromBufferAttribute(positions, i).applyMatrix4(deviceGroup.matrixWorld).project(camera);
+          const x = (point.x + 1) * 350, y = (1 - point.y) * 350;
+          bounds.left = Math.min(bounds.left, x); bounds.right = Math.max(bounds.right, x);
+          bounds.top = Math.min(bounds.top, y); bounds.bottom = Math.max(bounds.bottom, y);
+        }
+        annotationZoom = stateRef.current.onMeasurementBounds?.(bounds, bounds, displayedAngle) ?? annotationZoom;
+      }
       // Texture canvases stay off-DOM. An axis-aligned backup behind a
       // perspective surface leaks a second, flat silhouette around the model.
       projectMeasurements();
@@ -671,7 +721,7 @@ export function FoldRenderer3D({
     // Geometry/scene are rebuilt only when the device itself changes; angle
     // and display toggles update in place via the ref-backed redraw below.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [widthDp, heightDp, axis, skin, skinRotation, measured, chassisMm, webglUnavailable]);
+  }, [widthDp, heightDp, axis, triFold, skin, skinRotation, measured, chassisMm, webglUnavailable]);
 
   // Cheap updates (no scene rebuild) whenever angle or display options change.
   useEffect(() => {
@@ -689,7 +739,7 @@ export function FoldRenderer3D({
 
   if (webglUnavailable) {
     const visible = angle < COVER_REVEAL_ANGLE && cover ? cover : fallbackMain;
-    if (visible) return <div role="img" aria-label={`${axis === "vertical" ? "Book" : "Flip"} fold flat fallback diagram`} style={{ width: 700, height: 700 }}>
+    if (visible) return <div role="img" aria-label={`${triFold ? "TriFold" : axis === "vertical" ? "Book" : "Flip"} fold flat fallback diagram`} style={{ width: 700, height: 700 }}>
       <InsetsDiagram screen={visible.screen} measurement={visible.measurement} zoom={100} showFrame={showFrame}
         showRegions={showRegions} showDimensions={showDimensions} units={units} layers={layers}
         skin={angle < COVER_REVEAL_ANGLE && cover ? cover.skin : skin} />
@@ -697,7 +747,9 @@ export function FoldRenderer3D({
   }
 
   return <div ref={wrapRef} style={{ width: 700, height: 700, position: "relative" }}>
-    <div ref={mountRef} role="img" aria-label={`${axis === "vertical" ? "Book" : "Flip"} fold diagram, ${angle} degrees`} style={{ width: 700, height: 700 }} />
+    <div ref={mountRef} role="img" aria-label={triFold
+      ? `TriFold fold diagram, left hinge ${triFoldAngles(angle).left} degrees, right hinge ${triFoldAngles(angle).right} degrees`
+      : `${axis === "vertical" ? "Book" : "Flip"} fold diagram, ${angle} degrees`} style={{ width: 700, height: 700 }} />
     <ProjectedRulers measurements={measurements} />
   </div>;
 }

@@ -122,7 +122,7 @@
         "name": { "type": "string" },
         "brand": { "const": "Samsung" },
         "series": { "type": "string" },
-        "formFactor": { "enum": ["bar", "tablet", "foldable-book", "foldable-flip"] },
+        "formFactor": { "enum": ["bar", "tablet", "foldable-book", "foldable-flip", "foldable-trifold"] },
         "foldAnimation": { "type": "boolean" },
         "releaseYear": { "type": ["integer", "null"] }
       }

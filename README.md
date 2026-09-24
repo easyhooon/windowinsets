@@ -105,8 +105,9 @@ and archive policy](docs/DEVICE_COVERAGE.md).
 3. Expand Galaxy Note and Galaxy A coverage; neither series takes priority over
    the other yet.
 
-Galaxy Z TriFold is an explicit exception: its support and animation scope require
-a separate product decision. A downloaded skin does not automatically approve it.
+Galaxy Z TriFold support was approved separately on 2026-09-24: official
+cover/inner artwork and a sequential two-hinge 3D animation are available. Its
+WindowInsets remain pending. See [TriFold scope](docs/REFERENCE_PARITY.md#trifold-support--2026-09-24).
 
 An official skin permits an artwork preview, not a claim of verified inset data.
 Devices without captures remain marked **Skin preview / pending** until measured.
@@ -117,7 +118,7 @@ model has already been imported or measured.
 
 1. To register downloaded skins, run `python3 scripts/import-samsung-skins.py /path/to/downloads`.
    The importer copies original artwork, registers main/cover screens in
-   `app/data/skinCatalog.json`, and skips TriFold. Review each new model’s release
+   `app/data/skinCatalog.json`, including TriFold. Review each new model’s release
    year against the 2020 cutoff before publishing, except for Fold/Flip; record boundary/older models
    in `app/data/coverage.ts` with sources in `docs/DEVICE_COVERAGE.md`.
 2. For RTL data, keep raw JSON in `measurements/<device-slug>/`, then create
@@ -126,8 +127,8 @@ model has already been imported or measured.
    existing preview slug. Its screens override preview data; additional skin-only
    screens stay pending. Routes, sitemap and prerendering use the merged catalogue.
 
-Current public catalogue: 118 models (29 S, 29 Tab, 9 Fold, 8 Flip, 3 Note,
-40 A). The skin archive retains 125 models, including eight pre-2020 models.
+Current public catalogue: 119 models (29 S, 29 Tab, 9 Fold, 8 Flip, 1 TriFold,
+3 Note, 40 A). The skin archive retains 126 models, including eight pre-2020 models.
 New Fold/Flip entries have static main/cover previews where supplied; models
 with a main skin also have hinge animation. Note/A artwork is available as static
 previews; inset measurements remain pending.

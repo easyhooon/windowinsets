@@ -1,3 +1,4 @@
+import { triFoldAngles } from "./foldGeometry";
 import { flatDiagramSize } from "./diagramAnnotations";
 import { preciseScreen } from "../data/measurementUnits";
 import { useEffect, useRef, useState } from "react";
@@ -113,7 +114,9 @@ export function DeviceView({ device }: { device: Device }) {
     document.addEventListener("pointerdown", close); document.addEventListener("keydown", escape);
     return () => { document.removeEventListener("pointerdown", close); document.removeEventListener("keydown", escape); };
   }, [settingsOpen]);
-  const foldable = device.formFactor === "foldable-book" || device.formFactor === "foldable-flip";
+  const triFold = device.formFactor === "foldable-trifold";
+  const hinges = triFoldAngles(angle);
+  const foldable = triFold || device.formFactor === "foldable-book" || device.formFactor === "foldable-flip";
   const main = preciseScreen(device.screens.find(s => s.id === "main")!);
   const screen = preciseScreen(device.screens.find(s => s.id === screenId) ?? main);
   const measurement = screen.insets[navMode];
@@ -241,6 +244,7 @@ export function DeviceView({ device }: { device: Device }) {
             <Row label="Android" value={measurement ? measurement.condition.android : PENDING} />
           </dl>
           <p className="mb-3 text-xs text-muted">{device.name} · {screen.label} · {measurement ? `Captured ${screen.captureOrientation ?? "orientation unknown"}. Rotation changes the view, not the recorded Android insets.` : "Official artwork preview. Android insets have not been measured for this navigation mode."}</p>
+          {triFold && <p className="mb-3 text-xs text-muted">Two-hinge animation is illustrative. Partial poses do not represent measured Android window states.</p>}
           {measurement?.condition.note && <p className="mb-3 text-xs text-muted">{measurement.condition.note}</p>}
           <SourceList sources={Array.from(new Map((measurement?.sources ?? []).concat(screen.sources).map(s => [`${s.label}|${s.url ?? ""}`, s])).values())} />
           <Link to="/methodology" className="mt-3 block text-accent underline">How these values are measured →</Link>
@@ -256,7 +260,7 @@ export function DeviceView({ device }: { device: Device }) {
         onUserTransform={() => { setZoom(viewport.current?.effectiveZoom() ?? zoom); setAutoFit(false); }} onFit={() => setAutoFit(true)}
         baseWidth={diagramWidth}
         baseHeight={700} fitWidth={diagramWidth} fitHeight={diagramHeight}>
-        {useFold ? <FoldRenderer3D angle={angle} axis={device.formFactor === "foldable-flip" ? "horizontal" : "vertical"}
+        {useFold ? <FoldRenderer3D triFold={triFold} angle={angle} axis={device.formFactor === "foldable-flip" ? "horizontal" : "vertical"}
           widthDp={main.logicalSizeDp?.width ?? (mainSkin ? mainSkin.screen.width / 3 : 0)} heightDp={main.logicalSizeDp?.height ?? (mainSkin ? mainSkin.screen.height / 3 : 0)}
           safe={mainSafe} safePx={mainSafePx} logicalSizePx={main.logicalSizePx} cornerRadiiDp={main.cornerRadiiDp} cornerRadiiPx={main.cornerRadiiPx} cutoutShape={mainMeasurement?.cutoutShape}
           zoom={zoom} showFrame={showFrame} showRegions={showRegions} showDimensions={showDimensions} units={units} layers={layers} skin={mainSkin} skinRotation={main.captureRotation ?? 0} viewRotation={rotation} measured={!!main.logicalSizeDp} cover={outerScreen && outerSkin ? { screen: outerScreen, measurement: outerScreen.insets[navMode], skin: outerSkin } : undefined}
@@ -285,8 +289,8 @@ export function DeviceView({ device }: { device: Device }) {
       <Dropdown label="Navigation" value={navMode} options={[{ value: "threeButton", label: "3-button" }, { value: "gesture", label: "Gesture" }]} onChange={v => setNavMode(v as NavMode)} />
       <Dropdown label="Orientation" value={String(rotation)} options={orientationOptions} onChange={v => { setRotation(Number(v)); setAutoFit(true); setFitKey(key => key + 1); }} />
       <Dropdown label="Zoom" value={`${Math.round(zoom)}%`} options={[{ value: "fit", label: "Fit to canvas" }, { value: "out", label: "− Zoom out" }, { value: "in", label: "+ Zoom in" }, ...[50,100,200,300,500].map(z => ({ value: String(z), label: `${z}%` }))]} onChange={v => { if (v === "fit") { setAutoFit(true); setFitKey(k => k + 1); } else { setAutoFit(false); setZoom(v === "in" ? Math.min(500, (viewport.current?.effectiveZoom() ?? zoom) + 10) : v === "out" ? Math.max(25, (viewport.current?.effectiveZoom() ?? zoom) - 10) : Number(v)); } }} />
-      {useFold && <><Dropdown label="Pose" value={String(angle)} options={[{value:"0",label:"Closed"},{value:"90",label:"Partially Folded"},{value:"180",label:"Open"}]} onChange={pose} />
-      <Dropdown label="Hinge" value={`${angle}°`} valueWidthCh={4} options={[]} onChange={() => {}} footer={<input aria-label="Hinge angle in degrees" type="range" min={0} max={180} value={angle} onChange={e => pose(e.target.value)} />} /></>}
+      {useFold && <><Dropdown label="Pose" value={triFold && ![0, 135, 180].includes(angle) ? `${Math.round(angle / 180 * 100)}% open` : String(angle)} options={[{value:"0",label:"Closed"},{value:triFold ? "135" : "90",label:"Partially Folded"},{value:"180",label:"Open"}]} onChange={pose} />
+      <Dropdown label="Hinge" value={triFold ? `${hinges.left}° / ${hinges.right}°` : `${angle}°`} valueWidthCh={triFold ? 10 : 4} options={[]} onChange={() => {}} footer={<>{triFold && <p className="hinge-sequence-note">Left {hinges.left}° · Right {hinges.right}°<br />Close left first, then right.</p>}<input aria-label={triFold ? "Fold sequence" : "Hinge angle in degrees"} type="range" min={0} max={180} value={angle} onChange={e => pose(e.target.value)} /></>} /></>}
       <div className="dropdown settings" ref={settings}><button className="toolbar-button" aria-label="View settings" aria-expanded={settingsOpen} onClick={() => setSettingsOpen(!settingsOpen)}><Icon name="settings" /></button>
         {settingsOpen && <div className="dropdown-panel settings-panel">
           <label><input type="checkbox" checked={showFrame} onChange={e => setShowFrame(e.target.checked)} />Show Frame</label>

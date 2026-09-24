@@ -38,7 +38,7 @@ test('every public device export validates against the published schema', async 
   for (const device of devices) {
     const exported = createDeviceExport(device);
     assert.equal(validate(exported), true, `${device.slug}: ${JSON.stringify(validate.errors)}`);
-    if (device.formFactor === 'foldable-book' || device.formFactor === 'foldable-flip') {
+    if (device.formFactor === 'foldable-book' || device.formFactor === 'foldable-flip' || device.formFactor === 'foldable-trifold') {
       assert.equal(exported.device.foldAnimation, true, `${device.slug}: fold animation must be available`);
     }
   }
@@ -69,19 +69,22 @@ test('device export keeps measured dp and exact raw px separate from derived val
   assert.ok(measurement.sources[0].url?.endsWith('/cover-gesture.json'));
 });
 
-test('preview-only exports preserve explicit pending and null values', () => {
-  const exported = createDeviceExport(galaxyS25);
-  const main = exported.screens[0];
-  assert.deepEqual(main.specifications.resolutionPx, { width: 1080, height: 2340 });
-  assert.equal(main.capture.status, 'pending');
-  assert.equal(main.capture.value, null);
-  assert.deepEqual(main.navigationModes, {
-    gesture: { status: 'pending', value: null },
-    threeButton: { status: 'pending', value: null },
-  });
-  assert.equal(main.sources[0].note, null);
-  assert.equal(exported.device.foldAnimation, false);
-  assert.equal(main.specifications.evidence, 'registered');
+test('TriFold artwork export preserves pending values on both screens', async () => {
+  const { module: { skinPreviews } } = await runnerImport('./app/data/skinPreviews.ts', { root: process.cwd() });
+  const exported = createDeviceExport(skinPreviews.find(device => device.slug === 'galaxy-z-trifold'));
+  assert.equal(exported.device.formFactor, 'foldable-trifold');
+  assert.equal(exported.device.foldAnimation, true);
+  assert.deepEqual(exported.screens.map(screen => screen.id), ['cover', 'main']);
+  for (const screen of exported.screens) {
+    assert.equal(screen.specifications.resolutionPx, null);
+    assert.equal(screen.capture.status, 'pending');
+    assert.equal(screen.capture.value, null);
+    assert.deepEqual(screen.navigationModes, {
+      gesture: { status: 'pending', value: null },
+      threeButton: { status: 'pending', value: null },
+    });
+    assert.equal(screen.specifications.evidence, 'registered');
+  }
 });
 
 test('derived dp sizes use display precision while exact px remains unchanged', () => {

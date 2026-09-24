@@ -33,12 +33,12 @@ def import_skins(downloads):
     catalog = json.loads(catalog_path.read_text()) if catalog_path.exists() else []
     catalog_slugs = {entry['slug'] for entry in catalog}
     for archive in sorted(downloads.glob('Galaxy*.zip')):
-        if 'TriFold' in archive.stem:
-            continue  # Separate product decision; do not register automatically.
         slug = re.sub(r'[^a-z0-9]+', '-', archive.stem.lower()).strip('-')
         name = archive.stem.replace('_', ' ')
         if slug.startswith('galaxy-tab-'):
             family, form = 'Galaxy Tab', 'tablet'
+        elif 'trifold' in slug:
+            family, form = 'Galaxy Z TriFold', 'foldable-trifold'
         elif 'fold' in slug:
             family, form = 'Galaxy Z Fold', 'foldable-book'
         elif 'flip' in slug:
@@ -109,6 +109,10 @@ def import_skins(downloads):
                                        'radius': RADII.get(slug.removeprefix('galaxy-'), 70 if form == 'tablet' else 100)}}
                 if slug == 'galaxy-s20':
                     skins[key]['body'] = {'x': 334, 'y': 325, 'width': 1558, 'height': 3368, 'radius': 220}
+                if slug == 'galaxy-z-trifold':
+                    skins[key]['body'] = ({'x': 160, 'y': 154, 'width': 2270, 'height': 1680, 'radius': 24}
+                                          if screen_id == 'main' else
+                                          {'x': 180, 'y': 154, 'width': 1190, 'height': 2640, 'radius': 24})
                 imported.append(key)
         if screens and slug not in catalog_slugs:
             catalog.append({'slug': slug, 'name': name, 'series': family, 'formFactor': form,

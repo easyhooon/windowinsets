@@ -3,6 +3,7 @@ export const MIN_RELEASE_YEAR = 2020;
 
 // Audited boundary models. Do not infer a release year from a skin ZIP date.
 export const checkedReleaseYears: Record<string, number> = {
+  "galaxy-z-trifold": 2025,
   "galaxy-tab-s4-10-5": 2018,
   "galaxy-tab-s6": 2019,
   "galaxy-fold": 2019,
@@ -28,7 +29,6 @@ export const checkedReleaseYears: Record<string, number> = {
 };
 
 export function isInCoverage(device: { slug: string; formFactor: string; releaseYear: number | null }): boolean {
-  if (device.slug.includes("trifold")) return false;
   if (device.formFactor === "foldable-book" || device.formFactor === "foldable-flip") return true;
   const year = checkedReleaseYears[device.slug] ?? device.releaseYear;
   // Other existing previews have no exact year metadata; new imports require

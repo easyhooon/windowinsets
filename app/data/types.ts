@@ -99,7 +99,7 @@ export interface Screen {
   sources: Source[];
 }
 
-export type FormFactor = "bar" | "tablet" | "foldable-book" | "foldable-flip";
+export type FormFactor = "bar" | "tablet" | "foldable-book" | "foldable-flip" | "foldable-trifold";
 
 export interface Device {
   slug: string;

@@ -1,5 +1,45 @@
 # safearea.info parity — 2026-09-22
 
+## TriFold support — 2026-09-24
+
+The owner approved official artwork plus a two-hinge 3D animation, with the same
+visual role as the reference's iPhone Duo. The live reference was checked at
+1512×716 and 390×844: retain its Outer/Inner selector and Pose/Hinge control group.
+TriFold reuses the existing canvas, controls, zoom, pan and rotation.
+
+Android-specific substitutions and evidence boundaries:
+
+- A distinct `foldable-trifold` model uses three closed rigid housings and two
+  inward cylindrical hinge strips. The fixed middle panel carries the rear-facing
+  cover artwork. The [Samsung folding guide](https://www.samsung.com/us/support/answer/ANS10010261/)
+  specifies left first, then right when closing; opening reverses that order.
+- The Hinge dropdown shows **left / right** angles and one coordinated fold
+  sequence slider. This prevents a right-first closing order. Closed is 0°/0°,
+  Partially Folded is 90°/180°, and Open is 180°/180°. The slider's 0–180 range
+  denotes sequence position, not a sensor reading or Android posture.
+- Artwork-only automatic fit projects the housings each frame to center the
+  expanding silhouette. The camera moves sideways during partial poses and the
+  display responds to scene lighting to make depth visible. Explicit zoom/pan
+  remain user-controlled.
+- The ZIP supplies flat artwork, not CAD. Equal panel division, hinge curvature,
+  housing depth, gaps and partial poses are illustrative. They do not assert
+  hardware-supported intermediate window states or measurement accuracy.
+- Both displays and both navigation modes remain unmeasured. Insets, dp sizes,
+  density and corner radii stay pending; exact px mode remains disabled.
+  The physical camera stays in the official foreground mask.
+- Reduced motion applies the endpoint immediately. Missing/lost WebGL uses the
+  correct official cover or main SVG preview. JSON export preserves both screens
+  with pending/null data and reports the new form factor and animation capability.
+
+Validation: all six imported image/mask/layout files match the supplied ZIP bytes.
+Typecheck and the static prerender build pass, including `/galaxy-z-trifold` and
+its sitemap entry. The 32 Node rendering/export checks pass. Desktop and mobile
+browser checks cover both hinge stages, endpoints, rotation, frame toggling,
+manual zoom, reduced motion and unavailable WebGL. Existing Fold/Flip geometry,
+fit, pan, hinge controls and S25 Ultra exact-px checks also pass. No raw capture
+files were created or modified for TriFold.
+
+
 ## Binding development direction
 
 WindowInsets is a faithful Android clone of safearea.info. “Clone” means the live
@@ -152,7 +192,7 @@ rendered angle and CSS scale every animation frame on desktop and mobile.
   removing letterboxed gaps; its curved outer chassis has a separate crop.
   Mobile controls use two grid rows so Zoom cannot shrink to an icon-width strip.
 - Remaining-skin registration: catalogue uniqueness, all main/cover asset links
-  and TriFold exclusion are covered by the fourth Node test. Chrome checks covered
+  and TriFold registration are covered by the Node rendering tests. Chrome checks covered
   Tab S11 Ultra, mask-free Tab S4, Fold5 main/cover switching, and the natively
   landscape Tab Active4 Pro at 390×844. Registration uses static artwork; it does
   not assert animation completeness or measured device geometry for these models.
@@ -183,11 +223,11 @@ rendered angle and CSS scale every animation frame on desktop and mobile.
 - The S-series import adds 26 skins and 25 artwork-only catalogue entries. Existing
   S25-series specification/measurement entries take priority over skin previews.
   Unknown specifications and insets remain pending; skin pixels are not dp data.
-- Downloaded S/Tab/Z/Note/A skins are registered: 125 archived models,
-  118 public models after the 2020 release-year cutoff and Fold/Flip exception (see `DEVICE_COVERAGE.md`),
+- Downloaded S/Tab/Z/Note/A skins are registered: 126 archived models,
+  119 public models after the 2020 release-year cutoff and Fold/Flip exception (see `DEVICE_COVERAGE.md`),
   with separate static main/cover previews where supplied. Fold/Flip models
-  with a main skin have hinge animation; TriFold is excluded pending a separate
-  decision. No measurements are borrowed across models.
+  with a main skin have hinge animation; TriFold has a separately approved
+  sequential two-hinge animation (2026-09-24). No measurements are borrowed across models.
 - Native Android landscape insets require new captures. Current rotation is visual.
 - OG/favicon have been replaced with generated Android inset artwork and a matching
   corner mark. Production assets and the exact generation prompt are documented in
