@@ -187,3 +187,8 @@ Android 16) reduced the confirmed header balance from **12 to 10 Credits**.
 The slot was booked for 30 minutes / 2 credits after inspecting Usage History.
 The user completed the reservation and installed InsetsProbe while the Chrome
 file-chooser preflight remained blocked. No extension or renewal was requested.
+
+On 2026-09-25 the same TriFold model was booked for another 30 minutes / 2
+credits to capture the missing cover 3-button mode. The preceding catalog header
+showed 8 Credits; a post-booking balance and any refund were not independently
+verified.

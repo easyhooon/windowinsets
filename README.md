@@ -107,8 +107,8 @@ and archive policy](docs/DEVICE_COVERAGE.md).
 
 Galaxy Z TriFold support was approved separately on 2026-09-24: official
 cover/inner artwork and a sequential two-hinge 3D animation are available. Its
-main-display insets in both navigation modes and cover gesture insets are verified;
-cover 3-button remains pending. See [TriFold scope](docs/REFERENCE_PARITY.md#trifold-support--2026-09-24).
+main-display insets in both navigation modes and cover insets in both modes are
+verified. See [TriFold scope](docs/REFERENCE_PARITY.md#trifold-support--2026-09-24).
 
 An official skin permits an artwork preview, not a claim of verified inset data.
 Devices without captures remain marked **Skin preview / pending** until measured.

@@ -26,8 +26,8 @@ Android-specific substitutions and evidence boundaries:
 - The ZIP supplies flat artwork, not CAD. Equal panel division, hinge curvature,
   housing depth, gaps and partial poses are illustrative. They do not assert
   hardware-supported intermediate window states or measurement accuracy.
-- RTL captures now verify main insets in both modes and cover gesture insets.
-  Cover 3-button stays pending; exact px values come from the accepted captures.
+- RTL captures verify main and cover insets in both navigation modes; exact px
+  values come from the accepted captures.
   The physical camera stays in the official foreground mask.
 - Reduced motion applies the endpoint immediately. Missing/lost WebGL uses the
   correct official cover or main SVG preview. JSON export preserves both screens

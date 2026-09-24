@@ -715,8 +715,14 @@ test('landscape book captures rotate the hinge and preserve cover UV distances',
   }
 });
 
-test('TriFold log recovery preserves complete captures and leaves cover buttons pending', () => {
-  assert.equal(galaxyZTriFold.screens.find(s => s.id === 'cover').insets.threeButton, null);
+test('TriFold log recovery preserves complete captures and registers both cover modes', () => {
+  const cover = galaxyZTriFold.screens.find(s => s.id === 'cover');
+  const coverThreeButton = readCapture('measurements/galaxy-z-trifold/cover-threeButton.json');
+  assert.deepEqual(cover.insets.threeButton.systemBarsPx, coverThreeButton.insets.systemBars.px);
+  assert.deepEqual(cover.insets.threeButton.displayCutoutPx, coverThreeButton.insets.displayCutout.px);
+  assert.equal(coverThreeButton.screen, 'cover');
+  assert.equal(coverThreeButton.display.fontScale, 1);
+  assert.equal(coverThreeButton.navigation.mode, 'threeButton');
   for (const screen of ['main', 'cover']) {
     const log = readFileSync(`measurements/galaxy-z-trifold/rtl-logs/${screen}-gesture.txt`, 'utf8');
     const messages = log.split('\n').filter(line => /InsetsProbe:?[\t]+/.test(line))

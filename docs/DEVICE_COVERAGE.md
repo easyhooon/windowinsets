@@ -6,7 +6,8 @@ Flip models regardless of release year**. This replaces the earlier no-cutoff
 decision and adds the Fold/Flip exception.
 Discontinued and non-flagship models remain eligible. Priority is current
 S/Fold/Flip quality → Tab → Note and A. The owner separately approved TriFold
-artwork and two-hinge animation on 2026-09-24; measurements remain pending.
+artwork and two-hinge animation on 2026-09-24; all four screen/mode captures are
+now verified.
 
 Use the model's first commercial release year, not the skin upload date, ZIP
 timestamp, announcement of a refresh, or inferred generation number. A separately
@@ -20,8 +21,9 @@ mask and layout bytes remain in `public/skins/galaxy-z-trifold/`, with provenanc
 Samsung's [launch announcement](https://news.samsung.com/global/introducing-galaxy-z-trifold-the-shape-of-whats-next-in-mobile-innovation)
 places Korean availability in December 2025, establishing coverage eligibility.
 The public form factor is `foldable-trifold`, distinct from a single-hinge book
-fold. The subsequent 2026-09-24 Korea/Gumi RTL session verified main insets in
-both navigation modes and cover gesture insets; cover 3-button remains pending.
+fold. Korea/Gumi RTL sessions on 2026-09-24 and 2026-09-25 verified main and
+cover insets in both navigation modes. The cover 3-button recapture is
+1080×2520 px at 420 dpi with fontScale 1.
 
 These are official Samsung sources checked on 2026-09-22 through 2026-09-24. Regional availability
 dates below establish the year; they are not necessarily the first worldwide date.

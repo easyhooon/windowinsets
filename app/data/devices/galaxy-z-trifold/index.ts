@@ -94,7 +94,59 @@ export const galaxyZTriFold: Device = {
             "bottomPx": 2418
           }
         },
-        "threeButton": null
+        "threeButton": {
+          "systemBars": {
+            "top": 43.05,
+            "right": 0,
+            "bottom": 48,
+            "left": 0
+          },
+          "systemBarsPx": {
+            "top": 113,
+            "right": 0,
+            "bottom": 126,
+            "left": 0
+          },
+          "displayCutout": {
+            "top": 38.86,
+            "right": 0,
+            "bottom": 0,
+            "left": 0
+          },
+          "displayCutoutPx": {
+            "top": 102,
+            "right": 0,
+            "bottom": 0,
+            "left": 0
+          },
+          "condition": {
+            "android": "16",
+            "oneUi": "8.5",
+            "note": "Samsung RTL Korea/Gumi, SM-F968N_KR1, build BP4A.251205.006.F968NKSS6BZG3. Font scale 1, portrait rotation 0, full-screen 1080×2520 px window on display 0 at 420 dpi (default 320 dpi). Physically folded cover; three-button navigation confirmed by both Settings and inset classification. No folding feature reported."
+          },
+          "sources": [
+            {
+              "kind": "measured",
+              "label": "InsetsProbe 1.3.0 on Samsung RTL Galaxy Z TriFold cover, threeButton (SM-F968N)",
+              "url": "https://github.com/easyhooon/windowinsets/blob/main/measurements/galaxy-z-trifold/cover-threeButton.json",
+              "retrievedAt": "2026-09-25"
+            }
+          ],
+          "cutoutShape": {
+            "xDp": 193.52,
+            "yDp": 0,
+            "widthDp": 24.38,
+            "heightDp": 38.86,
+            "rightDp": 193.53,
+            "bottomDp": 921.14,
+            "xPx": 508,
+            "yPx": 0,
+            "widthPx": 64,
+            "heightPx": 102,
+            "rightPx": 508,
+            "bottomPx": 2418
+          }
+        }
       },
       "sources": [
         {
@@ -102,6 +154,12 @@ export const galaxyZTriFold: Device = {
           "label": "InsetsProbe 1.3.0 on Samsung RTL Galaxy Z TriFold cover, gesture (SM-F968N)",
           "url": "https://github.com/easyhooon/windowinsets/blob/main/measurements/galaxy-z-trifold/cover-gesture.json",
           "retrievedAt": "2026-09-24"
+        },
+        {
+          "kind": "measured",
+          "label": "InsetsProbe 1.3.0 on Samsung RTL Galaxy Z TriFold cover, threeButton (SM-F968N)",
+          "url": "https://github.com/easyhooon/windowinsets/blob/main/measurements/galaxy-z-trifold/cover-threeButton.json",
+          "retrievedAt": "2026-09-25"
         }
       ]
     },
@@ -239,6 +297,12 @@ export const galaxyZTriFold: Device = {
       "label": "InsetsProbe 1.3.0 on Samsung RTL Galaxy Z TriFold cover, gesture (SM-F968N)",
       "url": "https://github.com/easyhooon/windowinsets/blob/main/measurements/galaxy-z-trifold/cover-gesture.json",
       "retrievedAt": "2026-09-24"
+    },
+    {
+      "kind": "measured",
+      "label": "InsetsProbe 1.3.0 on Samsung RTL Galaxy Z TriFold cover, threeButton (SM-F968N)",
+      "url": "https://github.com/easyhooon/windowinsets/blob/main/measurements/galaxy-z-trifold/cover-threeButton.json",
+      "retrievedAt": "2026-09-25"
     },
     {
       "kind": "measured",
