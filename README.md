@@ -125,8 +125,8 @@ model has already been imported or measured.
    existing preview slug. Its screens override preview data; additional skin-only
    screens stay pending. Routes, sitemap and prerendering use the merged catalogue.
 
-Current public catalogue: 115 models (28 S, 28 Tab, 8 Fold, 8 Flip, 3 Note,
-40 A). The skin archive retains 123 models, including eight pre-2020 models.
+Current public catalogue: 117 models (29 S, 29 Tab, 8 Fold, 8 Flip, 3 Note,
+40 A). The skin archive retains 125 models, including eight pre-2020 models.
 New Fold/Flip entries have static main/cover previews where supplied; models
 with a main skin also have hinge animation. Note/A artwork is available as static
 previews; inset measurements remain pending.

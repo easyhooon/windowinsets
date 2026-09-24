@@ -2550,5 +2550,43 @@ export const skins: Record<string, DeviceSkin> = {
       "height": 2640,
       "radius": 100
     }
+  },
+  "galaxy-s10-lite/main": {
+    "image": "/skins/galaxy-s10-lite/main/device.png",
+    "foreground": "/skins/galaxy-s10-lite/main/foreground.png",
+    "width": 1492,
+    "height": 2813,
+    "screen": {
+      "x": 206,
+      "y": 196,
+      "width": 1080,
+      "height": 2400
+    },
+    "body": {
+      "x": 166,
+      "y": 156,
+      "width": 1160,
+      "height": 2480,
+      "radius": 100
+    }
+  },
+  "galaxy-tab-s8-ultra/main": {
+    "image": "/skins/galaxy-tab-s8-ultra/main/device.png",
+    "foreground": "/skins/galaxy-tab-s8-ultra/main/foreground.png",
+    "width": 2282,
+    "height": 3374,
+    "screen": {
+      "x": 217,
+      "y": 207,
+      "width": 1848,
+      "height": 2960
+    },
+    "body": {
+      "x": 162,
+      "y": 152,
+      "width": 1958,
+      "height": 3070,
+      "radius": 70
+    }
   }
 };

@@ -6,6 +6,8 @@ export const checkedReleaseYears: Record<string, number> = {
   "galaxy-tab-s4-10-5": 2018,
   "galaxy-tab-s6": 2019,
   "galaxy-fold": 2019,
+  "galaxy-s10-lite": 2020,
+  "galaxy-tab-s8-ultra": 2022,
   "galaxy-tab-s6-lite": 2020,
   "galaxy-z-flip": 2020,
   "galaxy-z-fold3": 2021,

@@ -1,0 +1,8 @@
+{
+  "archive": "Galaxy_S10_Lite.zip",
+  "folder": "Galaxy_S10_Lite",
+  "background": "device_Port-Black.png",
+  "foreground": "fore_port.png",
+  "source": "https://developer.samsung.com/galaxy-emulator-skin",
+  "providedAt": "2026-09-24"
+}

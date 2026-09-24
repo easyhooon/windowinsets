@@ -11,7 +11,7 @@ identified refreshed model can have its own release year.
 
 ## Boundary audit
 
-These are official Samsung sources checked on 2026-09-22 and 2026-09-23. Regional availability
+These are official Samsung sources checked on 2026-09-22 through 2026-09-24. Regional availability
 dates below establish the year; they are not necessarily the first worldwide date.
 
 | Imported model | Release evidence | Public coverage |
@@ -19,7 +19,9 @@ dates below establish the year; they are not necessarily the first worldwide dat
 | Galaxy Tab S4 10.5 | [US availability August 10, 2018](https://news.samsung.com/us/samsung-galaxy-tab-s4-helps-get-more-done) | Archive only |
 | Galaxy Tab S6 | [Korean release August 29, 2019](https://www.samsung.com/sec/business/insights/news/news-20190830/) | Archive only |
 | Galaxy Fold | [Korean release September 6, 2019](https://www.samsungmobilepress.com/articles/samsung-galaxy-fold-now-available) | Archive only |
+| Galaxy S10 Lite | [UK availability February 7, 2020](https://news.samsung.com/uk/samsung-brings-galaxy-to-more-people-introducing-galaxy-s10-lite-and-note10-lite) | Included |
 | Galaxy Tab S6 Lite | [Available April 30, 2020 in the Netherlands](https://news.samsung.com/nl/nieuwe-samsung-galaxy-tab-s6-lite-de-tablet-voor-werk-en-vrije-tijd) | Included |
+| Galaxy Tab S8 Ultra | [Global availability February 25, 2022](https://news.samsung.com/global/after-record-breaking-preorders-samsung-announces-global-availability-of-new-galaxy-s22-series-and-galaxy-tab-s8-series) | Included |
 | Galaxy Z Flip | [Original model first launched February 2020](https://news.samsung.com/us/galaxy-z-flip-5g-enabled-foldable-smartphone-unpacked/) | Included |
 | Galaxy Z Fold3 | [US availability August 26, 2021](https://news.samsung.com/us/galaxy-z-fold3-5g-galaxy-z-flip3-5g-unpacked-2021-next-mobile-innovation/) | Included |
 | Galaxy Note FE | [Korean release July 7, 2017](https://news.samsung.com/kr/%EC%82%BC%EC%84%B1%EC%A0%84%EC%9E%90-%EB%85%B8%ED%8A%B8-%ED%8C%AC%EC%9D%84-%EC%9C%84%ED%95%9C-%ED%8A%B9%EB%B3%84-%ED%95%9C%EC%A0%95%ED%8C%90-%EA%B0%A4%EB%9F%AD%EC%8B%9C-%EB%85%B8%ED%8A%B8-fan-editi) | Archive only |
@@ -39,11 +41,15 @@ audit also does not establish exact release dates for every imported model.
 
 ## Implementation and future imports
 
-`app/data/skinCatalog.json` and `public/skins/` retain all 123 imported models.
+`app/data/skinCatalog.json` and `public/skins/` retain all 125 imported models.
 `app/data/coverage.ts` applies the 2020 cutoff to known release years and the
 audited boundary models. `devices.ts` filters the merged device list, so device
 navigation, lookup, prerendered routes and the sitemap share the same policy.
-There are 115 public models: 28 S, 28 Tab, 8 Fold, 8 Flip, 3 Note and 40 A.
+There are 117 public models: 29 S, 29 Tab, 8 Fold, 8 Flip, 3 Note and 40 A.
+
+The user-supplied `Galaxy_S10_Lite.zip` and `Galaxy_Tab_S8_Ultra.zip` were imported
+on 2026-09-24 as main-screen artwork previews. Their official release years meet
+the coverage cutoff; inset measurements remain pending.
 
 The user-supplied `Galaxy_Z_Fold3.zip` was imported on 2026-09-23 with its
 folded cover and unfolded main layouts. It is an artwork-only preview until

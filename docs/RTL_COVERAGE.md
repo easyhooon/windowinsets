@@ -67,7 +67,7 @@ removes a model from its catalog.
   accepted or registered; neither file deletion nor a new reservation is
   evidence of that missing capture.
   The full cross-series, cross-region inventory was not completed.
-- The local skin archive contains 123 registered models; 115 are public under
+- The local skin archive contains 125 registered models; 117 are public under
   the release-year policy. All four featured mobile models have registered skins.
   The other archived models remain unverified, not unsupported. Galaxy Z Flip5
   was visible in the 2026-09-23 reservation catalog; its official main skin

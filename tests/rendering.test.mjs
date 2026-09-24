@@ -208,13 +208,13 @@ test('Note and A imports retain original layouts and source provenance', () => {
 test('2020 coverage keeps boundary models and archives older skins without publishing them', () => {
   const catalog = JSON.parse(readFileSync('app/data/skinCatalog.json', 'utf8'));
   const supported = catalog.filter(device => isInCoverage({ ...device, releaseYear: null }));
-  assert.equal(supported.length, 115);
+  assert.equal(supported.length, 117);
   for (const slug of ['galaxy-fold', 'galaxy-tab-s4-10-5', 'galaxy-tab-s6',
     'galaxy-note-fe', 'galaxy-note8', 'galaxy-note9', 'galaxy-note10', 'galaxy-note10-plus']) {
     assert.ok(catalog.some(device => device.slug === slug));
     assert.ok(!supported.some(device => device.slug === slug));
   }
-  for (const slug of ['galaxy-tab-s6-lite', 'galaxy-z-flip', 'galaxy-s20', 'galaxy-z-fold2', 'galaxy-z-fold3',
+  for (const slug of ['galaxy-s10-lite', 'galaxy-tab-s6-lite', 'galaxy-tab-s8-ultra', 'galaxy-z-flip', 'galaxy-s20', 'galaxy-z-fold2', 'galaxy-z-fold3',
     'galaxy-note10-lite', 'galaxy-note20', 'galaxy-note20-ultra', 'galaxy-a01-core', 'galaxy-a71']) {
     assert.ok(supported.some(device => device.slug === slug));
   }
