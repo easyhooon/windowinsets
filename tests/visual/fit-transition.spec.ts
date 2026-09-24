@@ -80,10 +80,10 @@ for (const slug of ["galaxy-z-fold8", "galaxy-z-flip8"]) {
     await page.locator("#device-canvas").focus();
     await page.keyboard.press("0");
     expect((await sample(page)).pan).toBe("translate(0px, 0px)");
-    const open = await sample(page);
+    expect((await sample(page)).scale).toBeLessThanOrEqual(1.5);
     await choose(page, "Pose", "Closed");
     await settled(page, 0);
-    expect((await sample(page)).scale).toBeGreaterThan(open.scale);
+    expect((await sample(page)).scale).toBeCloseTo(before.scale, 4);
   });
 
   test(`${slug} reduced motion synchronizes fit and hinge endpoints`, async ({ page }) => {
@@ -96,7 +96,13 @@ for (const slug of ["galaxy-z-fold8", "galaxy-z-flip8"]) {
       await settled(page, angle);
       const current = await sample(page);
       if (angle === 0) expect(current.scale).toBeCloseTo(closed.scale, 4);
-      else expect(current.scale).toBeLessThan(closed.scale);
+      expect(current.scale).toBeGreaterThan(0);
+      expect(current.scale).toBeLessThanOrEqual(1.5);
+      // Fewer annotations can let multiple poses reach the 150% Fit ceiling.
+      // An explicit Fit must reproduce the scale already reached at the endpoint.
+      await page.locator('#device-canvas').focus();
+      await page.keyboard.press('0');
+      await expect.poll(async () => (await sample(page)).scale).toBeCloseTo(current.scale, 4);
     }
   });
 }

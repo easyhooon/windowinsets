@@ -1,5 +1,7 @@
 import { useId, useState } from "react";
-import { diagramAnnotations, placeRulerLabels } from "./diagramAnnotations";
+import { diagramAnnotations, visibleDiagramRulers } from "./diagramAnnotations";
+import { MeasurementRulers } from "./MeasurementRulers";
+import type { RulerMeasurements } from "./measurementLayout";
 import { DIAGRAM_FONT, DIAGRAM_COLORS } from "./diagramStyle";
 import type { DeviceSkin } from "../data/skins";
 import type { InsetsMeasurement, Screen } from "../data/types";
@@ -103,11 +105,15 @@ export function InsetsDiagram({
   const { rulers, bounds, body } = diagramAnnotations(dp.width, dp.height, s, showFrame ? skin : undefined, safe, r, measurement?.cutoutShape);
   const labelScale = (bounds.bottom - bounds.top) / BASE_HEIGHT * 100 / zoom;
   const viewBox = `${bounds.left} ${bounds.top} ${bounds.right - bounds.left} ${bounds.bottom - bounds.top}`;
-  const cutout = measurement?.cutoutShape;
-  const bottomLabelWidth = cutout && cutout.yDp + cutout.heightDp >= dp.height - (safe?.bottom ?? 0) && cutout.xDp > 0
-    ? cutout.xDp * s : W;
-  const colors = { size: INK, inset: INSET_COLOR, radius: RADIUS_COLOR, cutout: "#8950e8" };
-  const visibleRulers = placeRulerLabels(rulers.filter(ruler => ruler.kind === "size" || layers[ruler.kind === "inset" ? "insets" : ruler.kind === "radius" ? "corners" : "cutout"]), labelScale, fmt, undefined, body);
+  const annotations: RulerMeasurements = {
+    body, scale: labelScale, format: fmt, units, screen: screen.label,
+    rulers: visibleDiagramRulers(rulers, layers).map(ruler => ({ ...ruler,
+      start: { x: ruler.guides[0][0], y: ruler.guides[0][1] },
+      end: { x: ruler.guides[1][0], y: ruler.guides[1][1] },
+      bracket: ruler.kind === 'radius' ? { x: ruler.guides[1][0], y: ruler.guides[1][1] > H / 2 ? H : 0 } : undefined,
+      side: ruler.y1 === ruler.y2 ? (ruler.y1 < 0 ? 'top' : 'bottom') : (ruler.x1 < 0 ? 'left' : 'right'),
+    })),
+  };
   async function copy(value: string) {
     try { await navigator.clipboard.writeText(value); setCopyStatus(`Copied ${value}`); }
     catch { setCopyStatus("Copy unavailable"); }
@@ -117,11 +123,6 @@ export function InsetsDiagram({
     <div className="space-y-3">
       <div>
       <svg
-        onPointerDown={e => { if ((e.target as Element).closest("text")) e.stopPropagation(); }}
-        onClick={async e => {
-          const label = (e.target as Element).closest("text")?.textContent?.trim();
-          if (label && /^[\d.]+$/.test(label)) { await copy(label); }
-        }}
         viewBox={viewBox}
         overflow="visible"
         // Sized by its own real aspect ratio (device width:height), not stretched to
@@ -139,6 +140,7 @@ export function InsetsDiagram({
         role="group"
         aria-label={`${screen.label} screen insets diagram`}
       >
+        <rect data-fit-body="true" x={body.left} y={body.top} width={body.right - body.left} height={body.bottom - body.top} fill="none" pointerEvents="none" />
         <defs>
           <clipPath id={`${id}-display`}>{cornerPath ? <path d={cornerPath} /> : <rect width={W} height={H} rx={skin ? skin.body.radius * W / skin.screen.width * .6 : 0} />}</clipPath>
         </defs>
@@ -204,40 +206,8 @@ export function InsetsDiagram({
           </g>
         )}
 
-        {showDimensions && layers.insets && safe && (
-          <>
-            {safe.top > 0 && <RegionLabel x={W * .25} y={safe.top * s / 2} name="TOP" value={fmt(safe.top)} color={INSET_COLOR} scale={labelScale} width={W / 2} height={safe.top * s} inline />}
-            {safe.bottom > 0 && <RegionLabel x={bottomLabelWidth / 2} y={H - safe.bottom * s / 2} name="BOTTOM" value={fmt(safe.bottom)} color={INSET_COLOR} scale={labelScale} width={bottomLabelWidth} height={safe.bottom * s} inline />}
-
-          </>
-        )}
-
         {skin?.foreground && showFrame && <image href={skin.foreground} x={0} y={0} width={W} height={H} preserveAspectRatio="none" />}
-        {!measurement && <text x={W / 2} y={H / 2} textAnchor="middle" fontSize={12 * labelScale} fill="#59636e">Skin preview</text>}
-        {showDimensions && <g aria-label="Measurement rulers">
-          {visibleRulers.map(ruler => {
-            const color = colors[ruler.kind];
-            const value = fmt(ruler.value);
-            const label = ruler.kind === "radius" ? `R ${value}` : value;
-            const vertical = ruler.x1 === ruler.x2;
-            const arrow = 3 * labelScale;
-            return <g key={ruler.name} role="button" tabIndex={0} aria-label={`${ruler.name}: ${value} ${units}. Copy ${value}`}
-              onPointerDown={e => e.stopPropagation()} onClick={e => { e.stopPropagation(); void copy(value); }}
-              onKeyDown={e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); void copy(value); } }} style={{ cursor: "copy" }}>
-              <title>{`${ruler.name}: ${value} ${units}`}</title>
-              {ruler.guides.map(([x1, y1, x2, y2], i) => <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} stroke={color} strokeWidth={.7 * labelScale} strokeDasharray={`${2 * labelScale} ${2 * labelScale}`} opacity={.65} />)}
-              <line x1={ruler.x1} y1={ruler.y1} x2={ruler.x2} y2={ruler.y2} stroke={color} strokeWidth={.7 * labelScale} />
-              {[[ruler.x1, ruler.y1, 1], [ruler.x2, ruler.y2, -1]].map(([x, y, direction], i) => <path key={i} d={vertical
-                ? `M ${x - arrow},${y + arrow * direction} L ${x},${y} L ${x + arrow},${y + arrow * direction}`
-                : `M ${x + arrow * direction},${y - arrow} L ${x},${y} L ${x + arrow * direction},${y + arrow}`}
-                stroke={color} strokeWidth={.7 * labelScale} fill="none" />)}
-              {ruler.kind === "radius" && <path d={`M ${ruler.x1},${ruler.guides[0][1]} H ${ruler.x2} V ${ruler.guides[0][1] < H / 2 ? 0 : H}`} fill="none" stroke={color} strokeWidth={.8 * labelScale} />}
-              {((vertical && (ruler.labelX !== ruler.x1 || ruler.labelY < ruler.y1 || ruler.labelY > ruler.y2)) || (!vertical && ruler.labelY !== ruler.y1)) &&
-                <line x1={ruler.labelX} y1={ruler.labelY} x2={(ruler.x1 + ruler.x2) / 2} y2={(ruler.y1 + ruler.y2) / 2} stroke={color} strokeWidth={.7 * labelScale} />}
-              <Badge x={ruler.labelX} y={ruler.labelY} label={label} color={color} scale={labelScale} />
-            </g>;
-          })}
-        </g>}
+        {showDimensions && <MeasurementRulers measurements={annotations} onCopy={copy} />}
       </svg>
       <span role="status" className="sr-only">{copyStatus}</span>
       </div>

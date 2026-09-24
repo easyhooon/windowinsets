@@ -1,3 +1,58 @@
+## Integrated release validation (2026-09-24)
+
+This supersedes the incomplete shared-UI run below. A stable production build
+passed 107 of 112 Chrome cases; the five failures exposed prerendered model-name
+hydration mismatches (three cases) and the obsolete transparent-canvas backup
+expectation (two cases). The shell now uses route params for initial selection,
+and real WebGL context loss exercises the explicit SVG fallback.
+
+After those corrections, all 16 focused desktop/mobile cases passed against an
+isolated production build, including the new JavaScript-disabled initial-HTML
+checks. All 39 Node tests, typecheck, production build and diff whitespace checks
+passed. The full 112-case run was not repeated after these targeted fixes.
+Updated screenshot baselines and both 143-frame README GIFs were visually inspected.
+Concurrent device-catalogue imports are outside this revision.
+
+## Shared UI follow-up (2026-09-24)
+
+The user's request is a shared UI improvement, not device-by-device annotation
+patches. The earlier non-overlap verdict did not cover information hierarchy,
+redundancy, canvas allocation or consistency between renderers.
+
+The final rule is: **equal symmetric lengths appear once; unequal lengths all
+remain**. It covers opposing insets, opposing cutout offsets and corner radii.
+The preliminary blanket removal of cutout offsets was rejected and superseded.
+A shared annotation renderer/layout serves flat, folding and fallback views.
+See `REFERENCE_PARITY.md` for the policy and intentional differences.
+
+The workspace uses real layout space for the diagram, legend and controls;
+Fit no longer guesses mobile/footer reserves. The bottom toolbar sizes to its
+content, Metrics has a clear heading and secondary export action, its mobile
+disclosure preserves the canvas size, and pending artwork has one status area.
+These changes apply through common components rather than per-device branches.
+
+### Follow-up validation scope
+
+- `pnpm typecheck`, `pnpm build`, and all 37 Node tests passed for the shared-UI
+  revision before concurrent fold-geometry work entered the workspace.
+- The final static-build browser run recorded 93 passes and 11 failures; it is
+  **not** an all-pass result. Earlier overlay-reserve assertions were replaced
+  with actual canvas bounds. Disabled, unmeasured layers are checked for absent
+  rulers instead of being clicked.
+- A separate final integer-angle run passed all eight desktop/mobile tests
+  (four foldable fixtures, every angle from 0° through 180°).
+- A Fit recovery test sampled zoom before iterative fitting settled. Its
+  stability wait was corrected, but its repeat run could not complete after
+  another build removed the shared static output; remaining pages returned
+  `Not found`. Repeat the complete browser suite against an isolated stable build
+  after the concurrent work is integrated.
+- Concurrent changes to `foldGeometry.ts`, `FoldRenderer3D.tsx` and rendering
+  tests are preserved. The passing build and Node results above do not validate
+  that newer geometry revision. Screenshot baselines were visually inspected
+  for the shared-UI build; they may need regeneration for the newer geometry.
+
+The report below is historical evidence, not a fresh independent Astra audit.
+
 # Issue 1: annotation readability and combination verification
 
 ## Correction after the merged release (2026-09-23)

@@ -102,7 +102,7 @@ test("Fold3 official cover and inner artwork remain measurement-pending", async 
   await expect(page.getByRole("button", { name: "Outer", exact: true })).toBeVisible();
   await page.getByRole("button", { name: "Inner", exact: true }).click();
   await expect(page.locator("#device-canvas")).toBeVisible();
-  await expect(page.getByText("No measurement available", { exact: false })).toBeVisible();
+  await expect(page.locator(".pending-notice")).toContainText("RTL measurement pending");
 });
 
 test("Flip6 main shows both measured navigation modes", async ({ page }) => {
@@ -169,7 +169,7 @@ test("Flip8 gesture diagrams and exact inner px remain readable", async ({ page 
 
 test("S25 Ultra exposes exact captured px separately from panel resolution", async ({ page }) => {
   await page.goto("/galaxy-s25-ultra");
-  await expect(page.getByRole("button", { name: "Top inset: 34.13 dp. Copy 34.13", exact: true })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Copy Top inset: 34.13 dp", exact: true })).toBeVisible();
   await openMetricsIfCollapsed(page);
   await page.getByRole("button", { name: "View settings" }).click();
   await page.getByRole("radio", { name: "px" }).click();
@@ -239,7 +239,15 @@ test("fold pose changes preserve pan and 0 restores automatic fit", async ({ pag
   await viewport.focus();
   await page.keyboard.press("0");
   await expect(position).toHaveAttribute("style", /translate\(0px, 0px\)/);
-  const fitZoom = await page.getByRole("button", { name: /^Zoom:/ }).textContent();
+  // Fit iterates because ruler text keeps its screen size while the body scales.
+  // Capture its settled value, not the first render after pan resets.
+  const zoomButton = page.getByRole("button", { name: /^Zoom:/ });
+  await expect.poll(async () => {
+    const before = await zoomButton.textContent();
+    await page.waitForTimeout(150);
+    return (await zoomButton.textContent()) === before;
+  }).toBe(true);
+  const fitZoom = await zoomButton.textContent();
   await page.keyboard.press("=");
   await expect(page.getByRole("button", { name: /^Zoom:/ })).not.toHaveText(fitZoom!);
   await page.keyboard.press("0");

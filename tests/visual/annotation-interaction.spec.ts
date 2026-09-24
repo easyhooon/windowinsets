@@ -14,7 +14,7 @@ for(const slug of ['galaxy-z-fold7','galaxy-z-flip8']) {
   });
   const before=await scale();
   const box=(await page.locator('#device-canvas').boundingBox())!;
-  const cx=box.x+box.width/2,cy=box.y+10;
+  const cx=box.x+box.width/2,cy=box.y+box.height*.35;
   const session=await context.newCDPSession(page);
   await session.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:cx-30,y:cy,id:1},{x:cx+30,y:cy,id:2}]});
   await session.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:cx-60,y:cy,id:1},{x:cx+60,y:cy,id:2}]});

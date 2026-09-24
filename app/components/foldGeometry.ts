@@ -1,4 +1,40 @@
 import * as THREE from "three";
+import { mergeGeometries } from "three/addons/utils/BufferGeometryUtils.js";
+
+export function verticalHinge(axis: "vertical" | "horizontal", artworkRotation: number) {
+  return (axis === "vertical") !== (artworkRotation % 2 === 1);
+}
+
+/** Cover UVs in the capture's coordinate system, shared by mesh and rulers. */
+export function coverPoint(u: number, v: number, width: number, height: number,
+  bodyWidth: number, bodyHeight: number, hinge: number, vertical: boolean, rotatedBook: boolean) {
+  const x = rotatedBook ? (v - .5) * height
+    : (vertical ? .5 - u : u - .5) * width + (vertical ? bodyWidth / 4 + hinge / 2 : 0);
+  const y = (rotatedBook ? (u - .5) * width : (vertical ? v - .5 : .5 - v) * height)
+    + (vertical ? 0 : bodyHeight / 4 + hinge / 2);
+  return [x, y] as const;
+}
+
+/** The closed inner gap is the diameter of the bent display's semicircle.
+ * Published closed depth includes both rigid housings and that gap. */
+export function hingeHalfWidth(thickness: number, foldedDepth = thickness * 2.15) {
+  return (foldedDepth - 2 * thickness) * Math.PI / 4;
+}
+
+/** Two independently closed housings; only the display/hinge strip bends. */
+export function createFoldHousings(width: number, height: number, radius: number, thickness: number, hinge: number, vertical: boolean) {
+  const panelWidth = vertical ? width / 2 - hinge : width;
+  const panelHeight = vertical ? height : height / 2 - hinge;
+  const halves = [-1, 1].map(sign => {
+    const panel = createChassis(panelWidth, panelHeight, radius, thickness);
+    panel.translate(vertical ? sign * (width / 4 + hinge / 2) : 0,
+      vertical ? 0 : sign * (height / 4 + hinge / 2), 0);
+    return panel;
+  });
+  const geometry = mergeGeometries(halves);
+  halves.forEach(half => half.dispose());
+  return geometry;
+}
 
 /** Transform artwork attached to the positive (right/upper) rigid panel. */
 export function rigidPanelPoint(x: number, y: number, z: number, angle: number, vertical: boolean, hinge: number) {
