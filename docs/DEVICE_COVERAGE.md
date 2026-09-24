@@ -1,7 +1,9 @@
 # Device coverage
 
-Decision, 2026-09-22: support officially skinned Samsung Galaxy models first
-released in **2020 or later**. This replaces the earlier no-cutoff decision.
+Decision, 2026-09-22, updated 2026-09-24: support officially skinned Samsung
+Galaxy models first released in **2020 or later**, plus **all Galaxy Fold and
+Flip models regardless of release year**. This replaces the earlier no-cutoff
+decision and adds the Fold/Flip exception.
 Discontinued and non-flagship models remain eligible. Priority is current
 S/Fold/Flip quality → Tab → Note and A. TriFold awaits a separate decision.
 
@@ -18,7 +20,7 @@ dates below establish the year; they are not necessarily the first worldwide dat
 | --- | --- | --- |
 | Galaxy Tab S4 10.5 | [US availability August 10, 2018](https://news.samsung.com/us/samsung-galaxy-tab-s4-helps-get-more-done) | Archive only |
 | Galaxy Tab S6 | [Korean release August 29, 2019](https://www.samsung.com/sec/business/insights/news/news-20190830/) | Archive only |
-| Galaxy Fold | [Korean release September 6, 2019](https://www.samsungmobilepress.com/articles/samsung-galaxy-fold-now-available) | Archive only |
+| Galaxy Fold | [Korean release September 6, 2019](https://www.samsungmobilepress.com/articles/samsung-galaxy-fold-now-available) | Included (Fold exception) |
 | Galaxy S10 Lite | [UK availability February 7, 2020](https://news.samsung.com/uk/samsung-brings-galaxy-to-more-people-introducing-galaxy-s10-lite-and-note10-lite) | Included |
 | Galaxy Tab S6 Lite | [Available April 30, 2020 in the Netherlands](https://news.samsung.com/nl/nieuwe-samsung-galaxy-tab-s6-lite-de-tablet-voor-werk-en-vrije-tijd) | Included |
 | Galaxy Tab S8 Ultra | [Global availability February 25, 2022](https://news.samsung.com/global/after-record-breaking-preorders-samsung-announces-global-availability-of-new-galaxy-s22-series-and-galaxy-tab-s8-series) | Included |
@@ -42,10 +44,11 @@ audit also does not establish exact release dates for every imported model.
 ## Implementation and future imports
 
 `app/data/skinCatalog.json` and `public/skins/` retain all 125 imported models.
-`app/data/coverage.ts` applies the 2020 cutoff to known release years and the
-audited boundary models. `devices.ts` filters the merged device list, so device
+`app/data/coverage.ts` includes Fold/Flip models at any release year and applies
+the 2020 cutoff to other known release years and audited boundary models.
+`devices.ts` filters the merged device list, so device
 navigation, lookup, prerendered routes and the sitemap share the same policy.
-There are 117 public models: 29 S, 29 Tab, 8 Fold, 8 Flip, 3 Note and 40 A.
+There are 118 public models: 29 S, 29 Tab, 9 Fold, 8 Flip, 3 Note and 40 A.
 
 The user-supplied `Galaxy_S10_Lite.zip` and `Galaxy_Tab_S8_Ultra.zip` were imported
 on 2026-09-24 as main-screen artwork previews. Their official release years meet

@@ -27,7 +27,9 @@ export const checkedReleaseYears: Record<string, number> = {
   "galaxy-a71": 2020,
 };
 
-export function isInCoverage(device: { slug: string; releaseYear: number | null }): boolean {
+export function isInCoverage(device: { slug: string; formFactor: string; releaseYear: number | null }): boolean {
+  if (device.slug.includes("trifold")) return false;
+  if (device.formFactor === "foldable-book" || device.formFactor === "foldable-flip") return true;
   const year = checkedReleaseYears[device.slug] ?? device.releaseYear;
   // Other existing previews have no exact year metadata; new imports require
   // a release-year review before publishing (see the coverage guide).

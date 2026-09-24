@@ -7,7 +7,7 @@ const catalog = JSON.parse(readFileSync("app/data/skinCatalog.json", "utf8")) as
 }>;
 const foldables = catalog.filter(device =>
   (device.formFactor === "foldable-book" || device.formFactor === "foldable-flip")
-  && isInCoverage({ slug: device.slug, releaseYear: null }));
+  && isInCoverage({ ...device, releaseYear: null }));
 
 test("every published Fold and Flip exposes a working hinge control", async ({ page }) => {
   test.setTimeout(120_000);

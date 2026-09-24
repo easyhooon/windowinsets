@@ -205,11 +205,12 @@ test('Note and A imports retain original layouts and source provenance', () => {
   assert.match(layout, /device_Port-Black\.png/);
 });
 
-test('2020 coverage keeps boundary models and archives older skins without publishing them', () => {
+test('Fold and Flip coverage overrides the 2020 cutoff while older bar and tablet skins stay archived', () => {
   const catalog = JSON.parse(readFileSync('app/data/skinCatalog.json', 'utf8'));
   const supported = catalog.filter(device => isInCoverage({ ...device, releaseYear: null }));
-  assert.equal(supported.length, 117);
-  for (const slug of ['galaxy-fold', 'galaxy-tab-s4-10-5', 'galaxy-tab-s6',
+  assert.equal(supported.length, 118);
+  assert.ok(supported.some(device => device.slug === 'galaxy-fold'));
+  for (const slug of ['galaxy-tab-s4-10-5', 'galaxy-tab-s6',
     'galaxy-note-fe', 'galaxy-note8', 'galaxy-note9', 'galaxy-note10', 'galaxy-note10-plus']) {
     assert.ok(catalog.some(device => device.slug === slug));
     assert.ok(!supported.some(device => device.slug === slug));
@@ -218,8 +219,11 @@ test('2020 coverage keeps boundary models and archives older skins without publi
     'galaxy-note10-lite', 'galaxy-note20', 'galaxy-note20-ultra', 'galaxy-a01-core', 'galaxy-a71']) {
     assert.ok(supported.some(device => device.slug === slug));
   }
-  assert.equal(isInCoverage({ slug: 'measured-older-device', releaseYear: 2019 }), false);
-  assert.equal(isInCoverage({ slug: 'measured-boundary-device', releaseYear: 2020 }), true);
+  assert.equal(isInCoverage({ slug: 'measured-older-device', formFactor: 'bar', releaseYear: 2019 }), false);
+  assert.equal(isInCoverage({ slug: 'measured-boundary-device', formFactor: 'bar', releaseYear: 2020 }), true);
+  assert.equal(isInCoverage({ slug: 'older-fold', formFactor: 'foldable-book', releaseYear: 2019 }), true);
+  assert.equal(isInCoverage({ slug: 'older-flip', formFactor: 'foldable-flip', releaseYear: 2019 }), true);
+  assert.equal(isInCoverage({ slug: 'galaxy-z-trifold', formFactor: 'foldable-book', releaseYear: 2025 }), false);
 });
 
 test('Flip6 main captures match both navigation modes without inventing cover measurements', () => {

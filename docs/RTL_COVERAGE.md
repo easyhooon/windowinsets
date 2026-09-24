@@ -2,7 +2,7 @@
 
 Checked 2026-09-24. **The full comparison is not yet verified.**
 
-Keep registered skins browsable under the existing 2020+ coverage policy.
+Keep registered skins browsable under the 2020+ coverage policy with the Fold/Flip exception.
 New measurement collection prioritizes models offered by Samsung Remote Test Lab.
 The owner also explicitly authorized physical Fold2 measurements on 2026-09-22;
 verified physical-device captures are accepted without implying RTL availability.
@@ -104,8 +104,9 @@ removes a model from its catalog.
   imported cover and main artwork are previews with no measured insets.
 
 The comparison for every registered skin is in [RTL_SKIN_COMPARISON.csv](RTL_SKIN_COMPARISON.csv).
-It includes archived pre-2020 models for inventory completeness; it does not
-publish their routes or change the separate TriFold decision.
+It includes pre-2020 models for inventory completeness. Galaxy Fold is public
+under the Fold/Flip exception; other pre-2020 entries remain archived. The
+separate TriFold decision is unchanged.
 
 ## Data and presentation
 

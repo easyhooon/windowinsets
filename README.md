@@ -94,8 +94,9 @@ pnpm build      # prerendered HTML in build/client
 ## Device coverage and priorities
 
 **Target coverage (WIP): every Samsung Galaxy model released in 2020 or later
-with an official Galaxy Emulator Skin**, including discontinued models and the
-Galaxy A and Note series. Discontinuation and flagship status are not exclusion
+with an official Galaxy Emulator Skin, plus all Galaxy Fold and Flip models with
+official skins regardless of release year**, including discontinued models and
+the Galaxy A and Note series. Discontinuation and flagship status are not exclusion
 criteria. This supersedes the earlier no-cutoff decision. See [release evidence
 and archive policy](docs/DEVICE_COVERAGE.md).
 
@@ -117,7 +118,7 @@ model has already been imported or measured.
 1. To register downloaded skins, run `python3 scripts/import-samsung-skins.py /path/to/downloads`.
    The importer copies original artwork, registers main/cover screens in
    `app/data/skinCatalog.json`, and skips TriFold. Review each new model’s release
-   year against the 2020 cutoff before publishing; record boundary/older models
+   year against the 2020 cutoff before publishing, except for Fold/Flip; record boundary/older models
    in `app/data/coverage.ts` with sources in `docs/DEVICE_COVERAGE.md`.
 2. For RTL data, keep raw JSON in `measurements/<device-slug>/`, then create
    `app/data/devices/<slug>/index.ts` implementing `Device` (see `app/data/types.ts`).
@@ -125,7 +126,7 @@ model has already been imported or measured.
    existing preview slug. Its screens override preview data; additional skin-only
    screens stay pending. Routes, sitemap and prerendering use the merged catalogue.
 
-Current public catalogue: 117 models (29 S, 29 Tab, 8 Fold, 8 Flip, 3 Note,
+Current public catalogue: 118 models (29 S, 29 Tab, 9 Fold, 8 Flip, 3 Note,
 40 A). The skin archive retains 125 models, including eight pre-2020 models.
 New Fold/Flip entries have static main/cover previews where supplied; models
 with a main skin also have hinge animation. Note/A artwork is available as static

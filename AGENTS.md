@@ -12,11 +12,12 @@ when an Android equivalent exists; document every intentional divergence in
 `docs/REFERENCE_PARITY.md`. Improve the existing device set before collecting more
 data or adding unrelated features.
 
-Coverage decision (2026-09-22): all Samsung Galaxy models with official skins are
-in scope when released in 2020 or later, regardless of discontinuation or flagship
-status. This supersedes the earlier no-cutoff decision. Follow
+Coverage decision (2026-09-22, updated 2026-09-24): all Samsung Galaxy models
+with official skins are in scope when released in 2020 or later; Galaxy Fold
+and Flip models with official skins are in scope at any release year. Discontinuation
+and flagship status do not affect coverage. Follow
 the priority order in README: current S/Fold/Flip quality → Tab → Note and A.
-Keep pre-2020 artwork archived but exclude it from public devices/routes. Check
+Keep other pre-2020 artwork archived but exclude it from public devices/routes. Check
 new imports against `docs/DEVICE_COVERAGE.md`. TriFold remains a separate support/animation
 decision, even when its skin is available. Artwork-only entries stay previews;
 missing measurements must not be invented.

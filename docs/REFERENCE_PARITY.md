@@ -184,7 +184,7 @@ rendered angle and CSS scale every animation frame on desktop and mobile.
   S25-series specification/measurement entries take priority over skin previews.
   Unknown specifications and insets remain pending; skin pixels are not dp data.
 - Downloaded S/Tab/Z/Note/A skins are registered: 125 archived models,
-  117 public models after the 2020 release-year cutoff (see `DEVICE_COVERAGE.md`),
+  118 public models after the 2020 release-year cutoff and Fold/Flip exception (see `DEVICE_COVERAGE.md`),
   with separate static main/cover previews where supplied. Fold/Flip models
   with a main skin have hinge animation; TriFold is excluded pending a separate
   decision. No measurements are borrowed across models.
