@@ -63,9 +63,19 @@ removes a model from its catalog.
   Probe also saved a main gesture capture on the device, but WebClient stopped
   delivering subsequent downloads despite Chrome automatic downloads being
   allowed. Samsung's Device to Host clipboard notification was selected, but
-  the host clipboard remained empty. The gesture mode is therefore not yet
-  accepted or registered; neither file deletion nor a new reservation is
+  the host clipboard remained empty. At that time the gesture mode was not
+  accepted or registered; neither file deletion nor a new reservation was
   evidence of that missing capture.
+  On 2026-09-24 the same Flip3 unit was reserved again. InsetsProbe 1.3.0
+  produced a fresh upright main gesture capture (1080×2640 px, display 0,
+  density 480 dpi, Android 14 / One UI 6.1). Its WebClient download reached
+  the host and was validated against the earlier main 3-button capture.
+  Both main modes are now registered; no official cover skin is available.
+  A second Fold3 unit (SM-F926U-VN2, Android 15, Vietnam/Hanoi) was reserved
+  on 2026-09-24. The same built APK again stalled at 0% in WebClient
+  Applications, while installation succeeded on Flip3 in the same session.
+  No Fold3 insets were captured. The device-specific installation failure is
+  tracked in [issue #11](https://github.com/easyhooon/windowinsets/issues/11).
   The full cross-series, cross-region inventory was not completed.
 - The local skin archive contains 125 registered models; 117 are public under
   the release-year policy. All four featured mobile models have registered skins.
@@ -85,7 +95,7 @@ removes a model from its catalog.
   cover gesture attempt preserved separately. Fold4 has accepted upright cover
   and inner captures in both modes after the Taskbar correction. Flip5 and Flip6
   main have accepted captures in both modes; their covers remain skin-unavailable. Flip3
-  has an accepted 3-button raw capture but no registered device values yet. Fold3's
+  main is also registered in both modes from dated captures on the same RTL unit. Fold3's
   imported cover and main artwork are previews with no measured insets.
 
 The comparison for every registered skin is in [RTL_SKIN_COMPARISON.csv](RTL_SKIN_COMPARISON.csv).

@@ -1,6 +1,6 @@
 # Samsung RTL credits and reservation budget
 
-**Last live verification:** 2026-09-23 21:26 KST
+**Last live verification:** 2026-09-24 11:23 KST
 
 Samsung's published pages and the current RTL account UI do not agree on the
 daily grant. Keep the published policy, observed behavior and spending history
@@ -105,6 +105,16 @@ visible balance from **3 to 1 Credit**. The main 3-button capture reached the
 host. A gesture capture was saved on the device, but subsequent WebClient
 downloads and the device-to-host clipboard transfer did not reach the host.
 No refund is claimed for this booking.
+
+On 2026-09-24 the live header showed **31 Credits** before this session.
+Galaxy Z Fold3 SM-F926U-VN2 was booked for 30 minutes, reducing it to
+**29 Credits**. Probe installation remained at 0%; ending the reservation
+with the one-credit return option selected restored **30 Credits**.
+Galaxy Z Flip3 SM-F711B-VN2 was then booked for 30 minutes. Its fresh main
+gesture JSON reached the host and passed validation. Ending it with the
+one-credit return option selected left **29 Credits** after a page reload,
+and the WebClient reported that all ongoing tests had ended. These are live
+balance observations, separate from booked-credit totals.
 
 The preceding 2026-09-22 Usage History contained these booked reservations:
 
