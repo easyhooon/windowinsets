@@ -1,6 +1,6 @@
 # WindowInsets Measurement Workflow & Status
 
-**Last Updated**: 2026-09-23
+**Last Updated**: 2026-09-24
 
 ## RTL collection scope
 
@@ -480,3 +480,18 @@ lagged during Settings transitions, so each destination screen was allowed to
 settle before the next touch. The Samsung WebClient removed the Ultra tab after
 early return but displayed a client-side `postMessage` error; verify any credit
 refund from the account balance rather than assuming it succeeded.
+
+## Verified original Galaxy Z Flip capture — 2026-09-24
+
+Samsung RTL India/Noida model SM-F700F-IN5, Android 13 / One UI 5.1.1,
+InsetsProbe 1.3.0. The original Galaxy Z Flip's official skin contains only the
+main display. Its upright portrait captures match the 1080×2636 px main layout;
+both active and maximum windows report that size, density is the default 480 dpi,
+and font scale is 1. The WindowManager folding feature reports a horizontal FLAT
+line at y=1318 px; the hinge-angle sensor is unavailable. The 3-button and
+gesture modes agree with Android Settings and Probe. The main display reports a
+91 px centered top cutout, 92 px top system bar, 144 px 3-button bottom bar or
+45 px gesture bottom bar, and 108 px rounded corners. Raw captures are
+`measurements/galaxy-z-flip/main-threeButton.json` and
+`measurements/galaxy-z-flip/main-gesture.json`. Cover remains unmeasured because
+the imported official skin has no cover layout.

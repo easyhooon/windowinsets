@@ -1,11 +1,11 @@
 // Partial official listing; never infer non-support from this snapshot.
 export const rtlCatalog = {
-  "checkedAt": "2026-09-23",
+  "checkedAt": "2026-09-24",
   "sourceUrl": "https://developer.samsung.com/remote-test-lab",
   "scope": "featured-devices",
   "complete": false,
   "reservationCatalogUrl": "https://developer.samsung.com/remotetestlab/devices",
-  "reservationCatalogResult": "Accessible after manual sign-in. Galaxy Z inventory was inspected; Galaxy Z Fold8, Fold7, Fold6, Fold5, Fold4, Fold3, Flip8, Flip7, Flip7 FE, Flip6, Flip5, Flip4 and Flip3 were successfully reserved. The full cross-series and cross-region inventory is still incomplete.",
+  "reservationCatalogResult": "Accessible after manual sign-in. Galaxy Z inventory was inspected; Galaxy Z Fold8, Fold7, Fold6, Fold5, Fold4, Fold3, Flip8, Flip7, Flip7 FE, Flip6, Flip5, Flip4, Flip3 and the original Galaxy Z Flip (SM-F700F-IN5, India/Noida) were successfully reserved. The full cross-series and cross-region inventory is still incomplete.",
   "reservableSlugs": [
     "galaxy-z-fold8",
     "galaxy-z-fold7",
@@ -18,7 +18,8 @@ export const rtlCatalog = {
     "galaxy-z-flip6",
     "galaxy-z-flip5",
     "galaxy-z-flip4",
-    "galaxy-z-flip3"
+    "galaxy-z-flip3",
+    "galaxy-z-flip"
   ],
   "listedSlugs": [
     "galaxy-z-fold8",

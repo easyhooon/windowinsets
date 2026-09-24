@@ -1,6 +1,6 @@
 # Samsung skin and RTL coverage
 
-Checked 2026-09-23. **The full comparison is not yet verified.**
+Checked 2026-09-24. **The full comparison is not yet verified.**
 
 Keep registered skins browsable under the existing 2020+ coverage policy.
 New measurement collection prioritizes models offered by Samsung Remote Test Lab.
@@ -71,6 +71,11 @@ removes a model from its catalog.
   density 480 dpi, Android 14 / One UI 6.1). Its WebClient download reached
   the host and was validated against the earlier main 3-button capture.
   Both main modes are now registered; no official cover skin is available.
+  The original Galaxy Z Flip (SM-F700F-IN5, India/Noida) was reserved on
+  2026-09-24. InsetsProbe 1.3.0 captured its main display in both navigation
+  modes on Android 13 / One UI 5.1.1; the official skin archive contains only
+  the main layout, so no cover measurement is registered. This reservation
+  verifies this exact model variant was offered on that date only.
   A second Fold3 unit (SM-F926U-VN2, Android 15, Vietnam/Hanoi) was reserved
   on 2026-09-24. The same built APK again stalled at 0% in WebClient
   Applications, while installation succeeded on Flip3 in the same session.
