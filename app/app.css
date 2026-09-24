@@ -171,3 +171,6 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
   .device-workspace>.resize-handle { margin-left:5px; }
 }
 .device-thumbnail.tablet { width:23px; height:30px; background:linear-gradient(135deg,#bddbd1,#538e83); }
+
+/* Keep the folding canvas height stable when switching to a pending capture. */
+.fold-measurement-notice { height:33px; }

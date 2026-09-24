@@ -195,6 +195,11 @@ export function DeviceView({ device }: { device: Device }) {
               <Row label="Scale" value={screen.densityDpi ? `${Number((screen.densityDpi / 160).toFixed(2))}×` : PENDING} />
             </dl>
 
+            {foldable && units === "dp" && <details className="mt-2 text-xs text-subtle">
+              <summary className="cursor-pointer">Why can outer and inner dp sizes differ?</summary>
+              <p className="mt-2">dp describes Android layout space, not physical length. Each display has its own pixel resolution and Android density, so equal physical heights can have different dp values.</p>
+            </details>}
+
             <SectionLabel>Safe Area Insets</SectionLabel>
             <dl>
               {safe ? insetsRows(safe, safePx, units, fmt) : pendingInsetsRows}
@@ -255,18 +260,17 @@ export function DeviceView({ device }: { device: Device }) {
     <section className="canvas-panel" aria-label="Device visualization">
       <div className="canvas-stage">
       <DiagramViewport viewportRef={viewport} autoFit={autoFit}
-        closedFit={useFold ? { width: device.formFactor === "foldable-flip" ? 380 : 340, height: device.formFactor === "foldable-flip" ? 390 : 500 } : undefined}
         zoom={zoom} setZoom={setZoom} rotation={rotation} fitKey={fitKey}
         onUserTransform={() => { setZoom(viewport.current?.effectiveZoom() ?? zoom); setAutoFit(false); }} onFit={() => setAutoFit(true)}
         baseWidth={diagramWidth}
-        baseHeight={700} fitWidth={diagramWidth} fitHeight={diagramHeight}>
+        baseHeight={700} fitWidth={useFold ? triFold ? 780 : 1000 : diagramWidth} fitHeight={useFold && !triFold ? 1000 : diagramHeight}>
         {useFold ? <FoldRenderer3D triFold={triFold} angle={angle} axis={device.formFactor === "foldable-flip" ? "horizontal" : "vertical"}
           widthDp={main.logicalSizeDp?.width ?? (mainSkin ? mainSkin.screen.width / 3 : 0)} heightDp={main.logicalSizeDp?.height ?? (mainSkin ? mainSkin.screen.height / 3 : 0)}
           safe={mainSafe} safePx={mainSafePx} logicalSizePx={main.logicalSizePx} cornerRadiiDp={main.cornerRadiiDp} cornerRadiiPx={main.cornerRadiiPx} cutoutShape={mainMeasurement?.cutoutShape}
           zoom={zoom} showFrame={showFrame} showRegions={showRegions} showDimensions={showDimensions} units={units} layers={layers} skin={mainSkin} skinRotation={main.captureRotation ?? 0} viewRotation={rotation} measured={!!main.logicalSizeDp} cover={outerScreen && outerSkin ? { screen: outerScreen, measurement: outerScreen.insets[navMode], skin: outerSkin } : undefined}
           fallbackMain={{ screen: main, measurement: mainMeasurement }}
           chassisMm={device.chassisMm}
-          onMeasurementBounds={bounds => viewport.current?.fitFoldBounds(bounds)}
+          onMeasurementBounds={() => viewport.current?.effectiveZoom()}
           onDisplayedAngle={value => {
             viewport.current?.setFoldAngle(value);
             const visible = value < COVER_REVEAL_ANGLE && outerScreen ? "cover" : "main";
@@ -278,8 +282,8 @@ export function DeviceView({ device }: { device: Device }) {
       </DiagramViewport>
       </div>
       <footer className="canvas-footer">
-      {!measurement && <p className="pending-notice">{rtl.previewNotice}</p>}
-      {(measurement || screen.cornerRadiiDp) && <div className="region-legend" aria-label="Region legend">
+      {useFold ? <div className="fold-measurement-notice">{!measurement && <p className="pending-notice">{rtl.previewNotice}</p>}</div> : !measurement && <p className="pending-notice">{rtl.previewNotice}</p>}
+      {(measurement || screen.cornerRadiiDp || useFold) && <div className="region-legend" aria-label="Region legend">
         {([{ key: "safe", label: "Safe Area", color: "#ade7bc" }, { key: "insets", label: "Insets", color: "#ffdab0" }, { key: "cutout", label: "Display Cutout", color: "#c4a0f1" }, { key: "corners", label: "Corner Radius", color: "#e4a6cc" }] as const).map(item => <button key={item.key} disabled={item.key === "corners" ? !screen.cornerRadiiDp : item.key === "cutout" ? !measurement?.cutoutShape : !measurement} aria-pressed={layers[item.key]} onClick={() => setLayers(v => ({ ...v, [item.key]: !v[item.key] }))}><i style={{ background: item.color }} />{item.label}</button>)}
       </div>}
       <p className="canvas-help">Scroll or drag to pan · Pinch to zoom · + / − to zoom · 0 to fit</p>

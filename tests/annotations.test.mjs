@@ -45,8 +45,8 @@ test('shared annotation layout clears bodies and adjacent badges at every zoom',
       end: { x: r.guides[1][0], y: r.guides[1][1] },
       side: r.y1 === r.y2 ? (r.y1 < 0 ? 'top' : 'bottom') : (r.x1 < 0 ? 'left' : 'right'),
     }));
-    for (const scale of [.5, 1, 2, 4]) {
-      const labels = layoutMeasurementRulers({ rulers: positioned, body, scale, format: v => v.toFixed(2), units: 'dp', screen: 'Test' });
+    for (const scale of [.5, 1, 2, 4]) for (const compact of [false, true]) {
+      const labels = layoutMeasurementRulers({ rulers: positioned, body, scale, compact, format: v => v.toFixed(2), units: 'dp', screen: 'Test' });
       const boxes = labels.map(r => ({ left: r.x - r.width / 2, right: r.x + r.width / 2, top: r.y - r.height / 2, bottom: r.y + r.height / 2 }));
       const overlaps = (a, b) => a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
       for (const [index, box] of boxes.entries()) {

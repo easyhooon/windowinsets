@@ -310,7 +310,10 @@ export function FoldRenderer3D({
     const rim = new THREE.DirectionalLight(0xc4d9ff, 2);
     rim.position.set(4, -1, -3);
     scene.add(rim);
-    const camera = new THREE.PerspectiveCamera(32, containerW / containerH, 0.1, 100);
+    // Orthographic projection keeps the physical scale constant as panels
+    // move in depth. Its framing is shared by every pose, including the cover.
+    const frustumHeight = 2 * Math.tan(THREE.MathUtils.degToRad(16)) * 11;
+    const camera = new THREE.OrthographicCamera(-frustumHeight / 2, frustumHeight / 2, frustumHeight / 2, -frustumHeight / 2, 0.1, 100);
     // Slightly elevated/angled viewpoint (not a flat head-on view) so the
     // fold's depth is actually visible instead of just its silhouette.
     camera.position.set(0, 1.1, 11);
@@ -320,7 +323,7 @@ export function FoldRenderer3D({
     const rotatedBook = axis === "vertical" && skinRotation % 2 === 1;
     const isVertical = verticalHinge(axis, skinRotation);
     const dpW = widthDp, dpH = heightDp;
-    const worldPerCssPixel = 2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * camera.position.z / containerH;
+    const worldPerCssPixel = frustumHeight / containerH;
 
     // Each screen uses its own capture or official skin coordinates. Cover
     // measurements must never be rotated/stretched to stand in for the inside.
@@ -583,7 +586,7 @@ export function FoldRenderer3D({
       }
       const body = { left: Math.min(...points.map(p => p.x)), right: Math.max(...points.map(p => p.x)),
         top: Math.min(...points.map(p => p.y)), bottom: Math.max(...points.map(p => p.y)) };
-      const next: RulerMeasurements = { body, scale: 100 / annotationZoom, format, units: st.units, screen: outer ? 'Cover' : 'Inner',
+      const next: RulerMeasurements = { body, compact: !triFold, scale: 100 / annotationZoom, format, units: st.units, screen: outer ? 'Cover' : 'Inner',
         rulers: visibleDiagramRulers(layout.rulers, st.layers).map(r => ({ ...r,
           start: project(r.guides[0][0], r.guides[0][1]), end: project(r.guides[1][0], r.guides[1][1]),
           bracket: r.kind === 'radius' ? project(r.guides[1][0], r.guides[1][1] > h / 2 ? h : 0) : undefined,
@@ -628,30 +631,8 @@ export function FoldRenderer3D({
       const pixelRatio = Math.min(4, window.devicePixelRatio * Math.max(1, stateRef.current.zoom / 100));
       if (renderer.getPixelRatio() !== pixelRatio) renderer.setPixelRatio(pixelRatio);
       applyBend();
-      const closedView = 1 - displayedAngle / 180;
-      camera.position.set((rotatedBook ? -3.5 : 3.5) * closedView, 2.1 * closedView, 11);
-      if (triFold) {
-        const depthView = Math.sin(displayedAngle * Math.PI / 180);
-        camera.position.x += 5 * depthView;
-        camera.position.y += 2 * depthView;
-      }
+      camera.position.set(isVertical ? 3 : 0, isVertical ? 0 : 3, 11);
       camera.lookAt(0, 0, 0);
-      if (triFold && !measured) {
-        // Artwork-only TriFold still needs a centered fit as each wing opens.
-        // These projected housing bounds are view geometry, never inset data.
-        deviceGroup.updateMatrixWorld(true);
-        camera.updateMatrixWorld(true);
-        const bounds = { left: Infinity, top: Infinity, right: -Infinity, bottom: -Infinity };
-        const point = new THREE.Vector3();
-        const positions = shellGeometry.attributes.position;
-        for (let i = 0; i < positions.count; i++) {
-          point.fromBufferAttribute(positions, i).applyMatrix4(deviceGroup.matrixWorld).project(camera);
-          const x = (point.x + 1) * 350, y = (1 - point.y) * 350;
-          bounds.left = Math.min(bounds.left, x); bounds.right = Math.max(bounds.right, x);
-          bounds.top = Math.min(bounds.top, y); bounds.bottom = Math.max(bounds.bottom, y);
-        }
-        annotationZoom = stateRef.current.onMeasurementBounds?.(bounds, bounds, displayedAngle) ?? annotationZoom;
-      }
       // Texture canvases stay off-DOM. An axis-aligned backup behind a
       // perspective surface leaks a second, flat silhouette around the model.
       projectMeasurements();

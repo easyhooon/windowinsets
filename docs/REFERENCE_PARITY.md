@@ -17,10 +17,12 @@ Android-specific substitutions and evidence boundaries:
   sequence slider. This prevents a right-first closing order. Closed is 0°/0°,
   Partially Folded is 90°/180°, and Open is 180°/180°. The slider's 0–180 range
   denotes sequence position, not a sensor reading or Android posture.
-- Artwork-only automatic fit projects the housings each frame to center the
-  expanding silhouette. The camera moves sideways during partial poses and the
-  display responds to scene lighting to make depth visible. Explicit zoom/pan
-  remain user-controlled.
+- Fold, Flip and TriFold use a fixed orthographic camera and a shared fit scale for all poses.
+  Folding changes the silhouette through hinge movement without camera zoom.
+  Fold opens across its width; Flip opens across its height.
+  Lighting and moving hinges show depth; explicit zoom/pan remain user-controlled.
+  Metrics explains that dp measures layout space, so outer/inner dp heights can
+  differ even when the physical device height stays the same.
 - The ZIP supplies flat artwork, not CAD. Equal panel division, hinge curvature,
   housing depth, gaps and partial poses are illustrative. They do not assert
   hardware-supported intermediate window states or measurement accuracy.
@@ -154,15 +156,14 @@ PPI; `Android Density` and `Scale` report the logical density used for dp. These
 extra rows are Android-specific substitutions needed to avoid presenting unlike
 measurements as if they were the same safearea.info metric.
 
-Fold/Flip routes fit the selected cover or inner display without clipping. While
-Fit mode is active, the Zoom control keeps the open-display fit as its stable base
-and a separate automatic scale interpolates the closed/open fits using the actual
-rendered hinge angle. This follows the stable Zoom control observed on safearea.info
-iPhone Duo in issue #2; Samsung endpoint normalization remains device-specific.
-Explicit user zoom or pan leaves Fit mode, preserving the effective scale and pan
-through pose changes. Fit to canvas restores automatic fit. Reduced motion applies
-the hinge and scale endpoints together. `fit-transition.spec.ts` samples both the
-rendered angle and CSS scale every animation frame on desktop and mobile.
+Fold, Flip and TriFold use a fixed orthographic camera and one fit scale across
+all hinge angles. This owner-approved change replaces the previous per-pose
+camera movement and scale interpolation. Fit uses a shared canvas envelope with
+room for annotations; pending notices and legends reserve space so changing the
+active screen does not resize the canvas. Explicit zoom and pan remain unchanged
+through poses. Fit to canvas recalculates for the current viewport and orientation.
+`fit-transition.spec.ts` checks constant CSS scale on every sampled animation frame,
+manual zoom/pan, and reduced motion on desktop and mobile.
 
 ## Verification
 
@@ -286,11 +287,9 @@ main frame-synchronized WebGL fold transition is preserved.
 
 External WebGL texture rulers have been replaced by screen-space SVG rulers whose
 attachment points use the device's current hinge transform and camera projection.
-The labels and arrows remain flat and outside the projected body. Desktop Fit
-includes these annotations. On narrow mobile viewports, a closed cover fits
-the device body with breathing room; stacked cutout labels would otherwise
-reduce the phone to a thumbnail. Some exterior labels require dragging the
-canvas. Partially folded and open poses fit the projected rulers. Short measurements use adjacent badges rather
+The labels and arrows remain flat and outside the projected body. Folding models
+share one fit envelope across poses, including annotation space, instead of
+refitting each projected silhouette. Short measurements use adjacent badges rather
 than diagonal leaders through the hinge. See `ISSUE_1_REVIEW.md` for the explicit
 navigation/unit/pose/rotation matrix, integer-angle sweep and browser coverage.
 

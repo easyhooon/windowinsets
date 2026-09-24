@@ -18,7 +18,7 @@ async function sample(page: Page) {
   });
 }
 for (const slug of ["galaxy-z-fold8", "galaxy-z-flip8"]) {
-  test(`${slug} automatic fit follows every hinge frame`, async ({ page }) => {
+  test(`${slug} automatic fit keeps one scale throughout folding`, async ({ page }) => {
     await page.goto(`/${slug}`);
     await settled(page, 0);
     const closed = await sample(page);
@@ -26,7 +26,7 @@ for (const slug of ["galaxy-z-fold8", "galaxy-z-flip8"]) {
     await settled(page, 180);
     const open = await sample(page);
     expect(closed.scale).toBeGreaterThan(0);
-    expect(open.scale).toBeGreaterThan(0);
+    expect(open.scale).toBeCloseTo(closed.scale, 4);
     // Sample the actual CSS transform and rendered angle in the same animation frame.
     for (const [pose, target] of [["Closed", 0], ["Partially Folded", 90], ["Open", 180], ["Closed", 0]] as const) {
       await page.getByRole("button", { name: /^Pose:/ }).click();
@@ -46,10 +46,7 @@ for (const slug of ["galaxy-z-fold8", "galaxy-z-flip8"]) {
       const values = await frames;
       expect(values.filter(v => v.angle > 1 && v.angle < 179).length).toBeGreaterThan(2);
       for (const frame of values) {
-        // Fit now includes screen-space badges, whose constant font size and
-        // occupied lanes change with perspective; it is no longer linear.
-        expect(frame.scale).toBeGreaterThan(0);
-        expect(frame.scale).toBeLessThanOrEqual(1.5);
+        expect(frame.scale).toBeCloseTo(closed.scale, 4);
       }
       await settled(page, target);
       const displayedZoom = await page.getByRole("button", { name: /^Zoom:/ }).textContent();
@@ -95,7 +92,7 @@ for (const slug of ["galaxy-z-fold8", "galaxy-z-flip8"]) {
       await choose(page, "Pose", pose);
       await settled(page, angle);
       const current = await sample(page);
-      if (angle === 0) expect(current.scale).toBeCloseTo(closed.scale, 4);
+      expect(current.scale).toBeCloseTo(closed.scale, 4);
       expect(current.scale).toBeGreaterThan(0);
       expect(current.scale).toBeLessThanOrEqual(1.5);
       // Fewer annotations can let multiple poses reach the 150% Fit ceiling.

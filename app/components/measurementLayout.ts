@@ -10,6 +10,7 @@ export interface RulerMeasurements {
   rulers: PositionedRuler[];
   body: { left: number; top: number; right: number; bottom: number };
   scale: number;
+  compact?: boolean;
   format: (value: number) => string;
   units: string;
   screen: string;
@@ -17,7 +18,7 @@ export interface RulerMeasurements {
 
 /** Pack each measurement kind into parallel lanes, keeping short intervals
  * instead of a distant badge with a diagonal leader through another measurement. */
-export function layoutMeasurementRulers({ rulers, body, scale, format }: RulerMeasurements) {
+export function layoutMeasurementRulers({ rulers, body, scale, format, compact = false }: RulerMeasurements) {
   const lanes = new Map<string, Array<Array<[number, number]>>>();
   // Read outward from local geometry to the overall display size.
   const priority = { radius: 0, cutout: 1, inset: 2, size: 3 };
@@ -37,14 +38,14 @@ export function layoutMeasurementRulers({ rulers, body, scale, format }: RulerMe
     rows[row].push(interval);
     lanes.set(ruler.side, rows);
     // A fixed lane width avoids varying-length values shifting adjacent lanes.
-    const distance = (horizontal ? 24 + row * 26 : 40 + row * 65) * scale;
+    const distance = (horizontal ? (compact ? 16 + row * 20 : 24 + row * 26) : (compact ? 32 + row * 52 : 40 + row * 65)) * scale;
     const lane = ruler.side === 'top' ? body.top - distance : ruler.side === 'bottom' ? body.bottom + distance
       : ruler.side === 'left' ? body.left - distance : body.right + distance;
     const p = horizontal ? { x: a, y: lane } : { x: lane, y: a };
     const q = horizontal ? { x: b, y: lane } : { x: lane, y: b };
     // For a small span, place the badge beside the arrow, on the same lane.
     const short = Math.abs(b - a) < (horizontal ? width + 8 * scale : height + 8 * scale);
-    const x = horizontal ? middle : lane + (short ? (ruler.side === 'left' ? -1 : 1) * (width / 2 + 5 * scale) : 0);
+    const x = horizontal ? middle : lane + (short && !compact ? (ruler.side === 'left' ? -1 : 1) * (width / 2 + 5 * scale) : 0);
     const y = horizontal ? lane + (ruler.side === 'top' ? -1 : 1) * (height / 2 + 4 * scale) : middle;
     return { ...ruler, text, p, q, x, y, width, height };
   });

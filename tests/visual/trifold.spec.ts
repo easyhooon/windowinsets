@@ -15,11 +15,13 @@ test("TriFold renders both hinges, preserves pending data, and fits each pose", 
   await expect(diagram).toHaveAttribute("data-right-angle", "0.00");
   await page.evaluate(() => document.fonts.ready);
   await expect(page).toHaveScreenshot("trifold-closed.png");
+  const poseZoom = await page.getByRole("button", { name: /^Zoom:/ }).textContent();
   for (const [pose, left, right] of [["Partially Folded", "90.00", "180.00"], ["Open", "180.00", "180.00"]]) {
     await choose(page, "Pose", pose);
     await expect(diagram).toHaveAttribute("data-left-angle", left);
     await expect(diagram).toHaveAttribute("data-right-angle", right);
     await expect(page.locator(".metrics-panel")).toHaveAttribute("aria-busy", "false");
+    await expect(page.getByRole("button", { name: /^Zoom:/ })).toHaveText(poseZoom!);
     await expect(page).toHaveScreenshot(`trifold-${pose === "Open" ? "open" : "partial"}.png`);
   }
   await page.getByRole("button", { name: /^Hinge:/ }).click();
