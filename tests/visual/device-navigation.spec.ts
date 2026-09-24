@@ -29,3 +29,17 @@ test("family filters and collapsible groups keep large device catalogues navigab
   await expect(families.getByRole("button", { name: "A", exact: true })).toHaveAttribute("aria-pressed", "true");
   await expect(aGroup.locator(".device-group-toggle")).toHaveAttribute("aria-expanded", "true");
 });
+
+test('prerendered model selection matches the requested device before hydration', async ({ browser, baseURL }) => {
+  const context = await browser.newContext({ javaScriptEnabled: false });
+  const page = await context.newPage();
+  try {
+    for (const [slug, name] of [['galaxy-z-fold5', 'Galaxy Z Fold5'], ['galaxy-z-flip8', 'Galaxy Z Flip8'], ['galaxy-s25-ultra', 'Galaxy S25 Ultra']]) {
+      await page.goto(`${baseURL}/${slug}`);
+      await expect(page.locator('.mobile-model')).toContainText(name);
+      await expect(page.locator('.device-link.selected')).toContainText(name);
+    }
+  } finally {
+    await context.close();
+  }
+});
