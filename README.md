@@ -131,6 +131,6 @@ New Fold/Flip entries have static main/cover previews where supplied; models
 with a main skin also have hinge animation. Note/A artwork is available as static
 previews; inset measurements remain pending.
 
-## Continuing development in Codex
+## Development
 
-Start with [AGENTS.md](AGENTS.md) and the current [reference parity notes](docs/REFERENCE_PARITY.md). Official Samsung artwork and its layout coordinates live in `public/skins/` and `app/data/skins.ts`. Run geometry/asset regressions with `node --test tests/rendering.test.mjs`.
+See the [reference parity notes](docs/REFERENCE_PARITY.md) for design decisions and implementation details. Official Samsung artwork and layout coordinates are stored in `public/skins/` and `app/data/skins.ts`. Run geometry and asset tests with `node --test tests/rendering.test.mjs`.
