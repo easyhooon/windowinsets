@@ -35,10 +35,13 @@ test("TriFold renders both hinges, preserves pending data, and fits each pose", 
   await expect(diagram).toHaveAttribute("data-right-angle", "90.00");
   await slider.press("Escape");
   await expect(page).toHaveScreenshot("trifold-right-hinge.png");
+  await choose(page, "Pose", "Closed");
+  await choose(page, "Navigation", "3-button");
+  await expect(page.locator(".pending-notice")).toBeVisible();
   await choose(page, "Navigation", "Gesture");
-  await expect(page.locator(".pending-notice")).toContainText("No measurement available");
+  await expect(page.locator(".pending-notice")).toHaveCount(0);
   await page.getByRole("button", { name: "View settings" }).click();
-  await expect(page.getByRole("radio", { name: "px", exact: true })).toBeDisabled();
+  await expect(page.getByRole("radio", { name: "px", exact: true })).toBeEnabled();
   await page.getByRole("checkbox", { name: "Show Frame" }).uncheck();
   await page.getByRole("button", { name: "View settings" }).click();
   await choose(page, "Pose", "Open");

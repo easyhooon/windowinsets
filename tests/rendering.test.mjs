@@ -1,3 +1,4 @@
+import { galaxyZTriFold } from '../app/data/devices/galaxy-z-trifold/index.ts';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
@@ -453,6 +454,7 @@ test('Fold8 recapture keeps cover and inner evidence distinct in both navigation
 
 test('published px values and capture orientation remain exact raw evidence', () => {
   const cases = [
+    ...[['main', 'threeButton'], ['main', 'gesture'], ['cover', 'gesture']].map(([screenId, navMode]) => ({ device: galaxyZTriFold, screenId, navMode, capturePath: `measurements/galaxy-z-trifold/${screenId}-${navMode}.json` })),
     ...['gesture', 'threeButton'].flatMap(navMode => [
       { device: galaxyZFold4, screenId: 'cover', navMode, capturePath: `measurements/galaxy-z-fold4/cover-${navMode}.json` },
       { device: galaxyZFold4, screenId: 'main', navMode, capturePath: `measurements/galaxy-z-fold4/main-${navMode}.json` },
@@ -710,5 +712,21 @@ test('landscape book captures rotate the hinge and preserve cover UV distances',
       assert.ok(Math.abs(Math.hypot(...pa.map((v, i) => v - pb[i])) - 1) < 1e-9);
       assert.ok(Math.abs(Math.hypot(...pa.map((v, i) => v - pc[i])) - 2) < 1e-9);
     }
+  }
+});
+
+test('TriFold log recovery preserves complete captures and leaves cover buttons pending', () => {
+  assert.equal(galaxyZTriFold.screens.find(s => s.id === 'cover').insets.threeButton, null);
+  for (const screen of ['main', 'cover']) {
+    const log = readFileSync(`measurements/galaxy-z-trifold/rtl-logs/${screen}-gesture.txt`, 'utf8');
+    const messages = log.split('\n').filter(line => /InsetsProbe:?[\t]+/.test(line))
+      .map(line => line.split(/InsetsProbe:?[\t]+/)[1]).join('\n');
+    const raw = readCapture(`measurements/galaxy-z-trifold/${screen}-gesture.json`);
+    const start = messages.lastIndexOf('"schemaVersion"');
+    const recovered = JSON.parse(messages.slice(messages.lastIndexOf('{', start), messages.length));
+    assert.deepEqual(recovered, raw);
+    assert.equal(raw.display.fontScale, 1);
+    assert.deepEqual(raw.display.rootViewPx, raw.display.maximumWindowPx);
+    assert.equal(raw.navigation.settingAgreesWithInsets, true);
   }
 });

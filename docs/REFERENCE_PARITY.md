@@ -24,12 +24,13 @@ Android-specific substitutions and evidence boundaries:
 - The ZIP supplies flat artwork, not CAD. Equal panel division, hinge curvature,
   housing depth, gaps and partial poses are illustrative. They do not assert
   hardware-supported intermediate window states or measurement accuracy.
-- Both displays and both navigation modes remain unmeasured. Insets, dp sizes,
-  density and corner radii stay pending; exact px mode remains disabled.
+- RTL captures now verify main insets in both modes and cover gesture insets.
+  Cover 3-button stays pending; exact px values come from the accepted captures.
   The physical camera stays in the official foreground mask.
 - Reduced motion applies the endpoint immediately. Missing/lost WebGL uses the
   correct official cover or main SVG preview. JSON export preserves both screens
-  with pending/null data and reports the new form factor and animation capability.
+  with pending/null data only for missing captures and reports the new form factor
+  and animation capability.
 
 Validation: all six imported image/mask/layout files match the supplied ZIP bytes.
 Typecheck and the static prerender build pass, including `/galaxy-z-trifold` and
@@ -37,7 +38,8 @@ its sitemap entry. The 32 Node rendering/export checks pass. Desktop and mobile
 browser checks cover both hinge stages, endpoints, rotation, frame toggling,
 manual zoom, reduced motion and unavailable WebGL. Existing Fold/Flip geometry,
 fit, pan, hinge controls and S25 Ultra exact-px checks also pass. No raw capture
-files were created or modified for TriFold.
+files were created for the initial artwork change. The subsequent RTL capture
+set and log provenance are documented in `measurements/galaxy-z-trifold/README.md`.
 
 
 ## Binding development direction

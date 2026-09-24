@@ -175,3 +175,9 @@ prove a universal 20-credit grant because the next live grant was only 10.
 
 Until Samsung resolves the documentation mismatch, reports should say both the
 published allowance and the amount actually granted to the account on that date.
+
+On 2026-09-24 a Galaxy Z TriFold reservation (SM-F968N_KR1, Korea/Gumi,
+Android 16) reduced the confirmed header balance from **12 to 10 Credits**.
+The slot was booked for 30 minutes / 2 credits after inspecting Usage History.
+The user completed the reservation and installed InsetsProbe while the Chrome
+file-chooser preflight remained blocked. No extension or renewal was requested.

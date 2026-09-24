@@ -280,6 +280,36 @@ step to the user.
    site permission. After every click, verify a new host file exists and matches
    the intended JSON fields; recover missing files while the reservation is live.
 
+### Fallback: export InsetsProbe logs
+
+When a File Browser click produces no host file after checking the download
+permission, switch to this path while the reservation is live. Avoid spending the
+remaining time repeating the same download or asking the user to repeat it.
+
+1. Open WebClient **Logs → Filter** and enter `InsetsProbe` in **Tag**. Keep the
+   log panel open before capturing; earlier messages may no longer be retained.
+2. In Probe, confirm the physical screen, settled dimensions/density and navigation
+   mode, then tap **Measure** or **Copy JSON**. The export function writes the JSON
+   to logcat under `InsetsProbe`, in chunks of 60 lines. This is a fresh capture,
+   so recheck its conditions rather than assuming it matches an earlier file.
+3. Use **save logs** and verify the downloaded text file on the host. The visible
+   log panel may show only the last rows; its current DOM snapshot alone is not
+   evidence of a complete JSON document. On 2026-09-24, TriFold File Browser
+   downloads stalled after the first file, but saving filtered logs succeeded.
+4. Preserve the downloaded log unchanged under the device's `rtl-logs/` directory.
+   Extract message fields for one complete capture in their original order,
+   removing only RTL's date/time/PID/TID/priority/tag columns. RTL may render the
+   tag as either `InsetsProbe` or `InsetsProbe:`. Keep captures separate; never
+   fill missing lines from another capture or from expected values.
+5. Parse the reconstructed JSON and apply every validation in section 4. Require
+   a complete root object, fresh timestamp, correct model, screen, navigation mode,
+   dimensions and density. Record the source log and extraction method beside the
+   resulting JSON. If parsing fails or lines are missing, recapture with Logs open;
+   unresolved screen/mode combinations remain pending.
+
+Completion criterion: the original log is preserved and a complete, validated JSON
+capture is traceable to it for each recovered screen/navigation combination.
+
 When automation cannot complete the live-device portion, ask the user to report the
 downloaded filenames and active display/resolution. State the exact inaccessible
 control and keep the reservation tab open.

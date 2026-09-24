@@ -1,0 +1,327 @@
+date		time		pid	tid	priority	tag			message
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe		{
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"schemaVersion": 2,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"capturedAt": "2026-09-24T13:49:18.025969Z",
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"screen": "main",
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"screenLabelSource": "manual",
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"probeVersion": "1.3.0",
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"device": {
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"manufacturer": "samsung",
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"brand": "samsung",
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"model": "SM-F968N",
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"device": "q7mq",
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"android": "16",
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"sdkInt": 36,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"securityPatch": "2026-07-05",
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"buildId": "BP4A.251205.006.F968NKSS6BZG3",
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"oneUi": "8.5",
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"oneUiProperty": 80500,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"oneUiSource": "ro.build.version.oneui",
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"semPlatformInt": 170500
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		},
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"display": {
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"id": 0,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"name": "Built-in Screen",
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"rotation": 0,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"isInMultiWindowMode": false,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"rootViewPx": {
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"width": 2160,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"height": 1584
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		},
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"refreshRate": 120,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"widthPx": 2160,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"heightPx": 1584,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"sizeSource": "currentWindowMetrics",
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"appMetricsPx": {
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"width": 2160,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"height": 1584
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		},
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"xdpi": 268.94,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"ydpi": 268.22,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"densityDpi": 320,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"density": 2,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"defaultDensityDpi": 320,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"fontScale": 1,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"orientation": "landscape",
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"screenWidthDp": 1080,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"screenHeightDp": 792,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"smallestScreenWidthDp": 792,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"currentWindowPx": {
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"width": 2160,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"height": 1584
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		},
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"maximumWindowPx": {
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"width": 2160,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"height": 1584
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		},
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"maximumWindowDp": {
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"width": 1080,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"height": 792
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		}
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		},
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"navigation": {
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"mode": "gesture",
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"modeSource": "configAndSideGestures",
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"modeFromInsets": "gesture",
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"modeFromSetting": "gesture",
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"settingAgreesWithInsets": true,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"settingsSecureNavigationMode": 2,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"configNavBarInteractionMode": 2
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		},
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"insets": {
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"statusBars": {
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"px": {
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"top": 71,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"right": 0,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"bottom": 0,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"left": 0
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		},
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"dp": {
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"top": 35.5,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"right": 0,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"bottom": 0,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"left": 0
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		}
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		},
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"navigationBars": {
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"px": {
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"top": 0,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"right": 0,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"bottom": 30,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"left": 0
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		},
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"dp": {
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"top": 0,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"right": 0,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"bottom": 15,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"left": 0
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		}
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		},
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"systemBars": {
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"px": {
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"top": 71,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"right": 0,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"bottom": 30,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"left": 0
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		},
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"dp": {
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"top": 35.5,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"right": 0,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"bottom": 15,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"left": 0
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		}
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		},
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"displayCutout": {
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"px": {
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"top": 0,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"right": 0,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"bottom": 0,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"left": 0
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		},
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"dp": {
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"top": 0,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"right": 0,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"bottom": 0,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"left": 0
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		}
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		},
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"captionBar": {
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"px": {
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"top": 0,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"right": 0,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"bottom": 0,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"left": 0
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		},
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"dp": {
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"top": 0,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"right": 0,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"bottom": 0,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"left": 0
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		}
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		},
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"systemGestures": {
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"px": {
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"top": 71,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"right": 60,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"bottom": 84,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"left": 60
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		},
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"dp": {
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"top": 35.5,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"right": 30,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"bottom": 42,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"left": 30
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		}
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		},
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"mandatorySystemGestures": {
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"px": {
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"top": 71,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"right": 0,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"bottom": 84,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"left": 0
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		},
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"dp": {
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"top": 35.5,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"right": 0,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"bottom": 42,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"left": 0
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		}
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		},
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"tappableElement": {
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"px": {
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"top": 71,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"right": 0,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"bottom": 0,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"left": 0
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		},
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"dp": {
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"top": 35.5,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"right": 0,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"bottom": 0,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"left": 0
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		}
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		}
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		},
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"insetsIgnoringVisibility": {
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"statusBars": {
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"px": {
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"top": 71,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"right": 0,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"bottom": 0,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"left": 0
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		},
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"dp": {
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"top": 35.5,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"right": 0,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"bottom": 0,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"left": 0
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		}
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		},
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"navigationBars": {
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"px": {
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"top": 0,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"right": 0,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"bottom": 30,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"left": 0
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		},
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"dp": {
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"top": 0,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"right": 0,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"bottom": 15,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"left": 0
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		}
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		},
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"systemBars": {
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"px": {
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"top": 71,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"right": 0,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"bottom": 30,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"left": 0
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		},
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"dp": {
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"top": 35.5,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"right": 0,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"bottom": 15,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"left": 0
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		}
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		}
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		},
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"displayCutout": null,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"roundedCorners": {
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"windowInsets": {
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"topLeft": {
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"radiusPx": 4,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"radiusDp": 2,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"centerPx": {
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"x": 4,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"y": 4
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		}
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		},
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"topRight": {
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"radiusPx": 4,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"radiusDp": 2,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"centerPx": {
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"x": 2156,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"y": 4
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		}
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		},
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"bottomRight": {
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"radiusPx": 4,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"radiusDp": 2,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"centerPx": {
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"x": 2156,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"y": 1580
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		}
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		},
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"bottomLeft": {
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"radiusPx": 4,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"radiusDp": 2,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"centerPx": {
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"x": 4,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"y": 1580
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		}
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		}
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		},
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"display": {
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"topLeft": {
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"radiusPx": 4,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"radiusDp": 2,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"centerPx": {
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"x": 4,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"y": 4
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		}
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		},
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"topRight": {
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"radiusPx": 4,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"radiusDp": 2,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"centerPx": {
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"x": 2156,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"y": 4
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		}
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		},
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"bottomRight": {
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"radiusPx": 4,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"radiusDp": 2,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"centerPx": {
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"x": 2156,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"y": 1580
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		}
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		},
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"bottomLeft": {
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"radiusPx": 4,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"radiusDp": 2,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"centerPx": {
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"x": 4,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"y": 1580
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		}
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		}
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		}
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		},
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"hinge": {
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"angleDegrees": 0,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"foldingFeatures": [
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		{
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"state": "FLAT",
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"orientation": "VERTICAL",
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"occlusionType": "NONE",
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"isSeparating": false,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"bounds": {
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"px": {
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"left": 1080,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"top": 0,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"right": 1080,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"bottom": 1584
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		},
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"dp": {
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"left": 540,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"top": 0,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"right": 540,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"bottom": 792,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"width": 0,
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		"height": 792
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		}
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		}
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		}
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		]
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe:		}
+2026-09-24	22:49:18.044	4942	4942	I		InsetsProbe		}

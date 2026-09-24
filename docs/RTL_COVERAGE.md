@@ -210,3 +210,16 @@ captured main 3-button and gesture navigation at an upright, full-screen
 rotation 0, and matching navigation settings/configuration. The reservation
 confirms Korea availability on this date; the overall RTL inventory remains
 incomplete.
+
+## Galaxy Z TriFold — 2026-09-24
+
+Samsung RTL SM-F968N_KR1, Korea/Gumi, Android 16 / One UI 8.5, build
+`BP4A.251205.006.F968NKSS6BZG3`. Main 3-button and gesture captures are
+2160×1584 px, natural landscape (rotation 0), 320 dpi, Taskbar off. Cover
+gesture is 1080×2520 px, portrait, 420 dpi. All registered captures use fontScale 1.
+Cover 3-button remains pending: its device-side file could not be retrieved before
+the reservation ended and the earlier screen transition had suspect stale density.
+
+Raw captures and unchanged RTL log exports are preserved in
+`measurements/galaxy-z-trifold/`. See its README for extraction provenance,
+display-density refresh behavior and the RTL hinge-report limitation.

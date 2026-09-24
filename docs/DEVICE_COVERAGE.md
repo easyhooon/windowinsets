@@ -20,7 +20,8 @@ mask and layout bytes remain in `public/skins/galaxy-z-trifold/`, with provenanc
 Samsung's [launch announcement](https://news.samsung.com/global/introducing-galaxy-z-trifold-the-shape-of-whats-next-in-mobile-innovation)
 places Korean availability in December 2025, establishing coverage eligibility.
 The public form factor is `foldable-trifold`, distinct from a single-hinge book
-fold. No RTL reservation or capture was made for this addition.
+fold. The subsequent 2026-09-24 Korea/Gumi RTL session verified main insets in
+both navigation modes and cover gesture insets; cover 3-button remains pending.
 
 These are official Samsung sources checked on 2026-09-22 through 2026-09-24. Regional availability
 dates below establish the year; they are not necessarily the first worldwide date.
