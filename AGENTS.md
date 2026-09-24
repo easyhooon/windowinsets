@@ -63,8 +63,14 @@ leave other models unverified. Preserve historical captures. See
 - `app/data/skins.ts` contains official asset rectangles. `public/skins/` keeps
   original Samsung images and emulator layout files with provenance. Body clips
   are illustrative, display rectangles come directly from the layout.
-- Check desktop and mobile, Fold/Flip/bar, dp/px, closed/partial/open, controls,
-  and no-data screens. Do not rely on a successful TypeScript build as visual QA.
+- For rendering or control changes, check desktop and mobile, Fold/Flip/bar,
+  dp/px, closed/partial/open, controls, and no-data screens. Do not rely on a
+  successful TypeScript build as visual QA.
+- For artwork-only skin registration (ZIP assets, generated skin data, and
+  coverage docs without behavior changes), inspect the new layout and asset
+  links plus the new desktop/mobile preview. Skip automated test suites,
+  typecheck, and build for this case; run them when application or
+  importer behavior changes or a concrete failure needs diagnosis.
 - Keep motion reduced when requested by the OS; dispose GPU resources on unmount.
 
 ## Working conventions
