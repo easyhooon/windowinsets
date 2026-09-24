@@ -192,3 +192,14 @@ On 2026-09-25 the same TriFold model was booked for another 30 minutes / 2
 credits to capture the missing cover 3-button mode. The preceding catalog header
 showed 8 Credits; a post-booking balance and any refund were not independently
 verified.
+
+On 2026-09-25, the live header showed 4 Credits after the Galaxy S24 FE
+reservation. Galaxy S23 Ultra (SM-S918B-VN4, Vietnam/Hanoi, Android 16) was
+reserved for 30 minutes, reducing the header from **4 to 2 Credits**. Galaxy
+S23+ (SM-S916B-VN2, Vietnam/Hanoi, Android 15) was then reserved for 30
+minutes, reducing it from **2 to 0 Credits**. Each WebClient immediately showed
+`All ongoing tests have ended`; no measurements were captured. The Reservations
+page still showed both reservation timers running (23 minutes on S23 Ultra and
+30 minutes on S23+) and offered only **Start** in each reservation detail. No
+early-return dialog or refund was available or claimed. One **Get Free Credits**
+attempt returned `Available only 1 time a day`; the balance remained 0.

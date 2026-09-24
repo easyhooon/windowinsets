@@ -12,6 +12,8 @@ export const rtlCatalog = {
     "galaxy-s24-fe",
     "galaxy-s24-plus",
     "galaxy-s24-ultra",
+    "galaxy-s23-ultra",
+    "galaxy-s23-plus",
     "galaxy-s25-fe",
     "galaxy-s25-edge",
     "galaxy-s25",
