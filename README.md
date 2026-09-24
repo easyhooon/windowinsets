@@ -6,7 +6,7 @@ Its interface is inspired by [safearea.info](https://safearea.info), adapted for
 
 ## Fold it. Measure it.
 
-Explore Galaxy Fold and Flip hinge states in **real-time 3D, built with Three.js and WebGL**. Official Samsung artwork wraps a lit device chassis, while exterior SVG rulers track the display through the fold.
+Explore Galaxy Fold and Flip hinge states in **real-time 3D, built with Three.js and WebGL**. Two rigid housings and a separate hinge show the folded depth, while official Samsung display artwork and exterior SVG rulers follow the fold.
 
 | Galaxy Z Fold8 · book fold | Galaxy Z Flip8 · clamshell fold |
 | :---: | :---: |
