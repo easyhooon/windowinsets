@@ -1,6 +1,6 @@
 # Samsung skin and RTL coverage
 
-Checked 2026-09-24. **The full comparison is not yet verified.**
+Checked 2026-09-25. **The full comparison is not yet verified.**
 
 Keep registered skins browsable under the 2020+ coverage policy with the Fold/Flip exception.
 New measurement collection prioritizes models offered by Samsung Remote Test Lab.
@@ -119,6 +119,13 @@ removes a model from its catalog.
   navigation modes at 1080×2340 px / 480 dpi; the downloaded files report
   matching Settings and inset classifications. This confirms availability for
   this exact model on that date only.
+- Galaxy S24 FE (SM-S721N_KR4, Korea/Gumi) was reserved on 2026-09-25 with
+  Android 16 / One UI 8.5. InsetsProbe 1.3.0 captured its Phone-labeled built-in
+  display in both navigation modes at 1080×2340 px / 450 dpi with font scale 1.
+  Both downloaded files report matching Settings and inset classifications.
+  Samsung's raw captures include the display cutout inset but no bounding
+  rectangles, so no cutout shape is registered. This confirms availability for
+  the exact model on that date only.
   Fold8 cover and inner were both
   recaptured from a live reservation in 3-button and gesture modes. Fold7 cover
   and inner are also measured in both modes from the same SM-F966U software

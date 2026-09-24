@@ -1,14 +1,15 @@
 // Partial official listing; never infer non-support from this snapshot.
 export const rtlCatalog = {
-  "checkedAt": "2026-09-24",
+  "checkedAt": "2026-09-25",
   "sourceUrl": "https://developer.samsung.com/remote-test-lab",
   "scope": "featured-devices",
   "complete": false,
   "reservationCatalogUrl": "https://developer.samsung.com/remotetestlab/devices",
-  "reservationCatalogResult": "Accessible after manual sign-in. Galaxy Z inventory was inspected; Galaxy Z Fold8, Fold7, Fold6, Fold5, Fold4, Fold3, Flip8, Flip7, Flip7 FE, Flip6, Flip5, Flip4, Flip3 and the original Galaxy Z Flip (SM-F700F-IN5, India/Noida) were successfully reserved. Galaxy S25 (SM-S931N_KR1), Galaxy S25 Edge (SM-S937N_KR10), Galaxy S25 FE (SM-S731N_KR1), Galaxy S24 Ultra (SM-S928N-KR3), Galaxy S24+ (SM-S926N-KR3), and Galaxy S24 (SM-S921N-KR3; all Korea/Gumi) were also reserved. The full cross-series and cross-region inventory is still incomplete.",
+  "reservationCatalogResult": "Accessible after manual sign-in. Galaxy Z inventory was inspected; Galaxy Z Fold8, Fold7, Fold6, Fold5, Fold4, Fold3, Flip8, Flip7, Flip7 FE, Flip6, Flip5, Flip4, Flip3 and the original Galaxy Z Flip (SM-F700F-IN5, India/Noida) were successfully reserved. Galaxy S25 (SM-S931N_KR1), Galaxy S25 Edge (SM-S937N_KR10), Galaxy S25 FE (SM-S731N_KR1), Galaxy S24 Ultra (SM-S928N-KR3), Galaxy S24+ (SM-S926N-KR3), Galaxy S24 (SM-S921N-KR3), and Galaxy S24 FE (SM-S721N_KR4; all Korea/Gumi) were successfully reserved. The full cross-series and cross-region inventory is still incomplete.",
   "reservableSlugs": [
     "galaxy-z-trifold",
     "galaxy-s24",
+    "galaxy-s24-fe",
     "galaxy-s24-plus",
     "galaxy-s24-ultra",
     "galaxy-s25-fe",
