@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
-import { bendPoint, createChassis, rigidPanelPoint } from '../app/components/foldGeometry.ts';
+import { bendPoint, createChassis, createFoldHousings, hingeHalfWidth, rigidPanelPoint } from '../app/components/foldGeometry.ts';
 import { skins } from '../app/data/skins.ts';
 import { isInCoverage } from '../app/data/coverage.ts';
 import { getRtlAvailability, rtlCatalog } from '../app/data/rtlAvailability.ts';
@@ -619,5 +619,52 @@ test('Flip8 FlexWindow recapture verifies the real cover in both navigation mode
     assert.equal(raw.probeVersion, '1.2.1');
     assert.deepEqual(cover.insets[navMode].systemBars, raw.insets.systemBars.dp);
     assert.deepEqual(cover.insets[navMode].displayCutout, raw.insets.displayCutout.dp);
+  }
+});
+
+
+test('closed housing depth matches the published depth on both hinge axes', () => {
+  for (const vertical of [true, false]) {
+    for (const [thickness, closedDepth] of [[.045, .097], [.042, .089], [.061, .131]]) {
+      const hinge = hingeHalfWidth(thickness, closedDepth);
+      const geometry = createFoldHousings(4, 3, .12, thickness, hinge, vertical);
+      const positions = geometry.attributes.position;
+      const along = [];
+      for (let i = 0; i < positions.count; i++) {
+        const point = bendPoint(positions.getX(i), positions.getY(i), positions.getZ(i), 0, vertical, hinge);
+        along.push(point[vertical ? 0 : 1]);
+      }
+      assert.ok(Math.abs(Math.max(...along) - Math.min(...along) - closedDepth) < 1e-7);
+      // Each half keeps its distances at intermediate poses (no rubber housing).
+      for (const angle of [0, 45, 90, 135, 180]) {
+        const a = vertical ? [1, .5, -thickness] : [.5, 1, -thickness];
+        const b = vertical ? [.3, -.5, -.008] : [-.5, .3, -.008];
+        const pa = bendPoint(...a, angle, vertical, hinge);
+        const pb = bendPoint(...b, angle, vertical, hinge);
+        assert.ok(Math.abs(Math.hypot(...pa.map((v, i) => v - pb[i])) - Math.hypot(...a.map((v, i) => v - b[i]))) < 1e-9);
+      }
+      geometry.dispose();
+    }
+  }
+});
+
+test('landscape book captures rotate the hinge and preserve cover UV distances', async () => {
+  const { verticalHinge, coverPoint } = await import('../app/components/foldGeometry.ts');
+  assert.equal(verticalHinge('vertical', 0), true);
+  assert.equal(verticalHinge('vertical', 1), false);
+  assert.equal(verticalHinge('vertical', 3), false);
+  assert.equal(verticalHinge('horizontal', 0), false);
+  for (const rotatedBook of [false, true]) {
+    const vertical = !rotatedBook;
+    const a = coverPoint(0, 0, 1, 2, 4, 3, .01, vertical, rotatedBook);
+    const b = coverPoint(1, 0, 1, 2, 4, 3, .01, vertical, rotatedBook);
+    const c = coverPoint(0, 1, 1, 2, 4, 3, .01, vertical, rotatedBook);
+    for (const angle of [0, 30, 60, 90, 180]) {
+      const pa = rigidPanelPoint(...a, -.069, angle, vertical, .01);
+      const pb = rigidPanelPoint(...b, -.069, angle, vertical, .01);
+      const pc = rigidPanelPoint(...c, -.069, angle, vertical, .01);
+      assert.ok(Math.abs(Math.hypot(...pa.map((v, i) => v - pb[i])) - 1) < 1e-9);
+      assert.ok(Math.abs(Math.hypot(...pa.map((v, i) => v - pc[i])) - 2) < 1e-9);
+    }
   }
 });

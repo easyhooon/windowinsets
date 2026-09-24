@@ -8,14 +8,13 @@ async function assertBadges(page: Page, context: string) {
     const viewport = document.querySelector('#device-canvas')!.getBoundingClientRect();
     const badges = elements.flatMap(el => [...el.querySelectorAll('[data-badge]')].map(node => ({ name: node.closest('[data-ruler]')!.getAttribute('data-ruler'), box: node.getBoundingClientRect() })));
     const errors: string[] = [];
-    const mobile = viewport.width < 768;
-    const visible = badges.filter(({box}) => box.right > viewport.left && box.left < viewport.right && box.bottom > viewport.top && box.top < viewport.bottom - 36);
+    const visible = badges; // The footer has its own layout area; all badges must fit the actual canvas.
     for (let i = 0; i < visible.length; i++) {
       const {box:a,name} = visible[i];
-      if(!mobile && (a.left < viewport.left || a.right > viewport.right || a.top < viewport.top || a.bottom > viewport.bottom - 36)) errors.push(`clipped ${name}`);
+      if(a.left < viewport.left || a.right > viewport.right || a.top < viewport.top || a.bottom > viewport.bottom) errors.push(`clipped ${name}`);
       for(const {box:b,name:other} of visible.slice(i+1)) if(a.left < b.right-.5 && a.right > b.left+.5 && a.top < b.bottom-.5 && a.bottom > b.top+.5) errors.push(`${name} overlaps ${other}`);
     }
-    if (mobile && visible.length === 0) errors.push('no visible badges');
+    if (visible.length === 0) errors.push('no visible badges');
     return errors;
   });
   expect(result, context).toEqual([]);
@@ -66,8 +65,17 @@ for (const slug of ['galaxy-z-fold2', 'galaxy-z-fold7', 'galaxy-z-fold8', 'galax
    await assertBadges(page,`${slug} hinge ${angle}`);
   }
   await page.getByRole('button',{name:/^Hinge:/}).click();
+  // Return to the measured cover before testing available layer controls.
+  await choose(page,'Pose','Closed');
+  await expect(page.locator('[data-displayed-angle]')).toHaveAttribute('data-displayed-angle','0.00');
   for(const layer of ['Display Cutout','Corner Radius','Insets']) {
-   await page.getByRole('button',{name:layer,exact:true}).click();
+   const toggle = page.getByRole('button',{name:layer,exact:true});
+   if (await toggle.isDisabled()) {
+    const selector = layer === 'Corner Radius' ? '[data-ruler$="radius"]' : layer === 'Display Cutout' ? '[data-ruler^="Cutout"]' : '[data-ruler$="inset"]';
+    await expect(page.locator(selector)).toHaveCount(0);
+    continue;
+   }
+   await toggle.click();
    await assertBadges(page,`${slug} ${layer} hidden`);
    await page.getByRole('button',{name:layer,exact:true}).click();
   }

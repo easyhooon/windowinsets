@@ -183,8 +183,8 @@ rendered angle and CSS scale every animation frame on desktop and mobile.
 - The S-series import adds 26 skins and 25 artwork-only catalogue entries. Existing
   S25-series specification/measurement entries take priority over skin previews.
   Unknown specifications and insets remain pending; skin pixels are not dp data.
-- Downloaded Tab/Z/Note/A skins are registered: 123 archived models,
-  115 public models after the 2020 release-year cutoff (see `DEVICE_COVERAGE.md`),
+- Downloaded S/Tab/Z/Note/A skins are registered: 125 archived models,
+  117 public models after the 2020 release-year cutoff (see `DEVICE_COVERAGE.md`),
   with separate static main/cover previews where supplied. Fold/Flip models
   with a main skin have hinge animation; TriFold is excluded pending a separate
   decision. No measurements are borrowed across models.
@@ -258,3 +258,81 @@ cutout lanes sit farther out and can pass behind the collapsed Metrics header,
 as on the reference mobile view. Dragging the canvas reveals these measurements;
 the metrics panel retains their numeric values. This is a visibility tradeoff of
 the narrow viewport, not a missing measurement.
+
+
+## Shared UI and symmetry rules — 2026-09-24
+
+The user clarified that the requested improvement is the entire UI system, not
+individual device corrections. The binding presentation rule is: **equal lengths
+in a symmetric measurement group appear once; unequal lengths all remain**.
+This applies to corner radii, opposing insets and opposing cutout offsets.
+Comparison uses unrounded measurement geometry, with only floating-point noise
+tolerance, not formatted display strings. Unrelated measurements are not merged
+just because their numeric values happen to match. A representative badge's title
+lists the positions it represents; Metrics retains every directional value.
+
+The earlier proposal to remove all cutout-position rulers has been superseded.
+Both unequal sides remain on the diagram. Equal sides share a representative.
+Cutout width/height use a size badge when both need a distinct readout; an enabled
+inset ruler can represent the same vertical interval. Interior TOP/BOTTOM values
+are omitted to avoid repeating the exterior inset labels. The safe-area size label
+remains. These consolidations are user-requested departures from the reference,
+which repeats some symmetric and interior/exterior values.
+
+All flat displays, folding overlays and the WebGL fallback now use one
+`MeasurementRulers` component and one `measurementLayout` algorithm: consistent
+badge typography, interval arrows, local-to-overall lane order, copy behavior and
+collision spacing. The old flat-only label displacement algorithm is removed.
+No device names or viewport-specific measurement omissions select the policy.
+
+The desktop three-column hierarchy and mobile selector/Metrics/controls hierarchy
+remain reference-shaped. The shared workspace now allocates real grid/flex space
+to the diagram, footer and controls rather than overlaying them and compensating
+with guessed pixel reserves in Fit. The bottom toolbar grows with its content;
+long values wrap rather than truncate. The legend and gesture help have their own
+footer area. This is an intentional layout-mechanism difference from the floating
+reference legend, preserving its visual grouping while preventing obstruction.
+
+Metrics and its secondary Export JSON action share one heading row. Mobile Metrics
+opens as a scrollable disclosure over the canvas without shrinking or refitting the
+device. Preview-only screens use one footer status and no inactive measurement
+legend or repeated text stamped on the artwork. Individual unavailable layers are
+disabled when other measured layers exist.
+
+Validation covers the layout contract at 320×640, 390×844, 768×1024, 1024×768 and
+1440×900 using varied screen ratios and missing-data states. Shared annotation
+geometry is checked against every registered skin at multiple zoom levels.
+Measurements, source pixels, skin artwork and exported JSON are unchanged.
+
+## Fold depth and capture-relative hinges — 2026-09-24
+
+Rechecked the live reference at 1440×900 and 390×844. Its closed view keeps a
+compact silhouette and the same measurement/control hierarchy. Android folding
+now uses two closed rigid housings and a separate inset hinge barrel, with the
+existing official artwork confined to the display surfaces. A mild oblique camera
+at the folded end reveals actual depth; the fully open endpoint remains head-on.
+This is an intentional Android hardware rendering substitution, not a new control.
+
+The old screen-width-based bend radius made the closed gap too large. Published
+Fold7/Fold8/Flip8 chassis dimensions now determine both panel depth and closed
+depth: the residual gap after subtracting two panels sets the display bend radius.
+Other models retain an illustrative thickness/gap, not a physical measurement.
+The barrel contour and its inset remain illustrative rather than CAD geometry.
+
+The hinge axis follows the official skin's rotation into capture coordinates.
+For landscape Fold captures this is a horizontal hinge, correcting the oversized
+housing around narrow portrait covers. Cover UVs and external ruler anchors share
+one mapping; closing rotates the cover upright without changing capture values.
+Texture canvases stay off-DOM: the former axis-aligned backup beneath WebGL could
+leak a flat duplicate around perspective edges. WebGL creation/context failures
+still use the explicit flat SVG fallback.
+
+Visual checks cover Fold8, Fold5 and Flip8 at 0°, 90° and 180°, plus the Fold3
+artwork-only state on desktop/mobile. Geometry tests verify closed depth and rigid
+cover distances. Existing source artwork, captures, measurement values and flat
+bar-device rendering are unchanged. Release screenshot baselines were refreshed
+against the stable build and inspected before commit.
+
+The release pass also corrects prerendered shell selection: route parameters select
+the same model in initial HTML and hydrated navigation, avoiding a Fold8 header on
+other device routes. JavaScript-disabled navigation checks cover this boundary.

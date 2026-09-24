@@ -6,6 +6,33 @@ export interface Ruler {
   x1: number; y1: number; x2: number; y2: number;
   guides: [number, number, number, number][];
   labelX: number; labelY: number;
+  secondaryValue?: number;
+  symmetry?: 'corners' | 'inset-horizontal' | 'inset-vertical' | 'cutout-horizontal-offset' | 'cutout-vertical-offset';
+  equivalentNames?: string[];
+}
+
+/** The canvas explains geometry; Metrics retains the complete measurement set.
+ * Consolidate only equivalent geometry, never unrelated values that happen to match. */
+export function visibleDiagramRulers(rulers: Ruler[], layers: { insets: boolean; cutout: boolean; corners: boolean }) {
+  const visible = rulers.filter(ruler => ruler.kind === 'size' || layers[ruler.kind === 'inset' ? 'insets' : ruler.kind === 'radius' ? 'corners' : 'cutout']);
+  const cutoutHeight = visible.find(ruler => ruler.name === 'Cutout height');
+  const sharedHeight = cutoutHeight && visible.some(other =>
+    other.kind === 'inset' && other.x1 === other.x2 &&
+    Math.abs(other.y1 - cutoutHeight.y1) < 1e-8 && Math.abs(other.y2 - cutoutHeight.y2) < 1e-8);
+  const compact: Ruler[] = [];
+  for (const ruler of visible) {
+    if (ruler.name === 'Cutout height') continue;
+    const existing = ruler.symmetry && compact.find(other => other.symmetry === ruler.symmetry && Math.abs(other.value - ruler.value) < 1e-8);
+    if (existing) {
+      existing.equivalentNames!.push(ruler.name);
+      continue;
+    }
+    compact.push({ ...ruler, equivalentNames: [ruler.name],
+      ...(ruler.name === 'Cutout width' && cutoutHeight && !sharedHeight
+        ? { name: 'Cutout size', secondaryValue: cutoutHeight.value } : {}),
+    });
+  }
+  return compact;
 }
 
 /** Shared geometry for SVG and the folded canvas. The display is the origin;
@@ -35,22 +62,22 @@ export function diagramAnnotations(width: number, height: number, scale: number,
     right: Math.max(body.right, chassis.right * scale), bottom: Math.max(body.bottom, chassis.bottom * scale),
   };
   const rulers: Ruler[] = [];
-  function horizontal(name: string, value: number, kind: Ruler['kind'], x1: number, x2: number, fromY: number, y: number, short = false) {
-    rulers.push({ name, value, kind, x1, x2, y1: y, y2: y,
+  function horizontal(name: string, value: number, kind: Ruler['kind'], x1: number, x2: number, fromY: number, y: number, short = false, symmetry?: Ruler['symmetry']) {
+    rulers.push({ name, value, kind, symmetry, x1, x2, y1: y, y2: y,
       guides: [[x1, fromY, x1, y], [x2, fromY, x2, y]],
       labelX: (x1 + x2) / 2, labelY: y + (short ? (y < 0 ? -12 : 12) * u : 0) });
   }
-  function vertical(name: string, value: number, kind: Ruler['kind'], y1: number, y2: number, fromX: number, x: number) {
-    rulers.push({ name, value, kind, x1: x, x2: x, y1, y2,
+  function vertical(name: string, value: number, kind: Ruler['kind'], y1: number, y2: number, fromX: number, x: number, symmetry?: Ruler['symmetry']) {
+    rulers.push({ name, value, kind, symmetry, x1: x, x2: x, y1, y2,
       guides: [[fromX, y1, x, y1], [fromX, y2, x, y2]], labelX: x, labelY: (y1 + y2) / 2 });
   }
   horizontal('Display width', width, 'size', 0, W, 0, body.top - 94 * u);
   vertical('Display height', height, 'size', 0, H, 0, body.left - 40 * u);
   if (safe) {
-    if (safe.top) vertical('Top inset', safe.top, 'inset', 0, safe.top * scale, W, body.right + 32 * u);
-    if (safe.bottom) vertical('Bottom inset', safe.bottom, 'inset', H - safe.bottom * scale, H, W, body.right + 32 * u);
-    if (safe.left) horizontal('Left inset', safe.left, 'inset', 0, safe.left * scale, H, body.bottom + 58 * u);
-    if (safe.right) horizontal('Right inset', safe.right, 'inset', W - safe.right * scale, W, H, body.bottom + 58 * u);
+    if (safe.top) vertical('Top inset', safe.top, 'inset', 0, safe.top * scale, W, body.right + 32 * u, 'inset-vertical');
+    if (safe.bottom) vertical('Bottom inset', safe.bottom, 'inset', H - safe.bottom * scale, H, W, body.right + 32 * u, 'inset-vertical');
+    if (safe.left) horizontal('Left inset', safe.left, 'inset', 0, safe.left * scale, H, body.bottom + 58 * u, false, 'inset-horizontal');
+    if (safe.right) horizontal('Right inset', safe.right, 'inset', W - safe.right * scale, W, H, body.bottom + 58 * u, false, 'inset-horizontal');
   }
   if (radii) {
     for (const [name, value, right, bottom] of [
@@ -59,7 +86,7 @@ export function diagramAnnotations(width: number, height: number, scale: number,
     ] as const) {
       if (!value) continue;
       horizontal(name, value, 'radius', right ? W - value * scale : 0, right ? W : value * scale,
-        bottom ? H - value * scale : value * scale, bottom ? body.bottom + 22 * u : body.top - 22 * u, true);
+        bottom ? H - value * scale : value * scale, bottom ? body.bottom + 22 * u : body.top - 22 * u, true, 'corners');
     }
   }
   if (cutout) {
@@ -71,10 +98,10 @@ export function diagramAnnotations(width: number, height: number, scale: number,
     vertical('Cutout height', h, 'cutout', y * scale, (y + h) * scale, (x + w) * scale, body.right + 80 * u);
     if (h * scale < 40 * u) rulers[rulers.length - 1].labelY = y * scale - 16 * u;
     // Position is measured from display edges, not from artwork or safe-area edges.
-    if (x > 0) horizontal('Cutout left distance', x, 'cutout', 0, x * scale, cutoutEdge, cutoutLane);
-    if (width - x - w > .01) horizontal('Cutout right distance', width - x - w, 'cutout', (x + w) * scale, W, cutoutEdge, cutoutLane);
-    if (y > 0) vertical('Cutout top distance', y, 'cutout', 0, y * scale, (x + w) * scale, body.right + 80 * u);
-    if (height - y - h > .01) vertical('Cutout bottom distance', height - y - h, 'cutout', (y + h) * scale, H, (x + w) * scale, body.right + 80 * u);
+    if (x > 0) horizontal('Cutout left distance', x, 'cutout', 0, x * scale, cutoutEdge, cutoutLane, false, 'cutout-horizontal-offset');
+    if (width - x - w > .01) horizontal('Cutout right distance', width - x - w, 'cutout', (x + w) * scale, W, cutoutEdge, cutoutLane, false, 'cutout-horizontal-offset');
+    if (y > 0) vertical('Cutout top distance', y, 'cutout', 0, y * scale, (x + w) * scale, body.right + 80 * u, 'cutout-vertical-offset');
+    if (height - y - h > .01) vertical('Cutout bottom distance', height - y - h, 'cutout', (y + h) * scale, H, (x + w) * scale, body.right + 80 * u, 'cutout-vertical-offset');
   }
   return { rulers, body, bounds: { left: body.left - 80 * u, top: body.top - 115 * u,
     right: body.right + 120 * u, bottom: body.bottom + 80 * u } };
@@ -83,47 +110,4 @@ export function diagramAnnotations(width: number, height: number, scale: number,
 export function flatDiagramSize(width: number, height: number, skin?: DeviceSkin) {
   const { bounds } = diagramAnnotations(width, height, 260 / width, skin, null, null, undefined);
   return { width: 700 * (bounds.right - bounds.left) / (bounds.bottom - bounds.top), height: 700 };
-}
-
-/** Keep numeric badges readable when zoom compensation makes a short ruler
- * smaller than its label. The leader still points to the original interval. */
-export function placeRulerLabels(rulers: Ruler[], fontScale: number, format: (value: number) => string, bounds?: { left: number; right: number; top: number; bottom: number }, body?: { left: number; right: number; top: number; bottom: number }) {
-  const placed: { left: number; right: number; top: number; bottom: number }[] = [];
-  return rulers.map(ruler => {
-    const text = (ruler.kind === 'radius' ? 'R ' : '') + format(ruler.value);
-    const halfWidth = (text.length * 7.2 + 12) * fontScale / 2;
-    const halfHeight = 11 * fontScale;
-    let x = ruler.labelX, y = ruler.labelY;
-    // Zoom-compensated badges must clear the body as well as their ruler line.
-    if (body) {
-      if (ruler.y1 === ruler.y2) y = ruler.y1 < body.top
-        ? Math.min(y, body.top - halfHeight - fontScale * 3)
-        : Math.max(y, body.bottom + halfHeight + fontScale * 3);
-      else x = ruler.x1 < body.left
-        ? Math.min(x, body.left - halfWidth - fontScale * 3)
-        : Math.max(x, body.right + halfWidth + fontScale * 3);
-    }
-    const direction = ruler.y1 === ruler.y2 && ruler.y1 > ruler.guides[0][1] ? 1 : -1;
-    const box = () => ({ left: x - halfWidth, right: x + halfWidth, top: y - halfHeight, bottom: y + halfHeight });
-    while (placed.some(other => {
-      const current = box();
-      return current.left < other.right && current.right > other.left && current.top < other.bottom && current.bottom > other.top;
-    })) y += direction * 2 * halfHeight;
-    if (bounds && (box().top < bounds.top || box().bottom > bounds.bottom)) {
-      // Canvas textures cannot overflow like SVG. Pack displaced labels across
-      // their outer margin and retain a leader to the measured interval.
-      x = bounds.left + halfWidth;
-      y = ruler.y1 < 0 ? bounds.top + halfHeight : bounds.bottom - halfHeight;
-      const rowDirection = ruler.y1 < 0 ? 1 : -1;
-      while (true) {
-        const current = box();
-        const collision = placed.find(other => current.left < other.right && current.right > other.left && current.top < other.bottom && current.bottom > other.top);
-        if (!collision) break;
-        x = collision.right + halfWidth + fontScale;
-        if (x + halfWidth > bounds.right) { x = bounds.left + halfWidth; y += rowDirection * halfHeight * 2; }
-      }
-    }
-    placed.push(box());
-    return { ...ruler, labelX: x, labelY: y };
-  });
 }

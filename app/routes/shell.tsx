@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { NavLink, Outlet, useLocation } from "react-router";
+import { NavLink, Outlet, useLocation, useParams } from "react-router";
 import { devices, featuredDevice, REPO_URL } from "../data/devices";
 import { ResizeHandle } from "../components/ResizeHandle";
 import { Icon } from "../components/Icon";
@@ -20,7 +20,8 @@ export default function Shell() {
   const [query, setQuery] = useState("");
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
-  const current = devices.find(d => location.pathname === `/${d.slug}`) ?? featuredDevice;
+  const { slug } = useParams();
+  const current = devices.find(d => d.slug === slug) ?? featuredDevice;
   const [family, setFamily] = useState<Family>(() => familyOf(current));
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(() => new Set([groupOf(current)]));
   useEffect(() => {

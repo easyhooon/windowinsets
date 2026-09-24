@@ -6,7 +6,7 @@ Its interface is inspired by [safearea.info](https://safearea.info), adapted for
 
 ## Fold it. Measure it.
 
-Explore Galaxy Fold and Flip hinge states in **real-time 3D, built with Three.js and WebGL**. Official Samsung artwork wraps a lit device chassis, while exterior SVG rulers track the display through the fold.
+Explore Galaxy Fold and Flip hinge states in **real-time 3D, built with Three.js and WebGL**. Two rigid housings and a separate hinge show the folded depth, while official Samsung display artwork and exterior SVG rulers follow the fold.
 
 | Galaxy Z Fold8 · book fold | Galaxy Z Flip8 · clamshell fold |
 | :---: | :---: |
@@ -131,6 +131,6 @@ New Fold/Flip entries have static main/cover previews where supplied; models
 with a main skin also have hinge animation. Note/A artwork is available as static
 previews; inset measurements remain pending.
 
-## Continuing development in Codex
+## Development
 
-Start with [AGENTS.md](AGENTS.md) and the current [reference parity notes](docs/REFERENCE_PARITY.md). Official Samsung artwork and its layout coordinates live in `public/skins/` and `app/data/skins.ts`. Run geometry/asset regressions with `node --test tests/rendering.test.mjs`.
+See the [reference parity notes](docs/REFERENCE_PARITY.md) for design decisions and implementation details. Official Samsung artwork and layout coordinates are stored in `public/skins/` and `app/data/skins.ts`. Run geometry and asset tests with `node --test tests/rendering.test.mjs`.

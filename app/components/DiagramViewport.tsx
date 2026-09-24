@@ -1,7 +1,7 @@
 import { useEffect, useImperativeHandle, useLayoutEffect, useRef, useState } from "react";
 
 type Bounds = { left: number; top: number; right: number; bottom: number };
-export type DiagramViewportHandle = { fitFoldBounds: (bounds: Bounds, mobileVerticalReserve?: number) => number; setFoldAngle: (angle: number) => void; effectiveZoom: () => number };
+export type DiagramViewportHandle = { fitFoldBounds: (bounds: Bounds) => number; setFoldAngle: (angle: number) => void; effectiveZoom: () => number };
 
 export function DiagramViewport({ viewportRef, autoFit = false, closedFit, children, zoom, setZoom, rotation, fitKey, onUserTransform, onFit, baseWidth = 700, baseHeight = 700, fitWidth = baseWidth, fitHeight = baseHeight }: {
   viewportRef?: React.Ref<DiagramViewportHandle>; autoFit?: boolean; closedFit?: { width: number; height: number };
@@ -20,15 +20,14 @@ export function DiagramViewport({ viewportRef, autoFit = false, closedFit, child
   const fitBounds = useRef({ fitWidth, fitHeight });
   fitBounds.current = { fitWidth, fitHeight };
   const fitCenter = useRef({ x: 0, y: 0 });
-  const projectedFit = useRef<{ bounds: Bounds; mobileVerticalReserve: number } | null>(null);
-  const fitFoldBounds = (bounds: Bounds, mobileVerticalReserve = 160) => {
-      projectedFit.current = { bounds, mobileVerticalReserve };
+  const projectedFit = useRef<Bounds | null>(null);
+  const fitFoldBounds = (bounds: Bounds) => {
+      projectedFit.current = bounds;
       if (!live.current.autoFit || !ref.current || !scaleRef.current) return effectiveZoom.current;
       const sideways = Math.abs(live.current.rotation) % 180 === 90;
       const width = bounds.right - bounds.left, height = bounds.bottom - bounds.top;
-      const mobile = ref.current.clientWidth < 768;
-      const availableW = ref.current.clientWidth - (mobile ? 40 : 52);
-      const availableH = ref.current.clientHeight - (mobile ? mobileVerticalReserve : 100);
+      const availableW = ref.current.clientWidth - 32;
+      const availableH = ref.current.clientHeight - 32;
       effectiveZoom.current = Math.max(25, Math.min(150, 100 * Math.min(availableW / (sideways ? height : width),
         availableH / (sideways ? width : height))));
       const displayedZoom = Math.round(effectiveZoom.current);
@@ -36,7 +35,8 @@ export function DiagramViewport({ viewportRef, autoFit = false, closedFit, child
         live.current.zoom = displayedZoom;
         live.current.setZoom(displayedZoom);
       }
-      const x = (bounds.left + bounds.right) / 2 - 350, y = (bounds.top + bounds.bottom) / 2 - 350;
+      const x = (bounds.left + bounds.right) / 2 - 350;
+      const y = (bounds.top + bounds.bottom) / 2 - 350;
       fitCenter.current = { x, y };
       scaleRef.current.style.transform = `scale(${effectiveZoom.current / 100}) rotate(${live.current.rotation}deg) translate(${-x}px, ${-y}px)`;
       return effectiveZoom.current;
@@ -48,7 +48,7 @@ export function DiagramViewport({ viewportRef, autoFit = false, closedFit, child
       ? fitScales.current.closed + (fitScales.current.open - fitScales.current.closed) * progress
       : live.current.zoom;
     if (scaleRef.current) scaleRef.current.style.transform = `scale(${effectiveZoom.current / 100}) rotate(${live.current.rotation}deg) translate(${-fitCenter.current.x}px, ${-fitCenter.current.y}px)`;
-    if (includeBounds && projectedFit.current) fitFoldBounds(projectedFit.current.bounds, projectedFit.current.mobileVerticalReserve);
+    if (includeBounds && projectedFit.current) fitFoldBounds(projectedFit.current);
   };
   useImperativeHandle(viewportRef, () => ({
     setFoldAngle: angle => { displayedAngle.current = angle; applyScale(false); },
@@ -67,8 +67,7 @@ export function DiagramViewport({ viewportRef, autoFit = false, closedFit, child
       const bounds = fitBounds.current;
       const sideways = Math.abs(rotation) % 180 === 90;
       const w = sideways ? bounds.fitHeight : bounds.fitWidth, h = sideways ? bounds.fitWidth : bounds.fitHeight;
-      const verticalReserve = el.clientWidth < 768 ? 160 : 100;
-      const scale = (width: number, height: number) => Math.max(25, Math.min(150, Math.floor(Math.min((el.clientWidth - 52) / width, (el.clientHeight - verticalReserve) / height) * 100)));
+      const scale = (width: number, height: number) => Math.max(25, Math.min(150, Math.floor(Math.min((el.clientWidth - 32) / width, (el.clientHeight - 32) / height) * 100)));
       const open = scale(w, h);
       fitScales.current = { open, closed: closedFit ? scale(sideways ? closedFit.height : closedFit.width, sideways ? closedFit.width : closedFit.height) : open };
       live.current.zoom = open;
@@ -89,17 +88,17 @@ export function DiagramViewport({ viewportRef, autoFit = false, closedFit, child
       const el = ref.current!;
       const svg = el.querySelector('svg[role="group"]');
       if (!svg) { fitting.current = false; return; }
-      // Badges have a constant on-screen font size and can extend beyond the
-      // SVG viewBox after collision avoidance. Fit their actual rotated bounds.
-      const boxes = [svg, ...svg.querySelectorAll('[role="button"]')].map(node => node.getBoundingClientRect());
+      // Fit the visible body and annotations, not the SVG's unused margins.
+      // Constant-size labels need another pass after the device scale changes.
+      const boxes = [...svg.querySelectorAll('[data-fit-body], [data-ruler]')].map(node => node.getBoundingClientRect());
       const left = Math.min(...boxes.map(box => box.left)), right = Math.max(...boxes.map(box => box.right));
       const top = Math.min(...boxes.map(box => box.top)), bottom = Math.max(...boxes.map(box => box.bottom));
       const viewport = el.getBoundingClientRect();
-      const ratio = Math.min((viewport.width - 52) / (right - left), (viewport.height - 100) / (bottom - top), 1);
+      const ratio = Math.min((viewport.width - 32) / (right - left), (viewport.height - 32) / (bottom - top));
       setPan(previous => ({ x: previous.x + viewport.left + viewport.width / 2 - (left + right) / 2,
         y: previous.y + viewport.top + viewport.height / 2 - (top + bottom) / 2 }));
-      const next = Math.max(25, Math.floor(zoom * ratio));
-      if (next < zoom) setZoom(next); else fitting.current = false;
+      const next = Math.max(25, Math.min(150, Math.floor(zoom * ratio)));
+      if (Math.abs(next - zoom) > 1) setZoom(next); else fitting.current = false;
     });
     return () => cancelAnimationFrame(frame);
   }, [zoom, rotation, baseWidth, baseHeight, fitKey, fitRevision, setZoom]);

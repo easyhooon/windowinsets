@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
-import { diagramAnnotations, placeRulerLabels } from '../app/components/diagramAnnotations.ts';
+import { diagramAnnotations, visibleDiagramRulers } from '../app/components/diagramAnnotations.ts';
+import { layoutMeasurementRulers } from '../app/components/measurementLayout.ts';
 import { skins } from '../app/data/skins.ts';
 test('rulers clear every official skin body rather than relying on bezel constants', () => {
   for (const skin of Object.values(skins)) {
@@ -33,34 +33,27 @@ test('a bottom cutout gets bottom rulers, without guides crossing the safe area'
 });
 
 
-test('small folded textures pack displaced badges without clipping or re-testing a touching edge', { timeout: 1000 }, () => {
-  const width = 360, height = 840, scale = 1200 / width;
-  const { rulers } = diagramAnnotations(width, height, scale, skins['galaxy-z-flip8/main'],
-    { top: 36, right: 0, bottom: 48, left: 0 },
-    { topLeft: 22, topRight: 22, bottomLeft: 22, bottomRight: 22 },
-    { xDp: 169.67, yDp: 0, widthDp: 20.67, heightDp: 36 });
-  const pad = width * .6 * scale;
-  const bounds = { left: -pad + scale, top: -pad + scale, right: width * scale + pad - scale, bottom: height * scale + pad - scale };
-  const format = value => String(Number(value.toFixed(2)));
-  for (const fontScale of [8.3, 10.14, 13.24, 19.1]) {
-    const labels = placeRulerLabels(rulers, fontScale, format, bounds);
-    for (const label of labels) {
-      assert.ok(Number.isFinite(label.labelX) && Number.isFinite(label.labelY));
-      assert.ok(label.labelY - 9 * fontScale >= bounds.top - 1);
-      assert.ok(label.labelY + 9 * fontScale <= bounds.bottom + 1);
+test('shared annotation layout clears bodies and adjacent badges at every zoom', () => {
+  for (const skin of Object.values(skins)) {
+    const width = skin.screen.width / 3, height = skin.screen.height / 3;
+    const { rulers, body } = diagramAnnotations(width, height, 260 / width, skin,
+      { top: 24, bottom: 48, left: 0, right: 0 },
+      { topLeft: 12, topRight: 12, bottomLeft: 24, bottomRight: 24 },
+      { xDp: width / 2 - 8, yDp: 0, widthDp: 16, heightDp: 24 });
+    const positioned = visibleDiagramRulers(rulers, { insets: true, cutout: true, corners: true }).map(r => ({ ...r,
+      start: { x: r.guides[0][0], y: r.guides[0][1] },
+      end: { x: r.guides[1][0], y: r.guides[1][1] },
+      side: r.y1 === r.y2 ? (r.y1 < 0 ? 'top' : 'bottom') : (r.x1 < 0 ? 'left' : 'right'),
+    }));
+    for (const scale of [.5, 1, 2, 4]) {
+      const labels = layoutMeasurementRulers({ rulers: positioned, body, scale, format: v => v.toFixed(2), units: 'dp', screen: 'Test' });
+      const boxes = labels.map(r => ({ left: r.x - r.width / 2, right: r.x + r.width / 2, top: r.y - r.height / 2, bottom: r.y + r.height / 2 }));
+      const overlaps = (a, b) => a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
+      for (const [index, box] of boxes.entries()) {
+        assert.ok(!overlaps(box, body), labels[index].name);
+        assert.ok(!boxes.slice(index + 1).some(other => overlaps(box, other)), labels[index].name);
+      }
     }
-  }
-});
-
-test('zoom-compensated badges clear the skin body', () => {
-  const { rulers, body } = diagramAnnotations(475.43, 751.24, 260 / 475.43, skins['galaxy-z-fold8/cover'],
-    { top: 41.9, right: 0, bottom: 48, left: 0 },
-    { topLeft: 9.9, topRight: 9.9, bottomRight: 9.9, bottomLeft: 9.9 }, undefined);
-  for (const scale of [1, 2, 3]) for (const label of placeRulerLabels(rulers, scale, String, undefined, body)) {
-    const halfWidth = ((label.kind === 'radius' ? 'R ' : '') + String(label.value)).length * 3.6 * scale + 4 * scale;
-    const halfHeight = 9 * scale;
-    assert.ok(label.labelX + halfWidth < body.left || label.labelX - halfWidth > body.right ||
-      label.labelY + halfHeight < body.top || label.labelY - halfHeight > body.bottom, label.name);
   }
 });
 
@@ -73,4 +66,43 @@ test('cover rulers also clear the larger folded chassis', () => {
   for (const ruler of rulers) assert.ok(ruler.x1 === ruler.x2
     ? ruler.x1 < chassis.left || ruler.x1 > chassis.right
     : ruler.y1 < chassis.top || ruler.y1 > chassis.bottom, ruler.name);
+});
+
+test('compact rulers retain distinct geometry and restore cutout height when insets are hidden', async () => {
+  const { rulers } = diagramAnnotations(384, 832, 1, undefined,
+    { top: 34.13, bottom: 48, left: 0, right: 0 },
+    { topLeft: 14.93, topRight: 14.93, bottomLeft: 14.93, bottomRight: 14.93 },
+    { xDp: 182.76, yDp: 0, widthDp: 18.49, heightDp: 34.13 });
+  const layers = { insets: true, cutout: true, corners: true };
+  const compact = visibleDiagramRulers(rulers, layers);
+  assert.equal(compact.length, 9);
+  assert.equal(compact.filter(r => r.kind === 'radius').length, 1);
+  assert.ok(compact.some(r => r.name === 'Cutout left distance'));
+  assert.ok(compact.some(r => r.name === 'Cutout right distance'));
+  assert.ok(compact.some(r => r.name === 'Cutout bottom distance'));
+  assert.ok(!compact.some(r => r.name === 'Cutout height'));
+  assert.ok(visibleDiagramRulers(rulers, { ...layers, insets: false }).some(r => r.name === 'Cutout size' && r.secondaryValue === 34.13));
+  // An equal length at a different vertical position is not the same interval.
+  const shifted = rulers.map(r => r.name === 'Cutout height' ? { ...r, y1: r.y1 + 5, y2: r.y2 + 5 } : r);
+  assert.ok(visibleDiagramRulers(shifted, layers).some(r => r.name === 'Cutout size' && r.secondaryValue === 34.13));
+  const asymmetric = rulers.map(r => r.name === 'Bottom right radius' ? { ...r, value: 20 } : r);
+  assert.equal(visibleDiagramRulers(asymmetric, layers).filter(r => r.kind === 'radius').length, 2);
+});
+
+
+test('equal symmetric measurements collapse once; unequal source lengths all remain', () => {
+  const make = (safe, cutout) => visibleDiagramRulers(diagramAnnotations(400, 800, 1, undefined, safe,
+    { topLeft: 10, topRight: 10, bottomLeft: 20, bottomRight: 20 }, cutout).rulers,
+    { insets: true, cutout: true, corners: true });
+  const equal = make({ top: 24, bottom: 24, left: 8, right: 8 }, { xDp: 190, yDp: 390, widthDp: 20, heightDp: 20 });
+  for (const group of ['inset-vertical', 'inset-horizontal', 'cutout-horizontal-offset', 'cutout-vertical-offset']) {
+    const values = equal.filter(r => r.symmetry === group);
+    assert.equal(values.length, 1, group);
+    assert.equal(values[0].equivalentNames.length, 2, group);
+  }
+  assert.equal(equal.filter(r => r.symmetry === 'corners').length, 2);
+  const unequal = make({ top: 24, bottom: 48, left: 8, right: 16 }, { xDp: 190.001, yDp: 380, widthDp: 20, heightDp: 20 });
+  for (const group of ['inset-vertical', 'inset-horizontal', 'cutout-horizontal-offset', 'cutout-vertical-offset']) {
+    assert.equal(unequal.filter(r => r.symmetry === group).length, 2, group);
+  }
 });

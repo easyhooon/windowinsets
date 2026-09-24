@@ -15,6 +15,38 @@
 > incorrect: its capture matches the official cover display, not the inner display.
 
 
+## 공통 UI 설계 원칙 — 2026-09-24
+
+> **대칭되는 부분의 길이가 같다면 하나만 표시하고, 다르다면 각각 표시한다.**
+
+이 원칙은 특정 기종의 예외 처리가 아니라 전체 프론트 UI의 설계 기준이다.
+일반 화면, 폴더블 커버·내부 화면, 태블릿, SVG·WebGL 대체 렌더링과
+모든 화면 크기에 동일하게 적용한다. 아래의 과거 시각 개선 목록보다 우선한다.
+
+- 같은 종류의 대칭 치수를 비교한다. 좌우·상하 인셋, 컷아웃의 양쪽 거리,
+  모서리 반경이 해당한다. 서로 다른 의미의 치수는 숫자가 같다는 이유만으로
+  합치지 않는다.
+- 같고 다름은 반올림한 표시 문자열이 아닌 원본 측정값으로 판단한다.
+  같은 값의 대표 표기에는 어느 위치들에 적용되는지 확인할 수 있는 문맥을 남긴다.
+- 값이 다르면 양쪽 정보를 모두 제공한다. 화면을 단순하게 보이게 만들기 위해
+  비대칭 치수를 숨기거나, 임의의 대표값으로 바꾸거나, 평균을 내지 않는다.
+- 동일한 정보를 화면 안팎에 반복하지 않는다. 도면에는 필요한 치수와 관계를
+  보여주고, Metrics에는 전체 방향별 값을 유지한다. 도면의 중복 제거가
+  측정 데이터나 JSON 내보내기 내용을 바꾸어서는 안 된다.
+- 가독성은 공통 정보 구조와 배치 규칙으로 해결한다. 특정 기종의 좌표 조정이나
+  수치 숨김을 해결책으로 삼지 않는다. 도면·범례·컨트롤은 실제 공간을 나눠 쓰고,
+  서로를 가리거나 불필요한 고정 여백 때문에 기기를 과도하게 축소하지 않는다.
+
+**검수 기준:** 대칭 값이 같은 입력과 다른 입력을 모두 확인한다. 같은 경우는
+대표 표기 하나만 남고, 다른 경우는 각 값이 모두 보존되어야 한다. 값이 표시상
+같게 반올림되더라도 원본이 다르면 별도로 제공한다. 이 검증을 공통 치수 모델과
+레이아웃에 적용하며, 스크린샷 한두 장이 깔끔해진 것만으로 완료를 판단하지 않는다.
+
+구현 및 레퍼런스와의 의도적인 차이는
+[REFERENCE_PARITY.md](REFERENCE_PARITY.md#shared-ui-and-symmetry-rules--2026-09-24)에 기록한다.
+
+---
+
 **Purpose**: items below are things Claude (writing/maintaining this codebase) can build and wire up functionally, but can't take further without actual design work — new artwork, per-device skin assets, or a real pass on visual hierarchy/material feel. Compiled for handoff to a design-focused agent/person. Reference site throughout: **safearea.info**.
 
 All of these are visual/asset polish only — no functional bugs are being tracked here.

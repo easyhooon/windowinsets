@@ -168,12 +168,12 @@ export function DeviceView({ device }: { device: Device }) {
     <h1 className="sr-only">{device.name} Window Insets</h1>
     <div className={`metrics-panel ${metricsOpen ? "is-open" : ""}`} aria-busy={transitionTarget !== null}>
       <div className="metrics-bar">
+        <h2 className="metrics-heading">Metrics</h2>
         <button className="metrics-toggle" aria-expanded={metricsOpen} onClick={() => setMetricsOpen(!metricsOpen)}>Metrics<Icon name="chevron" /></button>
         <button type="button" className="export-json-button" onClick={exportJson}>Export JSON</button>
         <span className="sr-only" role="status">{exportStatus}</span>
       </div>
       <div className="metrics-content">
-        <h2>Metrics</h2>
         {foldable && <div className="screen-tabs" aria-label="Display">{device.screens.map(s => <button key={s.id} aria-pressed={screen.id === s.id} onClick={() => pose(s.id === "cover" ? "0" : "180")}>{s.label === "Main" ? "Inner" : "Outer"}</button>)}</div>}
             <SectionLabel>Dimensions</SectionLabel>
             <dl>
@@ -249,6 +249,7 @@ export function DeviceView({ device }: { device: Device }) {
     </div>
     <ResizeHandle label="Metrics width" value={metricsWidth} onChange={setMetricsWidth} min={250} max={400} />
     <section className="canvas-panel" aria-label="Device visualization">
+      <div className="canvas-stage">
       <DiagramViewport viewportRef={viewport} autoFit={autoFit}
         closedFit={useFold ? { width: device.formFactor === "foldable-flip" ? 380 : 340, height: device.formFactor === "foldable-flip" ? 390 : 500 } : undefined}
         zoom={zoom} setZoom={setZoom} rotation={rotation} fitKey={fitKey}
@@ -261,12 +262,7 @@ export function DeviceView({ device }: { device: Device }) {
           zoom={zoom} showFrame={showFrame} showRegions={showRegions} showDimensions={showDimensions} units={units} layers={layers} skin={mainSkin} skinRotation={main.captureRotation ?? 0} viewRotation={rotation} measured={!!main.logicalSizeDp} cover={outerScreen && outerSkin ? { screen: outerScreen, measurement: outerScreen.insets[navMode], skin: outerSkin } : undefined}
           fallbackMain={{ screen: main, measurement: mainMeasurement }}
           chassisMm={device.chassisMm}
-          onMeasurementBounds={(bounds, body, displayedAngle) => {
-            if (window.innerWidth >= 768 || displayedAngle >= COVER_REVEAL_ANGLE) return viewport.current?.fitFoldBounds(bounds);
-            // Closed cover screens have many narrow cutout rulers above the
-            // phone. Fitting every badge makes the actual device thumbnail-sized.
-            return viewport.current?.fitFoldBounds(body, 120);
-          }}
+          onMeasurementBounds={bounds => viewport.current?.fitFoldBounds(bounds)}
           onDisplayedAngle={value => {
             viewport.current?.setFoldAngle(value);
             const visible = value < COVER_REVEAL_ANGLE && outerScreen ? "cover" : "main";
@@ -276,10 +272,14 @@ export function DeviceView({ device }: { device: Device }) {
           onTransitionEnd={() => { if (transitionTarget) { setScreenId(transitionTarget); setTransitionTarget(null); } }} />
           : <InsetsDiagram screen={screen} measurement={measurement} zoom={zoom} showFrame={showFrame} showRegions={showRegions} showDimensions={showDimensions} units={units} layers={layers} skin={skin} />}
       </DiagramViewport>
-      {!measurement && <p className="pending-notice">{rtl.previewNotice}</p>}
-      <div className="region-legend" aria-label="Region legend">
-        {([{ key: "safe", label: "Safe Area", color: "#ade7bc" }, { key: "insets", label: "Insets", color: "#ffdab0" }, { key: "cutout", label: "Display Cutout", color: "#c4a0f1" }, { key: "corners", label: "Corner Radius", color: "#e4a6cc" }] as const).map(item => <button key={item.key} aria-pressed={layers[item.key]} onClick={() => setLayers(v => ({ ...v, [item.key]: !v[item.key] }))}><i style={{ background: item.color }} />{item.label}</button>)}
       </div>
+      <footer className="canvas-footer">
+      {!measurement && <p className="pending-notice">{rtl.previewNotice}</p>}
+      {(measurement || screen.cornerRadiiDp) && <div className="region-legend" aria-label="Region legend">
+        {([{ key: "safe", label: "Safe Area", color: "#ade7bc" }, { key: "insets", label: "Insets", color: "#ffdab0" }, { key: "cutout", label: "Display Cutout", color: "#c4a0f1" }, { key: "corners", label: "Corner Radius", color: "#e4a6cc" }] as const).map(item => <button key={item.key} disabled={item.key === "corners" ? !screen.cornerRadiiDp : item.key === "cutout" ? !measurement?.cutoutShape : !measurement} aria-pressed={layers[item.key]} onClick={() => setLayers(v => ({ ...v, [item.key]: !v[item.key] }))}><i style={{ background: item.color }} />{item.label}</button>)}
+      </div>}
+      <p className="canvas-help">Scroll or drag to pan · Pinch to zoom · + / − to zoom · 0 to fit</p>
+      </footer>
     </section>
     <div className={`canvas-controls${useFold ? " is-foldable" : ""}`} aria-label="Canvas controls">
       <Dropdown label="Navigation" value={navMode} options={[{ value: "threeButton", label: "3-button" }, { value: "gesture", label: "Gesture" }]} onChange={v => setNavMode(v as NavMode)} />
@@ -296,6 +296,5 @@ export function DeviceView({ device }: { device: Device }) {
         </div>}
       </div>
     </div>
-    <p className="canvas-help">Scroll or drag to pan · Pinch to zoom · + / − to zoom · 0 to fit</p>
   </article>;
 }
