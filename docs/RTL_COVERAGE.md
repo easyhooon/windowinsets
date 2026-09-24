@@ -87,8 +87,40 @@ removes a model from its catalog.
   The other archived models remain unverified, not unsupported. Galaxy Z Flip5
   was visible in the 2026-09-23 reservation catalog; its official main skin
   and two verified main captures are now registered.
-- Existing S25+ and S25 Ultra captures document past measurements. They do not
-  establish current reservation availability. Fold8 cover and inner were both
+- Galaxy S25 (SM-S931N_KR1, Korea/Gumi) was reserved on 2026-09-24 with
+  Android 16 / One UI 8.5. InsetsProbe 1.3.0 captured its main display in both
+  navigation modes at 1080×2340 px; the files match the official main skin.
+  This verifies that exact model's availability on that date, but not the
+  complete cross-series catalog. Existing S25+ captures are from a physical
+  device; S25 Ultra captures document a separate past RTL reservation.
+- Galaxy S25 Edge (SM-S937N_KR10, Korea/Gumi) was reserved on 2026-09-24
+  with Android 16 / One UI 8.5. InsetsProbe 1.3.0 captured both navigation
+  modes at 1080×2340 px in FHD+ mode; the physical panel is 1440×3120 px.
+  Its live reservation confirms availability on that date only.
+- Galaxy S25 FE (SM-S731N_KR1, Korea/Gumi) was reserved on 2026-09-24 with
+  Android 16 / One UI 8.5. InsetsProbe 1.3.0 captured both navigation modes
+  at 1080×2340 px; this confirms availability on that date only.
+- Galaxy S24 Ultra (SM-S928N-KR3, Korea/Gumi) was reserved for 30 minutes on
+  2026-09-24 with Android 16 / One UI 8.5. InsetsProbe 1.3.0 captured the main
+  display in both navigation modes at 1080×2340 px / 450 dpi. Settings and inset
+  evidence agree; raw captures omit the cutout bounding rectangle, so only the
+  top cutout inset is registered. This confirms availability on that date only.
+- Galaxy S24+ (SM-S926N-KR3, Korea/Gumi) was reserved for 30 minutes on
+  2026-09-24 with Android 16 / One UI 8.5. One upright main 3-button capture
+  was downloaded and validated at 1080×2340 px / 450 dpi; InsetsProbe and
+  Android's navigation setting agree. After Swipe gestures was selected, the
+  Probe preview showed a newer timestamp, but the WebClient file browser still
+  listed only `main-threeButton.json`; a repeated download returned the same
+  11:51:57Z three-button JSON. No gesture capture is accepted, so this device
+  is registered with the verified 3-button measurement only; gesture remains
+  pending until a fresh file is verified. The reservation confirms this exact
+  model was offered in Korea on this date only.
+- Galaxy S24 (SM-S921N-KR3, Korea/Gumi) was reserved on 2026-09-24 with
+  Android 16 / One UI 8.5. InsetsProbe 1.3.0 captured the main display in both
+  navigation modes at 1080×2340 px / 480 dpi; the downloaded files report
+  matching Settings and inset classifications. This confirms availability for
+  this exact model on that date only.
+  Fold8 cover and inner were both
   recaptured from a live reservation in 3-button and gesture modes. Fold7 cover
   and inner are also measured in both modes from the same SM-F966U software
   build. Flip8 cover and inner are now measured in both modes; its accepted cover
@@ -147,3 +179,34 @@ files report an upright 1080×2340 px app window. The physical panel is
 1440×3120 px according to Samsung specifications. This reservation verifies
 that model was offered on the checked date; it does not complete the
 cross-region RTL catalog inventory.
+
+## Galaxy S25 measured on 2026-09-24
+
+Samsung RTL Korea/Gumi SM-S931N_KR1 (Android 16, One UI 8.5, build
+BP4A.251205.006.S931NKSSBCZG3) was reserved for 30 minutes. InsetsProbe 1.3.0
+captured main 3-button and gesture navigation at an upright 1080×2340 px full
+window, matching the official Galaxy S25 main skin. Both captures report
+480 dpi, font scale 1, display 0, and matching navigation settings/configuration.
+The hinge angle is null and there are no folding features, as expected for this
+bar phone. The reservation proves this model was offered in Korea on this date;
+the overall RTL inventory remains incomplete.
+
+## Galaxy S25 Edge measured on 2026-09-24
+
+Samsung RTL Korea/Gumi SM-S937N_KR10 (Android 16, One UI 8.5, build
+BP4A.251205.006.S937NKSS9CZG3) was reserved for 30 minutes. InsetsProbe 1.3.0
+captured main 3-button and gesture navigation in FHD+ mode at an upright, full-screen
+1080×2340 px window. Samsung specifies the panel as 1440×3120 px. Both captures
+report 450 dpi, font scale 1, display 0, rotation 0, and matching navigation
+settings/configuration. The reservation confirms Korea availability on this date;
+the overall RTL inventory remains incomplete.
+
+## Galaxy S25 FE measured on 2026-09-24
+
+Samsung RTL Korea/Gumi SM-S731N_KR1 (Android 16, One UI 8.5, build
+BP4A.251205.006.S731NKSS8BZG3) was reserved for 30 minutes. InsetsProbe 1.3.0
+captured main 3-button and gesture navigation at an upright, full-screen
+1080×2340 px window. Both captures report 450 dpi, font scale 1, display 0,
+rotation 0, and matching navigation settings/configuration. The reservation
+confirms Korea availability on this date; the overall RTL inventory remains
+incomplete.

@@ -116,6 +116,25 @@ one-credit return option selected left **29 Credits** after a page reload,
 and the WebClient reported that all ongoing tests had ended. These are live
 balance observations, separate from booked-credit totals.
 
+Galaxy S25 SM-S931N_KR1 (Korea/Gumi, Android 16) was booked for 30 minutes on
+2026-09-24 after the live header showed 26 Credits. The booking reduced the
+balance to 24. Both main captures were downloaded and validated. The exit dialog
+offered no one-credit return option, so no refund is claimed. The live header
+showed 24 Credits after the reservation ended.
+
+Galaxy S25 Edge SM-S937N_KR10 was then booked for 30 minutes from a 24-credit
+live balance; the header showed 22 Credits. Galaxy S25 FE SM-S731N_KR1 was
+booked for 30 minutes from 22 Credits, leaving 20. Both FE captures were
+completed while its reservation remained active. Galaxy S24 Ultra SM-S928N-KR3
+was then booked for 30 minutes from 20 Credits, leaving 18. Its reservation
+showed 28 minutes remaining at the first check. Its accepted main 3-button and
+gesture captures are in `measurements/galaxy-s24-ultra/recapture-2026-09-24/`.
+
+Galaxy S24+ SM-S926N-KR3 and Galaxy S24 SM-S921N-KR3 were each booked for
+30 minutes on 2026-09-24 (2 credits apiece). The S24+ reservation produced one
+accepted main 3-button capture; its gesture export remained pending. The S24
+reservation produced accepted main captures in both navigation modes.
+
 The preceding 2026-09-22 Usage History contained these booked reservations:
 
 | Time | Device | Booked credits |

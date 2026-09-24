@@ -48,6 +48,13 @@ the exact model name and current availability. A visible catalog is not proof of
 authenticated reservation session: opening the model must reach its reservation
 options without a sign-in notice.
 
+For a model with multiple RTL locations or Android versions, check Korean
+locations first and prefer a currently available Korean unit. Within the chosen
+location, select the newest Android version offered for that model. If no Korean
+unit is currently reservable, use an available location that offers the newest
+Android version and record the location/version fallback. Verify the final model,
+location and OS version in the reservation before starting it.
+
 ### Authentication handoff
 
 Authentication is always manual. If Samsung shows Sign in, credentials, QR sign-in,

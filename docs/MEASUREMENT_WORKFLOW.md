@@ -203,7 +203,12 @@ windowinsets.info is a reference site for Android window insets, display cutouts
 **Current Status**: Galaxy Z Fold8, Fold7, Fold6, Fold5, Fold4 and Flip8 cover and inner displays
 are measured in both navigation modes from verified live RTL sessions. Flip5 and
 Flip6 main screens are measured in both modes; no official cover skins were supplied.
-Galaxy S25 Ultra and Galaxy S25+ main screens are measured. Galaxy S25 remains pending.
+Galaxy S25 Ultra and Galaxy S25+ main screens are measured. Galaxy S24 Ultra and
+Galaxy S24 main screens are measured in both navigation modes; Galaxy S24+ has
+an accepted main 3-button capture, with gesture pending. Galaxy S25, Galaxy S25
+Edge and Galaxy S25 FE main screens are measured in both modes. These S24 and S25
+measurements are from Samsung RTL Korea/Gumi on Android 16 / One UI 8.5, captured
+2026-09-24.
 
 ## RTL Credits & Cost
 
@@ -354,8 +359,13 @@ Do not use Measure All. Capture each active display and navigation mode explicit
 | Galaxy Z Fold8 | SM-F971N | Cover + inner | ✓ both | ✓ both | Complete |
 | Galaxy Z Flip8 | SM-F776B | Cover + inner | ✓ both | ✓ both | Complete |
 | Galaxy S25 Ultra | SM-S938N | Main | ✓ | ✓ | Complete |
+| Galaxy S24 Ultra | SM-S928N-KR3 | Main | ✓ | ✓ | Complete (RTL, Korea/Gumi, Android 16 / One UI 8.5) |
+| Galaxy S24 | SM-S921N-KR3 | Main | ✓ | ✓ | Complete (RTL, Korea/Gumi, Android 16 / One UI 8.5) |
+| Galaxy S24+ | SM-S926N-KR3 | Main | ✓ | — | Partial (RTL, Korea/Gumi; gesture export pending; see issue #12) |
 | Galaxy S25+ | SM-S936N | Main | ✓ | ✓ | Complete (real device, Korea — not RTL) |
-| Galaxy S25 | SM-S931N | Main | Pending | Pending | Queued |
+| Galaxy S25 Edge | SM-S937N | Main | ✓ | ✓ | Complete (RTL, Korea/Gumi, Android 16) |
+| Galaxy S25 FE | SM-S731N | Main | ✓ | ✓ | Complete (RTL, Korea/Gumi, Android 16) |
+| Galaxy S25 | SM-S931N | Main | ✓ | ✓ | Complete (RTL, Korea/Gumi, Android 16) |
 | Galaxy Z Fold7 | SM-F966U | Cover + inner | ✓ both | ✓ both | Complete |
 | Galaxy Z Fold6 | SM-F956U | Cover + inner | ✓ both | ✓ both | Complete |
 | Galaxy Z Flip6 | SM-F741U | Main | ✓ | ✓ | Main complete; no cover skin |
@@ -367,6 +377,20 @@ Android version are recorded per capture. Orientation is evidence, not a default
 Fold8 cover is portrait and its verified inner capture is landscape. Probe dp is
 `px ÷ (densityDpi ÷ 160)` rounded to 2 decimals, while the website preserves and
 displays the original px separately instead of reconstructing it from rounded dp.
+
+Galaxy S25's 2026-09-24 RTL captures are from SM-S931N_KR1 in Korea/Gumi on
+Android 16 / One UI 8.5, build `BP4A.251205.006.S931NKSSBCZG3`. Both main
+navigation modes report display 0, rotation 0, a settled full-screen 1080×2340 px
+window, 480 dpi, font scale 1 and matching Settings/configuration mode evidence.
+
+Galaxy S24 Ultra's 2026-09-24 RTL recaptures are from SM-S928N-KR3 in Korea/Gumi
+on Android 16 / One UI 8.5, build `BP4A.251205.006.S928NKSS6DZG1`. Both main
+navigation modes report display 0, rotation 0, a settled full-screen 1080×2340 px
+window, 450 dpi, font scale 1 and matching Settings/configuration mode evidence.
+The original gesture capture remains at the canonical path; the recapture pair is
+in `measurements/galaxy-s24-ultra/recapture-2026-09-24/`. Neither raw file
+includes a cutout bounding rectangle, so the top display-cutout inset is
+registered without a bounding rectangle.
 
 ## InsetsProbe App: Architecture
 
@@ -495,3 +519,35 @@ gesture modes agree with Android Settings and Probe. The main display reports a
 `measurements/galaxy-z-flip/main-threeButton.json` and
 `measurements/galaxy-z-flip/main-gesture.json`. Cover remains unmeasured because
 the imported official skin has no cover layout.
+
+Galaxy S25 Edge's 2026-09-24 RTL captures are from SM-S937N_KR10 in Korea/Gumi
+on Android 16 / One UI 8.5, build `BP4A.251205.006.S937NKSS9CZG3`. Both main
+navigation modes report display 0, rotation 0, full-screen 1080×2340 px FHD+
+window, 450 dpi and font scale 1. The official panel is 1440×3120 px.
+
+Galaxy S25 FE's 2026-09-24 RTL captures are from SM-S731N_KR1 in Korea/Gumi
+on Android 16 / One UI 8.5, build `BP4A.251205.006.S731NKSS8BZG3`. Both main
+navigation modes report display 0, rotation 0, full-screen 1080×2340 px window,
+450 dpi and font scale 1. Screen timeout was set to 10 minutes.
+
+## Galaxy S24+ partial RTL capture — 2026-09-24
+
+Samsung RTL Korea/Gumi SM-S926N-KR3 (Android 16 / One UI 8.5) produced one
+accepted main 3-button capture at 1080×2340 px / 450 dpi. Its JSON reports
+`threeButton`, and the system setting agrees. After selecting Swipe gestures,
+InsetsProbe showed a newer preview timestamp, but the WebClient File Browser
+continued to list only `main-threeButton.json`; a second download was
+byte-identical to the first and still reported the original 11:51:57Z capture.
+Do not accept that stale export as a gesture measurement. The saved capture is
+`measurements/galaxy-s24-plus/main-threeButton.json`; the missing gesture file
+keeps the device registered with 3-button data only and gesture pending. The
+stale export symptom is tracked in [issue #12](https://github.com/easyhooon/windowinsets/issues/12).
+
+## Galaxy S24 RTL capture — 2026-09-24
+
+Samsung RTL Korea/Gumi SM-S921N-KR3 (Android 16 / One UI 8.5) produced main
+3-button and gesture captures at 1080×2340 px / 480 dpi. Both downloaded JSON
+files report display 0, rotation 0, screen label `main`, and matching navigation
+settings/inset classifications. The centered cutout bounds are present in both
+files. The accepted evidence is `measurements/galaxy-s24/main-threeButton.json`
+and `measurements/galaxy-s24/main-gesture.json`.
