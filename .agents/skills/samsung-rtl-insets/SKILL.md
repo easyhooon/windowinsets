@@ -117,6 +117,38 @@ screenshot after every device action. If the popup is invisible, cannot receive
 input, or a device control is ambiguous, keep the reservation open and hand that
 step to the user.
 
+### Fast path for a regular bar phone
+
+- These screen paths and labels are the standard route for the supported Samsung
+  Galaxy devices. Use them as visual landmarks rather than fixed pixel
+  coordinates; the remote display and browser viewport can scale differently.
+- In Samsung Settings follow **Display > Navigation bar > Swipe gestures**.
+  On the Settings home screen, find the **Display** row; on its page, find the
+  **Navigation bar** row; on that page, select **Swipe gestures** and confirm its
+  radio indicator is selected. The Settings page is rendered inside the remote
+  device image, so its controls may not appear in Chrome's accessibility tree.
+  Use a fresh WebClient screenshot after each page transition. After a scroll
+  drag, let the list settle and take another screenshot before tapping; inertial
+  scrolling can move the target row.
+- If Probe's **Display / navigation settings** button does not visibly open
+  Android Settings, use WebClient **Applications**, select `설정
+  com.android.settings`, and close the panel. Do not repeat a tap against an old
+  screenshot.
+- To return to Probe after Settings was launched from Applications, open
+  **Applications** and find the app row named
+  `InsetsProbe info.windowinsets.probe`. Select that row, then use the visible
+  triangle **▶ Start** control in the panel toolbar. Its accessibility label may
+  say `record start`; verify the InsetsProbe screen is visible afterward.
+- For a non-folding phone, leave Probe's **Phone** label selected. InsetsProbe
+  saves it as `main-<navigation>.json` while preserving `"screen": "phone"` in
+  the raw JSON. That pairing is expected; keep the JSON unchanged.
+- Export from **File Browser > Android > data > info.windowinsets.probe > files**.
+  Follow the visible breadcrumb one folder at a time and confirm the expected
+  JSON filename in the `files` directory. Hover or select that row to reveal its
+  download arrow at the row's end; confirm a new host file arrived, then validate
+  its fresh timestamp, model, dimensions, screen label and both navigation-mode
+  fields before copying it to the repo.
+
 ### Build and install Probe
 
 1. Build before spending reservation time:
