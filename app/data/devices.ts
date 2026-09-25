@@ -32,13 +32,17 @@ import { GalaxyTabS11 } from "./devices/galaxy-tab-s11";
 import { GalaxyTabS10FePlus } from "./devices/galaxy-tab-s10-fe-plus";
 import { GalaxyTabS10Fe } from "./devices/galaxy-tab-s10-fe";
 import { GalaxyTabS9FePlus } from "./devices/galaxy-tab-s9-fe-plus";
+import { galaxyTabS9Fe } from "./devices/galaxy-tab-s9-fe";
 import { galaxyTabS11Ultra } from "./devices/galaxy-tab-s11-ultra";
+import { galaxyTabS9Ultra } from "./devices/galaxy-tab-s9-ultra";
+import { galaxyTabA9Plus } from "./devices/galaxy-tab-a9-plus";
+import { galaxyTabA7Lite } from "./devices/galaxy-tab-a7-lite";
 import { skinPreviews } from "./skinPreviews";
 import { isInCoverage } from "./coverage";
 
 // Explicit entries own all verified data. Skins can add missing screens, never
 // replace a screen's captures. Add a measured entry here as RTL data arrives.
-const verifiedEntries = [GalaxyTabS11, GalaxyTabS10FePlus, GalaxyTabS10Fe, GalaxyTabS9FePlus, galaxyZTriFold, galaxyZFold8Ultra, galaxyZFold8, galaxyZFlip8, galaxyZFlip7Fe, galaxyTabS11Ultra, galaxyS26Ultra, galaxyS26Plus, galaxyS26,
+const verifiedEntries = [galaxyTabA7Lite, galaxyTabA9Plus, GalaxyTabS11, GalaxyTabS10FePlus, GalaxyTabS10Fe, GalaxyTabS9FePlus, galaxyTabS9Fe, galaxyZTriFold, galaxyZFold8Ultra, galaxyZFold8, galaxyZFlip8, galaxyZFlip7Fe, galaxyTabS11Ultra, galaxyTabS9Ultra, galaxyS26Ultra, galaxyS26Plus, galaxyS26,
   galaxyS25Ultra, galaxyS25Plus, galaxyS25Edge, galaxyS25Fe, galaxyS25, galaxyS24Ultra, galaxyS24Plus, galaxyS24, galaxyS24Fe, galaxyZFlip7, galaxyZFold7, galaxyZFold6, galaxyZFold5, galaxyZFold4, galaxyZFold3, galaxyZFlip6, galaxyZFlip5, galaxyZFlip4, galaxyZFlip3, galaxyZFlip, galaxyZFold2];
 const mergedDevices = verifiedEntries.map(device => {
   const preview = skinPreviews.find(entry => entry.slug === device.slug);

@@ -142,6 +142,20 @@ removes a model from its catalog.
   S10 FE captures report font scale 1.08 rather than the default 1.0; their raw
   measurements are registered with that condition and should be recaptured at
   1.0 for a normalized comparison.
+- Galaxy Tab A9+ 5G (SM-X216B) has both landscape main modes from Samsung RTL,
+  Android 14 / One UI 6.1, build `UP1A.231005.007.X216BXXS3CXG1`. Captures match
+  the official 1920×1200 skin at rotation 1, 240 dpi, and font scale 1.1. Both
+  modes report 48 dp / 72 px bottom system bars. The gesture mode is confirmed
+  by Settings/configuration and side system-gesture insets even though the
+  inset-only heuristic reports threeButton; the shared bottom inset is preserved
+  rather than treated as a mode mismatch.
+- Galaxy Tab A7 Lite LTE (SM-T225) has both landscape main captures from Samsung
+  RTL, Android 14 / One UI 6.1, build `UP1A.231005.007.T225XXSBEYE4`. The
+  1340×800 px active window matches Samsung's published display resolution at
+  rotation 1, 213 dpi and font scale 1. Gesture mode is confirmed by
+  Settings/configuration and side system-gesture insets although the inset-only
+  heuristic reports threeButton. Both modes report 48.08 dp / 64 px bottom
+  system bars; preserve the measured values.
 - Fold8 cover and inner were both
   recaptured from a live reservation in 3-button and gesture modes. Fold7 cover
   and inner are also measured in both modes from the same SM-F966U software
@@ -334,3 +348,43 @@ diagonal and 2960×1848 resolution give approximately 240 ppi.
 
 Raw files: `measurements/galaxy-tab-s11-ultra/main-gesture.json` and
 `main-threeButton.json`.
+
+## Galaxy Tab S9 Ultra measured on 2026-09-25
+
+Samsung RTL SM-X916B (Android 15 / One UI 7.0, build
+`AP3A.240905.015.A2.X916BXXS5CYG1`) produced full-screen main captures in
+landscape at rotation 1: 2960×1848 px, 280 dpi, font scale 1. Both match
+Samsung's official 14.6-inch WQXGA+ display. The captures report `screen: main`
+and display 0; InsetsProbe's generic Phone label is classified as the tablet's
+main screen from the model and dimensions.
+
+- 3-button: system bars are 42 px top and 84 px bottom (24 / 48 dp).
+- gesture: system bars are 42 px top and 26 px bottom (24 / 14.86 dp). Settings,
+  `config_navBarInteractionMode=2` and side system gesture insets confirm gesture
+  mode; Settings and inset classification agree.
+- Both captures include a 186×28 px centered cutout bound (106.29×16 dp) and
+  23 px rounded corners (13.14 dp).
+
+Raw files: `measurements/galaxy-tab-s9-ultra/main-gesture.json` and
+`main-threeButton.json`. The reservation confirms this exact model was offered
+in RTL on this date; it does not complete the cross-region catalog inventory.
+
+
+### Galaxy Tab S9 FE — 2026-09-25
+
+InsetsProbe 1.3.0 captured Samsung RTL Galaxy Tab S9 FE 5G (SM-X516N),
+Android 16 / One UI 8.5, build `BP4A.251205.006.X516NKOSEEZG3`, landscape at
+rotation 1. Both captures match the main skin at 2304×1440 px, 280 dpi, with
+font scale 1.08. The gesture capture is registered: Settings/configuration and
+side system-gesture insets confirm gesture mode, while the inset-only heuristic
+reports threeButton.
+
+The 3-button capture is preserved as rejected evidence because both
+`navigationBars` and `systemBars` report a 1 px bottom inset, including when
+ignoring visibility, despite `tappableElement` and mandatory-gesture bottom
+insets of 84 px. It does not provide a settled 3-button system-bar measurement;
+recapture that mode before publishing it. Font scale 1.08 is non-default and is
+recorded as captured; recapture at 1.0 if a normalized baseline is needed.
+
+Accepted raw file: `measurements/galaxy-tab-s9-fe/main-gesture.json`.
+Rejected raw file: `measurements/galaxy-tab-s9-fe/rejected-2026-09-25/main-threeButton.json`.
