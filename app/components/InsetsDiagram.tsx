@@ -17,6 +17,24 @@ const INSET_FILL = DIAGRAM_COLORS.insetFill;
 
 type Units = "dp" | "px";
 
+function skinTransform(skin: DeviceSkin, width: number, height: number, rotation: 0 | 1 | 2 | 3) {
+  const { x, y, width: screenWidth, height: screenHeight } = skin.screen;
+  if (rotation === 1) {
+    const sx = height / screenWidth, sy = width / screenHeight;
+    return `matrix(0 ${-sx} ${sy} 0 ${-y * sy} ${(screenWidth + x) * sx})`;
+  }
+  if (rotation === 2) {
+    const sx = width / screenWidth, sy = height / screenHeight;
+    return `matrix(${-sx} 0 0 ${-sy} ${(screenWidth + x) * sx} ${(screenHeight + y) * sy})`;
+  }
+  if (rotation === 3) {
+    const sx = height / screenWidth, sy = width / screenHeight;
+    return `matrix(0 ${sx} ${-sy} 0 ${(screenHeight + y) * sy} ${-x * sx})`;
+  }
+  const sx = width / screenWidth, sy = height / screenHeight;
+  return `matrix(${sx} 0 0 ${sy} ${-x * sx} ${-y * sy})`;
+}
+
 interface Insets {
   top: number;
   right: number;
@@ -84,6 +102,7 @@ export function InsetsDiagram({
   const s = MAX_W / dp.width;
   const W = dp.width * s;
   const H = dp.height * s;
+  const skinRotation = screen.captureRotation ?? 0;
   const r = screen.cornerRadiiDp;
   const rPx = r ? r.topLeft * s : 0;
   const cornerPath = r ? `M ${r.topLeft * s},0 H ${W - r.topRight * s} A ${r.topRight * s},${r.topRight * s} 0 0 1 ${W},${r.topRight * s} V ${H - r.bottomRight * s} A ${r.bottomRight * s},${r.bottomRight * s} 0 0 1 ${W - r.bottomRight * s},${H} H ${r.bottomLeft * s} A ${r.bottomLeft * s},${r.bottomLeft * s} 0 0 1 0,${H - r.bottomLeft * s} V ${r.topLeft * s} A ${r.topLeft * s},${r.topLeft * s} 0 0 1 ${r.topLeft * s},0 Z` : undefined;
@@ -102,7 +121,7 @@ export function InsetsDiagram({
     ...cutoutPairs(measurement?.cutoutShape),
   ]);
 
-  const { rulers, bounds, body } = diagramAnnotations(dp.width, dp.height, s, showFrame ? skin : undefined, safe, r, measurement?.cutoutShape);
+  const { rulers, bounds, body } = diagramAnnotations(dp.width, dp.height, s, showFrame ? skin : undefined, safe, r, measurement?.cutoutShape, skinRotation);
   const labelScale = (bounds.bottom - bounds.top) / BASE_HEIGHT * 100 / zoom;
   const viewBox = `${bounds.left} ${bounds.top} ${bounds.right - bounds.left} ${bounds.bottom - bounds.top}`;
   const annotations: RulerMeasurements = {
@@ -145,11 +164,11 @@ export function InsetsDiagram({
           <clipPath id={`${id}-display`}>{cornerPath ? <path d={cornerPath} /> : <rect width={W} height={H} rx={skin ? skin.body.radius * W / skin.screen.width * .6 : 0} />}</clipPath>
         </defs>
 
-        {skin && showFrame && <svg x={-skin.screen.x * W / skin.screen.width} y={-skin.screen.y * H / skin.screen.height} width={skin.width * W / skin.screen.width} height={skin.height * H / skin.screen.height} viewBox={`0 0 ${skin.width} ${skin.height}`} overflow="visible">
+        {skin && showFrame && <g transform={skinTransform(skin, W, H, skinRotation)}>
           <defs><clipPath id={`${id}-body`}><rect x={skin.body.x} y={skin.body.y} width={skin.body.width} height={skin.body.height} rx={skin.body.radius} /></clipPath></defs>
           <image href={skin.image} width={skin.width} height={skin.height} clipPath={`url(#${id}-body)`} />
           <rect x={skin.screen.x} y={skin.screen.y} width={skin.screen.width} height={skin.screen.height} rx={rPx * skin.screen.width / W} fill="white" />
-        </svg>}
+        </g>}
         {/* Device bezel */}
         {showFrame && !skin && (
           <rect x={0} y={0} width={W} height={H} rx={rPx} fill="#ffffff" stroke="#0f172a" strokeWidth={3} />
@@ -206,7 +225,9 @@ export function InsetsDiagram({
           </g>
         )}
 
-        {skin?.foreground && showFrame && <image href={skin.foreground} x={0} y={0} width={W} height={H} preserveAspectRatio="none" />}
+        {skin?.foreground && showFrame && <g transform={skinTransform(skin, W, H, skinRotation)}>
+          <image href={skin.foreground} x={skin.screen.x} y={skin.screen.y} width={skin.screen.width} height={skin.screen.height} preserveAspectRatio="none" />
+        </g>}
         {showDimensions && <MeasurementRulers measurements={annotations} onCopy={copy} />}
       </svg>
       <span role="status" className="sr-only">{copyStatus}</span>
