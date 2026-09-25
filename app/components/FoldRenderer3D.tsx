@@ -92,17 +92,18 @@ function drawDiagram(
     skinRotation?: QuarterTurns;
     artwork?: HTMLImageElement;
     foreground?: HTMLImageElement;
-    paddingDp: number;
+    paddingDp: number | { x: number; y: number };
     annotationScale: number;
     hits: { x: number; y: number; width: number; height: number; text: string }[];
   },
 ) {
   const W = dpW * px, H = dpH * px;
   const labelScale = opts.annotationScale;
-  const PAD = opts.paddingDp * px;
-  ctx.clearRect(0, 0, W + PAD * 2, H + PAD * 2);
+  const padX = (typeof opts.paddingDp === "number" ? opts.paddingDp : opts.paddingDp.x) * px;
+  const padY = (typeof opts.paddingDp === "number" ? opts.paddingDp : opts.paddingDp.y) * px;
+  ctx.clearRect(0, 0, W + padX * 2, H + padY * 2);
   ctx.save();
-  ctx.translate(PAD, PAD);
+  ctx.translate(padX, padY);
 
   const r = opts.cornerRadiiDp ? opts.cornerRadiiDp.topLeft * px : 0;
 
@@ -180,7 +181,7 @@ function drawDiagram(
     const fontSize = 12 * px * scale;
     ctx.font = `500 ${fontSize}px ${DIAGRAM_FONT}`;
     const w = ctx.measureText(text).width + 8 * px * scale, h = 18 * px * scale;
-    opts.hits.push({ x: x - w / 2 + PAD, y: y - h / 2 + PAD, width: w, height: h, text });
+    opts.hits.push({ x: x - w / 2 + padX, y: y - h / 2 + padY, width: w, height: h, text });
     ctx.globalAlpha = 1;
     ctx.fillStyle = color;
     roundedRectPath(x - w / 2, y - h / 2, w, h, 2 * px * scale);
@@ -205,7 +206,7 @@ function drawDiagram(
     const valueX = inline ? x + (nameW + gap) / 2 : x;
     const valueY = inline ? y : y + 12 * px * scale;
     const valueWidth = ctx.measureText(value).width;
-    opts.hits.push({ x: valueX - valueWidth / 2 + PAD, y: valueY - fontSize / 2 + PAD, width: valueWidth, height: fontSize, text: value });
+    opts.hits.push({ x: valueX - valueWidth / 2 + padX, y: valueY - fontSize / 2 + padY, width: valueWidth, height: fontSize, text: value });
     ctx.fillText(value, valueX, valueY);
   }
 
@@ -420,7 +421,7 @@ export function FoldRenderer3D({
     const outerTransform = (x: number, y: number, z: number, value: number) => triFold
       ? [x, y, z] as const : rigidPanelPoint(x, y, z, value, isVertical, hingeZoneHalfWidth);
 
-    let coverPanel = { width: 0, height: 0 };
+    let coverPanel = { width: 0, height: 0, padX: 0, padY: 0 };
     let annotationZoom = zoom;
     let textureZoom = zoom;
     function redrawCover() {
@@ -430,19 +431,26 @@ export function FoldRenderer3D({
       if (!data) { coverMesh.visible = false; return; }
       const { screen, measurement, skin: outerSkin } = data;
       const size = screen.logicalSizeDp ?? { width: outerSkin.screen.width / 3, height: outerSkin.screen.height / 3 };
-      const coverMargin = size.width * .25;
-      const factor = 1800 / (size.width + coverMargin);
+      // The original Fold's small outer display leaves much more chassis above
+      // and below it than later covers. Include the entire official body clip.
+      const padX = Math.max(size.width * .125,
+        (outerSkin.screen.x - outerSkin.body.x) * size.width / outerSkin.screen.width,
+        (outerSkin.body.x + outerSkin.body.width - outerSkin.screen.x - outerSkin.screen.width) * size.width / outerSkin.screen.width);
+      const padY = Math.max(size.width * .125,
+        (outerSkin.screen.y - outerSkin.body.y) * size.height / outerSkin.screen.height,
+        (outerSkin.body.y + outerSkin.body.height - outerSkin.screen.y - outerSkin.screen.height) * size.height / outerSkin.screen.height);
+      const factor = 1800 / (size.width + padX * 2);
       coverCanvas.width = 1800;
-      coverCanvas.height = Math.ceil((size.height + coverMargin) * factor);
+      coverCanvas.height = Math.ceil((size.height + padY * 2) * factor);
       const physicalPanelW = triFold ? bodyW / 3 : isVertical ? bodyW / 2 - hingeZoneHalfWidth : bodyW;
       const physicalPanelH = isVertical ? bodyH : bodyH / 2 - hingeZoneHalfWidth;
-      const fullW = (size.width + coverMargin) * outerSkin.screen.width / size.width;
-      const fullH = (size.height + coverMargin) * outerSkin.screen.height / size.height;
+      const fullW = (size.width + padX * 2) * outerSkin.screen.width / size.width;
+      const fullH = (size.height + padY * 2) * outerSkin.screen.height / size.height;
       const scale = rotatedBook
         ? Math.min(physicalPanelH / outerSkin.body.width, physicalPanelW / outerSkin.body.height)
         : Math.min(physicalPanelW / outerSkin.body.width, physicalPanelH / outerSkin.body.height);
       const panelW = fullW * scale, panelH = fullH * scale;
-      coverPanel = { width: panelW, height: panelH };
+      coverPanel = { width: panelW, height: panelH, padX, padY };
       const positions = coverGeometry.attributes.position;
       // Front UVs are mirrored on the back of the upper/right panel.
       const uv = coverGeometry.attributes.uv;
@@ -467,8 +475,8 @@ export function FoldRenderer3D({
           ...cornerPairs(screen.cornerRadiiDp, screen.cornerRadiiPx),
           ...cutoutPairs(measurement?.cutoutShape),
         ]), layers: st.layers, skin: outerSkin, skinRotation: screen.captureRotation ?? 0,
-        artwork: coverArtwork, foreground: coverForeground, hits: coverHits, paddingDp: coverMargin / 2,
-        annotationScale: worldPerCssPixel / (panelW / (size.width + coverMargin)) * 100 / annotationZoom,
+        artwork: coverArtwork, foreground: coverForeground, hits: coverHits, paddingDp: { x: padX, y: padY },
+        annotationScale: worldPerCssPixel / (panelW / (size.width + padX * 2)) * 100 / annotationZoom,
       });
       coverTexture.needsUpdate = true;
     }
@@ -566,7 +574,8 @@ export function FoldRenderer3D({
       };
       const project = (x: number, y: number) => {
         if (outer) {
-          const pad = w * .125, u = (x + pad) / (w + 2 * pad), v = 1 - (y + pad) / (h + 2 * pad);
+          const u = (x + coverPanel.padX) / (w + 2 * coverPanel.padX);
+          const v = 1 - (y + coverPanel.padY) / (h + 2 * coverPanel.padY);
           const [bx, by] = outerPoint(u, v, coverPanel.width, coverPanel.height);
           return projectWorld(...outerTransform(bx, by, -shellThickness - .004, displayedAngle));
         }

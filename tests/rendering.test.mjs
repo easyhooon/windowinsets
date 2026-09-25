@@ -267,6 +267,14 @@ test('Fold and Flip coverage overrides the 2020 cutoff while older bar and table
   assert.equal(isInCoverage({ slug: 'galaxy-z-trifold', formFactor: 'foldable-trifold', releaseYear: 2025 }), true);
 });
 
+test('Galaxy Fold cover artwork includes the full front chassis around its small display', () => {
+  const cover = skins['galaxy-fold/cover'];
+  assert.ok(cover.body.x <= 170);
+  assert.ok(cover.body.y <= 170);
+  assert.ok(cover.body.x + cover.body.width >= 1090);
+  assert.ok(cover.body.y + cover.body.height >= 2600);
+});
+
 test('Flip6 main captures match both navigation modes without inventing cover measurements', () => {
   const screen = galaxyZFlip6.screens.find(candidate => candidate.id === 'main');
   assert.equal(galaxyZFlip6.screens.length, 1);

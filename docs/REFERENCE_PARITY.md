@@ -367,8 +367,16 @@ This is an intentional Android hardware rendering substitution, not a new contro
 The old screen-width-based bend radius made the closed gap too large. Published
 Fold7/Fold8/Flip8 chassis dimensions now determine both panel depth and closed
 depth: the residual gap after subtracting two panels sets the display bend radius.
-Other models retain an illustrative thickness/gap, not a physical measurement.
+Models without published chassis dimensions retain an illustrative thickness/gap.
 The barrel contour and its inset remain illustrative rather than CAD geometry.
+
+Galaxy Fold's artwork-only preview now uses [Samsung's published chassis dimensions](https://www.samsungmobilepress.com/media-assets/galaxy_fold/?tab=specs)
+(117.9 mm unfolded width, 6.9 mm open depth, and up to 17.1 mm closed depth)
+for the same 3D depth calculation. Its cover screen is much smaller than the
+front housing: the full official front artwork is clipped to the visible body,
+and the cover texture has enough vertical space for that housing. These are
+product dimensions and artwork coordinates, not Android inset measurements;
+all Fold 1 metrics remain pending.
 
 The hinge axis follows the official skin's rotation into capture coordinates.
 For landscape Fold captures this is a horizontal hinge, correcting the oversized

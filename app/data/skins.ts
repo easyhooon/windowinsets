@@ -625,11 +625,11 @@ export const skins: Record<string, DeviceSkin> = {
       "height": 1680
     },
     "body": {
-      "x": 264,
-      "y": 521,
-      "width": 800,
-      "height": 1760,
-      "radius": 100
+      "x": 160,
+      "y": 154,
+      "width": 950,
+      "height": 2490,
+      "radius": 85
     }
   },
   "galaxy-fold/main": {
