@@ -2628,3 +2628,9 @@ export const skins: Record<string, DeviceSkin> = {
     }
   }
 };
+
+// Samsung lists the Galaxy A52s 5G with the same 159.9 × 75.1 × 8.4 mm body
+// and 1080 × 2400 display as the A52 family. The official A52 emulator artwork
+// therefore represents the shared front/display geometry; inset captures keep
+// their exact SM-A528B identity.
+skins["galaxy-a52s-5g/main"] = skins["galaxy-a52/main"];

@@ -83,6 +83,13 @@ removes a model from its catalog.
   Applications, while installation succeeded on Flip3 in the same session.
   No Fold3 insets were captured. The device-specific installation failure is
   tracked in [issue #11](https://github.com/easyhooon/windowinsets/issues/11).
+  On 2026-09-25 the user reported InsetsProbe installation stalled at 0% on
+  Galaxy A54 and Galaxy A13. For the original reports, exact SKU, Android / One
+  UI version, RTL location and APK version remain unknown. No A54 capture status
+  was provided. Later on 2026-09-25, SM-A135F Galaxy A13 LTE installed
+  InsetsProbe and produced valid captures; this shows the failure was not
+  universal but cannot identify the original failed unit. These reports belong
+  in [issue #11](https://github.com/easyhooon/windowinsets/issues/11).
   The full cross-series, cross-region inventory was not completed.
 - The local skin archive contains 126 registered models; 119 are public under
   the release-year policy. All four featured mobile models have registered skins.
@@ -517,14 +524,166 @@ identifies the SM-A276K Korean device as Galaxy Jump5 with a 169.1 mm,
 Raw files: `measurements/galaxy-a27-5g/main-gesture.json` and
 `main-threeButton.json`.
 
+The two captures supplied as Galaxy A26 identify the device as
+SM-A276B / `a27xq`, which Samsung identifies as Galaxy A27 5G. They are not
+Galaxy A26 captures (that model uses SM-A266B). The SM-A276B gesture and
+3-button captures were preserved byte-for-byte under
+`measurements/galaxy-a27-5g/SM-A276B/`. Both independently match the existing
+SM-A276K A27 captures: 1080×2340 px, 450 dpi, font scale 1, Android 16 / One UI
+8.5, status bar 102 px, cutout safe inset 94 px with the same 70×70 px bound,
+and navigation bar 42 px (gesture) / 135 px (3-button). The active A27 values
+therefore remain unchanged; these files corroborate them across regional SKUs.
+[Samsung identifies SM-A276B as Galaxy A27 5G](https://www.samsung.com/ie/smartphones/galaxy-a/galaxy-a27-5g-blue-256gb-sm-a276bzbceub/).
+
 
 ## Galaxy A-series measured on 2026-09-25
 
+- Galaxy A32 LTE (SM-A325F), Android 13 / One UI 5.1, build
+  `TP1A.220624.014.A325FXXSCDYA2`: both Main captures are 1080×2400 px at
+  420 dpi and font scale 1.1. Gesture bars are 80/39 px; 3-button bars are
+  80/126 px. Both agree with Settings and InsetsProbe; the centered cutout is
+  144×80 px with an 80 px safe inset. Registered against the matching Galaxy
+  A32 skin.
+- Galaxy A32 5G (SM-A326B), Android 13 / One UI 5.1, build
+  `TP1A.220624.014.A326BXXSECYB5`: both Main captures are 720×1600 px at
+  300 dpi, font scale 1. Gesture bars are 53/28 px; 3-button bars are
+  53/90 px. Both agree with Settings and InsetsProbe; the centered cutout is
+  96×53 px with a 53 px safe inset. Registered against the separate A32 5G
+  skin; this lower-resolution display is not interchangeable with A32 LTE.
+- Galaxy A53 5G (SM-A536B), Android 14 / One UI 6.1, build
+  `UP1A.231005.007.A536BXXSDEYB9`: both Main captures are 1080×2400 px at
+  450 dpi, font scale 1.1. Gesture bars are 88/42 px; 3-button bars are
+  88/135 px. Both agree with Settings and InsetsProbe; the centered cutout is
+  56×88 px with an 88 px safe inset.
+- Galaxy A52s 5G (SM-A528B), Android 14 / One UI 6.1, build
+  `UP1A.231005.007.A528BXXSAGYA2`: both Main captures are 1080×2400 px at
+  450 dpi. Gesture bars are 88/42 px top/bottom; 3-button bars are 88/135 px.
+  The 56×88 px centered cutout and 88 px safe top inset agree across both
+  captures, and Settings agrees with the reported navigation mode. The device
+  was captured at font scale 1.1, so retain this condition when comparing its
+  values. Samsung lists the same 1080×2400 display and 159.9×75.1×8.4 mm body
+  as the A52 family; the page reuses the official A52 skin for that shared
+  geometry. [Samsung A52s 5G specifications](https://www.samsung.com/pt/smartphones/galaxy-a/galaxy-a52s-5g-awesome-white-256gb-sm-a528bzwheub/).
+- Galaxy A24 (SM-A245F), Android 13 / One UI 5.1, build
+  `TP1A.220624.014.A245FXXU2AWE6`: both Main captures are 1080×2340 px at
+  450 dpi, font scale 1. Gesture bars are 77/42 px top/bottom; 3-button bars
+  are 77/135 px. Both report a 77 px safe cutout inset, the same centered
+  126×77 px cutout bounds and 90 px rounded corners; Settings agrees with both
+  navigation modes. Samsung's official A24 skin matches the captured display.
+- Galaxy A23 5G skin comparison uses captures from Galaxy A23 LTE (SM-A235F),
+  Android 14 / One UI 6.1, build `UP1A.231005.007.A235FXXSDEYL2`. Both Main
+  captures are 1080×2408 px at 450 dpi, font scale 1. Gesture bars are 66/42 px;
+  3-button bars are 66/135 px. Both agree with Settings and InsetsProbe; the
+  144×66 px centered cutout and 66 px safe inset match. Samsung lists the LTE
+  unit with the same 1080×2408 display and 165.4×76.9×8.4 mm body as the 5G
+  skin model, so the measurements are shared by screen/body geometry while the
+  raw JSON retains SM-A235F. [Samsung A23 LTE specifications](https://www.samsung.com/sa_en/business/smartphones/galaxy-a/galaxy-a23-sm-a235fzovmea/) ·
+  [A23 5G dimensions](https://www.samsung.com/es/smartphones/galaxy-a/galaxy-a23-5g-awesome-blue-64gb-sm-a236blbueub/).
+- Galaxy A34 5G (SM-A346E), Android 14 / One UI 6.1, build
+  `UP1A.231005.007.A346EXXS9CYD1`: both Main captures are 1080×2340 px at
+  450 dpi, font scale 1.1. Gesture bars are 75/42 px; 3-button bars are
+  75/135 px. Both agree with Settings and InsetsProbe; the centered cutout
+  bounds are 144×75 px and the safe top inset is 75 px.
+- Galaxy A33 5G (SM-A336E), Android 13 / One UI 5.1, build
+  `TP1A.220624.014.A336EDXS7CWJ1`: both Main captures are 1080×2400 px at
+  450 dpi, font scale 1.1. Gesture bars are 80/42 px; 3-button bars are
+  80/135 px. Both agree with Settings and InsetsProbe; the centered cutout
+  bounds are 144×80 px and the safe top inset is 80 px.
+- Galaxy A73 5G (SM-A736B), Android 15 / One UI 7.0, build
+  `AP3A.240905.015.A2.A736BXXUAFYE6`: the fresh Main gesture capture is
+  1080×2400 px at 450 dpi, font scale 1, with 98/42 px system bars and a 98 px
+  cutout safe inset. The supplied 3-button JSON has a 2025-05-15 timestamp; it
+  is preserved under `measurements/galaxy-a73-5g/recapture-2025-05-15/` and is
+  not registered as a current 3-button value. That mode remains pending a fresh
+  capture.
+- Galaxy A13 LTE (SM-A135F), Android 14 / One UI 6.1, build
+  `UP1A.231005.007.A135FXXSEEZE3`: both captures agree with Settings and
+  InsetsProbe at 1080×2408 px, 450 dpi and font scale 1. Gesture system bars
+  are 70/42 px and 3-button bars 70/135 px; the cutout safe inset is 65 px
+  with 172×65 px bounds. These raw captures are preserved under
+  `measurements/galaxy-a13-lte/` but are not attached to the A13 5G skin:
+  Samsung's A13 5G skin is 720×1600 px, so its display geometry does not match.
+  The earlier generic A13 0% installation report therefore remains unresolved
+  for its unidentified SKU; SM-A135F did install and produce captures in RTL.
+- Galaxy A55 5G / Galaxy Quantum5 (SM-A556S), Android 16 / One UI 8.5, build
+  `BP4A.251205.006.A556SKSS9DZG1`: both Main modes are portrait 1080×2340 px
+  at 450 dpi, font scale 1. Gesture system bars are 89/42 px top/bottom;
+  3-button bars are 89/135 px. Both report an 89 px cutout safe inset and the
+  same centered 66×66 px camera bound. Samsung identifies the measured Korean
+  SKU as Galaxy Quantum5 and lists the same 1080×2340 display as Galaxy A55 5G.
+  [Samsung Korea specs](https://www.samsung.com/sec/support/model/SM-A556SZKBSKC/) ·
+  [Galaxy A55 5G specs](https://www.samsung.com/mx/smartphones/galaxy-a/galaxy-a55-5g-awesome-navy-256gb-sm-a556ezkqltm/).
+- Galaxy A35 5G (SM-A356N), Android 16 / One UI 8.5, build
+  `BP4A.251205.006.A356NKSS9DZG1`: both Main modes are portrait 1080×2340 px
+  at 450 dpi, font scale 1. Gesture system bars are 101/42 px top/bottom;
+  3-button bars are 101/135 px. Both report an 89 px safe cutout inset and a
+  centered 66×66 px camera bound. [Samsung Korea specs](https://www.samsung.com/sec/support/model/SM-A356NLBWKOD/).
+- Galaxy A25 5G (SM-A256N), Android 16 / One UI 8.5, build
+  `BP4A.251205.006.A256NKSSAEZG1`: both Main modes are portrait 1080×2340 px
+  at 450 dpi, font scale 1. Gesture system bars are 77/42 px; 3-button bars
+  are 77/135 px. Both report a 77 px safe cutout inset and the same centered
+  126×77 px bound. The raw captures are preserved under
+  `measurements/galaxy-a25-5g/`, but the repository has no official A25 skin,
+  so they are not attached to a public device route. No skin artwork was
+  inferred from another A-series model. [Samsung identifies SM-A256N as Galaxy A25 5G](https://www.samsung.com/sec/support/model/SM-A256NLBAKOD/).
+- Galaxy A14 LTE (SM-A145F), Android 14 / One UI 6.1, build
+  `UP1A.231005.007.A145FXXS9CYB1`: both Main modes are portrait 1080×2408 px
+  at 450 dpi, font scale 1. Gesture system bars are 65/42 px top/bottom;
+  3-button bars are 65/135 px. Both report a 64 px safe cutout inset and the
+  same centered 144×64 px camera bound. Samsung's official A14 skin is the 5G
+  variant with the same 1080×2408 screen resolution; insets are from the LTE
+  unit and its exact software build. [Samsung A14 display information](https://images.samsung.com/is/content/samsung/assets/global/ir/docs/2023_4Q_Interim_Report.pdf) ·
+  [A14 5G specs](https://www.samsung.com/es/smartphones/galaxy-a/galaxy-a14-5g-black-128gb-sm-a146pzkgeub/).
+- Galaxy A04 (SM-A045F), Android 14 / One UI 6.1, build
+  `UP1A.231005.007.A045FXXSFEZE2`: both Main modes are portrait 720×1600 px
+  at 300 dpi, font scale 1. Gesture system bars are 48/28 px top/bottom;
+  3-button bars are 48/90 px. Both report a 45 px safe cutout inset and the
+  same centered 176×45 px camera bound. The status inset is 3 px taller than
+  the cutout safe inset. [Samsung A04 specs](https://www.samsung.com/id/smartphones/galaxy-a/galaxy-a04-black-32gb-sm-a045fzkdxid/).
+- Galaxy A16 LTE (SM-A165N), Android 16 / One UI 8.5, build
+  `BP4A.251205.006.A165NKSS8DZG1`: both Main modes are portrait 1080×2340 px
+  at 450 dpi, font scale 1. Gesture system bars are 100/42 px top/bottom;
+  3-button bars are 100/135 px. Both report a 100 px top cutout safe inset and
+  the same centered 140×100 px U-shaped camera bound. Samsung lists the same
+  169.1 mm, 1080×2340 display geometry for A16 LTE and A16 5G; the available
+  official artwork is the A16 5G skin. Insets are from the LTE unit and its
+  exact software build. [A16 LTE specs](https://www.samsung.com/sec/support/model/SM-A165NLGEKOO/) ·
+  [A16 5G specs](https://www.samsung.com/uk/smartphones/galaxy-a/galaxy-a16-5g-blue-black-128gb-sm-a166bzkdeub/).
+- Galaxy A15 LTE (SM-A155F), Android 14 / One UI 6.1, build
+  `UP1A.231005.007.A155FXXS6BYE1`: both Main modes are portrait 1080×2340 px
+  at 450 dpi, font scale 1. Gesture system bars are 80/42 px top/bottom;
+  3-button bars are 80/135 px. Both report an 80 px top cutout safe inset and
+  the same centered 136×80 px camera bound. Samsung lists 163.9 mm,
+  1080×2340 displays for both A15 LTE and A15 5G; the available official
+  artwork is the A15 5G skin. Insets are from the LTE unit and its exact
+  software build. [A15 LTE specs](https://www.samsung.com/uk/business/smartphones/galaxy-a/galaxy-a15-blue-128gb-sm-a155fzbdeub/) ·
+  [A15 5G specs](https://www.samsung.com/uk/business/smartphones/galaxy-a/galaxy-a15-5g-blue-black-128gb-sm-a156bzkdeub/).
+- Galaxy A06 (SM-A065F), Android 14 / One UI 6.1, build
+  `UP1A.231005.007.A065FXXS3AYB1`: both Main modes are portrait 720×1600 px
+  at 300 dpi, font scale 1. Gesture system bars are 43/28 px top/bottom;
+  3-button bars are 43/90 px. Both report a 43 px top cutout safe inset and
+  an 80×43 px centered camera bound. [Samsung A06 specs](https://www.samsung.com/levant/smartphones/galaxy-a/galaxy-a06-black-64gb-sm-a065fzkdmea/).
+- Galaxy A05 (SM-A055F), Android 14 / One UI 6.1, build
+  `UP1A.231005.007.A055FXXS8CYC3`: both Main modes are portrait 720×1600 px
+  at 300 dpi, font scale 1. Gesture system bars are 59/28 px top/bottom;
+  3-button bars are 59/90 px. Both report a 59 px top cutout safe inset and
+  an 80×59 px centered camera bound. Samsung's raw rounded-corner fields are
+  unavailable, so no corner radius is published. [Samsung A05 specs](https://www.samsung.com/ph/smartphones/galaxy-a/galaxy-a05-black-128gb-sm-a055fzkgphl/).
 - Galaxy A57 5G (SM-A576S), Android 16 / One UI 8.5, build
   `BP4A.251205.006.A576SKSU1AZG7`: both Main modes are full-screen portrait
   1080×2340 px at 450 dpi, font scale 1. The captures agree on navigation mode.
   System bars are 97/42 px top/bottom in gesture mode and 97/135 px in
   3-button mode; the cutout safe inset is 82 px, with a centered 58×58 px bound.
+- Galaxy A07 5G (SM-A076M), Android 16 / One UI 8.0, build
+  `BP2A.250605.031.A3.A076MXXS4AZD2`: both Main modes are full-screen portrait
+  720×1600 px at 300 dpi, font scale 1. Gesture system bars are 64/28 px and
+  3-button bars are 64/90 px. Both report a 64 px safe cutout inset and agree
+  with Android Settings and InsetsProbe. The official Galaxy A07 skin's 720×1600
+  display rectangle matches the capture; Samsung lists a 6.7-inch HD+ display
+  and a January 2026 launch for A07 5G. The skin's shell art is retained as
+  supplied and is not used as measured device thickness.
+  [Samsung A07 5G specifications](https://www.samsung.com/br/smartphones/galaxy-a/galaxy-a07-5g-black-128gb-sm-a076mzkbzto/) ·
+  [Samsung launch announcement](https://news.samsung.com/global/samsung-launches-galaxy-a07-5g-bringing-intelligence-and-reliable-performance-to-more-galaxy-a-series-devices).
 - Galaxy A37 5G (SM-A376N), Android 16 / One UI 8.5, build
   `BP4A.251205.006.A376NKSS2AZG1`: both Main modes are full-screen portrait
   1080×2340 px at 450 dpi, font scale 1. Gesture system bars are 101/42 px;
@@ -547,6 +706,10 @@ Raw files: `measurements/galaxy-a27-5g/main-gesture.json` and
   `AP3A.240905.015.A2.A566BXXS4AYE6`: both modes are full-screen portrait
   1080×2340 px at 450 dpi, font scale 1. System bars are 92/42 px in gesture
   mode and 92/135 px in 3-button mode, with a 92 px safe top cutout inset.
+  Installation note (2026-09-25): the user reported an A56 Remote Test Lab
+  session where the Probe APK install remained at 0%. The failing unit's exact
+  SKU, Android version and RTL location were not provided. This does not
+  invalidate the earlier accepted SM-A566B captures above.
 - Galaxy A36 5G (SM-A366N), Android 16 / One UI 8.5, build
   `BP4A.251205.006.A366NKSS8CZG1`: both modes are full-screen portrait
   1080×2340 px at 450 dpi, font scale 1. System bars are 101/42 px in gesture

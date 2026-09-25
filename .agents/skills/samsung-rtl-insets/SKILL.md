@@ -197,6 +197,16 @@ step to the user.
    unless the user explicitly authorizes that permission. The visible WebClient
    workflow does not require RDB.
 
+Known device-specific 0% reports include Fold3, an initial Flip7 FE session,
+Galaxy A56, Galaxy A54 and Galaxy A13 (all reported 2026-09-25; exact failing
+SKU, OS and RTL location unknown). A later SM-A135F Galaxy A13 LTE session
+installed InsetsProbe and produced both navigation captures; this does not
+identify or clear the earlier report's failing SKU.
+Keep previously validated captures for that model. If 0% recurs, record the exact
+SKU, Android / One UI version, RTL location and APK version/checksum; do not treat
+one device's stalled install as proof that the APK or model is unsupported.
+See the per-model notes in `docs/RTL_COVERAGE.md`.
+
 ### Wake, unlock and normalize
 
 - Set language to English and restore default Display size, Font size, and Screen

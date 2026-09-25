@@ -15,6 +15,13 @@ const captureSource = (mode: "gesture" | "threeButton"): Source => ({
   retrievedAt: "2026-09-25",
 });
 
+const internationalVariantSource = (mode: "gesture" | "threeButton"): Source => ({
+  kind: "measured",
+  label: `InsetsProbe 1.3.0 on Samsung RTL Galaxy A27 5G (SM-A276B), main ${mode === "gesture" ? "gesture" : "3-button"}`,
+  url: `https://github.com/easyhooon/windowinsets/blob/main/measurements/galaxy-a27-5g/SM-A276B/main-${mode}.json`,
+  retrievedAt: "2026-09-25",
+});
+
 const measuredInsets = (mode: "gesture" | "threeButton"): InsetsMeasurement => mode === "gesture"
   ? {
       systemBars: { top: 36.27, right: 0, bottom: 14.93, left: 0 },
@@ -23,7 +30,7 @@ const measuredInsets = (mode: "gesture" | "threeButton"): InsetsMeasurement => m
       displayCutoutPx: { top: 94, right: 0, bottom: 0, left: 0 },
       cutoutShape: { xDp: 179.55556, yDp: 8.53333, widthDp: 24.88889, heightDp: 24.88889, rightDp: 179.55556, bottomDp: 798.57778, xPx: 505, yPx: 24, widthPx: 70, heightPx: 70, rightPx: 505, bottomPx: 2246 },
       condition: { oneUi: "8.5", android: "16", note: "Samsung RTL, Galaxy Jump5 / Galaxy A27 5G, SM-A276K, build BP4A.251205.006.A276KKSU2AZH3. Portrait rotation 0, 1080×2340 px full-screen capture, 450 dpi, font scale 1. Gesture mode agrees with Android Settings and InsetsProbe." },
-      sources: [captureSource("gesture")],
+      sources: [captureSource("gesture"), internationalVariantSource("gesture")],
     }
   : {
       systemBars: { top: 36.27, right: 0, bottom: 48, left: 0 },
@@ -32,7 +39,7 @@ const measuredInsets = (mode: "gesture" | "threeButton"): InsetsMeasurement => m
       displayCutoutPx: { top: 94, right: 0, bottom: 0, left: 0 },
       cutoutShape: { xDp: 179.55556, yDp: 8.53333, widthDp: 24.88889, heightDp: 24.88889, rightDp: 179.55556, bottomDp: 798.57778, xPx: 505, yPx: 24, widthPx: 70, heightPx: 70, rightPx: 505, bottomPx: 2246 },
       condition: { oneUi: "8.5", android: "16", note: "Samsung RTL, Galaxy Jump5 / Galaxy A27 5G, SM-A276K, build BP4A.251205.006.A276KKSU2AZH3. Portrait rotation 0, 1080×2340 px full-screen capture, 450 dpi, font scale 1. 3-button mode agrees with Android Settings and InsetsProbe." },
-      sources: [captureSource("threeButton")],
+      sources: [captureSource("threeButton"), internationalVariantSource("threeButton")],
     };
 
 export const galaxyA27: Device = {

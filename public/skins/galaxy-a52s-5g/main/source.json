@@ -1,0 +1,10 @@
+{
+  "archive": "Galaxy_A52.zip",
+  "folder": "Galaxy_A52",
+  "background": "device_Port-Black.png",
+  "foreground": "fore_port.png",
+  "source": "https://developer.samsung.com/galaxy-emulator-skin",
+  "providedAt": "2026-09-23",
+  "derivedFrom": "galaxy-a52/main",
+  "note": "Shared for Galaxy A52s 5G (SM-A528B): Samsung lists the same 1080x2400 display and 159.9x75.1x8.4 mm body. Original A52 artwork assets are referenced directly."
+}
