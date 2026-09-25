@@ -127,7 +127,22 @@ removes a model from its catalog.
   Samsung's raw captures include the display cutout inset but no bounding
   rectangles, so no cutout shape is registered. This confirms availability for
   the exact model on that date only.
-  Fold8 cover and inner were both
+- Galaxy Tab S11 Ultra Wi-Fi (SM-X930) was captured in both navigation modes
+  on 2026-09-25. Its landscape 2960×1848 px window matches the official main
+  display resolution. The gesture capture's inset-only classifier says
+  threeButton, but Android Settings, config and side gesture insets confirm
+  gesture mode; preserve and register the measured gesture values.
+- Galaxy Tab S11 Wi-Fi (SM-X730), Galaxy Tab S10 FE+ Wi-Fi (SM-X620), Galaxy
+  Tab S10 FE Wi-Fi (SM-X520) and Galaxy Tab S9 FE+ 5G (SM-X616N) each have
+  landscape main captures in both navigation modes from 2026-09-25. The captures
+  match their registered official skin dimensions: 2560×1600, 2880×1800,
+  2304×1440 and 2560×1600 px respectively, all at rotation 1. Gesture mode is
+  confirmed by Android Settings/configuration and side system gesture insets,
+  even though InsetsProbe's inset-only classification says threeButton. The
+  S10 FE captures report font scale 1.08 rather than the default 1.0; their raw
+  measurements are registered with that condition and should be recaptured at
+  1.0 for a normalized comparison.
+- Fold8 cover and inner were both
   recaptured from a live reservation in 3-button and gesture modes. Fold7 cover
   and inner are also measured in both modes from the same SM-F966U software
   build. Flip8 cover and inner are now measured in both modes; its accepted cover
@@ -296,4 +311,26 @@ configuration: gesture has 116/45 px top/bottom system bars; 3-button has
 skin includes only the main display, so no cover capture is in scope.
 
 Raw files: `measurements/galaxy-z-flip7-fe/main-gesture.json` and
+`main-threeButton.json`.
+
+## Galaxy Tab S11 Ultra measured on 2026-09-25
+
+InsetsProbe 1.3.0 captured Samsung RTL Galaxy Tab S11 Ultra Wi-Fi (SM-X930),
+Android 16 / One UI 8.5, build `BP4A.251205.006.X930XXS7BZG3`, in landscape at
+rotation 1. Both captures report a full-screen 2960×1848 px main display at
+280 dpi with font scale 1, matching Samsung's official WQXGA+ resolution. The
+main skin is portrait artwork; the registered capture rotation presents the
+landscape evidence in its physical orientation. Samsung's listed 14.6-inch
+diagonal and 2960×1848 resolution give approximately 240 ppi.
+
+- 3-button: system bars are 60 px top and 84 px bottom (34.29 / 48 dp).
+- gesture: system bars are 60 px top and 26 px bottom (34.29 / 14.86 dp).
+  Settings, `config_navBarInteractionMode=2`, and side system gestures confirm
+  gesture mode, although the inset-only heuristic reports threeButton because
+  the tappable bottom inset is nonzero.
+- Both captures report a 100×28 px centered cutout bound and 44 px rounded
+  corners. InsetsProbe labels non-foldable displays `phone`; these matching
+  SM-X930 captures are registered as the tablet's main screen.
+
+Raw files: `measurements/galaxy-tab-s11-ultra/main-gesture.json` and
 `main-threeButton.json`.
