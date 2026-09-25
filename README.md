@@ -12,7 +12,7 @@ Explore Galaxy Fold and Flip hinge states in **real-time 3D, built with Three.js
 | :---: | :---: |
 | [![Galaxy Z Fold8 opening from 0 to 180 degrees and closing, with projected inset dimensions](docs/media/galaxy-z-fold8-hinge.gif)](https://windowinsets.info/galaxy-z-fold8) | [![Galaxy Z Flip8 opening from 0 to 180 degrees and closing, with projected inset dimensions](docs/media/galaxy-z-flip8-hinge.gif)](https://windowinsets.info/galaxy-z-flip8) |
 
-**0° → 180° → 0°** · Recorded from the live renderer. Try the hinge slider, drag to pan, or pinch to zoom on [windowinsets.info](https://windowinsets.info).
+**0° → 180° → 0°** · Recorded from the live renderer with a fixed camera and zoom throughout the fold. Try the hinge slider, drag to pan, or pinch to zoom on [windowinsets.info](https://windowinsets.info).
 
 The animation illustrates device geometry. Insets remain the recorded Android measurements for the selected cover or inner display; moving the hinge does not create new measurements.
 
