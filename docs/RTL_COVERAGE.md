@@ -38,10 +38,11 @@ removes a model from its catalog.
   Both screens were measured upright in both navigation modes. Rotated first
   attempts and a main gesture attempt with Taskbar enabled are retained as
   rejected evidence; the accepted main captures have Taskbar off.
-  Galaxy Z Flip7 FE (SM-F761B-VN4, Vietnam/Hanoi) was reserved on
-  2026-09-23, but InsetsProbe installation stayed at 0% even after reconnecting
-  following a device restart. The reservation was returned with one credit
-  refunded; no measurement was accepted. Galaxy Z Flip6 (SM-F741U-KR10,
+  An initial Galaxy Z Flip7 FE (SM-F761B-VN4, Vietnam/Hanoi) reservation on
+  2026-09-23 failed to install InsetsProbe at 0%, even after reconnecting
+  following a device restart. That reservation was returned with one credit
+  refunded and produced no accepted measurement. A later capture is documented
+  below. Galaxy Z Flip6 (SM-F741U-KR10,
   Korea/Gumi) was subsequently reserved. Its official main-screen skin was
   matched to fresh, upright 1080×2640 px captures in both navigation modes;
   the skin archive has no cover layout, so cover values remain pending.
@@ -282,3 +283,17 @@ official cover skin exists. As of 2026-09-25, only Flip7 and Flip8 have cover
 layouts in the catalog; Flip5 and Flip6 remain main-only until cover artwork is
 imported. Complete both cover navigation modes on eligible models before moving
 to lower-priority collection targets.
+
+## Galaxy Z Flip7 FE measured on 2026-09-25
+
+InsetsProbe 1.3.0 captures for SM-F761B, Android 16 / One UI 8.0, build
+`BP2A.250605.031.A3.F761BXXU4AYI1`, were downloaded and validated on 2026-09-25.
+Both are upright main-display captures at 1080×2640 px, display 0, 480 dpi and
+font scale 1, with the device fully unfolded (180°) and a horizontal FLAT
+folding feature at y=1320 px. The captures agree with Android navigation
+configuration: gesture has 116/45 px top/bottom system bars; 3-button has
+116/144 px. Both include a 66×116 px centered cutout bound. The registered
+skin includes only the main display, so no cover capture is in scope.
+
+Raw files: `measurements/galaxy-z-flip7-fe/main-gesture.json` and
+`main-threeButton.json`.
