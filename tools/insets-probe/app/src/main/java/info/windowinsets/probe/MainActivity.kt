@@ -202,11 +202,25 @@ class MainActivity : ComponentActivity(), SensorEventListener {
 
         root = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
 
-        root.addView(TextView(this).apply {
-            text = "InsetsProbe · windowinsets.info"
-            textSize = 16f
-            setTypeface(typeface, Typeface.BOLD)
-            setPadding(px(12), px(8), px(12), 0)
+        root.addView(LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
+            setPadding(px(12), px(4), px(8), 0)
+
+            addView(TextView(context).apply {
+                text = "InsetsProbe · windowinsets.info"
+                textSize = 16f
+                setTypeface(typeface, Typeface.BOLD)
+            }, LinearLayout.LayoutParams(0, WRAP_CONTENT, 1f))
+
+            addView(Button(context).apply {
+                text = "×"
+                textSize = 24f
+                contentDescription = context.getString(R.string.close_probe)
+                minWidth = px(48)
+                minHeight = px(48)
+                setOnClickListener { this@MainActivity.finishAndRemoveTask() }
+            }, LinearLayout.LayoutParams(px(48), px(48)))
         })
         root.addView(TextView(this).apply {
             text = "Use default Display size / Font size in full screen. Physically open or close the device first. " +

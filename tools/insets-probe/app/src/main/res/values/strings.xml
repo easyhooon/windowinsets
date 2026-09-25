@@ -2,4 +2,5 @@
 <resources>
     <string name="app_name">InsetsProbe</string>
     <string name="open_cover_probe">Open cover probe</string>
+    <string name="close_probe">Close InsetsProbe</string>
 </resources>
