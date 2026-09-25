@@ -127,6 +127,40 @@ removes a model from its catalog.
   Samsung's raw captures include the display cutout inset but no bounding
   rectangles, so no cutout shape is registered. This confirms availability for
   the exact model on that date only.
+- Galaxy S23 FE (SM-S711B), Galaxy S22 Ultra (SM-S908U), Galaxy S22+ (SM-S906B)
+  and Galaxy S22 (SM-S901B) were reserved and captured on 2026-09-25. Each has
+  full-screen main captures in both navigation modes with Android setting and
+  InsetsProbe classifications in agreement, font scale 1, and exact raw JSON
+  preserved under its `measurements/` directory. S23 FE is Android 16 / One UI
+  8.5 at 1080×2340 px / 450 dpi; S22 Ultra is Android 13 / One UI 5.1 at
+  1080×2316 px / 450 dpi on its 1440×3088 physical panel; S22+ is Android 15 /
+  One UI 7.0 at 1080×2340 px / 450 dpi; S22 is Android 15 / One UI 7.0 at
+  1080×2340 px / 480 dpi. S22 Ultra's raw cutout bounds are centered around
+  x=720 despite the active window being 1080 px wide, so only its measured safe
+  inset is registered and the inconsistent cutout shape is omitted from the
+  diagram. This verifies these exact model variants were offered on the capture
+  date; it does not complete the cross-region catalog inventory.
+- Galaxy S21 Ultra (SM-G998B), Galaxy S21+ (SM-G996B), Galaxy S21 (SM-G991B),
+  Galaxy S20 Ultra (SM-G988B) and Galaxy S20 FE (SM-G780G) were reserved and
+  captured on 2026-09-25. The first four have accepted main captures in both
+  navigation modes, all with matching Android setting and InsetsProbe mode,
+  font scale 1 and rotation 0. S21 Ultra: Android 14 / One UI 6.1,
+  1080×2400 px / 450 dpi on a 1440×3200 panel; rounded-corner values are null
+  in both raw captures and remain unavailable. S21+: Android 15 / One UI 7.0,
+  1080×2400 px / 450 dpi. S21: Android 14 / One UI 6.1, 1080×2400 px / 480
+  dpi. S20 Ultra: Android 13 / One UI 5.1, 1080×2400 px / 420 dpi on a
+  1440×3200 panel. Its raw cutout rectangle is centered around x=720 despite
+  the active window being 1080 px wide; the safe inset is registered and the
+  unscaled cutout shape is omitted. S20 FE has both modes (Android 13 / One UI
+  5.1, 1080×2400 px / 480 dpi). Its gesture file says 2026-09-25T05:30:35Z;
+  the 3-button file's embedded `capturedAt` says 2024-12-27T11:54:02Z, while
+  its host download modification time is 2026-09-25 14:30:57 KST, 13 seconds
+  after the gesture file. The user confirmed the 3-button capture was just
+  measured alongside the gesture capture. Probe writes `capturedAt` using the
+  Android device clock (`Instant.now()`), so the raw discrepancy is retained
+  and documented as a likely device-clock anomaly; neither JSON was edited.
+  These reservations verify exact model variants on the capture date only, not
+  the full cross-region catalog.
 - Galaxy Tab S11 Ultra Wi-Fi (SM-X930) was captured in both navigation modes
   on 2026-09-25. Its landscape 2960×1848 px window matches the official main
   display resolution. The gesture capture's inset-only classifier says
@@ -368,6 +402,29 @@ main screen from the model and dimensions.
 Raw files: `measurements/galaxy-tab-s9-ultra/main-gesture.json` and
 `main-threeButton.json`. The reservation confirms this exact model was offered
 in RTL on this date; it does not complete the cross-region catalog inventory.
+
+## Physical Galaxy Tab S9 measured on 2026-09-25
+
+InsetsProbe 1.3.0 was installed through Android CLI on the user's physical
+Galaxy Tab S9 Wi-Fi (SM-X710), Android 16 / One UI 8.0, build
+`BP2A.250605.031.A3.X710XXS5DZA1`. Both full-screen Main captures are portrait,
+rotation 0, 1600×2560 px, 340 dpi (default) and font scale 1, matching the
+official 2560×1600 panel in portrait orientation. The Samsung Taskbar was enabled
+for both captures and was left unchanged.
+
+- 3-button: system bars are 64 px top and 102 px bottom (30.12 / 48 dp).
+- gesture: system bars are 64 px top and 32 px bottom (30.12 / 15.06 dp).
+  Settings and `config_navBarInteractionMode=2` confirm gesture mode; left/right
+  system-gesture insets are 63 px. The inset-only heuristic reports
+  threeButton, so retain the settings and gesture-region evidence rather than
+  inferring a mode error from that heuristic.
+- Both captures have no display cutout and report 21 px rounded corners
+  (9.88 dp).
+
+These are direct physical-device captures, not RTL data; the RTL catalog status
+for Galaxy Tab S9 remains unknown. Raw files:
+`measurements/galaxy-tab-s9/main-gesture.json` and
+`main-threeButton.json`.
 
 
 ### Galaxy Tab S9 FE — 2026-09-25

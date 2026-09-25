@@ -1,18 +1,18 @@
 slug,name,skin_registered,public_coverage,rtl_status,rtl_evidence_scope,checked_at,source_url
 galaxy-fold,Galaxy Fold,yes,published,unknown,featured-devices,2026-09-22,https://developer.samsung.com/remote-test-lab
 galaxy-s20,Galaxy S20,yes,published,unknown,featured-devices,2026-09-22,https://developer.samsung.com/remote-test-lab
-galaxy-s20-fe,Galaxy S20 FE,yes,published,unknown,featured-devices,2026-09-22,https://developer.samsung.com/remote-test-lab
+galaxy-s20-fe,Galaxy S20 FE,yes,published,listed,reservation-catalog-live-reservation,2026-09-25,https://developer.samsung.com/remotetestlab/devices
 galaxy-s20-plus,Galaxy S20 Plus,yes,published,unknown,featured-devices,2026-09-22,https://developer.samsung.com/remote-test-lab
-galaxy-s20-ultra,Galaxy S20 Ultra,yes,published,unknown,featured-devices,2026-09-22,https://developer.samsung.com/remote-test-lab
-galaxy-s21,Galaxy S21,yes,published,unknown,featured-devices,2026-09-22,https://developer.samsung.com/remote-test-lab
+galaxy-s20-ultra,Galaxy S20 Ultra,yes,published,listed,reservation-catalog-live-reservation,2026-09-25,https://developer.samsung.com/remotetestlab/devices
+galaxy-s21,Galaxy S21,yes,published,listed,reservation-catalog-live-reservation,2026-09-25,https://developer.samsung.com/remotetestlab/devices
 galaxy-s21-fe,Galaxy S21 FE,yes,published,unknown,featured-devices,2026-09-22,https://developer.samsung.com/remote-test-lab
-galaxy-s21-plus,Galaxy S21 Plus,yes,published,unknown,featured-devices,2026-09-22,https://developer.samsung.com/remote-test-lab
-galaxy-s21-ultra,Galaxy S21 Ultra,yes,published,unknown,featured-devices,2026-09-22,https://developer.samsung.com/remote-test-lab
-galaxy-s22,Galaxy S22,yes,published,unknown,featured-devices,2026-09-22,https://developer.samsung.com/remote-test-lab
-galaxy-s22-plus,Galaxy S22 Plus,yes,published,unknown,featured-devices,2026-09-22,https://developer.samsung.com/remote-test-lab
-galaxy-s22-ultra,Galaxy S22 Ultra,yes,published,unknown,featured-devices,2026-09-22,https://developer.samsung.com/remote-test-lab
+galaxy-s21-plus,Galaxy S21 Plus,yes,published,listed,reservation-catalog-live-reservation,2026-09-25,https://developer.samsung.com/remotetestlab/devices
+galaxy-s21-ultra,Galaxy S21 Ultra,yes,published,listed,reservation-catalog-live-reservation,2026-09-25,https://developer.samsung.com/remotetestlab/devices
+galaxy-s22,Galaxy S22,yes,published,listed,reservation-catalog-live-reservation,2026-09-25,https://developer.samsung.com/remotetestlab/devices
+galaxy-s22-plus,Galaxy S22 Plus,yes,published,listed,reservation-catalog-live-reservation,2026-09-25,https://developer.samsung.com/remotetestlab/devices
+galaxy-s22-ultra,Galaxy S22 Ultra,yes,published,listed,reservation-catalog-live-reservation,2026-09-25,https://developer.samsung.com/remotetestlab/devices
 galaxy-s23,Galaxy S23,yes,published,unknown,featured-devices,2026-09-22,https://developer.samsung.com/remote-test-lab
-galaxy-s23-fe,Galaxy S23 FE,yes,published,unknown,featured-devices,2026-09-22,https://developer.samsung.com/remote-test-lab
+galaxy-s23-fe,Galaxy S23 FE,yes,published,listed,reservation-catalog-live-reservation,2026-09-25,https://developer.samsung.com/remotetestlab/devices
 galaxy-s23-plus,Galaxy S23 Plus,yes,published,unknown,featured-devices,2026-09-22,https://developer.samsung.com/remote-test-lab
 galaxy-s23-ultra,Galaxy S23 Ultra,yes,published,unknown,featured-devices,2026-09-22,https://developer.samsung.com/remote-test-lab
 galaxy-s24,Galaxy S24,yes,published,listed,reservation-catalog-live-reservation,2026-09-24,https://developer.samsung.com/remotetestlab/devices

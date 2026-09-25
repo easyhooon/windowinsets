@@ -382,6 +382,15 @@ Do not use Measure All. Capture each active display and navigation mode explicit
 | Galaxy S25 Edge | SM-S937N | Main | ✓ | ✓ | Complete (RTL, Korea/Gumi, Android 16) |
 | Galaxy S25 FE | SM-S731N | Main | ✓ | ✓ | Complete (RTL, Korea/Gumi, Android 16) |
 | Galaxy S25 | SM-S931N | Main | ✓ | ✓ | Complete (RTL, Korea/Gumi, Android 16) |
+| Galaxy S23 FE | SM-S711B | Main | ✓ | ✓ | Complete (RTL, Android 16 / One UI 8.5) |
+| Galaxy S22 Ultra | SM-S908U | Main | ✓ | ✓ | Complete (RTL, Android 13 / One UI 5.1; FHD+ capture, cutout geometry omitted due to coordinate mismatch) |
+| Galaxy S22+ | SM-S906B | Main | ✓ | ✓ | Complete (RTL, Android 15 / One UI 7.0) |
+| Galaxy S22 | SM-S901B | Main | ✓ | ✓ | Complete (RTL, Android 15 / One UI 7.0) |
+| Galaxy S21 Ultra | SM-G998B | Main | ✓ | ✓ | Complete (RTL, Android 14 / One UI 6.1; FHD+ capture on QHD+ panel; corner radii unavailable) |
+| Galaxy S21+ | SM-G996B | Main | ✓ | ✓ | Complete (RTL, Android 15 / One UI 7.0) |
+| Galaxy S21 | SM-G991B | Main | ✓ | ✓ | Complete (RTL, Android 14 / One UI 6.1) |
+| Galaxy S20 Ultra | SM-G988B | Main | ✓ | ✓ | Complete (RTL, Android 13 / One UI 5.1; FHD+ capture on QHD+ panel; cutout bounds mismatch, shape omitted) |
+| Galaxy S20 FE | SM-G780G | Main | ✓ | ✓ | Complete (RTL, Android 13 / One UI 5.1; raw 3-button timestamp differs from host download time and is documented as a device-clock anomaly) |
 | Galaxy Z Fold7 | SM-F966U | Cover + inner | ✓ both | ✓ both | Complete |
 | Galaxy Z Fold6 | SM-F956U | Cover + inner | ✓ both | ✓ both | Complete |
 | Galaxy Z Flip6 | SM-F741U | Main | ✓ | ✓ | Main complete; no cover skin |
