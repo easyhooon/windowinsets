@@ -90,13 +90,6 @@ React, TypeScript and React Router (framework mode), styled with Tailwind CSS. B
 
 Rendering lives in [`FoldRenderer3D.tsx`](app/components/FoldRenderer3D.tsx), [`foldGeometry.ts`](app/components/foldGeometry.ts) and [`ProjectedRulers.tsx`](app/components/ProjectedRulers.tsx). See [device thickness and artwork limits](#device-thickness-and-artwork-limits) for the boundary between published dimensions and illustrative geometry.
 
-```bash
-pnpm install
-pnpm dev        # http://localhost:5173
-pnpm typecheck
-pnpm build      # prerendered HTML in build/client
-```
-
 ## Device coverage and priorities
 
 **Target coverage (WIP): every Samsung Galaxy model released in 2020 or later
