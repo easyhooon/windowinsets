@@ -2,7 +2,7 @@ import { galaxyZTriFold } from '../app/data/devices/galaxy-z-trifold/index.ts';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
-import { bendPoint, createChassis, createFoldHousings, hingeHalfWidth, rigidPanelPoint, triFoldAngles, triFoldPoint, triFoldHinges, createTriFoldHousings, createTriFoldDisplay } from '../app/components/foldGeometry.ts';
+import { bendPoint, createChassis, createFoldHousings, hingeHalfWidth, rigidPanelPoint, triFoldAngles, triFoldViewTurn, triFoldPoint, triFoldHinges, createTriFoldHousings, createTriFoldDisplay } from '../app/components/foldGeometry.ts';
 import { skins } from '../app/data/skins.ts';
 import { isInCoverage } from '../app/data/coverage.ts';
 import { getRtlAvailability, rtlCatalog } from '../app/data/rtlAvailability.ts';
@@ -61,6 +61,20 @@ test('TriFold folds left before right with three rigid, separated housings', () 
       }
     }
     geometry.dispose();
+  }
+});
+
+test('TriFold cover reveal keeps the right wing facing forward without an extra spin', () => {
+  for (let sequence = 0; sequence <= 180; sequence++) {
+    const turn = triFoldViewTurn(sequence);
+    const a = triFoldPoint(1.2, 0, 0, sequence, 4.2, .065);
+    const b = triFoldPoint(1.8, 0, 0, sequence, 4.2, .065);
+    const dx = b[0] - a[0], dz = b[2] - a[2];
+    const worldX = Math.cos(turn) * dx + Math.sin(turn) * dz;
+    const worldZ = -Math.sin(turn) * dx + Math.cos(turn) * dz;
+    assert.ok(Math.abs(worldX - .6) < 1e-9, 'right wing must retain its world-facing direction');
+    assert.ok(Math.abs(worldZ) < 1e-9, 'right wing must not spin during the cover reveal');
+    if (sequence >= 90) assert.equal(turn, 0, 'left wing opens with a stationary inner view');
   }
 });
 

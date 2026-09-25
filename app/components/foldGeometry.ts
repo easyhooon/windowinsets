@@ -107,6 +107,12 @@ export function triFoldAngles(sequence: number) {
     right: Math.max(0, Math.min(180, sequence * 2)) };
 }
 
+/** Present the rear cover, then turn toward the inner display while keeping
+ * the right wing's facing direction fixed. The opposite sign adds a full spin. */
+export function triFoldViewTurn(sequence: number) {
+  return (180 - triFoldAngles(sequence).right) * Math.PI / 180;
+}
+
 /** Illustrative unequal hinge strips leave room for the nested left housing. */
 export function triFoldHinges(thickness: number) {
   const gap = thickness * .12;

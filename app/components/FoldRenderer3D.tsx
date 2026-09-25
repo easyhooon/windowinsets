@@ -5,7 +5,7 @@ import { InsetsDiagram } from "./InsetsDiagram";
 import { DIAGRAM_FONT, DIAGRAM_COLORS } from "./diagramStyle";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
-import { bendPoint, createChassis, createFoldHousings, hingeHalfWidth, rigidPanelPoint, verticalHinge, coverPoint, triFoldPoint, triFoldAngles, createTriFoldDisplay, createTriFoldHousings, createTriFoldHingeStrips } from "./foldGeometry";
+import { bendPoint, createChassis, createFoldHousings, hingeHalfWidth, rigidPanelPoint, verticalHinge, coverPoint, triFoldPoint, triFoldAngles, triFoldViewTurn, createTriFoldDisplay, createTriFoldHousings, createTriFoldHingeStrips } from "./foldGeometry";
 import type { DeviceSkin } from "../data/skins";
 import { skinAssetUrl } from "../data/skinAssetUrl";
 import type { CutoutShape, Screen, InsetsMeasurement } from "../data/types";
@@ -535,8 +535,7 @@ export function FoldRenderer3D({
       coverMesh.visible = !!stateRef.current.cover && displayedAngle < 100;
       const reveal = Math.max(0, 1 - displayedAngle / 100);
       if (triFold) {
-        const turn = reveal * reveal * (3 - 2 * reveal) * Math.PI;
-        deviceGroup.rotation.set(0, -turn, 0);
+        deviceGroup.rotation.set(0, triFoldViewTurn(displayedAngle), 0);
         deviceGroup.position.set(0, 0, 0);
         return;
       }
@@ -596,7 +595,7 @@ export function FoldRenderer3D({
       }
       const body = { left: Math.min(...points.map(p => p.x)), right: Math.max(...points.map(p => p.x)),
         top: Math.min(...points.map(p => p.y)), bottom: Math.max(...points.map(p => p.y)) };
-      const next: RulerMeasurements = { body, compact: !triFold, scale: 100 / annotationZoom, format, units: st.units, screen: outer ? 'Cover' : 'Inner',
+      const next: RulerMeasurements = { body, compact: true, scale: 100 / annotationZoom, format, units: st.units, screen: outer ? 'Cover' : 'Inner',
         rulers: visibleDiagramRulers(layout.rulers, st.layers).map(r => ({ ...r,
           start: project(r.guides[0][0], r.guides[0][1]), end: project(r.guides[1][0], r.guides[1][1]),
           bracket: r.kind === 'radius' ? project(r.guides[1][0], r.guides[1][1] > h / 2 ? h : 0) : undefined,

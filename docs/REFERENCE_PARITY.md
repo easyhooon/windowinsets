@@ -13,6 +13,14 @@ Android-specific substitutions and evidence boundaries:
   inward cylindrical hinge strips. The fixed middle panel carries the rear-facing
   cover artwork. The [Samsung folding guide](https://www.samsung.com/us/support/answer/ANS10010261/)
   specifies left first, then right when closing; opening reverses that order.
+  The [Korean service guide](https://www.samsungsvc.co.kr/solution/4498019)
+  confirms that closing the camera-bearing side first triggers a warning and vibration.
+  Left/right here are viewed from the unfolded inner display.
+- The cover-to-inner presentation turns the chassis in the direction that cancels
+  the right wing's hinge rotation, keeping that wing facing forward. The middle
+  panel's rear cover turns away once; the left wing then opens with a stationary
+  inner view. This replaces the opposite-direction reveal that made the right wing
+  perform an extra full turn. Camera position and zoom stay fixed.
 - The Hinge dropdown shows **left / right** angles and one coordinated fold
   sequence slider. This prevents a right-first closing order. Closed is 0°/0°,
   Partially Folded is 90°/180°, and Open is 180°/180°. The slider's 0–180 range

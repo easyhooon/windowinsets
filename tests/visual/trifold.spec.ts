@@ -5,7 +5,7 @@ async function choose(page: Page, control: string, value: string) {
   await page.getByRole("button", { name: value, exact: true }).click();
 }
 
-test("TriFold renders both hinges, preserves pending data, and fits each pose", async ({ page }) => {
+test("TriFold renders both hinges, switches measured modes, and fits each pose", async ({ page }) => {
   const errors: string[] = [];
   page.on("pageerror", error => errors.push(error.message));
   await page.goto("/galaxy-z-trifold");
@@ -39,7 +39,7 @@ test("TriFold renders both hinges, preserves pending data, and fits each pose", 
   await expect(page).toHaveScreenshot("trifold-right-hinge.png");
   await choose(page, "Pose", "Closed");
   await choose(page, "Navigation", "3-button");
-  await expect(page.locator(".pending-notice")).toBeVisible();
+  await expect(page.locator(".pending-notice")).toHaveCount(0);
   await choose(page, "Navigation", "Gesture");
   await expect(page.locator(".pending-notice")).toHaveCount(0);
   await page.getByRole("button", { name: "View settings" }).click();
