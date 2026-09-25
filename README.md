@@ -115,6 +115,19 @@ Devices without captures remain marked **Skin preview / pending** until measured
 Coverage is still in progress; this target is not a claim that every eligible
 model has already been imported or measured.
 
+### Galaxy Watch limitation
+
+The Samsung Galaxy Emulator Skin downloads checked on 2026-09-25 contain no
+Galaxy Watch skins. Galaxy Watch4 and later use Wear OS Powered by Samsung, so
+Android `WindowInsets` can be measured, but the current InsetsProbe workflow and
+device data model assume phone navigation modes (gesture or 3-button) and do not
+represent watch-specific round-screen safe areas. Supporting Galaxy Watch needs
+traceable watch artwork and a Wear OS measurement path that records those safe
+areas separately. Until then, Galaxy Watch models are not part of the public
+device catalogue, and no watch measurements are inferred from product images.
+See [Galaxy Watch platform history](https://developer.samsung.com/galaxy-watch-tizen/notice.html)
+and Android's [Wear OS screen-shape guidance](https://developer.android.com/training/wearables/views/layouts).
+
 ## Adding a device
 
 1. To register downloaded skins, run `python3 scripts/import-samsung-skins.py /path/to/downloads`.

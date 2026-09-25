@@ -70,6 +70,18 @@ and Flip6 remain main-only until cover artwork is imported. A physical cover
 display without a corresponding registered skin does not create a product
 measurement target.
 
+## Galaxy Watch limitation
+
+The Samsung Galaxy Emulator Skin downloads checked on 2026-09-25 contain no
+Galaxy Watch skin. Galaxy Watch4 and later use Wear OS Powered by Samsung and
+can expose Android `WindowInsets`, but the current device model requires gesture
+or 3-button measurements and does not model watch-specific round-screen safe
+areas. Keep Galaxy Watch outside the public device catalogue until traceable
+watch artwork and a dedicated Wear OS capture/data path are available; do not
+derive screen geometry or inset values from product images. See Samsung's
+[Galaxy Watch platform notice](https://developer.samsung.com/galaxy-watch-tizen/notice.html)
+and Android's [Wear OS screen-shape guide](https://developer.android.com/training/wearables/views/layouts).
+
 The user-supplied `Galaxy_S10_Lite.zip` and `Galaxy_Tab_S8_Ultra.zip` were imported
 on 2026-09-24 as main-screen artwork previews. Their official release years meet
 the coverage cutoff; inset measurements remain pending.

@@ -21,3 +21,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "InsetsProbe"
 include(":app")
+include(":wear")
