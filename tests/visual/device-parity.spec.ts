@@ -209,7 +209,7 @@ test("Fold7 animation switches from measured cover to measured inner display", a
   await page.getByRole("button", { name: "Open", exact: true }).click();
   await waitForFoldTransition(page);
   await expect(page.locator(".screen-tabs button").filter({ hasText: "Inner" })).toHaveAttribute("aria-pressed", "true");
-  await expect(page.getByRole("button", { name: "Logical Size 832 × 749.71 dp" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Logical Size 749.71 × 832 dp" })).toBeVisible();
 });
 
 test("fold pose changes preserve an explicit zoom", async ({ page }) => {

@@ -347,7 +347,7 @@ test('RTL comparisons never turn an incomplete inventory into non-support claims
   assert.equal(getRtlAvailability('galaxy-z-fold6').label, 'Reservable on RTL');
 });
 
-test('Fold7 captures keep exact cover and rotated inner evidence distinct', () => {
+test('Fold7 captures keep exact cover and upright inner evidence distinct', () => {
   const captures = [
     ['cover', 'gesture'],
     ['cover', 'threeButton'],
@@ -355,7 +355,8 @@ test('Fold7 captures keep exact cover and rotated inner evidence distinct', () =
     ['main', 'threeButton'],
   ];
   for (const [screenId, navMode] of captures) {
-    const raw = readCapture(`measurements/galaxy-z-fold7/${screenId}-${navMode}.json`);
+    const folder = screenId === 'main' ? 'galaxy-z-fold7/recapture-2026-09-25' : 'galaxy-z-fold7';
+    const raw = readCapture(`measurements/${folder}/${screenId}-${navMode}.json`);
     const screen = galaxyZFold7.screens.find(candidate => candidate.id === screenId);
     assert.equal(raw.device.model, 'SM-F966U');
     assert.equal(raw.screen, screenId);
@@ -370,14 +371,16 @@ test('Fold7 captures keep exact cover and rotated inner evidence distinct', () =
   const main = galaxyZFold7.screens.find(screen => screen.id === 'main');
   assert.deepEqual(cover.resolutionPx, { width: 1080, height: 2520 });
   assert.deepEqual(main.resolutionPx, { width: 1968, height: 2184 });
-  assert.deepEqual(main.logicalSizePx, { width: 2184, height: 1968 });
-  assert.equal(main.captureOrientation, 'landscape');
+  assert.deepEqual(main.logicalSizePx, { width: 1968, height: 2184 });
+  assert.equal(main.captureOrientation, 'portrait');
+  assert.equal(main.captureRotation, 0);
   for (const navMode of ['gesture', 'threeButton']) {
-    const raw = readCapture(`measurements/galaxy-z-fold7/main-${navMode}.json`);
+    const raw = readCapture(`measurements/galaxy-z-fold7/recapture-2026-09-25/main-${navMode}.json`);
     assert.equal(raw.hinge.angleDegrees, 0);
     assert.equal(raw.hinge.foldingFeatures[0].state, 'FLAT');
+    assert.equal(raw.hinge.foldingFeatures[0].orientation, 'VERTICAL');
     assert.deepEqual(raw.hinge.foldingFeatures[0].bounds.px,
-      { left: 0, top: 984, right: 2184, bottom: 984 });
+      { left: 984, top: 0, right: 984, bottom: 2184 });
   }
 });
 
@@ -512,7 +515,7 @@ test('published px values and capture orientation remain exact raw evidence', ()
         device: galaxyZFold7,
         screenId: 'main',
         navMode,
-        capturePath: `measurements/galaxy-z-fold7/main-${navMode}.json`,
+        capturePath: `measurements/galaxy-z-fold7/recapture-2026-09-25/main-${navMode}.json`,
       },
       {
         device: galaxyZFold8,

@@ -109,23 +109,26 @@ gesture captures; the second produced the remaining cover gesture capture. Both
 RTL instances reported the same Android 16 / One UI 8.5 build.
 
 - folded cover: **1080×2520 px**, portrait, matching the official cover layout;
-- unfolded inner display: **2184×1968 px**, landscape, the rotated orientation of
-  the official 1968×2184 inner layout;
+- unfolded inner display: **1968×2184 px**, portrait (rotation 0), matching the
+  official inner layout, with a vertical FLAT folding feature at x=984;
 - cover cutout: **60×102 px** at x=510, y=0;
-- system bars: cover 110 px top and 126/39 px bottom; inner 79 px top and
+- system bars: cover 110 px top and 126/39 px bottom; inner 89 px top and
   126/39 px bottom for 3-button/gesture respectively.
 
-The inner display's hinge sensor remained at 0°, but InsetsProbe 1.2.1 accepted the
+The inner display's hinge sensor remained at 0°, but InsetsProbe accepted the
 capture because WindowManager supplied a real FLAT folding feature across the
-display midpoint. All four raw files are preserved under
-`measurements/galaxy-z-fold7/`.
+display midpoint. The cover files are under `measurements/galaxy-z-fold7/`.
 
-Recapture needed (2026-09-26): the inner captures were taken with the device
-turned sideways (rotation 1, horizontal FLAT feature), so the renderer turns the
-opened chassis 90° while Fold4/Fold6/Fold8 open as upright books. Recapture
-`main-threeButton` and `main-gesture` at rotation 0 with a vertical FLAT
-feature (Samsung Taskbar off, as for Fold4). The cover captures are already
-upright and stay. Keep the current files as historical evidence.
+Upright inner recapture (2026-09-25): the first inner captures (InsetsProbe
+1.2.1) were taken with the device turned sideways (rotation 1, 2184×1968 px,
+horizontal FLAT feature, 79 px top), so the renderer turned the opened chassis
+90° while Fold4/Fold6/Fold8 open as upright books. They remain unchanged at
+`measurements/galaxy-z-fold7/main-*.json` as historical evidence. The published
+inner values now come from InsetsProbe 1.3.0 captures at rotation 0 in
+`measurements/galaxy-z-fold7/recapture-2026-09-25/`, on the same software build.
+The gesture capture's Settings and configuration report gestures with 78 px side
+gesture regions, while the inset-only classifier reports `threeButton`; this is
+disclosed in the published condition.
 
 ### Verified Fold6 capture and rejected earlier 3-button attempt
 
@@ -172,7 +175,7 @@ The first cover gesture capture was accidentally rotated to landscape. Its
 original JSON remains under `measurements/galaxy-z-fold5/rejected-2026-09-23/`;
 the second reservation supplied an upright 904×2316 px capture whose gesture
 configuration, Settings value and inset classifier all agree. The inner captures
-need the same rotation-0 recapture as Fold7 (`main-threeButton` and
+need the same rotation-0 recapture that Fold7 received (`main-threeButton` and
 `main-gesture`, vertical FLAT feature); the current landscape files remain
 historical evidence. The inner gesture
 capture has gesture Settings/configuration and 78 px side gesture regions, but

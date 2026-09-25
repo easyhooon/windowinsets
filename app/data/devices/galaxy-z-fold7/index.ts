@@ -1,6 +1,7 @@
 import type { Device, Source } from "../../types";
 
 const captureBase = "https://github.com/easyhooon/windowinsets/blob/main/measurements/galaxy-z-fold7";
+const mainCaptureBase = `${captureBase}/recapture-2026-09-25`;
 
 const samsungSkinPage: Source = {
   kind: "official",
@@ -32,16 +33,16 @@ const coverGesture: Source = {
 
 const mainThreeButton: Source = {
   kind: "measured",
-  label: "InsetsProbe 1.2.1 on Samsung RTL Galaxy Z Fold7 inner display, 3-button (SM-F966U)",
-  url: `${captureBase}/main-threeButton.json`,
-  retrievedAt: "2026-09-23",
+  label: "InsetsProbe 1.3.0 on Samsung RTL Galaxy Z Fold7 inner display, 3-button (SM-F966U)",
+  url: `${mainCaptureBase}/main-threeButton.json`,
+  retrievedAt: "2026-09-25",
 };
 
 const mainGesture: Source = {
   kind: "measured",
-  label: "InsetsProbe 1.2.1 on Samsung RTL Galaxy Z Fold7 inner display, gestures (SM-F966U)",
-  url: `${captureBase}/main-gesture.json`,
-  retrievedAt: "2026-09-23",
+  label: "InsetsProbe 1.3.0 on Samsung RTL Galaxy Z Fold7 inner display, gestures (SM-F966U)",
+  url: `${mainCaptureBase}/main-gesture.json`,
+  retrievedAt: "2026-09-25",
 };
 
 const coverCondition = {
@@ -53,7 +54,7 @@ const coverCondition = {
 const mainCondition = {
   oneUi: "8.5",
   android: "16",
-  note: "Samsung RTL, fully unfolded, landscape. Active window 2184×1968 px. RTL's hinge sensor remained at 0°, while WindowManager reported a horizontal FLAT folding feature across the display midpoint.",
+  note: "Samsung RTL, fully unfolded, portrait (rotation 0). Active window 1968×2184 px. RTL's hinge sensor remained at 0°, while WindowManager reported a vertical FLAT folding feature at x=984 px. In the gesture capture, Settings and the navigation configuration report gestures while the inset-only classifier reports 3-button; the recorded insets are used as captured.",
 };
 
 const coverCutout = {
@@ -120,26 +121,26 @@ export const galaxyZFold7: Device = {
       label: "Main",
       diagonalInch: 8.0,
       resolutionPx: { width: 1968, height: 2184 },
-      logicalSizePx: { width: 2184, height: 1968 },
-      captureOrientation: "landscape",
-      captureRotation: 1,
+      logicalSizePx: { width: 1968, height: 2184 },
+      captureOrientation: "portrait",
+      captureRotation: 0,
       ppi: 368,
-      logicalSizeDp: { width: 832, height: 749.71 },
+      logicalSizeDp: { width: 749.71, height: 832 },
       densityDpi: 420,
       cornerRadiiDp: { topLeft: 4.95, topRight: 4.95, bottomRight: 4.95, bottomLeft: 4.95 },
       cornerRadiiPx: { topLeft: 13, topRight: 13, bottomRight: 13, bottomLeft: 13 },
       insets: {
         gesture: {
-          systemBars: { top: 30.1, right: 0, bottom: 14.86, left: 0 },
-          systemBarsPx: { top: 79, right: 0, bottom: 39, left: 0 },
+          systemBars: { top: 33.9, right: 0, bottom: 14.86, left: 0 },
+          systemBarsPx: { top: 89, right: 0, bottom: 39, left: 0 },
           displayCutout: { top: 0, right: 0, bottom: 0, left: 0 },
           displayCutoutPx: { top: 0, right: 0, bottom: 0, left: 0 },
           condition: mainCondition,
           sources: [mainGesture],
         },
         threeButton: {
-          systemBars: { top: 30.1, right: 0, bottom: 48, left: 0 },
-          systemBarsPx: { top: 79, right: 0, bottom: 126, left: 0 },
+          systemBars: { top: 33.9, right: 0, bottom: 48, left: 0 },
+          systemBarsPx: { top: 89, right: 0, bottom: 126, left: 0 },
           displayCutout: { top: 0, right: 0, bottom: 0, left: 0 },
           displayCutoutPx: { top: 0, right: 0, bottom: 0, left: 0 },
           condition: mainCondition,
