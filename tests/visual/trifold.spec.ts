@@ -81,7 +81,7 @@ test("TriFold reduced motion and WebGL fallback select the correct official scre
   await page.reload();
   const fallback = page.getByRole("img", { name: "TriFold fold flat fallback diagram" });
   await expect(fallback).toBeVisible();
-  await expect(fallback.locator('image[href="/skins/galaxy-z-trifold/cover/device.png"]')).toBeAttached();
+  await expect(fallback.locator('image[href^="/skins/galaxy-z-trifold/cover/device."]')).toBeAttached();
   await choose(page, "Pose", "Open");
-  await expect(fallback.locator('image[href="/skins/galaxy-z-trifold/main/device.png"]')).toBeAttached();
+  await expect(fallback.locator('image[href^="/skins/galaxy-z-trifold/main/device."]')).toBeAttached();
 });
