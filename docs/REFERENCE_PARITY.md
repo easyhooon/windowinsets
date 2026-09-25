@@ -358,6 +358,13 @@ device. Preview-only screens use one footer status and no inactive measurement
 legend or repeated text stamped on the artwork. Individual unavailable layers are
 disabled when other measured layers exist.
 
+The device selector groups official skin previews in a collapsed section within
+each series, with search and the selected preview opening that section. Entries
+with any captured inset data appear first. Their labels describe measured inset
+coverage (complete or partial) rather than RTL reservation status; the preview
+label explicitly says inset measurements are unavailable. This is an intentional
+Android data-availability distinction in the reference-shaped device list.
+
 Validation covers the layout contract at 320×640, 390×844, 768×1024, 1024×768 and
 1440×900 using varied screen ratios and missing-data states. Shared annotation
 geometry is checked against every registered skin at multiple zoom levels.

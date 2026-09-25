@@ -54,6 +54,9 @@ button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visibl
 .device-group-count { margin-left:auto; font-variant-numeric:tabular-nums; font-weight:400; }
 .device-group-toggle svg { flex-shrink:0; transition:transform 150ms ease; }
 .device-group-toggle[aria-expanded="false"] svg { transform:rotate(-90deg); }
+.device-preview-group { margin:5px 0 7px 8px; border-left:1px solid #d1d9e0; }
+.device-preview-toggle { padding-left:10px; font-weight:500; }
+.device-preview-group .device-link { padding-left:12px; }
 .device-list [hidden] { display:none; }
 .device-link { display:flex; align-items:center; gap:12px; padding:9px 12px; min-height:52px; border-radius:6px; }
 .device-link small,.mobile-model small { display:block; color:#59636e; font-weight:400; font-size:12px; }

@@ -3,7 +3,6 @@ import { NavLink, Outlet, useLocation, useParams } from "react-router";
 import { devices, featuredDevice, REPO_URL } from "../data/devices";
 import { ResizeHandle } from "../components/ResizeHandle";
 import { Icon } from "../components/Icon";
-import { getRtlAvailability } from "../data/rtlAvailability";
 import { trackDeviceSelection } from "../lib/analytics";
 
 type Device = typeof devices[number];
@@ -14,6 +13,14 @@ const groupOf = (device: Device) => device.formFactor === "tablet" ? "Galaxy Tab
 const familyOf = (device: Device): Family => device.formFactor === "tablet" ? "Tab"
   : device.series.startsWith("Galaxy Z") ? "Z" : device.series.startsWith("Galaxy Note") ? "Note"
   : device.series === "Galaxy A" ? "A" : "S";
+const measurementCount = (device: Device) => device.screens.reduce((count, screen) =>
+  count + Number(screen.insets.gesture !== null) + Number(screen.insets.threeButton !== null), 0);
+const hasMeasurements = (device: Device) => measurementCount(device) > 0;
+const measurementLabel = (device: Device) => {
+  const count = measurementCount(device);
+  if (!count) return "No inset measurements";
+  return count === device.screens.length * 2 ? "Insets measured" : "Some insets measured";
+};
 
 export default function Shell() {
   const [sidebarWidth, setSidebarWidth] = useState(240);
@@ -24,9 +31,11 @@ export default function Shell() {
   const current = devices.find(d => d.slug === slug) ?? featuredDevice;
   const [family, setFamily] = useState<Family>(() => familyOf(current));
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(() => new Set([groupOf(current)]));
+  const [expandedPreviews, setExpandedPreviews] = useState<Set<string>>(() => new Set(hasMeasurements(current) ? [] : [groupOf(current)]));
   useEffect(() => {
     setFamily(familyOf(current));
     setExpandedGroups(new Set([groupOf(current)]));
+    setExpandedPreviews(new Set(hasMeasurements(current) ? [] : [groupOf(current)]));
   }, [location.pathname]);
   const search = query.trim().toLowerCase();
   const filtered = devices.filter(d => search ? d.name.toLowerCase().includes(search) : family === "All" || familyOf(d) === family);
@@ -36,17 +45,26 @@ export default function Shell() {
     setQuery("");
     const first = next === "All" || familyOf(current) === next ? current : devices.find(d => familyOf(d) === next);
     setExpandedGroups(new Set(first ? [groupOf(first)] : []));
+    setExpandedPreviews(new Set(first && !hasMeasurements(first) ? [groupOf(first)] : []));
   };
   const toggleGroup = (group: string) => setExpandedGroups(previous => {
     const next = new Set(previous);
     if (next.has(group)) next.delete(group); else next.add(group);
     return next;
   });
+  const togglePreviews = (group: string) => setExpandedPreviews(previous => {
+    const next = new Set(previous);
+    if (next.has(group)) next.delete(group); else next.add(group);
+    return next;
+  });
+  const deviceLink = (d: Device) => <NavLink key={d.slug} to={`/${d.slug}`} onClick={() => { trackDeviceSelection(d); setQuery(""); setMobileOpen(false); }} onAuxClick={e => { if (e.button === 1) trackDeviceSelection(d); }} className={`device-link ${current.slug === d.slug ? "selected" : ""}`}>
+    <span className={`device-thumbnail ${d.formFactor}`} /><span>{d.name}<small>{d.releaseYear ? `${d.releaseYear} · ` : ""}{measurementLabel(d)}</small></span>
+  </NavLink>;
   return <div style={{ "--sidebar-width": `${sidebarWidth}px` } as React.CSSProperties} className="app-shell" data-build-commit={__BUILD_COMMIT__}>
     <a href="#device-canvas" className="skip-link">Skip to device canvas</a>
     <header className="app-header">
       <NavLink to="/" className="brand"><img src="/favicon-v2.svg" width="28" height="28" alt="" />windowinsets.info</NavLink>
-      <button className="mobile-model" aria-expanded={mobileOpen} onClick={() => setMobileOpen(!mobileOpen)}><span className={`device-thumbnail ${current.formFactor}`} /><span>{current.name}<small>{current.releaseYear ?? "Skin preview"}</small></span><Icon name="chevron" /></button>
+      <button className="mobile-model" aria-expanded={mobileOpen} onClick={() => setMobileOpen(!mobileOpen)}><span className={`device-thumbnail ${current.formFactor}`} /><span>{current.name}<small>{measurementLabel(current)}</small></span><Icon name="chevron" /></button>
     </header>
     <div className="app-content">
       <aside className={`device-sidebar ${mobileOpen ? "is-open" : ""}`} aria-label="Devices">
@@ -58,13 +76,20 @@ export default function Shell() {
         <nav className="device-list">
           {series.map(group => {
             const members = filtered.filter(d => groupOf(d) === group);
+            const measured = members.filter(hasMeasurements);
+            const previews = members.filter(d => !hasMeasurements(d));
             const expanded = Boolean(search) || expandedGroups.has(group);
             const id = `device-group-${group.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
+            const previewsExpanded = Boolean(search) || expandedPreviews.has(group);
             return <section key={group} aria-label={group}>
             <h2><button type="button" className="device-group-toggle" aria-expanded={expanded} aria-controls={id} disabled={Boolean(search)} onClick={() => toggleGroup(group)}><span>{group}</span><span className="device-group-count">{members.length}</span><Icon name="chevron" /></button></h2>
-            <div id={id} hidden={!expanded}>{members.map(d => <NavLink key={d.slug} to={`/${d.slug}`} onClick={() => { trackDeviceSelection(d); setQuery(""); setMobileOpen(false); }} onAuxClick={e => { if (e.button === 1) trackDeviceSelection(d); }} className={`device-link ${current.slug === d.slug ? "selected" : ""}`}>
-              <span className={`device-thumbnail ${d.formFactor}`} /><span>{d.name}<small>{d.releaseYear ? `${d.releaseYear} · ` : ""}{getRtlAvailability(d.slug).label}</small></span>
-            </NavLink>)}</div>
+            <div id={id} hidden={!expanded}>
+              {measured.map(deviceLink)}
+              {previews.length > 0 && <div className="device-preview-group">
+                <button type="button" className="device-group-toggle device-preview-toggle" aria-expanded={previewsExpanded} aria-controls={`${id}-previews`} disabled={Boolean(search)} onClick={() => togglePreviews(group)}><span>Skin previews</span><span className="device-group-count">{previews.length}</span><Icon name="chevron" /></button>
+                <div id={`${id}-previews`} hidden={!previewsExpanded}>{previews.map(deviceLink)}</div>
+              </div>}
+            </div>
           </section>})}
           {!filtered.length && <p className="p-3 text-sm text-muted">No devices found.</p>}
         </nav>
