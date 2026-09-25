@@ -56,8 +56,9 @@ removes a model from its catalog.
   3-button capture; the newer probe also records a cutout path.
   Galaxy Z Flip5 (SM-F731BE-VN3, Vietnam/Hanoi) was then reserved. Its
   official main skin matches upright 1080×2640 captures in both navigation
-  modes. The first gesture export was rotated 180° and retained only in the
-  host download history; the accepted recapture is rotation 0. The imported
+  modes. The first gesture export was rotated 180° and is retained as rejected
+  evidence in `measurements/galaxy-z-flip5/rejected-2026-09-23/`; the accepted
+  recapture is rotation 0. The imported
   archive has no cover layout, so cover remains unavailable.
   Galaxy Z Flip3 (SM-F711B-VN2, Vietnam/Hanoi) was reserved on 2026-09-23.
   Its upright main 3-button capture was downloaded and verified at 1080×2640.
@@ -525,20 +526,23 @@ Raw files: `measurements/galaxy-a27-5g/main-gesture.json` and
   System bars are 97/42 px top/bottom in gesture mode and 97/135 px in
   3-button mode; the cutout safe inset is 82 px, with a centered 58×58 px bound.
 - Galaxy A37 5G (SM-A376N), Android 16 / One UI 8.5, build
-  `BP4A.251205.006.A376NKSS2AZG1`: the accepted gesture Main capture is
-  1080×2340 px at 450 dpi, font scale 1, with 101/42 px system bars and a
-  92 px safe cutout inset. The 3-button capture reports Settings mode 0 but only
-  a 1 px bottom `navigationBars`/`systemBars` inset, including when ignoring
-  visibility; tappable and mandatory-gesture insets report 135 px. It is rejected
-  as an invalid 3-button measurement, so that mode remains pending. The raw file
-  is preserved under `measurements/galaxy-a37-5g/rejected-2026-09-25/`.
+  `BP4A.251205.006.A376NKSS2AZG1`: both Main modes are full-screen portrait
+  1080×2340 px at 450 dpi, font scale 1. Gesture system bars are 101/42 px;
+  3-button bars are 101/135 px. Both report a 92 px safe cutout inset and
+  agree with Android Settings and InsetsProbe. The initial 3-button attempt
+  reported a 1 px bottom system inset and remains preserved as rejected evidence;
+  the later valid recapture is registered as `main-threeButton.json`.
 - Galaxy A17 LTE (SM-A175N), Android 16 / One UI 8.5, build
   `BP4A.251205.006.A175NKSS6CZG1`: both modes are full-screen portrait
   1080×2340 px at 450 dpi, font scale 1. System bars are 100/42 px in gesture
   mode and 100/135 px in 3-button mode; both captures report a centered
-  140×100 px camera bound. Samsung's exact Korean SKU is Galaxy A17 LTE. The
-  available official emulator artwork is the A17 5G skin, whose main rectangle
-  is the same 1080×2340 px; the measured model variant is recorded explicitly.
+  140×100 px camera bound. The measured Korean SKU is Galaxy A17 LTE (SM-A175N).
+  Samsung lists the same 164.4×77.9×7.5 mm body, 169.1 mm / 6.7-inch display,
+  and 1080×2340 resolution for the LTE and 5G variants, so the LTE capture is
+  used for their shared A17 screen geometry. The raw SKU and Android / One UI
+  build remain explicit; navigation insets are evidence from that measured
+  software configuration. [A17 LTE specs](https://www.samsung.com/sec/support/model/SM-A175NZAAKOD/) ·
+  [A17 5G specs](https://www.samsung.com/uk/smartphones/galaxy-a/galaxy-a17-5g-grey-128gb-sm-a176bzaaeub/).
 - Galaxy A56 5G (SM-A566B), Android 15 / One UI 7.0, build
   `AP3A.240905.015.A2.A566BXXS4AYE6`: both modes are full-screen portrait
   1080×2340 px at 450 dpi, font scale 1. System bars are 92/42 px in gesture

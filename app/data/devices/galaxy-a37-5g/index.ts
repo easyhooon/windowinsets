@@ -25,6 +25,15 @@ const measuredInsets = (mode: "gesture" | "threeButton"): InsetsMeasurement | nu
       condition: { oneUi: "8.5", android: "16", note: "Samsung RTL, Galaxy A37 5G (SM-A376N), build BP4A.251205.006.A376NKSS2AZG1. Portrait rotation 0, 1080×2340 px full-screen capture, 450 dpi, font scale 1. Gesture mode agrees with Android Settings and InsetsProbe." },
       sources: [captureSource("gesture")],
     };
+  if (mode === "threeButton") return {
+      systemBars: { top: 35.91, right: 0, bottom: 48, left: 0 },
+      systemBarsPx: { top: 101, right: 0, bottom: 135, left: 0 },
+      displayCutout: { top: 32.71, right: 0, bottom: 0, left: 0 },
+      displayCutoutPx: { top: 92, right: 0, bottom: 0, left: 0 },
+      cutoutShape: { xDp: 179.91, yDp: 8.53, widthDp: 24.18, heightDp: 24.18, rightDp: 179.91, bottomDp: 799.29, xPx: 506, yPx: 24, widthPx: 68, heightPx: 68, rightPx: 506, bottomPx: 2248 },
+      condition: { oneUi: "8.5", android: "16", note: "Samsung RTL, Galaxy A37 5G (SM-A376N), build BP4A.251205.006.A376NKSS2AZG1. Portrait rotation 0, 1080×2340 px full-screen capture, 450 dpi, font scale 1. 3-button mode agrees with Android Settings and InsetsProbe; recapture supersedes the earlier 1 px navigation inset." },
+      sources: [captureSource("threeButton")],
+    };
   return null;
 };
 
@@ -49,7 +58,7 @@ export const galaxyA37: Device = {
     cornerRadiiDp: { topLeft: 40.18, topRight: 40.18, bottomRight: 40.18, bottomLeft: 40.18 },
     cornerRadiiPx: { topLeft: 113, topRight: 113, bottomRight: 113, bottomLeft: 113 },
     insets: { gesture: measuredInsets("gesture"), threeButton: measuredInsets("threeButton") },
-    sources: [samsungSpecs, captureSource("gesture")],
+    sources: [samsungSpecs, captureSource("gesture"), captureSource("threeButton")],
   }],
-  sources: [samsungSpecs, captureSource("gesture")],
+  sources: [samsungSpecs, captureSource("gesture"), captureSource("threeButton")],
 };

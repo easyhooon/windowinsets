@@ -18,7 +18,7 @@ unchanged from RTL downloads and matched the expected model and full-screen
 resolution. For the four tablets, gesture mode is confirmed by Settings and
 configuration plus side system-gesture insets even when InsetsProbe's inset-only
 heuristic reports threeButton; retain the recorded mode and explain the evidence
-in [RTL_COVERAGE.md](RTL_COVERAGE.md). Galaxy A37 3-button remains pending: the capture reports a 1 px system/navigation bar despite Settings selecting buttons, and is retained as rejected evidence.
+in [RTL_COVERAGE.md](RTL_COVERAGE.md). Galaxy A37 now has a valid 3-button recapture with a 135 px bottom bar; the initial 1 px attempt remains rejected evidence.
 
 ## Correction from official skins (2026-09-22)
 
