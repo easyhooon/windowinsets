@@ -125,7 +125,7 @@ export default function Methodology() {
           <p>
             A missing path in an older JSON means it was not collected. A null path in a new
             capture means the API did not return one. Neither is evidence of a zero-size lens.
-            Camera artwork is illustrative; we do not infer measured lens diameters or spacing
+            Camera artwork is illustrative; I do not infer measured lens diameters or spacing
             from skin pixels. Browser safe-area values cannot provide the missing geometry.
           </p>
         </Section>

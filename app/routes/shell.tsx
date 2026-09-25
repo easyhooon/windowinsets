@@ -70,10 +70,10 @@ export default function Shell() {
         </nav>
         <nav className="sidebar-footer">
           <NavLink to="/developer-guide" onClick={() => setMobileOpen(false)}>Developer guide</NavLink>
-          <NavLink to="/methodology" onClick={() => setMobileOpen(false)}>How we measure</NavLink>
+          <NavLink to="/methodology" onClick={() => setMobileOpen(false)}>How I measure</NavLink>
           <span className="sidebar-footer-community">
             <a href={REPO_URL} target="_blank" rel="noreferrer">GitHub ↗</a>
-            <a href={`${REPO_URL}/issues/new/choose`} target="_blank" rel="noreferrer" aria-label="Contact us on GitHub (opens in a new tab)">Contact us ↗</a>
+            <a href={`${REPO_URL}/issues/new/choose`} target="_blank" rel="noreferrer" aria-label="Contact me on GitHub (opens in a new tab)">Contact me ↗</a>
           </span>
           <a href="https://safearea.info" target="_blank" rel="noreferrer">Inspired by safearea.info ↗</a>
         </nav>

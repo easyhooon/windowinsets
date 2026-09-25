@@ -273,7 +273,7 @@ Other notes:
 
 Throughout this project, RTL's own pages (`/remotetestlab/devices`, `/remotetestlab/reservations`, even the marketing page at `/remote-test-lab`) have intermittently returned a bare **403 Forbidden** — sometimes on direct URL navigation, sometimes on an in-app link click, sometimes for a logged-in session that was working seconds earlier. Retrying after a short wait (10–30s) usually clears it; sometimes a full re-login is needed.
 
-**This is a known, widely-reported issue on Samsung's own side, not something wrong with our login flow, cookies, or the browser used:**
+**This is a known, widely-reported issue on Samsung's own side, not necessarily a problem with the login flow, cookies, or browser used:**
 
 - [403 Forbidden — Samsung Developer Forums](https://forum.developer.samsung.com/t/403-forbidden/34558)
 - [Can no longer access RTL — Samsung Developer Program](https://forum.developer.samsung.com/t/can-no-longer-access-rtl/39361)
@@ -286,7 +286,7 @@ Throughout this project, RTL's own pages (`/remotetestlab/devices`, `/remotetest
 
 Causes reported across those threads (any combination may apply): stale browser cache/cookies for the domain, 2FA session hiccups, Samsung-side rate limiting/WAF, and occasional real outages. One user reported clearing several weeks of browser data fixed it; Samsung's own guidance for persistent cases is to file a support ticket.
 
-We separately confirmed during this project that the RTL single-page-app itself can throw a client-side JS error (`TypeError: Cannot read properties of null (reading 'filter')` in its own minified bundle) that leaves the page blank/unresponsive (including a dead "Sign in" button) — this looks like the SPA choking on a null array somewhere in its own state (likely related to the same underlying session/rate-limit flakiness), not a bug in anything we control.
+I separately confirmed during this project that the RTL single-page app itself can throw a client-side JS error (`TypeError: Cannot read properties of null (reading 'filter')` in its own minified bundle) that leaves the page blank/unresponsive (including a dead "Sign in" button) — this looks like the SPA choking on a null array somewhere in its own state (likely related to the same underlying session/rate-limit flakiness), not a bug in this project's code.
 
 **What worked in practice**: retry after 10–30s; re-enter through the marketing page (`developer.samsung.com/remote-test-lab`) rather than deep-linking straight to `/remotetestlab/devices`; if the SPA is visibly crashed (blank sidebar, unresponsive buttons), a hard reload or fresh tab is needed rather than continuing to click around the broken state.
 
