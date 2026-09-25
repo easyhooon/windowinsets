@@ -120,6 +120,13 @@ capture because WindowManager supplied a real FLAT folding feature across the
 display midpoint. All four raw files are preserved under
 `measurements/galaxy-z-fold7/`.
 
+Recapture needed (2026-09-26): the inner captures were taken with the device
+turned sideways (rotation 1, horizontal FLAT feature), so the renderer turns the
+opened chassis 90° while Fold4/Fold6/Fold8 open as upright books. Recapture
+`main-threeButton` and `main-gesture` at rotation 0 with a vertical FLAT
+feature (Samsung Taskbar off, as for Fold4). The cover captures are already
+upright and stay. Keep the current files as historical evidence.
+
 ### Verified Fold6 capture and rejected earlier 3-button attempt
 
 Galaxy Z Fold6 (SM-F956U-KR10) was measured on Samsung RTL on 2026-09-23
@@ -164,7 +171,10 @@ Galaxy Z Fold5 (SM-F946B, RTL Vietnam/Hanoi) was measured with InsetsProbe
 The first cover gesture capture was accidentally rotated to landscape. Its
 original JSON remains under `measurements/galaxy-z-fold5/rejected-2026-09-23/`;
 the second reservation supplied an upright 904×2316 px capture whose gesture
-configuration, Settings value and inset classifier all agree. The inner gesture
+configuration, Settings value and inset classifier all agree. The inner captures
+need the same rotation-0 recapture as Fold7 (`main-threeButton` and
+`main-gesture`, vertical FLAT feature); the current landscape files remain
+historical evidence. The inner gesture
 capture has gesture Settings/configuration and 78 px side gesture regions, but
 Probe's inset-only classifier reports `threeButton`; this disagreement is
 disclosed in the published condition. The cover hinge sensor reported 180° with
