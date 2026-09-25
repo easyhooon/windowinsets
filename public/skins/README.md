@@ -3,6 +3,13 @@
 Source: https://developer.samsung.com/galaxy-emulator-skin
 Provided by the project owner from official downloads on 2026-09-22.
 Original PNGs and layout files are preserved. Artwork belongs to Samsung.
+Lossless WebP copies are generated with `pnpm skins:optimize` (requires `cwebp`
+from libwebp). Run it after importing new PNGs and commit the matching WebP
+files. `pnpm build` keeps only WebP images used by prerendered device routes in
+`build/client/skins`; it omits the original PNGs, layout files, provenance JSON,
+and skins outside public coverage from the deployment. Local development still
+uses the original PNGs. A missing WebP makes the build fail with the command to
+generate it, so a new device cannot silently ship without artwork.
 The app clips the decorative background in the renderer. Screen rectangles come
 from each layout file; body clipping rectangles are illustration coordinates.
 These assets provide appearance only, not One UI behavior or measured insets.

@@ -4,6 +4,7 @@ import { MeasurementRulers } from "./MeasurementRulers";
 import type { RulerMeasurements } from "./measurementLayout";
 import { DIAGRAM_FONT, DIAGRAM_COLORS } from "./diagramStyle";
 import type { DeviceSkin } from "../data/skins";
+import { skinAssetUrl } from "../data/skinAssetUrl";
 import type { InsetsMeasurement, Screen } from "../data/types";
 import { cutoutPairs, cornerPairs, formatLengthFromPairs, insetPairs, safeInsets, safeInsetsPx } from "../data/measurementUnits";
 
@@ -166,7 +167,7 @@ export function InsetsDiagram({
 
         {skin && showFrame && <g transform={skinTransform(skin, W, H, skinRotation)}>
           <defs><clipPath id={`${id}-body`}><rect x={skin.body.x} y={skin.body.y} width={skin.body.width} height={skin.body.height} rx={skin.body.radius} /></clipPath></defs>
-          <image href={skin.image} width={skin.width} height={skin.height} clipPath={`url(#${id}-body)`} />
+          <image href={skinAssetUrl(skin.image)} width={skin.width} height={skin.height} clipPath={`url(#${id}-body)`} />
           <rect x={skin.screen.x} y={skin.screen.y} width={skin.screen.width} height={skin.screen.height} rx={rPx * skin.screen.width / W} fill="white" />
         </g>}
         {/* Device bezel */}
@@ -226,7 +227,7 @@ export function InsetsDiagram({
         )}
 
         {skin?.foreground && showFrame && <g transform={skinTransform(skin, W, H, skinRotation)}>
-          <image href={skin.foreground} x={skin.screen.x} y={skin.screen.y} width={skin.screen.width} height={skin.screen.height} preserveAspectRatio="none" />
+          <image href={skinAssetUrl(skin.foreground)} x={skin.screen.x} y={skin.screen.y} width={skin.screen.width} height={skin.screen.height} preserveAspectRatio="none" />
         </g>}
         {showDimensions && <MeasurementRulers measurements={annotations} onCopy={copy} />}
       </svg>

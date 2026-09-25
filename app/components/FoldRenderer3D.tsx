@@ -7,6 +7,7 @@ import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { bendPoint, createChassis, createFoldHousings, hingeHalfWidth, rigidPanelPoint, verticalHinge, coverPoint, triFoldPoint, triFoldAngles, createTriFoldDisplay, createTriFoldHousings, createTriFoldHingeStrips } from "./foldGeometry";
 import type { DeviceSkin } from "../data/skins";
+import { skinAssetUrl } from "../data/skinAssetUrl";
 import type { CutoutShape, Screen, InsetsMeasurement } from "../data/types";
 import { cutoutPairs, cornerPairs, formatLengthFromPairs, insetPairs, safeInsets, safeInsetsPx } from "../data/measurementUnits";
 
@@ -655,11 +656,11 @@ export function FoldRenderer3D({
     const outerSkin = stateRef.current.cover?.skin;
     if (outerSkin) {
       coverArtwork.onload = update; coverForeground.onload = update;
-      coverArtwork.src = outerSkin.image; if (outerSkin.foreground) coverForeground.src = outerSkin.foreground;
+      coverArtwork.src = skinAssetUrl(outerSkin.image); if (outerSkin.foreground) coverForeground.src = skinAssetUrl(outerSkin.foreground);
     }
     if (skin) {
       artwork.onload = update; foreground.onload = update;
-      artwork.src = skin.image; if (skin.foreground) foreground.src = skin.foreground;
+      artwork.src = skinAssetUrl(skin.image); if (skin.foreground) foreground.src = skinAssetUrl(skin.foreground);
     }
     update();
     (mount as HTMLDivElement & { __update?: () => void }).__update = update;
