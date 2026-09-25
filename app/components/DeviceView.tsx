@@ -39,6 +39,32 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
 
 const PENDING = <span className="text-subtle">pending</span>;
 
+function gcd(a: number, b: number): number {
+  return b === 0 ? a : gcd(b, a % b);
+}
+
+function aspectRatio(width: number, height: number): string | null {
+  if (!(width > 0 && height > 0)) return null;
+
+  // Keep the displayed pair in whole numbers, choosing the closest compact ratio.
+  const ratio = width / height;
+  let bestNumerator = 1;
+  let bestDenominator = 1;
+  let smallestError = Number.POSITIVE_INFINITY;
+  for (let denominator = 1; denominator <= 16; denominator++) {
+    const numerator = Math.max(1, Math.round(ratio * denominator));
+    const error = Math.abs(numerator / denominator - ratio);
+    if (error < smallestError) {
+      bestNumerator = numerator;
+      bestDenominator = denominator;
+      smallestError = error;
+    }
+  }
+
+  const divisor = gcd(bestNumerator, bestDenominator);
+  return `${bestNumerator / divisor}:${bestDenominator / divisor}`;
+}
+
 function insetsRows(i: Insets, iPx: Insets | null | undefined, unit = "dp", fmt = (v: number, px?: number) => String(px ?? v)) {
   return (
     <>
@@ -187,6 +213,16 @@ export function DeviceView({ device }: { device: Device }) {
               <Row
                 label="Resolution"
                 value={screen.resolutionPx.width > 0 && screen.resolutionPx.height > 0 ? `${screen.resolutionPx.width} × ${screen.resolutionPx.height} px` : PENDING}
+              />
+              <Row
+                label="Aspect Ratio"
+                value={aspectRatio(screen.resolutionPx.width, screen.resolutionPx.height) ?? PENDING}
+              />
+              <Row
+                label="sw600dp"
+                value={screen.logicalSizeDp
+                  ? Math.min(screen.logicalSizeDp.width, screen.logicalSizeDp.height) >= 600 ? "Yes" : "No"
+                  : PENDING}
               />
               {screen.logicalSizePx && (screen.logicalSizePx.width !== screen.resolutionPx.width || screen.logicalSizePx.height !== screen.resolutionPx.height) &&
                 <Row label="Captured Window" value={`${screen.logicalSizePx.width} × ${screen.logicalSizePx.height} px`} />}

@@ -122,7 +122,7 @@ from https://developer.samsung.com/galaxy-emulator-skin.
 | Layers | Safe area/insets/reserved/corners | Independent legend toggles; Android cutout bounding region replaces iOS reserved regions |
 | Settings | Frame, regions, dimensions, units | All switches plus Android dp/px and navigation mode |
 | Measurements | Labels and clickable metrics | Whole metric rows and 2D/3D labels copy values; exact captured px is kept separately from rounded dp |
-| Display metadata | Logical size, panel resolution, physical density and scale | Android adds Captured Window and Android Density so active WindowMetrics are not mislabeled as native panel resolution or physical PPI |
+| Display metadata | Logical size, panel resolution, physical density and scale | Android adds Captured Window and Android Density so active WindowMetrics are not mislabeled as native panel resolution or physical PPI; Aspect Ratio is derived from panel resolution and rounded to a compact whole-number ratio; `sw600dp` reports whether the selected display's smallest logical dimension is at least 600 dp |
 | Reserved regions | Size and four directional offsets | Android cutout bounds expose Size plus Left/Top/Right/Bottom distances in the same hierarchy |
 | Data export | No observed per-device JSON download | Intentional Android-service divergence: a compact Export JSON action in the Metrics header downloads the complete versioned evidence payload |
 | Artwork | Per-device frames | Official Fold8 main/cover, Flip8 main/cover and 28 S20–S26 variants aligned by original layout coordinates |
@@ -213,6 +213,15 @@ manual zoom/pan, and reduced motion on desktop and mobile.
   in the Metrics header on desktop and mobile so it does not reorganize the
   reference-shaped canvas controls. Its v1 contract and derivation boundaries are
   documented in `JSON_EXPORT.md`.
+- **Aspect Ratio** is an owner-requested Android metric with no safearea.info
+  counterpart. It appears as a row in the existing Dimensions section for every
+  selected display, derived from its panel resolution and rounded to the nearest
+  compact whole-number width:height ratio. Missing panel resolution remains
+  pending; view rotation does not change the reported ratio.
+- **sw600dp** is an owner-requested Android metric with no safearea.info counterpart.
+  It appears beside the selected display's dimensions and reports whether the
+  shorter logical dimension is at least 600 dp. Missing logical size remains
+  pending.
 - Fold8/Flip8 cover and inner displays share one WebGL scene through folding.
   The cover uses the rigid rear-panel transform; applying the inner cylindrical
   bend to its annotation margins previously pulled it inside the opaque chassis.
