@@ -12,13 +12,13 @@ and its per-skin comparison for checked sources, unknowns and completion steps.
 
 ## Latest registered batch (2026-09-25)
 
-Galaxy Note20 and Galaxy Tab S9+, Tab S8 Ultra, Tab S8+ and Tab S8 now have
+Galaxy Note20, Note20 Ultra, Galaxy A27 5G and Galaxy Tab S9+, Tab S8 Ultra, Tab S8+ and Tab S8 now have
 paired main-display 3-button and gesture captures. The raw JSON files were copied
 unchanged from RTL downloads and matched the expected model and full-screen
 resolution. For the four tablets, gesture mode is confirmed by Settings and
 configuration plus side system-gesture insets even when InsetsProbe's inset-only
 heuristic reports threeButton; retain the recorded mode and explain the evidence
-in [RTL_COVERAGE.md](RTL_COVERAGE.md).
+in [RTL_COVERAGE.md](RTL_COVERAGE.md). Galaxy A37 3-button remains pending: the capture reports a 1 px system/navigation bar despite Settings selecting buttons, and is retained as rejected evidence.
 
 ## Correction from official skins (2026-09-22)
 

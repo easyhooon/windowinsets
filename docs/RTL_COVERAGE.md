@@ -478,3 +478,88 @@ landscape system-bar pattern is ambiguous. Settings/configuration and side gestu
 insets support the recorded gesture mode; the mode is not inferred from bottom
 inset size. The captures contain no hinge features and the Tab S8 Ultra's generic
 `phone` label is only a Probe label; raw evidence has not been rewritten.
+
+
+## Galaxy Note20 Ultra 5G measured on 2026-09-25
+
+Samsung RTL captures for SM-N985F (Android 13 / One UI 5.1, build
+`TP1A.220624.014.N985FXXSIHYH3`) form a matched main-display pair. Both are
+portrait, display 0, rotation 0, full-screen 1080×2316 px at 420 dpi and font
+scale 1; the active FHD+ window is on the 1440×3088 physical panel. The 3-button
+capture (content 81) and gesture capture (content 92) each agree with Android
+Settings and InsetsProbe. System bars are 67/126 px top/bottom in 3-button mode
+and 67/39 px in gesture mode. The safe cutout inset is 67 px at the top. Raw
+cutout bounds are centered near x=720 on a 1440 px display coordinate space, so
+the module renders the safe inset only and does not scale the cutout shape onto
+the 1080 px active window. Samsung lists the 6.9-inch, 3088×1440, 496 ppi panel
+in its [Note20 series specifications](https://news.samsung.com/global/samsung-unveils-five-new-power-devices-in-the-galaxy-ecosystem-to-empower-their-work-and-play).
+
+Raw files: `measurements/galaxy-note20-ultra/main-threeButton.json` and
+`main-gesture.json`.
+
+
+## Galaxy A27 5G measured on 2026-09-25
+
+Samsung RTL model SM-A276K (Korean carrier name Galaxy Jump5), Android 16 /
+One UI 8.5, build `BP4A.251205.006.A276KKSU2AZH3`, was captured in both main
+navigation modes. The portrait display is 1080×2340 px, display 0, rotation 0,
+450 dpi and font scale 1. Gesture (content 93) and 3-button (content 94) each
+agree with Settings and InsetsProbe. System bars are 102/42 px top/bottom in
+gesture mode and 102/135 px in 3-button mode. Both files report a 94 px top safe
+inset and the same centered 70×70 px cutout bound at x=505, y=24. The official
+skin's main display rectangle matches the measured active window. Samsung
+identifies the SM-A276K Korean device as Galaxy Jump5 with a 169.1 mm,
+1080×2340 FHD+ display; Samsung's global product naming is Galaxy A27 5G.
+[Samsung Korea specs](https://www.samsung.com/sec/support/model/SM-A276KZKAKTC/) ·
+[Samsung Galaxy A27 5G announcement](https://news.samsung.com/uk/samsung-galaxy-a27-5g-brings-an-immersive-display-and-awesome-intelligence-to-more-users).
+
+Raw files: `measurements/galaxy-a27-5g/main-gesture.json` and
+`main-threeButton.json`.
+
+
+## Galaxy A-series measured on 2026-09-25
+
+- Galaxy A57 5G (SM-A576S), Android 16 / One UI 8.5, build
+  `BP4A.251205.006.A576SKSU1AZG7`: both Main modes are full-screen portrait
+  1080×2340 px at 450 dpi, font scale 1. The captures agree on navigation mode.
+  System bars are 97/42 px top/bottom in gesture mode and 97/135 px in
+  3-button mode; the cutout safe inset is 82 px, with a centered 58×58 px bound.
+- Galaxy A37 5G (SM-A376N), Android 16 / One UI 8.5, build
+  `BP4A.251205.006.A376NKSS2AZG1`: the accepted gesture Main capture is
+  1080×2340 px at 450 dpi, font scale 1, with 101/42 px system bars and a
+  92 px safe cutout inset. The 3-button capture reports Settings mode 0 but only
+  a 1 px bottom `navigationBars`/`systemBars` inset, including when ignoring
+  visibility; tappable and mandatory-gesture insets report 135 px. It is rejected
+  as an invalid 3-button measurement, so that mode remains pending. The raw file
+  is preserved under `measurements/galaxy-a37-5g/rejected-2026-09-25/`.
+- Galaxy A17 LTE (SM-A175N), Android 16 / One UI 8.5, build
+  `BP4A.251205.006.A175NKSS6CZG1`: both modes are full-screen portrait
+  1080×2340 px at 450 dpi, font scale 1. System bars are 100/42 px in gesture
+  mode and 100/135 px in 3-button mode; both captures report a centered
+  140×100 px camera bound. Samsung's exact Korean SKU is Galaxy A17 LTE. The
+  available official emulator artwork is the A17 5G skin, whose main rectangle
+  is the same 1080×2340 px; the measured model variant is recorded explicitly.
+- Galaxy A56 5G (SM-A566B), Android 15 / One UI 7.0, build
+  `AP3A.240905.015.A2.A566BXXS4AYE6`: both modes are full-screen portrait
+  1080×2340 px at 450 dpi, font scale 1. System bars are 92/42 px in gesture
+  mode and 92/135 px in 3-button mode, with a 92 px safe top cutout inset.
+- Galaxy A36 5G (SM-A366N), Android 16 / One UI 8.5, build
+  `BP4A.251205.006.A366NKSS8CZG1`: both modes are full-screen portrait
+  1080×2340 px at 450 dpi, font scale 1. System bars are 101/42 px in gesture
+  mode and 101/135 px in 3-button mode; both include a centered 68×68 px bound
+  and 92 px cutout safe inset.
+
+All valid navigation settings and Probe modes agree. Raw captures are preserved
+under each model's `measurements/<slug>/` directory; the invalid A37 button-mode
+file is retained as rejected evidence and is not published. Samsung's official
+model specifications confirm the matching 6.7-inch 1080×2340 displays for
+[A57](https://www.samsung.com/br/smartphones/galaxy-a/galaxy-a57-5g-awesome-icyblue-256gb-sm-a576blbfzto/),
+[A37](https://www.samsung.com/sec/support/model/SM-A376NLVAKOD/),
+[A17 LTE](https://www.samsung.com/sec/support/model/SM-A175NZAAKOD/),
+[A56](https://www.samsung.com/uk/smartphones/galaxy-a/galaxy-a56-5g-awesome-graphite-256gb-sm-a566bzkceub/) and
+[A36](https://www.samsung.com/sec/support/model/SM-A366NZKAKOD/).
+
+The earlier Galaxy Z TriFold 3-button cover attempt from `content (34)` is also
+preserved under `measurements/galaxy-z-trifold/rejected-2026-09-25/`: it has
+font scale 1.08 and no WindowManager folding feature; the later 2026-09-24T15:17Z
+recapture remains the accepted cover 3-button evidence.
