@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-test('S25 Ultra and Flip8 keep compact rulers above the legend on a short phone viewport', async ({ page, context }) => {
+test('S25 Ultra and Flip8 keep compact rulers visible around the overlaid legend on a short phone viewport', async ({ page, context }) => {
   await context.grantPermissions(['clipboard-read', 'clipboard-write']);
   await page.setViewportSize({ width: 384, height: 720 });
   for (const slug of ['galaxy-s25-ultra', 'galaxy-z-flip8']) {
@@ -17,7 +17,8 @@ test('S25 Ultra and Flip8 keep compact rulers above the legend on a short phone 
       const badges = [...document.querySelectorAll('.projected-rulers [data-badge], [aria-label="Measurement rulers"] rect')];
       return badges.every(node => {
         const b = node.getBoundingClientRect();
-        return b.left >= viewport.left && b.right <= viewport.right && b.top >= viewport.top && b.bottom < legend.top;
+        const overlapsLegend = b.left < legend.right && b.right > legend.left && b.top < legend.bottom && b.bottom > legend.top;
+        return b.left >= viewport.left && b.right <= viewport.right && b.top >= viewport.top && b.bottom <= viewport.bottom && !overlapsLegend;
       });
     })).toBe(true);
     const text = await rulers.allTextContents();

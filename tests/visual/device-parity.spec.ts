@@ -43,7 +43,7 @@ test("sidebar inquiry opens the GitHub issue template chooser", async ({ page },
     await page.locator(".mobile-model").click();
   }
 
-  const inquiry = page.getByRole("link", { name: "GitHub에서 문의하기 (새 창)" });
+  const inquiry = page.getByRole("link", { name: "Contact me on GitHub (opens in a new tab)" });
   await expect(inquiry).toBeVisible();
   await expect(inquiry).toHaveAttribute(
     "href",
@@ -94,7 +94,7 @@ test("Fold4 shows upright cover and Taskbar-free inner measurements", async ({ p
   await expect(page.locator("#device-canvas")).toBeVisible();
 });
 
-test("Fold3 official cover and inner artwork remain measurement-pending", async ({ page }) => {
+test("Fold3 official cover and inner artwork show captured insets", async ({ page }) => {
   await page.goto("/galaxy-z-fold3");
   await openMetricsIfCollapsed(page);
   await expect(page.getByRole("heading", { name: /Galaxy Z Fold3 Window Insets/ })).toBeVisible();
@@ -102,7 +102,8 @@ test("Fold3 official cover and inner artwork remain measurement-pending", async 
   await expect(page.getByRole("button", { name: "Outer", exact: true })).toBeVisible();
   await page.getByRole("button", { name: "Inner", exact: true }).click();
   await expect(page.locator("#device-canvas")).toBeVisible();
-  await expect(page.locator(".pending-notice")).toContainText("RTL measurement pending");
+  await expect(page.locator(".pending-notice")).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "Bottom 48 dp" })).toBeVisible();
 });
 
 test("Flip6 main shows both measured navigation modes", async ({ page }) => {

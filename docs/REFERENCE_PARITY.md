@@ -345,12 +345,12 @@ collision spacing. The old flat-only label displacement algorithm is removed.
 No device names or viewport-specific measurement omissions select the policy.
 
 The desktop three-column hierarchy and mobile selector/Metrics/controls hierarchy
-remain reference-shaped. The shared workspace now allocates real grid/flex space
-to the diagram, footer and controls rather than overlaying them and compensating
-with guessed pixel reserves in Fit. The bottom toolbar grows with its content;
-long values wrap rather than truncate. The legend and gesture help have their own
-footer area. This is an intentional layout-mechanism difference from the floating
-reference legend, preserving its visual grouping while preventing obstruction.
+remain reference-shaped. The shared workspace allocates real grid/flex space
+to the diagram and bottom controls without guessed pixel reserves in Fit. The
+bottom toolbar grows with its content;
+long values wrap rather than truncate. The legend and gesture help overlay the
+canvas as on the reference, so panned device artwork can remain visible behind
+them until it reaches the actual canvas edge. The legend stays interactive.
 
 Metrics and its secondary Export JSON action share one heading row. Mobile Metrics
 opens as a scrollable disclosure over the canvas without shrinking or refitting the
