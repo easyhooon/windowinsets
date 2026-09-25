@@ -404,11 +404,12 @@ test('Fold6 publishes settled cover and inner evidence in both navigation modes'
     .insets.systemBars.px.bottom, 1);
 });
 
-test('Fold5 publishes upright cover and landscape inner evidence in both modes', () => {
+test('Fold5 publishes upright cover and inner evidence in both modes', () => {
   for (const [screenId, navMode] of [
     ['cover', 'gesture'], ['cover', 'threeButton'], ['main', 'gesture'], ['main', 'threeButton'],
   ]) {
-    const raw = readCapture(`measurements/galaxy-z-fold5/${screenId}-${navMode}.json`);
+    const folder = screenId === 'main' ? 'galaxy-z-fold5/recapture-2026-09-25' : 'galaxy-z-fold5';
+    const raw = readCapture(`measurements/${folder}/${screenId}-${navMode}.json`);
     const screen = galaxyZFold5.screens.find(candidate => candidate.id === screenId);
     assert.equal(raw.device.model, 'SM-F946B');
     assert.equal(raw.screen, screenId);
@@ -421,9 +422,16 @@ test('Fold5 publishes upright cover and landscape inner evidence in both modes',
   const cover = galaxyZFold5.screens.find(screen => screen.id === 'cover');
   const main = galaxyZFold5.screens.find(screen => screen.id === 'main');
   assert.deepEqual(cover.logicalSizePx, { width: 904, height: 2316 });
-  assert.deepEqual(main.logicalSizePx, { width: 2176, height: 1812 });
-  assert.equal(readCapture('measurements/galaxy-z-fold5/main-gesture.json')
-    .hinge.foldingFeatures[0].state, 'FLAT');
+  assert.deepEqual(main.logicalSizePx, { width: 1812, height: 2176 });
+  assert.equal(main.captureOrientation, 'portrait');
+  for (const navMode of ['gesture', 'threeButton']) {
+    const feature = readCapture(`measurements/galaxy-z-fold5/recapture-2026-09-25/main-${navMode}.json`)
+      .hinge.foldingFeatures[0];
+    assert.equal(feature.state, 'FLAT');
+    assert.equal(feature.orientation, 'VERTICAL');
+    assert.deepEqual(feature.bounds.px, { left: 906, top: 0, right: 906, bottom: 2176 });
+  }
+  assert.equal(readCapture('measurements/galaxy-z-fold5/main-gesture.json').display.rotation, 1);
   assert.equal(readCapture('measurements/galaxy-z-fold5/rejected-2026-09-23/cover-gesture-landscape.json')
     .display.rotation, 1);
 });
@@ -486,7 +494,7 @@ test('published px values and capture orientation remain exact raw evidence', ()
     ]),
     ...['gesture', 'threeButton'].flatMap(navMode => [
       { device: galaxyZFold5, screenId: 'cover', navMode, capturePath: `measurements/galaxy-z-fold5/cover-${navMode}.json` },
-      { device: galaxyZFold5, screenId: 'main', navMode, capturePath: `measurements/galaxy-z-fold5/main-${navMode}.json` },
+      { device: galaxyZFold5, screenId: 'main', navMode, capturePath: `measurements/galaxy-z-fold5/recapture-2026-09-25/main-${navMode}.json` },
     ]),
     { device: galaxyZFold6, screenId: 'cover', navMode: 'gesture', capturePath: 'measurements/galaxy-z-fold6/cover-gesture.json' },
     { device: galaxyZFold6, screenId: 'cover', navMode: 'threeButton', capturePath: 'measurements/galaxy-z-fold6/cover-threeButton.json' },

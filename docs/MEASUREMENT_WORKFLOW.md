@@ -168,17 +168,22 @@ Galaxy Z Fold5 (SM-F946B, RTL Vietnam/Hanoi) was measured with InsetsProbe
 
 - folded cover: **904×2316 px**, portrait, with a 59×85 px cutout at x=423;
   3-button and gesture system bars measured 85 px top and 126/39 px bottom;
-- unfolded inner display: **2176×1812 px**, landscape, with a horizontal FLAT
-  folding feature at y=906; both modes measured 79 px top and 126/39 px bottom.
+- unfolded inner display: **1812×2176 px**, portrait (rotation 0), with a
+  vertical FLAT folding feature at x=906; both modes measured 80 px top and
+  126/39 px bottom (2026-09-25 recapture).
 
 The first cover gesture capture was accidentally rotated to landscape. Its
 original JSON remains under `measurements/galaxy-z-fold5/rejected-2026-09-23/`;
 the second reservation supplied an upright 904×2316 px capture whose gesture
-configuration, Settings value and inset classifier all agree. The inner captures
-need the same rotation-0 recapture that Fold7 received (`main-threeButton` and
-`main-gesture`, vertical FLAT feature); the current landscape files remain
-historical evidence. The inner gesture
-capture has gesture Settings/configuration and 78 px side gesture regions, but
+configuration, Settings value and inset classifier all agree.
+
+Upright inner recapture (2026-09-25): the 2026-09-23 inner captures were taken
+sideways (rotation 1, 2176×1812 px, horizontal FLAT feature, 79 px top), which
+turned the opened chassis 90°. They remain unchanged at
+`measurements/galaxy-z-fold5/main-*.json` as historical evidence. Published
+inner values come from the rotation-0 InsetsProbe 1.3.0 captures in
+`measurements/galaxy-z-fold5/recapture-2026-09-25/` on the same build. The
+recapture's hinge sensor reported 180°. The inner gesture capture has gesture Settings/configuration and 78 px side gesture regions, but
 Probe's inset-only classifier reports `threeButton`; this disagreement is
 disclosed in the published condition. The cover hinge sensor reported 180° with
 no folding feature, so display identity relies on the switched window size and
