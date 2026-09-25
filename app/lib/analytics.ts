@@ -53,6 +53,28 @@ export function trackDeviceSelection(device: Device) {
   });
 }
 
+export function trackJsonExport(device: Device) {
+  if (!ready) return;
+  window.gtag?.("event", "json_export", deviceParameters(device));
+}
+
+export function trackUnitChange(device: Device, unit: "dp" | "px") {
+  if (!ready) return;
+  window.gtag?.("event", "unit_change", {
+    ...deviceParameters(device),
+    dimension_unit: unit,
+  });
+}
+
+export function trackFoldPoseChange(device: Device, angle: number, controlSource: "display_tab" | "pose_menu" | "hinge_slider") {
+  if (!ready) return;
+  window.gtag?.("event", "fold_pose_change", {
+    ...deviceParameters(device),
+    fold_pose: angle === 0 ? "closed" : angle === 180 ? "open" : "partially_open",
+    control_source: controlSource,
+  });
+}
+
 /** Path-only tracking avoids search text / URL fragments and rerender duplicates. */
 export function trackPageView(pathname: string, device?: Device) {
   if (!ready || pathname === lastPath) return;

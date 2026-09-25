@@ -23,6 +23,9 @@ test('analytics gates collection and tracks interest independently from default 
     analytics.initializeAnalytics(undefined, true);
     analytics.initializeAnalytics('not-a-measurement-id', true);
     analytics.trackDeviceSelection(model);
+    analytics.trackJsonExport(model);
+    analytics.trackUnitChange(model, 'px');
+    analytics.trackFoldPoseChange(model, 90, 'hinge_slider');
     assert.equal(scripts.length, 0);
     assert.equal(window.dataLayer, undefined);
 
@@ -38,6 +41,10 @@ test('analytics gates collection and tracks interest independently from default 
     analytics.trackPageView('/', model); // React rerenders / effect replay
     analytics.trackDeviceSelection(model);
     analytics.trackDeviceSelection(model); // repeated clicks are actual interest
+    analytics.trackJsonExport(model);
+    analytics.trackUnitChange(model, 'px');
+    analytics.trackFoldPoseChange(model, 90, 'hinge_slider');
+    analytics.trackFoldPoseChange(model, 180, 'pose_menu');
     analytics.trackPageView('/galaxy-z-fold8', model);
     analytics.trackPageView('/methodology');
     analytics.trackPageView('/galaxy-z-fold8', model); // browser Back
@@ -53,6 +60,18 @@ test('analytics gates collection and tracks interest independently from default 
     assert.equal(selections[0][2].device_slug, model.slug);
     assert.equal(selections[0][2].form_factor, 'foldable-book');
     assert.equal(selections[0][2].selection_source, 'device_list');
+    const exports = events.filter(c => c[1] === 'json_export');
+    assert.equal(exports.length, 1);
+    assert.equal(exports[0][2].device_slug, model.slug);
+    const unitChanges = events.filter(c => c[1] === 'unit_change');
+    assert.equal(unitChanges.length, 1);
+    assert.equal(unitChanges[0][2].dimension_unit, 'px');
+    const poseChanges = events.filter(c => c[1] === 'fold_pose_change');
+    assert.equal(poseChanges.length, 2);
+    assert.equal(poseChanges[0][2].fold_pose, 'partially_open');
+    assert.equal(poseChanges[0][2].control_source, 'hinge_slider');
+    assert.equal(poseChanges[1][2].fold_pose, 'open');
+    assert.equal(poseChanges[1][2].control_source, 'pose_menu');
   } finally {
     delete globalThis.window;
     delete globalThis.document;

@@ -14,6 +14,7 @@ import { Icon } from "./Icon";
 import { getRtlAvailability } from "../data/rtlAvailability";
 import { formatLength, hasExactPx, safeInsets, safeInsetsPx } from "../data/measurementUnits";
 import { downloadDeviceExport } from "../data/deviceExport";
+import { trackFoldPoseChange, trackJsonExport, trackUnitChange } from "../lib/analytics";
 
 function Row({ label, value }: { label: string; value: React.ReactNode }) {
   const [status, setStatus] = useState("");
@@ -115,6 +116,7 @@ export function DeviceView({ device }: { device: Device }) {
   const [metricsWidth, setMetricsWidth] = useState(292);
   const [navMode, setNavMode] = useState<NavMode>("threeButton");
   const [angle, setAngle] = useState(initialHasCover ? 0 : 180);
+  const lastCommittedAngle = useRef(initialHasCover ? 0 : 180);
   const [screenId, setScreenId] = useState(initialHasCover ? "cover" : "main");
   const [transitionTarget, setTransitionTarget] = useState<"cover" | "main" | null>(null);
   const viewport = useRef<DiagramViewportHandle>(null);
@@ -173,6 +175,16 @@ export function DeviceView({ device }: { device: Device }) {
       if (autoFit) setFitKey(key => key + 1);
     }
   };
+  const recordPose = (value: string, source: "display_tab" | "pose_menu" | "hinge_slider") => {
+    const nextAngle = Number(value);
+    if (nextAngle === lastCommittedAngle.current) return;
+    lastCommittedAngle.current = nextAngle;
+    trackFoldPoseChange(device, nextAngle, source);
+  };
+  const selectPose = (value: string, source: "display_tab" | "pose_menu") => {
+    pose(value);
+    recordPose(value, source);
+  };
   const size = screen.logicalSizeDp ?? (skin ? { width: skin.screen.width, height: skin.screen.height } : null);
   const orientationOptions = size && size.width > size.height ? [
     { value: "0", label: "Landscape Left" }, { value: "90", label: "Portrait" },
@@ -186,6 +198,7 @@ export function DeviceView({ device }: { device: Device }) {
   const exportJson = () => {
     try {
       downloadDeviceExport(device);
+      trackJsonExport(device);
       setExportStatus("JSON downloaded");
     } catch {
       setExportStatus("Download unavailable");
@@ -203,7 +216,7 @@ export function DeviceView({ device }: { device: Device }) {
         <span className="sr-only" role="status">{exportStatus}</span>
       </div>
       <div className="metrics-content">
-        {foldable && <div className="screen-tabs" aria-label="Display">{device.screens.map(s => <button key={s.id} aria-pressed={screen.id === s.id} onClick={() => pose(s.id === "cover" ? "0" : "180")}>{s.label === "Main" ? "Inner" : "Outer"}</button>)}</div>}
+        {foldable && <div className="screen-tabs" aria-label="Display">{device.screens.map(s => <button key={s.id} aria-pressed={screen.id === s.id} onClick={() => selectPose(s.id === "cover" ? "0" : "180", "display_tab")}>{s.label === "Main" ? "Inner" : "Outer"}</button>)}</div>}
             <SectionLabel>Dimensions</SectionLabel>
             <dl>
               <Row
@@ -334,14 +347,14 @@ export function DeviceView({ device }: { device: Device }) {
       <Dropdown label="Navigation" value={navMode} options={[{ value: "threeButton", label: "3-button" }, { value: "gesture", label: "Gesture" }]} onChange={v => setNavMode(v as NavMode)} />
       <Dropdown label="Orientation" value={String(rotation)} options={orientationOptions} onChange={v => { setRotation(Number(v)); setAutoFit(true); setFitKey(key => key + 1); }} />
       <Dropdown label="Zoom" value={`${Math.round(zoom)}%`} options={[{ value: "fit", label: "Fit to canvas" }, { value: "out", label: "− Zoom out" }, { value: "in", label: "+ Zoom in" }, ...[50,100,200,300,500].map(z => ({ value: String(z), label: `${z}%` }))]} onChange={v => { if (v === "fit") { setAutoFit(true); setFitKey(k => k + 1); } else { setAutoFit(false); setZoom(v === "in" ? Math.min(500, (viewport.current?.effectiveZoom() ?? zoom) + 10) : v === "out" ? Math.max(25, (viewport.current?.effectiveZoom() ?? zoom) - 10) : Number(v)); } }} />
-      {useFold && <><Dropdown label="Pose" value={triFold && ![0, 135, 180].includes(angle) ? `${Math.round(angle / 180 * 100)}% open` : String(angle)} options={[{value:"0",label:"Closed"},{value:triFold ? "135" : "90",label:"Partially Folded"},{value:"180",label:"Open"}]} onChange={pose} />
-      <Dropdown label="Hinge" value={triFold ? `${hinges.left}° / ${hinges.right}°` : `${angle}°`} valueWidthCh={triFold ? 10 : 4} options={[]} onChange={() => {}} footer={<>{triFold && <p className="hinge-sequence-note">Left {hinges.left}° · Right {hinges.right}°<br />Close left first, then right.</p>}<input aria-label={triFold ? "Fold sequence" : "Hinge angle in degrees"} type="range" min={0} max={180} value={angle} onChange={e => pose(e.target.value)} /></>} /></>}
+      {useFold && <><Dropdown label="Pose" value={triFold && ![0, 135, 180].includes(angle) ? `${Math.round(angle / 180 * 100)}% open` : String(angle)} options={[{value:"0",label:"Closed"},{value:triFold ? "135" : "90",label:"Partially Folded"},{value:"180",label:"Open"}]} onChange={v => selectPose(v, "pose_menu")} />
+      <Dropdown label="Hinge" value={triFold ? `${hinges.left}° / ${hinges.right}°` : `${angle}°`} valueWidthCh={triFold ? 10 : 4} options={[]} onChange={() => {}} footer={<>{triFold && <p className="hinge-sequence-note">Left {hinges.left}° · Right {hinges.right}°<br />Close left first, then right.</p>}<input aria-label={triFold ? "Fold sequence" : "Hinge angle in degrees"} type="range" min={0} max={180} value={angle} onChange={e => pose(e.target.value)} onPointerUp={e => recordPose(e.currentTarget.value, "hinge_slider")} onKeyUp={e => recordPose(e.currentTarget.value, "hinge_slider")} /></>} /></>}
       <div className="dropdown settings" ref={settings}><button className="toolbar-button" aria-label="View settings" aria-expanded={settingsOpen} onClick={() => setSettingsOpen(!settingsOpen)}><Icon name="settings" /></button>
         {settingsOpen && <div className="dropdown-panel settings-panel">
           <label><input type="checkbox" checked={showFrame} onChange={e => setShowFrame(e.target.checked)} />Show Frame</label>
           <label><input type="checkbox" checked={showRegions} onChange={e => setShowRegions(e.target.checked)} />Show Regions</label>
           <label><input type="checkbox" checked={showDimensions} onChange={e => setShowDimensions(e.target.checked)} />Show Dimensions</label>
-          <fieldset><legend>Dimension units</legend>{(["dp","px"] as const).map(u => <label key={u}><input type="radio" name="units" checked={units === u} disabled={u === "px" && !exactPxAvailable} onChange={() => setUnits(u)} />{u}</label>)}</fieldset>
+          <fieldset><legend>Dimension units</legend>{(["dp","px"] as const).map(u => <label key={u}><input type="radio" name="units" checked={units === u} disabled={u === "px" && !exactPxAvailable} onChange={() => { if (u !== units) { setUnits(u); trackUnitChange(device, u); } }} />{u}</label>)}</fieldset>
         </div>}
       </div>
     </div>

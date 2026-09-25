@@ -22,10 +22,12 @@ Without that ID the site works normally and analytics remains disabled.
    Vite embeds this public ID at build time; changes require a rebuild.
 4. In Admin → Custom definitions, create **event-scoped** custom dimensions
    for `device_slug`, `device_name`, `device_series`, `form_factor`,
-   `view_source`, and `selection_source`. Register these before collecting
+   `view_source`, `selection_source`, `dimension_unit`, `fold_pose`, and
+   `control_source`. Register these before collecting
    production data; reports can take 24–48 hours to populate.
 5. Open the production site and select a model. Check Realtime for `page_view`,
-   `device_view`, and `device_select`. In browser Network, filter `collect`
+   `device_view`, `device_select`, `json_export`, `unit_change`, and
+   `fold_pose_change`. In browser Network, filter `collect`
    and inspect `en` and `ep.*`. Ad blockers can prevent collection.
 
 ## Event contract
@@ -35,14 +37,19 @@ Without that ID the site works normally and analytics remains disabled.
 | `page_view` | Initial page and each changed pathname, including back/forward | Page location, title, previous page; ignores query/hash-only changes |
 | `device_view` | A page view displaying a registered device | `device_slug`, `device_name`, `device_series`, `form_factor`, `view_source` |
 | `device_select` | Device-list link click, Enter, modifier-click or middle-click | Device parameters plus `selection_source=device_list`; repeated clicks count |
+| `json_export` | Export JSON click after the browser download action returns without error | Device parameters; does not confirm the file was saved to disk |
+| `unit_change` | User changes the Metrics dimension unit | Device parameters plus `dimension_unit=dp` or `px`; automatic fallback to dp is excluded |
+| `fold_pose_change` | User changes a foldable's display tab or pose menu, or finishes a hinge-slider adjustment | Device parameters plus `fold_pose=closed`, `partially_open`, or `open`, and `control_source=display_tab`, `pose_menu`, or `hinge_slider`; unchanged selections are excluded |
 
 `form_factor` is the **viewed model's** category: `bar`, `foldable-book`,
-`foldable-flip`, or `tablet`. It is not the visitor's hardware.
+`foldable-flip`, `foldable-trifold`, or `tablet`. It is not the visitor's hardware.
 `view_source=home_default` marks the model automatically shown on the homepage;
 `device_page` covers direct model links and internal navigation.
 Direct visits and back/forward navigation do not fabricate selection events.
 Right-click → Open in new tab is counted as a view in the destination, not a
 selection in the source. All registered models, including previews, are covered.
+Slider drags produce one `fold_pose_change` on release rather than an event for
+every intermediate angle. No precise hinge angle is sent.
 
 ## Read the results
 
@@ -57,6 +64,9 @@ selection in the source. All registered models, including previews, are covered.
   with Event count. GA4 users are browser/device-based estimates, not a count
   of identified people. Click share is not a conversion rate or exposure-adjusted
   preference: list ordering and model availability affect it.
+- **Feature use:** Filter Event name by `json_export`, `unit_change`, or
+  `fold_pose_change`. Break down unit changes by `dimension_unit` and pose
+  changes by `fold_pose` or `control_source`; these are actions, not unique users.
 
 ## Collection scope
 
