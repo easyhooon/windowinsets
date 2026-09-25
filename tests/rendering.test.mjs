@@ -769,3 +769,16 @@ test('TriFold log recovery preserves complete captures and registers both cover 
     assert.equal(raw.navigation.settingAgreesWithInsets, true);
   }
 });
+
+test('measured Z screens publish the official skin resolution in its upright orientation', () => {
+  const devices = [galaxyZFold2, galaxyZFold4, galaxyZFold5, galaxyZFold6, galaxyZFold7, galaxyZFold8,
+    galaxyZFlip5, galaxyZFlip6, galaxyZFlip8];
+  for (const device of devices) {
+    for (const screen of device.screens) {
+      const skin = skins[`${device.slug}/${screen.id}`];
+      if (!skin) continue;
+      assert.deepEqual(screen.resolutionPx, { width: skin.screen.width, height: skin.screen.height },
+        `${device.slug}/${screen.id}`);
+    }
+  }
+});

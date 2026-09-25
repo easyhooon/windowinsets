@@ -84,7 +84,7 @@ export const galaxyZFlip8: Device = {
       id: "main",
       label: "Main",
       diagonalInch: 5.7,
-      resolutionPx: { width: 0, height: 0 },
+      resolutionPx: { width: 1080, height: 2520 },
       logicalSizePx: { width: 1080, height: 2520 },
       captureOrientation: "portrait",
       ppi: 0,

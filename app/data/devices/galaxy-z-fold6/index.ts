@@ -116,7 +116,7 @@ export const galaxyZFold6: Device = {
       id: "main",
       label: "Main",
       diagonalInch: 7.6,
-      resolutionPx: { width: 2160, height: 1856 },
+      resolutionPx: { width: 1856, height: 2160 },
       logicalSizePx: { width: 1856, height: 2160 },
       captureOrientation: "portrait",
       captureRotation: 0,
