@@ -14,7 +14,9 @@ const browser = await chromium.launch({ channel: 'chrome' });
 try {
   const page = await browser.newPage({ viewport: { width: 1440, height: 900 }, deviceScaleFactor: 1,
     colorScheme: 'light', reducedMotion: 'reduce', locale: 'en-US' });
-  for (const slug of ['galaxy-z-fold8', 'galaxy-z-flip8']) {
+  const devices = process.argv.slice(2);
+  for (const slug of devices.length ? devices : ['galaxy-z-fold8', 'galaxy-z-flip8', 'galaxy-z-trifold']) {
+    const triFold = slug === 'galaxy-z-trifold';
     const frames = join(temporary, slug);
     await mkdir(frames);
     await page.goto(`${baseURL}/${slug}`);
@@ -23,12 +25,16 @@ try {
     await page.waitForTimeout(1000); // Official artwork textures load asynchronously.
     for (let angle = 0; angle <= 180; angle += 3) {
       await page.getByRole('button', { name: /^Hinge:/ }).click();
-      const slider = page.getByRole('slider', { name: 'Hinge angle in degrees' });
+      const slider = page.getByRole('slider', { name: triFold ? 'Fold sequence' : 'Hinge angle in degrees' });
       await slider.evaluate((input, value) => {
         Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set.call(input, String(value));
         input.dispatchEvent(new Event('input', { bubbles: true }));
       }, angle);
       await expect(page.locator('[data-displayed-angle]')).toHaveAttribute('data-displayed-angle', angle.toFixed(2));
+      if (triFold) {
+        await expect(page.locator('[data-left-angle]')).toHaveAttribute('data-left-angle', Math.max(0, angle * 2 - 180).toFixed(2));
+        await expect(page.locator('[data-right-angle]')).toHaveAttribute('data-right-angle', Math.min(180, angle * 2).toFixed(2));
+      }
       await page.getByRole('button', { name: /^Hinge:/ }).click();
       await page.waitForTimeout(60);
       await page.locator('.canvas-panel').screenshot({ path: join(frames, `angle-${angle}.png`) });
