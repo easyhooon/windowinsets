@@ -25,6 +25,14 @@ registered official skin. TriFold is supported; apply the same RTL-availability
 and capture-evidence rules when collecting its measurements. Missing measurements
 remain pending.
 
+For Galaxy Z Flip cover work, the supported collection scope starts at Flip5.
+Treat covers on Flip, Flip3 and Flip4 as unsupported and do not reserve or capture
+them. For Flip5 and later, collect cover measurements only when the registered
+official skin includes a `cover` screen; if a model is main-only, its cover remains
+out of scope until an official cover layout is imported. Prioritize completing
+both cover navigation modes on eligible Flip5+ models before lower-priority model
+collection.
+
 Measure only one device at a time; this is not a limit on simultaneous
 reservations. Samsung's [Web Client guide](https://developer.samsung.com/remotetestlab/doc/get-started-with-web-client)
 supports multiple reserved devices in separate tabs. After the current device's
@@ -235,12 +243,17 @@ step to the user.
 
 1. Start with 3-button navigation. Confirm the active window shown by Probe before
    choosing a label.
+   Batch captures by navigation mode to avoid revisiting Android Settings: capture
+   3-button Main, then each other supported display (for an eligible Flip, launch
+   Probe on the folded cover display), switch navigation mode once, then capture
+   gesture Main and the other supported display. Keep the screen/mode order
+   `3-button main/cover → gesture main/cover` where both displays are supported.
 2. For foldables, use the WebClient folding control on the right settings bar.
    Open its menu and choose the explicit Folded, Unfolded or Flex state by tooltip;
    do not infer the state from icon shape alone. Wait for the chassis and active
    window size to settle.
-3. For a Galaxy Z Flip cover capture, complete the **FlexWindow launch** branch
-   before selecting a label:
+3. For a supported Galaxy Z Flip cover capture (Flip5+ with a registered cover
+   skin), complete the **FlexWindow launch** branch before selecting a label:
    - The cover is a separate FlexWindow surface; folding can replace the inner app
      with cover home instead of moving the activity. Starting an app from
      WebClient **Applications** can still target the hidden inner display.
@@ -268,7 +281,9 @@ step to the user.
      MultiStar can open Probe on display 1, document the compatibility blocker and
      requeue the device; inner-display values are not cover evidence.
 4. Select Probe's radio circle matching the physically active display. Cover/Main
-   is a manual label and never switches hardware.
+   is a manual label and never switches hardware. Validate `display.id`, active
+   window dimensions and folding-feature state in every JSON; a Cover label on
+   display 0 at inner-display dimensions is not a cover capture.
 5. Tap **Measure** and require the toast filename to match the intended combination,
    for example `cover-threeButton.json`. A different filename is a rejected
    attempt, not evidence.

@@ -231,3 +231,29 @@ captures are now verified.
 Raw captures and unchanged RTL log exports are preserved in
 `measurements/galaxy-z-trifold/`. See its README for extraction provenance,
 display-density refresh behavior and the RTL hinge-report limitation.
+
+## Galaxy Z Flip4 measured on 2026-09-25
+
+Samsung RTL Vietnam/Hanoi SM-F721BE-VN1 (SM-F721B, Android 14 / One UI 6.1.1)
+produced valid unfolded main captures in 3-button and gesture navigation. Both
+report display 0, 1080×2640 px, 480 dpi, rotation 0, and a horizontal FLAT
+folding feature at y=1320. InsetsProbe, Settings and Android navigation
+configuration agree: bottom system bars are 144 px in 3-button mode and 45 px
+in gesture mode. The reservation confirms availability in Vietnam on this date;
+the Korean catalog and full RTL inventory remain incomplete.
+
+The session's Cover-labelled exports are preserved as rejected evidence because
+they also report display 0, the unfolded 1080×2640 px window, and the FLAT inner
+display. Probe's Cover/Main radio changes only the stored label; it does not
+switch displays. The Flip cover collection policy now starts at Flip5: Flip, Flip3
+and Flip4 covers are unsupported and are not measurement targets because their
+registered official skins have no cover layout. The physical Flip4 cover exists,
+but its RTL captures are intentionally excluded from product support. See the raw
+captures, rejected files and unchanged log export under
+`measurements/galaxy-z-flip4/`.
+
+For Flip5 and later, cover measurement is eligible only after a registered
+official cover skin exists. As of 2026-09-25, only Flip7 and Flip8 have cover
+layouts in the catalog; Flip5 and Flip6 remain main-only until cover artwork is
+imported. Complete both cover navigation modes on eligible models before moving
+to lower-priority collection targets.

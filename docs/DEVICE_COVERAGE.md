@@ -62,6 +62,14 @@ the 2020 cutoff to other known release years and audited boundary models.
 navigation, lookup, prerendered routes and the sitemap share the same policy.
 There are 119 public models: 29 S, 29 Tab, 9 Fold, 8 Flip, 1 TriFold, 3 Note and 40 A.
 
+Galaxy Z Flip cover support has a separate generation and skin boundary: Flip,
+Flip3 and Flip4 are out of cover-measurement scope. Flip5 and later qualify for
+cover collection only when their registered official skin includes a cover
+layout. On 2026-09-25, the catalog has cover layouts for Flip7 and Flip8; Flip5
+and Flip6 remain main-only until cover artwork is imported. A physical cover
+display without a corresponding registered skin does not create a product
+measurement target.
+
 The user-supplied `Galaxy_S10_Lite.zip` and `Galaxy_Tab_S8_Ultra.zip` were imported
 on 2026-09-24 as main-screen artwork previews. Their official release years meet
 the coverage cutoff; inset measurements remain pending.
