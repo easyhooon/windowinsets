@@ -138,8 +138,33 @@ removes a model from its catalog.
   cover gesture attempt preserved separately. Fold4 has accepted upright cover
   and inner captures in both modes after the Taskbar correction. Flip5 and Flip6
   main have accepted captures in both modes; their covers remain skin-unavailable. Flip3
-  main is also registered in both modes from dated captures on the same RTL unit. Fold3's
-  imported cover and main artwork are previews with no measured insets.
+  main is also registered in both modes from dated captures on the same RTL unit.
+  Galaxy Z Fold3 is now measured on both displays in both navigation modes from
+  two Vietnam/Hanoi RTL units running Android 14 / One UI 6.1.
+
+### Galaxy Z Fold3 — 2026-09-25
+
+InsetsProbe 1.3.0 captured all four display/navigation combinations on Samsung
+RTL. Cover and main 3-button captures came from SM-F926B-VN1; main gesture was
+recaptured on SM-F926B-VN2. The captures share model/build, Android 14, One UI
+6.1, and 420 dpi. The active windows match the official cover/main skin classes:
+840×2289 px cover and 1768×2208 px main, both portrait. Main captures include a
+vertical FLAT folding feature at x=884 px.
+
+- cover: 82 px top and 126/39 px bottom for 3-button/gesture;
+- main: 88 px top and 126/168 px bottom for 3-button/gesture;
+- main gesture mode is verified from Settings/configuration and side system
+  gesture insets although InsetsProbe's inset-only classifier reports 3-button.
+  User screenshots show the persistent Taskbar with both navigation choices;
+  the gesture-mode bottom inset is 64 dp versus 48 dp in 3-button mode. Preserve
+  these measured values as the observed Fold3 configuration, not a mode error.
+
+Two rejected attempts are preserved under
+`measurements/galaxy-z-fold3/rejected-2026-09-25/`: `content (40)` was labeled
+main gesture but had cover dimensions (840×2289 px), while `content (43)` had
+the correct inner dimensions but retained the Phone label. Neither is registered.
+Fold3 RTL availability is confirmed by live reservations in Vietnam/Hanoi on
+2026-09-25; the reservation catalog was not exhaustively inventoried by region.
 
 The comparison for every registered skin is in [RTL_SKIN_COMPARISON.csv](RTL_SKIN_COMPARISON.csv).
 It includes pre-2020 models for inventory completeness. Galaxy Fold is public

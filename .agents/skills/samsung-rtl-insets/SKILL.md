@@ -301,10 +301,14 @@ step to the user.
    On book-fold main displays, inspect Samsung **Settings > Display > Taskbar**
    before capture. A visible Taskbar can enlarge the bottom navigation/system
    inset and make the inset-only navigation heuristic report 3-button even when
-   gesture mode is configured. For comparable baseline captures, switch Taskbar
-   off, record that condition, and recapture both main navigation modes with the
-   same setting. Preserve earlier Taskbar-on JSON as separate evidence; never
-   rewrite its values.
+   gesture mode is configured. Gesture mode can therefore have a larger bottom
+   system inset than 3-button mode on a specific Fold/taskbar configuration.
+   Do not reject or relabel a gesture capture by comparing bottom inset sizes
+   alone; verify Settings/configuration and side system-gesture insets, and record
+   Taskbar state. For comparable baseline captures, switch Taskbar off, record
+   that condition, and recapture both main navigation modes with the same
+   setting. Preserve earlier Taskbar-on JSON as separate evidence; never rewrite
+   its values.
 9. Record the visible active-window resolution and hinge/folding-feature state for
    each capture. A hinge angle can be wrong on RTL; screen classification requires
    the actual switched state plus resolution evidence.

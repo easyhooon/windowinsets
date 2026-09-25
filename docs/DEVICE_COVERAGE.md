@@ -75,8 +75,8 @@ on 2026-09-24 as main-screen artwork previews. Their official release years meet
 the coverage cutoff; inset measurements remain pending.
 
 The user-supplied `Galaxy_Z_Fold3.zip` was imported on 2026-09-23 with its
-folded cover and unfolded main layouts. It is an artwork-only preview until
-actual inset captures are collected.
+folded cover and unfolded main layouts. InsetsProbe 1.3.0 measurements for
+cover and main in both navigation modes were registered on 2026-09-25.
 The user-supplied `Galaxy_Z_Flip5.zip` was imported on 2026-09-23 with its
 1080×2640 main display layout. The ZIP has no cover layout; both inset modes
 were measured on RTL on 2026-09-23; cover artwork remains unavailable.

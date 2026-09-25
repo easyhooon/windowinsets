@@ -168,6 +168,22 @@ After disabling Taskbar, both accepted main captures were taken in the same
 portrait conditions and all mode classifiers agree. The cover camera bounds
 come from the raw DisplayCutout rectangle, not the artwork.
 
+### Verified Fold3 capture and larger gesture-mode bottom inset
+
+Galaxy Z Fold3 (SM-F926B, Vietnam/Hanoi RTL) was measured on 2026-09-25 with
+InsetsProbe 1.3.0 on Android 14 / One UI 6.1 at 420 dpi. The capture set covers
+both modes on both screens. Cover windows are 840×2289 px; the unfolded main
+window is 1768×2208 px with a vertical FLAT folding feature at x=884 px.
+
+The main 3-button capture reports a 126 px (48 dp) bottom system inset. The main
+gesture capture reports 168 px (64 dp), while Settings/configuration and 78 px
+side system-gesture regions verify gesture navigation. InsetsProbe's inset-only
+classifier reports 3-button for that gesture capture. User screenshots show the
+persistent Taskbar in both Buttons and Swipe gestures settings. Treat this as a
+Fold3/taskbar configuration where gesture mode can have a larger bottom system
+inset than 3-button; do not reject the capture or infer navigation mode from the
+bottom inset alone. Preserve the raw measurements unchanged.
+
 ### Verified Flip8 FlexWindow recapture
 
 Galaxy Z Flip8 (SM-F776B) was folded and InsetsProbe 1.2.1 was launched from its
