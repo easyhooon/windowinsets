@@ -274,6 +274,14 @@ export function DeviceView({ device }: { device: Device }) {
                 {" "}<Link to="/methodology#camera-cutouts" className="text-accent underline">Cutout measurement limits →</Link>
               </p>
             </>}
+            {measurement && !measurement.cutoutShape && skin && Object.values(measurement.displayCutout).every(v => !v) && <>
+              <SectionLabel>Display Cutout Bounds</SectionLabel>
+              <p className="text-xs leading-relaxed text-muted">
+                Android reported no display cutout here. Any camera shown in the official
+                artwork is not a measured exclusion, so its edge distances are not shown.
+                {" "}<Link to="/methodology#camera-cutouts" className="text-accent underline">Cutout measurement limits →</Link>
+              </p>
+            </>}
 
             {screen.cornerRadiiDp && (
               <>

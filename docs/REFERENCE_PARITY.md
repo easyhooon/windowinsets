@@ -393,6 +393,11 @@ and the cover texture has enough vertical space for that housing. These are
 product dimensions and artwork coordinates, not Android inset measurements;
 all Fold 1 metrics remain pending.
 
+When Android reports no display cutout for a screen, Metrics says so instead of
+deriving camera distances from the artwork. Current Fold7, Fold8, Fold8 Ultra and
+TriFold inner captures report zero cutouts; Fold3–Fold6 inner artwork shows an
+under-display camera or none.
+
 The hinge axis follows the official skin's rotation into capture coordinates.
 For landscape Fold captures this is a horizontal hinge, correcting the oversized
 housing around narrow portrait covers. Cover UVs and external ruler anchors share
