@@ -1,5 +1,5 @@
-name: 폼팩터·제조사·기기 요청
-description: 새 폼팩터, 제조사 또는 기기의 지원과 측정을 요청해 주세요.
+name: Form factor, manufacturer, or device request
+description: Request support or measurements for a new form factor, manufacturer, or device.
 title: "[Device Request] "
 labels: ["enhancement"]
 assignees: []
@@ -7,73 +7,73 @@ body:
   - type: markdown
     attributes:
       value: |
-        요청은 공식 사양·스킨과 실제 측정 가능성을 확인한 뒤 반영합니다. 측정되지 않은 인셋 값은 추정해서 등록하지 않습니다.
+        We review requests against official specifications, emulator skins, and measurement availability. We do not estimate inset values that have not been measured.
   - type: dropdown
     id: request-type
     attributes:
-      label: 요청 범위
+      label: Request scope
       options:
-        - 기존 제조사의 특정 기기
-        - 새로운 제조사
-        - 새로운 폼팩터
+        - Specific device from an existing manufacturer
+        - New manufacturer
+        - New form factor
     validations:
       required: true
   - type: input
     id: manufacturer
     attributes:
-      label: 제조사
-      placeholder: 예) Samsung
+      label: Manufacturer
+      placeholder: e.g., Samsung
     validations:
       required: true
   - type: input
     id: device
     attributes:
-      label: 기기명 또는 제품군
-      placeholder: 예) Galaxy Z Fold7
+      label: Device name or product family
+      placeholder: e.g., Galaxy Z Fold7
     validations:
       required: true
   - type: dropdown
     id: form-factor
     attributes:
-      label: 폼팩터
+      label: Form factor
       options:
-        - 일반 스마트폰(Bar)
-        - 북 타입 폴더블(Fold)
-        - 클램셸 폴더블(Flip)
-        - 태블릿
-        - 듀얼 스크린 또는 기타
+        - Smartphone (bar)
+        - Book-style foldable (Fold)
+        - Clamshell foldable (Flip)
+        - Tablet
+        - Dual-screen or other
     validations:
       required: true
   - type: input
     id: release-year
     attributes:
-      label: 출시 연도
-      placeholder: 예) 2025
+      label: Release year
+      placeholder: e.g., 2025
   - type: textarea
     id: screens
     attributes:
-      label: 필요한 화면과 상태
-      description: Main/Cover, 접힘/펼침, 세로/가로 등 확인이 필요한 상태를 적어주세요.
-      placeholder: 예) 커버 화면과 펼친 내부 화면, 제스처·3버튼 모두
+      label: Displays and states needed
+      description: List the displays and states to cover, such as Main/Cover, folded/unfolded, or portrait/landscape.
+      placeholder: e.g., Cover and unfolded inner displays, in both Gesture and 3-button modes
     validations:
       required: true
   - type: textarea
     id: sources
     attributes:
-      label: 공식 자료
-      description: 제조사 제품 페이지, 공식 해상도 자료, 에뮬레이터 스킨 등의 링크를 적어주세요.
+      label: Official sources
+      description: Add links to manufacturer product pages, official resolution specifications, emulator skins, or other official material.
   - type: dropdown
     id: measurement-access
     attributes:
-      label: 실제 측정 가능 여부
+      label: Measurement availability
       options:
-        - 실기기를 제공하거나 직접 측정할 수 있음
-        - 원격 테스트 랩에서 확인 가능
-        - 측정 경로를 알 수 없음
+        - I can provide a device or capture measurements
+        - Available in a remote test lab
+        - I do not know how it can be measured
   - type: textarea
     id: reason
     attributes:
-      label: 지원이 필요한 이유
-      description: 개발·검증 중 겪는 문제나 우선순위를 판단할 맥락을 알려주세요.
+      label: Why is this support needed?
+      description: Share the development or verification problem and any context that would help assess its priority.
     validations:
       required: true
