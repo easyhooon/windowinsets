@@ -14,9 +14,9 @@ Explore Galaxy Fold, Flip and TriFold hinge states in **real-time 3D, built with
 
 **0° → 180° → 0°** · Recorded from the live renderer with a fixed camera and zoom throughout the fold. Try the hinge slider, drag to pan, or pinch to zoom on [windowinsets.info](https://windowinsets.info).
 
-**Galaxy Z TriFold · two-hinge fold**
-
-[![Galaxy Z TriFold opening its two hinges in sequence and closing at a fixed camera scale](docs/media/galaxy-z-trifold-hinge.gif)](https://windowinsets.info/galaxy-z-trifold)
+| Galaxy Z TriFold · two-hinge fold |
+| :---: |
+| [<img src="docs/media/galaxy-z-trifold-hinge.gif" width="400" alt="Galaxy Z TriFold opening its two hinges in sequence and closing at a fixed camera scale">](https://windowinsets.info/galaxy-z-trifold) |
 
 The right hinge opens first, followed by the left; closing reverses that order. Camera and zoom stay fixed throughout.
 
