@@ -51,12 +51,13 @@ galaxy-tab-s6-lite,Galaxy Tab S6 Lite,yes,published,unknown,featured-devices,202
 galaxy-tab-s7,Galaxy Tab S7,yes,published,unknown,featured-devices,2026-09-22,https://developer.samsung.com/remote-test-lab
 galaxy-tab-s7-fe,Galaxy Tab S7 FE,yes,published,unknown,featured-devices,2026-09-22,https://developer.samsung.com/remote-test-lab
 galaxy-tab-s7-plus,Galaxy Tab S7 Plus,yes,published,unknown,featured-devices,2026-09-22,https://developer.samsung.com/remote-test-lab
-galaxy-tab-s8,Galaxy Tab S8,yes,published,unknown,featured-devices,2026-09-22,https://developer.samsung.com/remote-test-lab
-galaxy-tab-s8-plus,Galaxy Tab S8 Plus,yes,published,unknown,featured-devices,2026-09-22,https://developer.samsung.com/remote-test-lab
+galaxy-tab-s8-ultra,Galaxy Tab S8 Ultra,yes,published,listed,reservation-catalog-live-reservation,2026-09-25,https://developer.samsung.com/remotetestlab/devices
+galaxy-tab-s8,Galaxy Tab S8,yes,published,listed,reservation-catalog-live-reservation,2026-09-25,https://developer.samsung.com/remotetestlab/devices
+galaxy-tab-s8-plus,Galaxy Tab S8 Plus,yes,published,listed,reservation-catalog-live-reservation,2026-09-25,https://developer.samsung.com/remotetestlab/devices
 galaxy-tab-s9,Galaxy Tab S9,yes,published,unknown,featured-devices,2026-09-22,https://developer.samsung.com/remote-test-lab
 galaxy-tab-s9-fe,Galaxy Tab S9 FE,yes,published,listed,reservation-catalog-live-reservation,2026-09-25,https://developer.samsung.com/remote-test-lab
 galaxy-tab-s9-fe-plus,Galaxy Tab S9 FE Plus,yes,published,listed,reservation-catalog-live-reservation,2026-09-25,https://developer.samsung.com/remote-test-lab
-galaxy-tab-s9-plus,Galaxy Tab S9 Plus,yes,published,unknown,featured-devices,2026-09-22,https://developer.samsung.com/remote-test-lab
+galaxy-tab-s9-plus,Galaxy Tab S9 Plus,yes,published,listed,reservation-catalog-live-reservation,2026-09-25,https://developer.samsung.com/remotetestlab/devices
 galaxy-tab-s9-ultra,Galaxy Tab S9 Ultra,yes,published,listed,reservation-catalog-live-reservation,2026-09-25,https://developer.samsung.com/remotetestlab/devices
 galaxy-z-flip,Galaxy Z Flip,yes,published,listed,reservation-catalog-live-reservation,2026-09-24,https://developer.samsung.com/remotetestlab/devices
 galaxy-z-flip3,Galaxy Z Flip3,yes,published,listed,reservation-catalog-live-reservation,2026-09-23,https://developer.samsung.com/remotetestlab/devices
@@ -117,7 +118,7 @@ galaxy-a73-5g,Galaxy A73 5G,yes,published,unknown,not-checked,,
 galaxy-note10,Galaxy Note10,yes,archived,unknown,not-checked,,
 galaxy-note10-lite,Galaxy Note10 Lite,yes,published,unknown,not-checked,,
 galaxy-note10-plus,Galaxy Note10 Plus,yes,archived,unknown,not-checked,,
-galaxy-note20,Galaxy Note20,yes,published,unknown,not-checked,,
+galaxy-note20,Galaxy Note20,yes,published,listed,reservation-catalog-live-reservation,2026-09-25,https://developer.samsung.com/remotetestlab/devices
 galaxy-note20-ultra,Galaxy Note20 Ultra,yes,published,unknown,not-checked,,
 galaxy-note8,Galaxy Note8,yes,archived,unknown,not-checked,,
 galaxy-note9,Galaxy Note9,yes,archived,unknown,not-checked,,

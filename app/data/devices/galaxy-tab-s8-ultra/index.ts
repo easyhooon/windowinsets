@@ -1,0 +1,62 @@
+import type { Device, InsetsMeasurement, Source } from "../../types";
+
+const samsungSpecs: Source = {
+  kind: "official",
+  label: "Samsung Galaxy Tab S8 Ultra display specifications",
+  url: "https://www.samsung.com/pt/tablets/galaxy-tab-s/galaxy-tab-s8-ultra-5g-graphite-128gb-sm-x906bzaaeub/",
+  retrievedAt: "2026-09-25",
+  note: "Samsung lists a 14.6-inch display and 2960×1848 WQXGA+ resolution; PPI is calculated from those values.",
+};
+
+const captureSource = (mode: "gesture" | "threeButton"): Source => ({
+  kind: "measured",
+  label: `InsetsProbe 1.3.0 on Samsung RTL Galaxy Tab S8 Ultra (SM-X906B), main ${mode === "gesture" ? "gesture" : "3-button"}`,
+  url: `https://github.com/easyhooon/windowinsets/blob/main/measurements/galaxy-tab-s8-ultra/main-${mode}.json`,
+  retrievedAt: "2026-09-25",
+});
+
+const measuredInsets = (mode: "gesture" | "threeButton"): InsetsMeasurement => mode === "gesture"
+  ? {
+  systemBars: { top: 30, right: 0, bottom: 15, left: 0 },
+  systemBarsPx: { top: 60, right: 0, bottom: 30, left: 0 },
+  displayCutout: { top: 14.00000, right: 0.00000, bottom: 0.00000, left: 0.00000 },
+  displayCutoutPx: { top: 28, right: 0, bottom: 0, left: 0 },
+  cutoutShape: { xDp: 696.50000, yDp: 0.00000, widthDp: 87.00000, heightDp: 14.00000, rightDp: 696.50000, bottomDp: 910.00000, xPx: 1393, yPx: 0, widthPx: 174, heightPx: 28, rightPx: 1393, bottomPx: 1820 },
+  condition: { oneUi: "8.0", android: "16", note: "Samsung RTL, SM-X906B, build BP2A.250605.031.A3.X906BXXSAEZB2. landscape rotation 1, 2960×1848 px full-screen capture, 320 dpi, font scale 1. Gesture mode is confirmed by Settings secure navigation mode 2, config_navBarInteractionMode=2, and left/right system-gesture insets 60/60 px; inset-only classification says threeButton, so preserve the mode recorded by Settings/configuration." },
+  sources: [captureSource("gesture")],
+}
+  : {
+  systemBars: { top: 30, right: 0, bottom: 48, left: 0 },
+  systemBarsPx: { top: 60, right: 0, bottom: 96, left: 0 },
+  displayCutout: { top: 14.00000, right: 0.00000, bottom: 0.00000, left: 0.00000 },
+  displayCutoutPx: { top: 28, right: 0, bottom: 0, left: 0 },
+  cutoutShape: { xDp: 696.50000, yDp: 0.00000, widthDp: 87.00000, heightDp: 14.00000, rightDp: 696.50000, bottomDp: 910.00000, xPx: 1393, yPx: 0, widthPx: 174, heightPx: 28, rightPx: 1393, bottomPx: 1820 },
+  condition: { oneUi: "8.0", android: "16", note: "Samsung RTL, SM-X906B, build BP2A.250605.031.A3.X906BXXSAEZB2. landscape rotation 1, 2960×1848 px full-screen capture, 320 dpi, font scale 1. Probe used its generic Phone label, but model and full-screen dimensions match this tablet main display; the raw JSON is unchanged." },
+  sources: [captureSource("threeButton")],
+};
+
+export const galaxyTabS8Ultra: Device = {
+  slug: "galaxy-tab-s8-ultra",
+  name: "Galaxy Tab S8 Ultra",
+  brand: "Samsung",
+  series: "Galaxy Tab",
+  formFactor: "tablet",
+  releaseYear: 2022,
+  screens: [{
+    id: "main",
+    label: "Main",
+    diagonalInch: 14.6,
+    resolutionPx: { width: 2960, height: 1848 },
+    logicalSizePx: { width: 2960, height: 1848 },
+    captureOrientation: "landscape",
+    captureRotation: 1,
+    ppi: 239,
+    logicalSizeDp: { width: 1480.00000, height: 924.00000 },
+    densityDpi: 320,
+    cornerRadiiDp: { topLeft: 13.00000, topRight: 13.00000, bottomRight: 13.00000, bottomLeft: 13.00000 },
+    cornerRadiiPx: { topLeft: 26, topRight: 26, bottomRight: 26, bottomLeft: 26 },
+    insets: { gesture: measuredInsets("gesture"), threeButton: measuredInsets("threeButton") },
+    sources: [samsungSpecs, captureSource("gesture"), captureSource("threeButton")],
+  }],
+  sources: [samsungSpecs, captureSource("gesture"), captureSource("threeButton")],
+};

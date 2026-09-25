@@ -18,6 +18,7 @@ import { galaxyS21Plus } from "./devices/galaxy-s21-plus";
 import { galaxyS21 } from "./devices/galaxy-s21";
 import { galaxyS20Ultra } from "./devices/galaxy-s20-ultra";
 import { galaxyS20Fe } from "./devices/galaxy-s20-fe";
+import { galaxyNote20 } from "./devices/galaxy-note20";
 import { galaxyS26Ultra } from "./devices/galaxy-s26-ultra";
 import { galaxyS26Plus } from "./devices/galaxy-s26-plus";
 import { galaxyS26 } from "./devices/galaxy-s26";
@@ -43,6 +44,10 @@ import { GalaxyTabS10Fe } from "./devices/galaxy-tab-s10-fe";
 import { GalaxyTabS9FePlus } from "./devices/galaxy-tab-s9-fe-plus";
 import { galaxyTabS9Fe } from "./devices/galaxy-tab-s9-fe";
 import { galaxyTabS9 } from "./devices/galaxy-tab-s9";
+import { galaxyTabS9Plus } from "./devices/galaxy-tab-s9-plus";
+import { galaxyTabS8Ultra } from "./devices/galaxy-tab-s8-ultra";
+import { galaxyTabS8Plus } from "./devices/galaxy-tab-s8-plus";
+import { galaxyTabS8 } from "./devices/galaxy-tab-s8";
 import { galaxyTabS11Ultra } from "./devices/galaxy-tab-s11-ultra";
 import { galaxyTabS9Ultra } from "./devices/galaxy-tab-s9-ultra";
 import { galaxyTabA9Plus } from "./devices/galaxy-tab-a9-plus";
@@ -52,8 +57,8 @@ import { isInCoverage } from "./coverage";
 
 // Explicit entries own all verified data. Skins can add missing screens, never
 // replace a screen's captures. Add a measured entry here as RTL data arrives.
-const verifiedEntries = [galaxyTabA7Lite, galaxyTabA9Plus, GalaxyTabS11, GalaxyTabS10FePlus, GalaxyTabS10Fe, GalaxyTabS9FePlus, galaxyTabS9Fe, galaxyTabS9, galaxyZTriFold, galaxyZFold8Ultra, galaxyZFold8, galaxyZFlip8, galaxyZFlip7Fe, galaxyTabS11Ultra, galaxyTabS9Ultra, galaxyS26Ultra, galaxyS26Plus, galaxyS26,
-  galaxyS25Ultra, galaxyS25Plus, galaxyS25Edge, galaxyS25Fe, galaxyS25, galaxyS24Ultra, galaxyS24Plus, galaxyS24, galaxyS24Fe, galaxyS23Fe, galaxyS22Ultra, galaxyS22Plus, galaxyS22, galaxyS21Ultra, galaxyS21Plus, galaxyS21, galaxyS20Ultra, galaxyS20Fe, galaxyZFlip7, galaxyZFold7, galaxyZFold6, galaxyZFold5, galaxyZFold4, galaxyZFold3, galaxyZFlip6, galaxyZFlip5, galaxyZFlip4, galaxyZFlip3, galaxyZFlip, galaxyZFold2];
+const verifiedEntries = [galaxyTabA7Lite, galaxyTabA9Plus, GalaxyTabS11, GalaxyTabS10FePlus, GalaxyTabS10Fe, GalaxyTabS9FePlus, galaxyTabS9Fe, galaxyTabS9, galaxyTabS9Plus, galaxyTabS8Ultra, galaxyTabS8Plus, galaxyTabS8, galaxyZTriFold, galaxyZFold8Ultra, galaxyZFold8, galaxyZFlip8, galaxyZFlip7Fe, galaxyTabS11Ultra, galaxyTabS9Ultra, galaxyS26Ultra, galaxyS26Plus, galaxyS26,
+  galaxyS25Ultra, galaxyS25Plus, galaxyS25Edge, galaxyS25Fe, galaxyS25, galaxyS24Ultra, galaxyS24Plus, galaxyS24, galaxyS24Fe, galaxyS23Fe, galaxyS22Ultra, galaxyS22Plus, galaxyS22, galaxyS21Ultra, galaxyS21Plus, galaxyS21, galaxyS20Ultra, galaxyS20Fe, galaxyNote20, galaxyZFlip7, galaxyZFold7, galaxyZFold6, galaxyZFold5, galaxyZFold4, galaxyZFold3, galaxyZFlip6, galaxyZFlip5, galaxyZFlip4, galaxyZFlip3, galaxyZFlip, galaxyZFold2];
 const mergedDevices = verifiedEntries.map(device => {
   const preview = skinPreviews.find(entry => entry.slug === device.slug);
   const missingScreens = preview?.screens.filter(screen => !device.screens.some(s => s.id === screen.id)) ?? [];

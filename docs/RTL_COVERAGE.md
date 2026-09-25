@@ -445,3 +445,36 @@ recorded as captured; recapture at 1.0 if a normalized baseline is needed.
 
 Accepted raw file: `measurements/galaxy-tab-s9-fe/main-gesture.json`.
 Rejected raw file: `measurements/galaxy-tab-s9-fe/rejected-2026-09-25/main-threeButton.json`.
+
+
+## Galaxy Note20 and Galaxy Tab S9+/S8 series measured on 2026-09-25
+
+Samsung RTL produced paired full-screen Main captures for Galaxy Note20 5G
+(SM-N981U), Galaxy Tab S9+ (SM-X816B), Tab S8 Ultra (SM-X906B), Tab S8+
+(SM-X806B), and Tab S8 (SM-X706N). The raw JSONs are retained unchanged under
+`measurements/<device-slug>/main-{gesture,threeButton}.json`; each pair has the
+same model/build, display 0, default font scale 1, and matching full-screen and
+maximum-window dimensions.
+
+- Note20: Android 13 / One UI 5.1, portrait 1080×2400 px at 450 dpi. Gesture
+  system bars are 92/42 px top/bottom and 3-button bars are 92/135 px. Both
+  modes agree with the recorded navigation setting. The centered cutout bound is
+  74×92 px.
+- Tab S9+: SM-X816B, Android 14 / One UI 6.1, landscape 2800×1752 px at
+  rotation 1 and 340 dpi. Gesture/button bars are 51/136 px and 51/102 px.
+- Tab S8 Ultra: SM-X906B, Android 16 / One UI 8.0, landscape 2960×1848 px at
+  rotation 1 and 320 dpi. Gesture/button bars are 60/30 px and 60/96 px; both
+  include a centered 174×28 px cutout. Its 3-button raw screen label is `phone`,
+  preserved unchanged; model and resolution establish the tablet Main display.
+- Tab S8+: SM-X806B, Android 14 / One UI 6.1, landscape 2800×1752 px at
+  rotation 1 and 340 dpi. Gesture/button bars are 51/136 px and 51/102 px.
+- Tab S8: SM-X706N, Android 16 / One UI 8.0, landscape 2560×1600 px at
+  rotation 1 and 340 dpi. Gesture/button bars are 64/32 px and 64/102 px.
+
+For all four tablets, the gesture captures record secure navigation mode 2 and
+`config_navBarInteractionMode=2`, with 60–63 px left/right system-gesture
+regions. InsetsProbe's inset-only heuristic reports threeButton because the
+landscape system-bar pattern is ambiguous. Settings/configuration and side gesture
+insets support the recorded gesture mode; the mode is not inferred from bottom
+inset size. The captures contain no hinge features and the Tab S8 Ultra's generic
+`phone` label is only a Probe label; raw evidence has not been rewritten.

@@ -10,6 +10,16 @@ captures. The full RTL catalog remains inaccessible; do not interpret missing
 models in the featured list as unsupported. See [RTL_COVERAGE.md](RTL_COVERAGE.md)
 and its per-skin comparison for checked sources, unknowns and completion steps.
 
+## Latest registered batch (2026-09-25)
+
+Galaxy Note20 and Galaxy Tab S9+, Tab S8 Ultra, Tab S8+ and Tab S8 now have
+paired main-display 3-button and gesture captures. The raw JSON files were copied
+unchanged from RTL downloads and matched the expected model and full-screen
+resolution. For the four tablets, gesture mode is confirmed by Settings and
+configuration plus side system-gesture insets even when InsetsProbe's inset-only
+heuristic reports threeButton; retain the recorded mode and explain the evidence
+in [RTL_COVERAGE.md](RTL_COVERAGE.md).
+
 ## Correction from official skins (2026-09-22)
 
 The old claim that RTL always exposes the main display was not justified. Fold8's
