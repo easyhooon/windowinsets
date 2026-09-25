@@ -220,8 +220,9 @@ manual zoom/pan, and reduced motion on desktop and mobile.
   pending; view rotation does not change the reported ratio.
 - **sw600dp** is an owner-requested Android metric with no safearea.info counterpart.
   It appears beside the selected display's dimensions and reports whether the
-  shorter logical dimension is at least 600 dp. Missing logical size remains
-  pending.
+  shorter logical dimension is at least 600 dp. Its inline help expands the
+  Android smallest-width qualifier and the threshold rule. Missing logical size
+  remains pending.
 - Fold8/Flip8 cover and inner displays share one WebGL scene through folding.
   The cover uses the rigid rear-panel transform; applying the inner cylindrical
   bend to its annotation margins previously pulled it inside the opaque chassis.

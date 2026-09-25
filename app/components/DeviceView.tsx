@@ -231,6 +231,11 @@ export function DeviceView({ device }: { device: Device }) {
               <Row label="Scale" value={screen.densityDpi ? `${Number((screen.densityDpi / 160).toFixed(2))}×` : PENDING} />
             </dl>
 
+            <details className="mt-2 text-xs text-subtle">
+              <summary className="cursor-pointer">What does sw600dp mean?</summary>
+              <p className="mt-2">“sw” means smallest width. Android's <code>sw600dp</code> resource qualifier applies when the app's smallest available width is at least 600 dp. The Yes/No value here compares the selected display's shorter measured logical dimension with 600 dp; exactly 600 dp counts as Yes.</p>
+            </details>
+
             {foldable && units === "dp" && <details className="mt-2 text-xs text-subtle">
               <summary className="cursor-pointer">Why can outer and inner dp sizes differ?</summary>
               <p className="mt-2">dp describes Android layout space, not physical length. Each display has its own pixel resolution and Android density, so equal physical heights can have different dp values.</p>
