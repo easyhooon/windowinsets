@@ -157,6 +157,17 @@ export function DeviceView({ device }: { device: Device }) {
   const outerSkin = skins[`${device.slug}/cover`];
   const outerSource = device.screens.find(s => s.id === "cover");
   const outerScreen = outerSource ? preciseScreen(outerSource) : undefined;
+  const densityRows = device.screens.flatMap(s => {
+    const px = s.logicalSizePx ?? s.resolutionPx;
+    if (!s.densityDpi || !s.logicalSizeDp || !px.width) return [];
+    return [{
+      label: s.id === "cover" ? "Outer" : "Inner",
+      px: `${px.width} × ${px.height} px`,
+      scale: `${Number((s.densityDpi / 160).toFixed(3))} (${s.densityDpi} dpi)`,
+      dp: `${Number(s.logicalSizeDp.width.toFixed(2))} × ${Number(s.logicalSizeDp.height.toFixed(2))} dp`,
+    }];
+  });
+  const densityScales = [...new Set(device.screens.flatMap(s => s.densityDpi ? [s.densityDpi] : []))];
   const mainMeasurement = main.insets[navMode];
   const mainSafe = mainMeasurement ? safeInsets(mainMeasurement) : null;
   const mainSafePx = mainMeasurement ? safeInsetsPx(mainMeasurement) : null;
@@ -249,9 +260,12 @@ export function DeviceView({ device }: { device: Device }) {
               <p className="mt-2">“sw” means smallest width. Android's <code>sw600dp</code> resource qualifier applies when the app's smallest available width is at least 600 dp. The Yes/No value here compares the selected display's shorter measured logical dimension with 600 dp; exactly 600 dp counts as Yes.</p>
             </details>
 
-            {foldable && units === "dp" && <details className="mt-2 text-xs text-subtle">
-              <summary className="cursor-pointer">Why can outer and inner dp sizes differ?</summary>
-              <p className="mt-2">dp describes Android layout space, not physical length. Each display has its own pixel resolution and Android density, so equal physical heights can have different dp values.</p>
+            {foldable && <details className="mt-2 text-xs text-subtle" open={densityScales.length > 1}>
+              <summary className="cursor-pointer">Why do outer and inner sizes differ?</summary>
+              <p className="mt-2">The diagram is drawn in Android layout units, not millimeters. Each display has its own pixel resolution and Android density, so a smaller px or dp value does not mean a physically shorter display.</p>
+              {densityRows.length > 0 && <ul className="mt-2 space-y-1 font-mono">
+                {densityRows.map(row => <li key={row.label}>{row.label}: {row.px} ÷ {row.scale} = {row.dp}</li>)}
+              </ul>}
             </details>}
 
             <SectionLabel>Safe Area Insets</SectionLabel>
