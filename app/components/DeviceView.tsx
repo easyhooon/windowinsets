@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router";
 import type { Device, Insets, NavMode, Source } from "../data/types";
 import { Dropdown } from "./Dropdown";
-import { COVER_REVEAL_ANGLE, FoldRenderer3D } from "./FoldRenderer3D";
+import { FoldRenderer3D, coverRevealAngle } from "./FoldRenderer3D";
 import { InsetsDiagram } from "./InsetsDiagram";
 import { DiagramViewport, type DiagramViewportHandle } from "./DiagramViewport";
 import { skins } from "../data/skins";
@@ -176,7 +176,7 @@ export function DeviceView({ device }: { device: Device }) {
   useEffect(() => { if (units === "px" && !exactPxAvailable) setUnits("dp"); }, [exactPxAvailable, units]);
   const pose = (value: string) => {
     const nextAngle = Number(value);
-    const target = nextAngle < COVER_REVEAL_ANGLE && device.screens.some(s => s.id === "cover") ? "cover" : "main";
+    const target = nextAngle < coverRevealAngle(triFold) && device.screens.some(s => s.id === "cover") ? "cover" : "main";
     setAngle(nextAngle);
     if (useFold) {
       setTransitionTarget(target);
@@ -357,7 +357,7 @@ export function DeviceView({ device }: { device: Device }) {
           onMeasurementBounds={(bounds, body) => viewport.current?.fitFoldBounds(bounds, body)}
           onDisplayedAngle={value => {
             viewport.current?.setFoldAngle(value);
-            const visible = value < COVER_REVEAL_ANGLE && outerScreen ? "cover" : "main";
+            const visible = value < coverRevealAngle(triFold) && outerScreen ? "cover" : "main";
             setScreenId(current => current === visible ? current : visible);
             return viewport.current?.effectiveZoom();
           }}

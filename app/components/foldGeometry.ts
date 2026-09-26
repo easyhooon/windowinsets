@@ -120,10 +120,11 @@ export function triFoldAngles(sequence: number) {
     right: Math.max(0, Math.min(180, sequence * 2)) };
 }
 
-/** Present the rear cover, then turn toward the inner display while keeping
- * the right wing's facing direction fixed. The opposite sign adds a full spin. */
-export function triFoldViewTurn(sequence: number) {
-  return (180 - triFoldAngles(sequence).right) * Math.PI / 180;
+/** Face the inner display while both wings fold so each bend stays visible,
+ * then turn to the middle panel's rear cover only as the right wing closes. */
+export function triFoldViewTurn(sequence: number, revealEnd: number) {
+  const reveal = Math.max(0, 1 - sequence / revealEnd);
+  return reveal * reveal * (3 - 2 * reveal) * Math.PI;
 }
 
 /** Illustrative unequal hinge strips leave room for the nested left housing. */

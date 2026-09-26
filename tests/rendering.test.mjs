@@ -64,18 +64,15 @@ test('TriFold folds left before right with three rigid, separated housings', () 
   }
 });
 
-test('TriFold cover reveal keeps the right wing facing forward without an extra spin', () => {
-  for (let sequence = 0; sequence <= 180; sequence++) {
-    const turn = triFoldViewTurn(sequence);
-    const a = triFoldPoint(1.2, 0, 0, sequence, 4.2, .065);
-    const b = triFoldPoint(1.8, 0, 0, sequence, 4.2, .065);
-    const dx = b[0] - a[0], dz = b[2] - a[2];
-    const worldX = Math.cos(turn) * dx + Math.sin(turn) * dz;
-    const worldZ = -Math.sin(turn) * dx + Math.cos(turn) * dz;
-    assert.ok(Math.abs(worldX - .6) < 1e-9, 'right wing must retain its world-facing direction');
-    assert.ok(Math.abs(worldZ) < 1e-9, 'right wing must not spin during the cover reveal');
-    if (sequence >= 90) assert.equal(turn, 0, 'left wing opens with a stationary inner view');
+test('TriFold faces the inner display while wings fold, then turns to the rear cover', () => {
+  let previous = 0;
+  for (let sequence = 180; sequence >= 0; sequence--) {
+    const turn = triFoldViewTurn(sequence, 60);
+    if (sequence >= 60) assert.equal(turn, 0, 'both hinges must stay visible from the front');
+    assert.ok(turn >= previous, 'the cover reveal must not reverse');
+    previous = turn;
   }
+  assert.ok(Math.abs(triFoldViewTurn(0, 60) - Math.PI) < 1e-12, 'closed pose shows the middle panel rear');
 });
 
 function rawCornerRadii(raw) {

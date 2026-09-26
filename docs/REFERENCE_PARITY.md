@@ -16,11 +16,12 @@ Android-specific substitutions and evidence boundaries:
   The [Korean service guide](https://www.samsungsvc.co.kr/solution/4498019)
   confirms that closing the camera-bearing side first triggers a warning and vibration.
   Left/right here are viewed from the unfolded inner display.
-- The cover-to-inner presentation turns the chassis in the direction that cancels
-  the right wing's hinge rotation, keeping that wing facing forward. The middle
-  panel's rear cover turns away once; the left wing then opens with a stationary
-  inner view. This replaces the opposite-direction reveal that made the right wing
-  perform an extra full turn. Camera position and zoom stay fixed.
+- The TriFold view faces the inner display while the left wing and most of the
+  right wing fold, so both bends stay readable, like the Fold/Flip reveal. Only in
+  the last third of the sequence (right wing below 120°) does the chassis ease a
+  half turn to the middle panel's rear cover. Cover measurements replace inner ones
+  once that turn passes 90°. This replaces a linear turn tied to the right wing,
+  which showed the right wing's fold edge-on. Camera position stays fixed.
 - The Hinge dropdown shows **left / right** angles and one coordinated fold
   sequence slider. This prevents a right-first closing order. Closed is 0°/0°,
   Partially Folded is 90°/180°, and Open is 180°/180°. The slider's 0–180 range

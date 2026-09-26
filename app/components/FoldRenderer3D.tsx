@@ -12,6 +12,10 @@ import type { CutoutShape, Screen, InsetsMeasurement } from "../data/types";
 import { cutoutPairs, cornerPairs, formatLengthFromPairs, insetPairs, safeInsets, safeInsetsPx } from "../data/measurementUnits";
 
 export const COVER_REVEAL_ANGLE = 60; // Illustrative primary surface, not a measured hinge state.
+/** TriFold turns over the same span but faces its rear cover only past the half turn. */
+export function coverRevealAngle(triFold: boolean) {
+  return triFold ? COVER_REVEAL_ANGLE / 2 : COVER_REVEAL_ANGLE;
+}
 
 const SEGMENTS = 96; // vertices along the fold axis — higher = smoother curve
 const DEFAULT_THICKNESS = 0.065; // Preview fallback when no published chassis dimensions exist.
@@ -535,9 +539,10 @@ export function FoldRenderer3D({
       coverMesh.visible = !!stateRef.current.cover && displayedAngle < 100;
       const reveal = Math.max(0, 1 - displayedAngle / 100);
       if (triFold) {
-        deviceGroup.rotation.set(0, triFoldViewTurn(displayedAngle), 0);
+        const triTurn = triFoldViewTurn(displayedAngle, COVER_REVEAL_ANGLE);
+        deviceGroup.rotation.set(0, triTurn, 0);
         deviceGroup.position.set(0, 0, 0);
-        seatFacingDisplay(Math.max(0, 1 - displayedAngle / COVER_REVEAL_ANGLE));
+        seatFacingDisplay(triTurn / Math.PI);
         return;
       }
       const turn = reveal * reveal * (3 - 2 * reveal) * Math.PI / 2;
@@ -564,9 +569,9 @@ export function FoldRenderer3D({
       if (!st.showDimensions) { setMeasurements(null); return; }
       // Only annotate the front-facing display. Never show hidden inner values
       // through the cover, or use cover captures as inner measurements.
-      const outer = displayedAngle < COVER_REVEAL_ANGLE ? st.cover : undefined;
+      const outer = displayedAngle < coverRevealAngle(triFold) ? st.cover : undefined;
       const size = outer?.screen.logicalSizeDp;
-      if (displayedAngle < COVER_REVEAL_ANGLE ? !size : !measured) { setMeasurements(null); return; }
+      if (displayedAngle < coverRevealAngle(triFold) ? !size : !measured) { setMeasurements(null); return; }
       const w = size?.width ?? dpW, h = size?.height ?? dpH;
       const inset = outer ? (outer.measurement ? safeInsets(outer.measurement) : null) : st.safe;
       const insetPx = outer ? (outer.measurement ? safeInsetsPx(outer.measurement) : null) : st.safePx;
@@ -739,11 +744,11 @@ export function FoldRenderer3D({
   }
 
   if (webglUnavailable) {
-    const visible = angle < COVER_REVEAL_ANGLE && cover ? cover : fallbackMain;
+    const visible = angle < coverRevealAngle(triFold) && cover ? cover : fallbackMain;
     if (visible) return <div role="img" aria-label={`${triFold ? "TriFold" : axis === "vertical" ? "Book" : "Flip"} fold flat fallback diagram`} style={{ width: 700, height: 700 }}>
       <InsetsDiagram screen={visible.screen} measurement={visible.measurement} zoom={100} showFrame={showFrame}
         showRegions={showRegions} showDimensions={showDimensions} units={units} layers={layers}
-        skin={angle < COVER_REVEAL_ANGLE && cover ? cover.skin : skin} />
+        skin={angle < coverRevealAngle(triFold) && cover ? cover.skin : skin} />
     </div>;
   }
 
