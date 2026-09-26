@@ -7,6 +7,8 @@ import type { Device, Insets, NavMode, Source } from "../data/types";
 import { Dropdown } from "./Dropdown";
 import { FoldRenderer3D, coverRevealAngle } from "./FoldRenderer3D";
 import { InsetsDiagram } from "./InsetsDiagram";
+import { CodeBlock } from "./CodeBlock";
+import type { ComposePreview } from "./composePreview";
 import { DiagramViewport, type DiagramViewportHandle } from "./DiagramViewport";
 import { skins } from "../data/skins";
 import { ResizeHandle } from "./ResizeHandle";
@@ -106,6 +108,22 @@ function SourceList({ sources }: { sources: Source[] }) {
 }
 
 
+const dp = (v: number) => `${Number(v.toFixed(2))}.dp`;
+function composeSnippet(safe: Insets, device: string, mode: string) {
+  return `// ${device}
+// ${mode}, keyboard hidden
+Scaffold(
+  contentWindowInsets =
+    WindowInsets.safeDrawing,
+) { innerPadding ->
+  // start ${dp(safe.left)}, top ${dp(safe.top)}
+  // end ${dp(safe.right)}, bottom ${dp(safe.bottom)}
+  Content(
+    Modifier.padding(innerPadding)
+  )
+}`;
+}
+
 const orientations = [
   { value: "0", label: "Portrait" }, { value: "90", label: "Landscape Left" },
   { value: "-90", label: "Landscape Right" }, { value: "180", label: "Portrait Upside Down" },
@@ -129,6 +147,7 @@ export function DeviceView({ device }: { device: Device }) {
   const [showDimensions, setShowDimensions] = useState(true);
   const [layers, setLayers] = useState({ safe: true, insets: true, cutout: true, corners: true });
   const [units, setUnits] = useState<"dp" | "px">("dp");
+  const [composePreview, setComposePreview] = useState<ComposePreview>("off");
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [metricsOpen, setMetricsOpen] = useState(false);
   const [exportStatus, setExportStatus] = useState("");
@@ -280,6 +299,20 @@ export function DeviceView({ device }: { device: Device }) {
             <dl>
               {safe ? insetsRows(safe, safePx, units, fmt) : pendingInsetsRows}
             </dl>
+            {safe && <p className="mt-2 text-xs leading-relaxed text-muted">
+              With the keyboard hidden, Compose's <code>WindowInsets.safeDrawing</code> resolves to these values.
+              {" "}<Link to="/developer-guide#jetpack-compose" className="text-accent underline">Compose guide →</Link>
+            </p>}
+            {safe && composePreview !== "off" && <>
+              <SectionLabel>Compose Preview · {composePreview === "after" ? "After" : "Before"}</SectionLabel>
+              <p className="text-xs leading-relaxed text-muted">
+                {composePreview === "after"
+                  ? "Content is padded by safeDrawing. Backgrounds still draw edge to edge; the list scrolls behind the navigation bar."
+                  : "Content ignores the insets. Red outlines mark controls under a system bar or the cutout."}
+                {" "}Simulated from the recorded insets, not a rendered Compose frame.
+              </p>
+              <CodeBlock title="safeDrawing padding">{composeSnippet(safe, foldable ? `${device.name} · ${screen.id === "cover" ? "Outer" : "Inner"}` : device.name, navMode === "gesture" ? "Gesture" : "3-button")}</CodeBlock>
+            </>}
 
             {measurement?.cutoutShape && <>
               <SectionLabel>Display Cutout Bounds</SectionLabel>
@@ -351,7 +384,7 @@ export function DeviceView({ device }: { device: Device }) {
         {useFold ? <FoldRenderer3D triFold={triFold} angle={angle} axis={device.formFactor === "foldable-flip" ? "horizontal" : "vertical"}
           widthDp={mainWidthDp} heightDp={mainHeightDp}
           safe={mainSafe} safePx={mainSafePx} logicalSizePx={main.logicalSizePx} cornerRadiiDp={main.cornerRadiiDp} cornerRadiiPx={main.cornerRadiiPx} cutoutShape={mainMeasurement?.cutoutShape}
-          zoom={zoom} showFrame={showFrame} showRegions={showRegions} showDimensions={showDimensions} units={units} layers={layers} skin={mainSkin} skinRotation={main.captureRotation ?? 0} viewRotation={rotation} measured={!!main.logicalSizeDp} cover={outerScreen && outerSkin ? { screen: outerScreen, measurement: outerScreen.insets[navMode], skin: outerSkin } : undefined}
+          zoom={zoom} showFrame={showFrame} showRegions={showRegions} showDimensions={showDimensions} units={units} layers={layers} composePreview={composePreview} skin={mainSkin} skinRotation={main.captureRotation ?? 0} viewRotation={rotation} measured={!!main.logicalSizeDp} cover={outerScreen && outerSkin ? { screen: outerScreen, measurement: outerScreen.insets[navMode], skin: outerSkin } : undefined}
           fallbackMain={{ screen: main, measurement: mainMeasurement }}
           chassisMm={device.chassisMm}
           onMeasurementBounds={(bounds, body) => viewport.current?.fitFoldBounds(bounds, body)}
@@ -362,7 +395,7 @@ export function DeviceView({ device }: { device: Device }) {
             return viewport.current?.effectiveZoom();
           }}
           onTransitionEnd={() => { viewport.current?.refitFold(); if (transitionTarget) { setScreenId(transitionTarget); setTransitionTarget(null); } }} />
-          : <InsetsDiagram screen={screen} measurement={measurement} zoom={zoom} showFrame={showFrame} showRegions={showRegions} showDimensions={showDimensions} units={units} layers={layers} skin={skin} />}
+          : <InsetsDiagram screen={screen} measurement={measurement} zoom={zoom} showFrame={showFrame} showRegions={showRegions} showDimensions={showDimensions} units={units} layers={layers} composePreview={composePreview} skin={skin} />}
       </DiagramViewport>
       </div>
       <footer className="canvas-footer">
@@ -375,6 +408,7 @@ export function DeviceView({ device }: { device: Device }) {
     </section>
     <div className={`canvas-controls${useFold ? " is-foldable" : ""}`} aria-label="Canvas controls">
       <Dropdown label="Navigation" value={navMode} options={[{ value: "threeButton", label: "3-button" }, { value: "gesture", label: "Gesture" }]} onChange={v => setNavMode(v as NavMode)} />
+      <Dropdown label="Compose" value={safe ? composePreview : "off"} valueWidthCh={6} options={[{ value: "off", label: "Off" }, { value: "before", label: "Before", disabled: !safe }, { value: "after", label: "After (safeDrawing)", disabled: !safe }]} onChange={v => setComposePreview(v as ComposePreview)} />
       <Dropdown label="Orientation" value={String(rotation)} options={orientationOptions} onChange={v => { setRotation(Number(v)); setAutoFit(true); setFitKey(key => key + 1); }} />
       <Dropdown label="Zoom" value={`${displayZoom(zoom)}%`} options={[{ value: "fit", label: "Fit to canvas" }, { value: "out", label: "− Zoom out" }, { value: "in", label: "+ Zoom in" }, ...[25,50,100,200,300].map(z => ({ value: String(z), label: `${z}%` }))]} onChange={v => {
         if (v === "fit") { setAutoFit(true); setFitKey(k => k + 1); return; }

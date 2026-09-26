@@ -13,9 +13,9 @@ export function meta(_: Route.MetaArgs) {
   });
 }
 
-function Section({ title, children }: { title: string; children: ReactNode }) {
+function Section({ id, title, children }: { id?: string; title: string; children: ReactNode }) {
   return (
-    <section className="mt-8">
+    <section id={id} className="mt-8 scroll-mt-4">
       <h2 className="text-lg font-semibold">{title}</h2>
       <div className="mt-2 space-y-3 text-[15px] leading-relaxed text-muted [&_b]:text-fg [&_code:not(.hljs)]:rounded [&_code:not(.hljs)]:bg-canvas [&_code:not(.hljs)]:px-1.5 [&_code:not(.hljs)]:font-mono [&_code:not(.hljs)]:text-[13px] [&_code:not(.hljs)]:text-fg [&_li]:ml-5 [&_li]:list-disc [&_a]:text-accent [&_a]:underline [&_h3]:mt-4 [&_h3]:font-medium [&_h3]:text-fg">
         {children}
@@ -61,7 +61,7 @@ export default function DeveloperGuide() {
         </ul>
       </Section>
 
-      <Section title="Jetpack Compose">
+      <Section id="jetpack-compose" title="Jetpack Compose">
         <p>
           Compose is Android's recommended UI toolkit, so its examples come first. If your app
           still uses XML layouts, the View-based equivalents follow below.
