@@ -19,7 +19,7 @@ const samsungResolution: Source = {
 const capture = (mode: "gesture" | "threeButton"): Source => ({
   kind: "measured",
   label: `InsetsProbe 1.3.0 on Samsung RTL Galaxy S24 (SM-S921N-KR3), main ${mode === "gesture" ? "gesture" : "3-button"}`,
-  url: `https://github.com/easyhooon/windowinsets/blob/main/measurements/galaxy-s24/main-${mode}.json`,
+  url: `https://github.com/easyhooon/windowinsets.info/blob/main/measurements/galaxy-s24/main-${mode}.json`,
   retrievedAt: "2026-09-24",
 });
 

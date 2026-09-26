@@ -7,7 +7,7 @@ const samsungSpecs: Source = {
   retrievedAt: "2026-09-25",
   note: "Samsung lists 13.1-inch (332.8 mm), 2880×1800 WQXGA+; PPI is calculated from that diagonal and resolution.",
 };
-const captureBase = "https://github.com/easyhooon/windowinsets/blob/main/measurements/galaxy-tab-s10-fe-plus";
+const captureBase = "https://github.com/easyhooon/windowinsets.info/blob/main/measurements/galaxy-tab-s10-fe-plus";
 const captureSource = (mode: "gesture" | "threeButton"): Source => ({
   kind: "measured",
   label: `InsetsProbe 1.3.0 on Samsung RTL Galaxy Tab S10 FE+ main (SM-X620), ${mode}`,

@@ -103,7 +103,7 @@ export const devices: Device[] = mergedDevices.filter(isInCoverage).sort((a, b) 
 export const featuredDevice = devices.find(device => device.slug === "galaxy-z-fold8")!;
 
 export const SITE_URL = "https://windowinsets.info";
-export const REPO_URL = "https://github.com/easyhooon/windowinsets";
+export const REPO_URL = "https://github.com/easyhooon/windowinsets.info";
 
 /** Non-device pages that are prerendered and listed in the sitemap. */
 export const STATIC_PATHS = ["/", "/methodology"];

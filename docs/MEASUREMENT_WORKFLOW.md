@@ -606,7 +606,7 @@ display `phone`; the accepted file uses the site's `main` screen filename and
 keeps the raw label unchanged. The gesture file was downloaded as `content (33)`
 and validated from its JSON fields before being copied unchanged to
 `measurements/galaxy-s24-plus/main-gesture.json`. The earlier stale-export symptom
-is tracked in [issue #12](https://github.com/easyhooon/windowinsets/issues/12).
+is tracked in [issue #12](https://github.com/easyhooon/windowinsets.info/issues/12).
 
 ## Galaxy S24 RTL capture — 2026-09-24
 

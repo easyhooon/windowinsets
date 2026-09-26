@@ -10,14 +10,14 @@ const samsungSpecs: Source = {
 const probe: Source = {
   kind: "measured",
   label: "InsetsProbe on SM-S936N (Korea)",
-  url: "https://github.com/easyhooon/windowinsets/blob/main/measurements/galaxy-s25-plus/main-threeButton.json",
+  url: "https://github.com/easyhooon/windowinsets.info/blob/main/measurements/galaxy-s25-plus/main-threeButton.json",
   retrievedAt: "2025-01-14",
 };
 
 const probeGesture: Source = {
   kind: "measured",
   label: "InsetsProbe on SM-S936N (Korea)",
-  url: "https://github.com/easyhooon/windowinsets/blob/main/measurements/galaxy-s25-plus/main-gesture.json",
+  url: "https://github.com/easyhooon/windowinsets.info/blob/main/measurements/galaxy-s25-plus/main-gesture.json",
   retrievedAt: "2026-09-22",
 };
 

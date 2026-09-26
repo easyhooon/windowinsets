@@ -12,7 +12,7 @@ const samsungSkinPage: Source = {
   url: "https://developer.samsung.com/galaxy-emulator-skin/galaxy-z.html",
   retrievedAt: "2026-09-23",
 };
-const captureBase = "https://github.com/easyhooon/windowinsets/blob/main/measurements/galaxy-z-fold5";
+const captureBase = "https://github.com/easyhooon/windowinsets.info/blob/main/measurements/galaxy-z-fold5";
 const mainCaptureBase = `${captureBase}/recapture-2026-09-25`;
 const coverThreeButton: Source = {
   kind: "measured",

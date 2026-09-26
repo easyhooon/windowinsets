@@ -82,14 +82,14 @@ removes a model from its catalog.
   on 2026-09-24. The same built APK again stalled at 0% in WebClient
   Applications, while installation succeeded on Flip3 in the same session.
   No Fold3 insets were captured. The device-specific installation failure is
-  tracked in [issue #11](https://github.com/easyhooon/windowinsets/issues/11).
+  tracked in [issue #11](https://github.com/easyhooon/windowinsets.info/issues/11).
   On 2026-09-25 the user reported InsetsProbe installation stalled at 0% on
   Galaxy A54 and Galaxy A13. For the original reports, exact SKU, Android / One
   UI version, RTL location and APK version remain unknown. No A54 capture status
   was provided. Later on 2026-09-25, SM-A135F Galaxy A13 LTE installed
   InsetsProbe and produced valid captures; this shows the failure was not
   universal but cannot identify the original failed unit. These reports belong
-  in [issue #11](https://github.com/easyhooon/windowinsets/issues/11).
+  in [issue #11](https://github.com/easyhooon/windowinsets.info/issues/11).
   The full cross-series, cross-region inventory was not completed.
 - The local skin archive contains 126 registered models; 119 are public under
   the release-year policy. All four featured mobile models have registered skins.

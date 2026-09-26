@@ -62,7 +62,7 @@ export const galaxyZFold2: Device = {
             {
               "kind": "measured",
               "label": "InsetsProbe 1.1.2 on physical Galaxy Z Fold2 cover, gestures (SM-F916N)",
-              "url": "https://github.com/easyhooon/windowinsets/blob/main/measurements/galaxy-z-fold2/cover-gesture.json",
+              "url": "https://github.com/easyhooon/windowinsets.info/blob/main/measurements/galaxy-z-fold2/cover-gesture.json",
               "retrievedAt": "2026-09-22"
             }
           ]
@@ -101,7 +101,7 @@ export const galaxyZFold2: Device = {
             {
               "kind": "measured",
               "label": "InsetsProbe 1.1.1 on physical Galaxy Z Fold2 cover (SM-F916N)",
-              "url": "https://github.com/easyhooon/windowinsets/blob/main/measurements/galaxy-z-fold2/cover-threeButton.json",
+              "url": "https://github.com/easyhooon/windowinsets.info/blob/main/measurements/galaxy-z-fold2/cover-threeButton.json",
               "retrievedAt": "2026-09-22"
             }
           ]
@@ -111,19 +111,19 @@ export const galaxyZFold2: Device = {
         {
           "kind": "measured",
           "label": "Galaxy Z Fold2 physical panel and app-window investigation notes",
-          "url": "https://github.com/easyhooon/windowinsets/blob/main/measurements/galaxy-z-fold2/README.md",
+          "url": "https://github.com/easyhooon/windowinsets.info/blob/main/measurements/galaxy-z-fold2/README.md",
           "retrievedAt": "2026-09-22"
         },
         {
           "kind": "measured",
           "label": "InsetsProbe 1.1.1 on physical Galaxy Z Fold2 cover (SM-F916N)",
-          "url": "https://github.com/easyhooon/windowinsets/blob/main/measurements/galaxy-z-fold2/cover-threeButton.json",
+          "url": "https://github.com/easyhooon/windowinsets.info/blob/main/measurements/galaxy-z-fold2/cover-threeButton.json",
           "retrievedAt": "2026-09-22"
         },
         {
           "kind": "measured",
           "label": "InsetsProbe 1.1.2 on physical Galaxy Z Fold2 cover, gestures (SM-F916N)",
-          "url": "https://github.com/easyhooon/windowinsets/blob/main/measurements/galaxy-z-fold2/cover-gesture.json",
+          "url": "https://github.com/easyhooon/windowinsets.info/blob/main/measurements/galaxy-z-fold2/cover-gesture.json",
           "retrievedAt": "2026-09-22"
         }
       ]
@@ -186,7 +186,7 @@ export const galaxyZFold2: Device = {
             {
               "kind": "measured",
               "label": "InsetsProbe 1.1.2 on physical Galaxy Z Fold2 inner, gestures with taskbar (SM-F916N)",
-              "url": "https://github.com/easyhooon/windowinsets/blob/main/measurements/galaxy-z-fold2/main-gesture.json",
+              "url": "https://github.com/easyhooon/windowinsets.info/blob/main/measurements/galaxy-z-fold2/main-gesture.json",
               "retrievedAt": "2026-09-22"
             }
           ]
@@ -225,7 +225,7 @@ export const galaxyZFold2: Device = {
             {
               "kind": "measured",
               "label": "InsetsProbe 1.1.1 on physical Galaxy Z Fold2 (SM-F916N)",
-              "url": "https://github.com/easyhooon/windowinsets/blob/main/measurements/galaxy-z-fold2/main-threeButton.json",
+              "url": "https://github.com/easyhooon/windowinsets.info/blob/main/measurements/galaxy-z-fold2/main-threeButton.json",
               "retrievedAt": "2026-09-22"
             }
           ]
@@ -235,13 +235,13 @@ export const galaxyZFold2: Device = {
         {
           "kind": "measured",
           "label": "InsetsProbe 1.1.1 on physical Galaxy Z Fold2 (SM-F916N)",
-          "url": "https://github.com/easyhooon/windowinsets/blob/main/measurements/galaxy-z-fold2/main-threeButton.json",
+          "url": "https://github.com/easyhooon/windowinsets.info/blob/main/measurements/galaxy-z-fold2/main-threeButton.json",
           "retrievedAt": "2026-09-22"
         },
         {
           "kind": "measured",
           "label": "InsetsProbe 1.1.2 on physical Galaxy Z Fold2 inner, gestures with taskbar (SM-F916N)",
-          "url": "https://github.com/easyhooon/windowinsets/blob/main/measurements/galaxy-z-fold2/main-gesture.json",
+          "url": "https://github.com/easyhooon/windowinsets.info/blob/main/measurements/galaxy-z-fold2/main-gesture.json",
           "retrievedAt": "2026-09-22"
         }
       ]
@@ -251,25 +251,25 @@ export const galaxyZFold2: Device = {
     {
       "kind": "measured",
       "label": "InsetsProbe 1.1.1 on physical Galaxy Z Fold2 (SM-F916N)",
-      "url": "https://github.com/easyhooon/windowinsets/blob/main/measurements/galaxy-z-fold2/main-threeButton.json",
+      "url": "https://github.com/easyhooon/windowinsets.info/blob/main/measurements/galaxy-z-fold2/main-threeButton.json",
       "retrievedAt": "2026-09-22"
     },
     {
       "kind": "measured",
       "label": "InsetsProbe 1.1.1 on physical Galaxy Z Fold2 cover (SM-F916N)",
-      "url": "https://github.com/easyhooon/windowinsets/blob/main/measurements/galaxy-z-fold2/cover-threeButton.json",
+      "url": "https://github.com/easyhooon/windowinsets.info/blob/main/measurements/galaxy-z-fold2/cover-threeButton.json",
       "retrievedAt": "2026-09-22"
     },
     {
       "kind": "measured",
       "label": "InsetsProbe 1.1.2 on physical Galaxy Z Fold2 inner, gestures with taskbar (SM-F916N)",
-      "url": "https://github.com/easyhooon/windowinsets/blob/main/measurements/galaxy-z-fold2/main-gesture.json",
+      "url": "https://github.com/easyhooon/windowinsets.info/blob/main/measurements/galaxy-z-fold2/main-gesture.json",
       "retrievedAt": "2026-09-22"
     },
     {
       "kind": "measured",
       "label": "InsetsProbe 1.1.2 on physical Galaxy Z Fold2 cover, gestures (SM-F916N)",
-      "url": "https://github.com/easyhooon/windowinsets/blob/main/measurements/galaxy-z-fold2/cover-gesture.json",
+      "url": "https://github.com/easyhooon/windowinsets.info/blob/main/measurements/galaxy-z-fold2/cover-gesture.json",
       "retrievedAt": "2026-09-22"
     }
   ]

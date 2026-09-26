@@ -10,13 +10,13 @@ const samsungSpecs: Source = {
 const rtlThreeButton: Source = {
   kind: "measured",
   label: "Samsung Remote Test Lab (RTL), One UI 8.5, Android 16",
-  url: "https://github.com/easyhooon/windowinsets/blob/main/measurements/galaxy-s25-ultra/main-threeButton.json",
+  url: "https://github.com/easyhooon/windowinsets.info/blob/main/measurements/galaxy-s25-ultra/main-threeButton.json",
   retrievedAt: "2026-09-22",
 };
 
 const rtlGesture: Source = {
   ...rtlThreeButton,
-  url: "https://github.com/easyhooon/windowinsets/blob/main/measurements/galaxy-s25-ultra/main-gesture.json",
+  url: "https://github.com/easyhooon/windowinsets.info/blob/main/measurements/galaxy-s25-ultra/main-gesture.json",
 };
 
 export const galaxyS25Ultra: Device = {

@@ -10,7 +10,7 @@ const specs: Source = {
 const capture = (mode: "gesture" | "threeButton"): Source => ({
   kind: "measured",
   label: `InsetsProbe 1.2.1 on Samsung RTL Galaxy S26 (SM-S942N), ${mode}`,
-  url: `https://github.com/easyhooon/windowinsets/blob/main/measurements/galaxy-s26/main-${mode}.json`,
+  url: `https://github.com/easyhooon/windowinsets.info/blob/main/measurements/galaxy-s26/main-${mode}.json`,
   retrievedAt: "2026-09-23",
 });
 

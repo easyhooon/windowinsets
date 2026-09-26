@@ -211,7 +211,7 @@ those test-server artifacts were diagnosed separately and are not counted as pas
 
 ## Review images
 
-- [Flip8 at 90°, desktop](https://github.com/easyhooon/windowinsets/blob/codex/fix-inset-annotation-readability/tests/visual/__screenshots__/desktop/galaxy-z-flip8-partially-folded.png)
-- [Flip8 at 90°, mobile](https://github.com/easyhooon/windowinsets/blob/codex/fix-inset-annotation-readability/tests/visual/__screenshots__/mobile/galaxy-z-flip8-partially-folded.png)
-- [Fold8 cover, desktop](https://github.com/easyhooon/windowinsets/blob/codex/fix-inset-annotation-readability/tests/visual/__screenshots__/desktop/galaxy-z-fold8-closed.png)
-- [Fold8 cover, mobile](https://github.com/easyhooon/windowinsets/blob/codex/fix-inset-annotation-readability/tests/visual/__screenshots__/mobile/galaxy-z-fold8-closed.png)
+- [Flip8 at 90°, desktop](https://github.com/easyhooon/windowinsets.info/blob/codex/fix-inset-annotation-readability/tests/visual/__screenshots__/desktop/galaxy-z-flip8-partially-folded.png)
+- [Flip8 at 90°, mobile](https://github.com/easyhooon/windowinsets.info/blob/codex/fix-inset-annotation-readability/tests/visual/__screenshots__/mobile/galaxy-z-flip8-partially-folded.png)
+- [Fold8 cover, desktop](https://github.com/easyhooon/windowinsets.info/blob/codex/fix-inset-annotation-readability/tests/visual/__screenshots__/desktop/galaxy-z-fold8-closed.png)
+- [Fold8 cover, mobile](https://github.com/easyhooon/windowinsets.info/blob/codex/fix-inset-annotation-readability/tests/visual/__screenshots__/mobile/galaxy-z-fold8-closed.png)

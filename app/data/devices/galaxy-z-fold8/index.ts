@@ -1,6 +1,6 @@
 import type { Device, Source } from "../../types";
 
-const captureBase = "https://github.com/easyhooon/windowinsets/blob/main/measurements/galaxy-z-fold8/recapture-2026-09-22";
+const captureBase = "https://github.com/easyhooon/windowinsets.info/blob/main/measurements/galaxy-z-fold8/recapture-2026-09-22";
 
 const coverThreeButton: Source = {
   kind: "measured",

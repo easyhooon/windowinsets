@@ -10,7 +10,7 @@ const samsungSpecs: Source = {
 const gestureSource: Source = {
   kind: "measured",
   label: "InsetsProbe 1.3.0 on Samsung RTL Galaxy Tab S9 FE 5G main (SM-X516N), gesture",
-  url: "https://github.com/easyhooon/windowinsets/blob/main/measurements/galaxy-tab-s9-fe/main-gesture.json",
+  url: "https://github.com/easyhooon/windowinsets.info/blob/main/measurements/galaxy-tab-s9-fe/main-gesture.json",
   retrievedAt: "2026-09-25",
 };
 const condition = {

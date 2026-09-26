@@ -12,7 +12,7 @@ const samsungSkinPage: Source = {
   url: "https://developer.samsung.com/galaxy-emulator-skin/galaxy-z.html",
   retrievedAt: "2026-09-25",
 };
-const captureBase = "https://github.com/easyhooon/windowinsets/blob/main/measurements/galaxy-z-fold3";
+const captureBase = "https://github.com/easyhooon/windowinsets.info/blob/main/measurements/galaxy-z-fold3";
 const source = (screen: "cover" | "main", mode: "gesture" | "threeButton", unit: "VN1" | "VN2"): Source => ({
   kind: "measured",
   label: `InsetsProbe 1.3.0 on Samsung RTL Galaxy Z Fold3 ${screen}, ${mode} (SM-F926B-${unit})`,

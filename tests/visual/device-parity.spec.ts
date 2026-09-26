@@ -47,7 +47,7 @@ test("sidebar inquiry opens the GitHub issue template chooser", async ({ page },
   await expect(inquiry).toBeVisible();
   await expect(inquiry).toHaveAttribute(
     "href",
-    "https://github.com/easyhooon/windowinsets/issues/new/choose",
+    "https://github.com/easyhooon/windowinsets.info/issues/new/choose",
   );
   await expect(page.locator(".sidebar-footer")).toHaveScreenshot("sidebar-footer-inquiry.png");
 });

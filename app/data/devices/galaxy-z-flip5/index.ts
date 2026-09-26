@@ -6,7 +6,7 @@ const samsungSpecs: Source = {
   url: "https://images.samsung.com/is/content/samsung/assets/pl/2307/mktpd/b5/Galaxy_Z_Flip5_spec.pdf",
   retrievedAt: "2026-09-23",
 };
-const captureBase = "https://github.com/easyhooon/windowinsets/blob/main/measurements/galaxy-z-flip5";
+const captureBase = "https://github.com/easyhooon/windowinsets.info/blob/main/measurements/galaxy-z-flip5";
 const measuredSource = (mode: "gesture" | "threeButton"): Source => ({
   kind: "measured",
   label: `InsetsProbe 1.3.0 on Samsung RTL Galaxy Z Flip5 main, ${mode} (SM-F731B)`,

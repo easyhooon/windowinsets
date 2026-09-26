@@ -75,7 +75,7 @@ export const galaxyZTriFold: Device = {
             {
               "kind": "measured",
               "label": "InsetsProbe 1.3.0 on Samsung RTL Galaxy Z TriFold cover, gesture (SM-F968N)",
-              "url": "https://github.com/easyhooon/windowinsets/blob/main/measurements/galaxy-z-trifold/cover-gesture.json",
+              "url": "https://github.com/easyhooon/windowinsets.info/blob/main/measurements/galaxy-z-trifold/cover-gesture.json",
               "retrievedAt": "2026-09-24"
             }
           ],
@@ -128,7 +128,7 @@ export const galaxyZTriFold: Device = {
             {
               "kind": "measured",
               "label": "InsetsProbe 1.3.0 on Samsung RTL Galaxy Z TriFold cover, threeButton (SM-F968N)",
-              "url": "https://github.com/easyhooon/windowinsets/blob/main/measurements/galaxy-z-trifold/cover-threeButton.json",
+              "url": "https://github.com/easyhooon/windowinsets.info/blob/main/measurements/galaxy-z-trifold/cover-threeButton.json",
               "retrievedAt": "2026-09-25"
             }
           ],
@@ -152,13 +152,13 @@ export const galaxyZTriFold: Device = {
         {
           "kind": "measured",
           "label": "InsetsProbe 1.3.0 on Samsung RTL Galaxy Z TriFold cover, gesture (SM-F968N)",
-          "url": "https://github.com/easyhooon/windowinsets/blob/main/measurements/galaxy-z-trifold/cover-gesture.json",
+          "url": "https://github.com/easyhooon/windowinsets.info/blob/main/measurements/galaxy-z-trifold/cover-gesture.json",
           "retrievedAt": "2026-09-24"
         },
         {
           "kind": "measured",
           "label": "InsetsProbe 1.3.0 on Samsung RTL Galaxy Z TriFold cover, threeButton (SM-F968N)",
-          "url": "https://github.com/easyhooon/windowinsets/blob/main/measurements/galaxy-z-trifold/cover-threeButton.json",
+          "url": "https://github.com/easyhooon/windowinsets.info/blob/main/measurements/galaxy-z-trifold/cover-threeButton.json",
           "retrievedAt": "2026-09-25"
         }
       ]
@@ -230,7 +230,7 @@ export const galaxyZTriFold: Device = {
             {
               "kind": "measured",
               "label": "InsetsProbe 1.3.0 on Samsung RTL Galaxy Z TriFold main, gesture (SM-F968N)",
-              "url": "https://github.com/easyhooon/windowinsets/blob/main/measurements/galaxy-z-trifold/main-gesture.json",
+              "url": "https://github.com/easyhooon/windowinsets.info/blob/main/measurements/galaxy-z-trifold/main-gesture.json",
               "retrievedAt": "2026-09-24"
             }
           ]
@@ -269,7 +269,7 @@ export const galaxyZTriFold: Device = {
             {
               "kind": "measured",
               "label": "InsetsProbe 1.3.0 on Samsung RTL Galaxy Z TriFold main, threeButton (SM-F968N)",
-              "url": "https://github.com/easyhooon/windowinsets/blob/main/measurements/galaxy-z-trifold/main-threeButton.json",
+              "url": "https://github.com/easyhooon/windowinsets.info/blob/main/measurements/galaxy-z-trifold/main-threeButton.json",
               "retrievedAt": "2026-09-24"
             }
           ]
@@ -279,13 +279,13 @@ export const galaxyZTriFold: Device = {
         {
           "kind": "measured",
           "label": "InsetsProbe 1.3.0 on Samsung RTL Galaxy Z TriFold main, gesture (SM-F968N)",
-          "url": "https://github.com/easyhooon/windowinsets/blob/main/measurements/galaxy-z-trifold/main-gesture.json",
+          "url": "https://github.com/easyhooon/windowinsets.info/blob/main/measurements/galaxy-z-trifold/main-gesture.json",
           "retrievedAt": "2026-09-24"
         },
         {
           "kind": "measured",
           "label": "InsetsProbe 1.3.0 on Samsung RTL Galaxy Z TriFold main, threeButton (SM-F968N)",
-          "url": "https://github.com/easyhooon/windowinsets/blob/main/measurements/galaxy-z-trifold/main-threeButton.json",
+          "url": "https://github.com/easyhooon/windowinsets.info/blob/main/measurements/galaxy-z-trifold/main-threeButton.json",
           "retrievedAt": "2026-09-24"
         }
       ]
@@ -295,25 +295,25 @@ export const galaxyZTriFold: Device = {
     {
       "kind": "measured",
       "label": "InsetsProbe 1.3.0 on Samsung RTL Galaxy Z TriFold cover, gesture (SM-F968N)",
-      "url": "https://github.com/easyhooon/windowinsets/blob/main/measurements/galaxy-z-trifold/cover-gesture.json",
+      "url": "https://github.com/easyhooon/windowinsets.info/blob/main/measurements/galaxy-z-trifold/cover-gesture.json",
       "retrievedAt": "2026-09-24"
     },
     {
       "kind": "measured",
       "label": "InsetsProbe 1.3.0 on Samsung RTL Galaxy Z TriFold cover, threeButton (SM-F968N)",
-      "url": "https://github.com/easyhooon/windowinsets/blob/main/measurements/galaxy-z-trifold/cover-threeButton.json",
+      "url": "https://github.com/easyhooon/windowinsets.info/blob/main/measurements/galaxy-z-trifold/cover-threeButton.json",
       "retrievedAt": "2026-09-25"
     },
     {
       "kind": "measured",
       "label": "InsetsProbe 1.3.0 on Samsung RTL Galaxy Z TriFold main, gesture (SM-F968N)",
-      "url": "https://github.com/easyhooon/windowinsets/blob/main/measurements/galaxy-z-trifold/main-gesture.json",
+      "url": "https://github.com/easyhooon/windowinsets.info/blob/main/measurements/galaxy-z-trifold/main-gesture.json",
       "retrievedAt": "2026-09-24"
     },
     {
       "kind": "measured",
       "label": "InsetsProbe 1.3.0 on Samsung RTL Galaxy Z TriFold main, threeButton (SM-F968N)",
-      "url": "https://github.com/easyhooon/windowinsets/blob/main/measurements/galaxy-z-trifold/main-threeButton.json",
+      "url": "https://github.com/easyhooon/windowinsets.info/blob/main/measurements/galaxy-z-trifold/main-threeButton.json",
       "retrievedAt": "2026-09-24"
     }
   ]
