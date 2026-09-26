@@ -61,54 +61,11 @@ export default function DeveloperGuide() {
         </ul>
       </Section>
 
-      <Section title="Reading insets in your Activity or Fragment">
-        <h3>With ViewCompat (Jetpack, recommended)</h3>
-        <p>
-          Use{" "}
-          <a href="https://developer.android.com/reference/androidx/core/view/ViewCompat#setOnApplyWindowInsetsListener(android.view.View,androidx.core.view.OnApplyWindowInsetsListener)">
-            ViewCompat.setOnApplyWindowInsetsListener
-          </a>
-          :
-        </p>
-        <CodeBlock title="Reading window insets">{`ViewCompat.setOnApplyWindowInsetsListener(rootView) { view, insets ->
-  val statusBars = insets.getInsets(Type.statusBars())
-  val navBars = insets.getInsets(Type.navigationBars())
-  val cutout = insets.getInsets(Type.displayCutout())
-
-  // Apply padding: view.setPadding(
-  //   statusBars.left, statusBars.top,
-  //   statusBars.right, navBars.bottom
-  // )
-
-  insets  // return unhandled insets to others
-}`}</CodeBlock>
-
-        <h3>Direct API access</h3>
-        <p>
-          On API 29+, use{" "}
-          <a href="https://developer.android.com/reference/android/view/WindowInsets#getInsets(int)">
-            WindowInsets.getInsets()
-          </a>
-          . On newer APIs (31+), also check <code>Display.getRoundedCorner()</code>.
-        </p>
-      </Section>
-
-      <Section title="Safe areas for content">
-        <p>
-          <b>Safe area</b> = system bars + display cutout. Combine them to find where content is
-          always visible and tappable:
-        </p>
-        <CodeBlock title="Calculating safe areas">{`val systemBars = insets.getInsets(Type.systemBars())
-val cutout = insets.getInsets(Type.displayCutout())
-val safe = Insets.of(
-  max(systemBars.left, cutout.left),
-  max(systemBars.top, cutout.top),
-  max(systemBars.right, cutout.right),
-  max(systemBars.bottom, cutout.bottom)
-)`}</CodeBlock>
-      </Section>
-
       <Section title="Jetpack Compose">
+        <p>
+          Compose is Android's recommended UI toolkit, so its examples come first. If your app
+          still uses XML layouts, the View-based equivalents follow below.
+        </p>
         <p>
           In Compose,{" "}
           <a href="https://developer.android.com/reference/kotlin/androidx/compose/foundation/layout/package-summary#(androidx.compose.foundation.layout.WindowInsets.Companion).safeDrawing()">
@@ -187,6 +144,53 @@ val safe = WindowInsets.safeDrawing
 val topPx = safe.getTop(density)                       // Int, px
 val padding = safe.asPaddingValues()                   // PaddingValues, dp
 val startDp = padding.calculateStartPadding(layoutDirection)`}</CodeBlock>
+      </Section>
+
+      <Section title="Views: reading insets in your Activity or Fragment">
+        <h3>With ViewCompat (Jetpack, recommended)</h3>
+        <p>
+          Use{" "}
+          <a href="https://developer.android.com/reference/androidx/core/view/ViewCompat#setOnApplyWindowInsetsListener(android.view.View,androidx.core.view.OnApplyWindowInsetsListener)">
+            ViewCompat.setOnApplyWindowInsetsListener
+          </a>
+          :
+        </p>
+        <CodeBlock title="Reading window insets">{`ViewCompat.setOnApplyWindowInsetsListener(rootView) { view, insets ->
+  val statusBars = insets.getInsets(Type.statusBars())
+  val navBars = insets.getInsets(Type.navigationBars())
+  val cutout = insets.getInsets(Type.displayCutout())
+
+  // Apply padding: view.setPadding(
+  //   statusBars.left, statusBars.top,
+  //   statusBars.right, navBars.bottom
+  // )
+
+  insets  // return unhandled insets to others
+}`}</CodeBlock>
+
+        <h3>Direct API access</h3>
+        <p>
+          On API 29+, use{" "}
+          <a href="https://developer.android.com/reference/android/view/WindowInsets#getInsets(int)">
+            WindowInsets.getInsets()
+          </a>
+          . On newer APIs (31+), also check <code>Display.getRoundedCorner()</code>.
+        </p>
+      </Section>
+
+      <Section title="Views: safe areas for content">
+        <p>
+          <b>Safe area</b> = system bars + display cutout. Combine them to find where content is
+          always visible and tappable:
+        </p>
+        <CodeBlock title="Calculating safe areas">{`val systemBars = insets.getInsets(Type.systemBars())
+val cutout = insets.getInsets(Type.displayCutout())
+val safe = Insets.of(
+  max(systemBars.left, cutout.left),
+  max(systemBars.top, cutout.top),
+  max(systemBars.right, cutout.right),
+  max(systemBars.bottom, cutout.bottom)
+)`}</CodeBlock>
       </Section>
 
       <Section title="Foldables: detecting the hinge">
