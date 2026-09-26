@@ -108,6 +108,87 @@ val safe = Insets.of(
 )`}</CodeBlock>
       </Section>
 
+      <Section title="Jetpack Compose">
+        <p>
+          In Compose,{" "}
+          <a href="https://developer.android.com/reference/kotlin/androidx/compose/foundation/layout/package-summary#(androidx.compose.foundation.layout.WindowInsets.Companion).safeDrawing()">
+            WindowInsets.safeDrawing
+          </a>{" "}
+          is the union of <code>systemBars</code>, <code>displayCutout</code> and{" "}
+          <code>ime</code>. With the keyboard hidden it equals the <b>Safe Area Insets</b> shown
+          on each device page, so those values are what this padding resolves to on that model.
+        </p>
+        <h3>Opting in to edge-to-edge</h3>
+        <p>
+          Apps targeting Android 15 (API 35) are drawn edge-to-edge by default. Call{" "}
+          <code>enableEdgeToEdge()</code> so older versions behave the same, then pad content
+          yourself:
+        </p>
+        <CodeBlock title="Padding content by safeDrawing">{`class MainActivity : ComponentActivity() {
+  override fun onCreate(savedInstanceState: Bundle?) {
+    enableEdgeToEdge()
+    super.onCreate(savedInstanceState)
+    setContent {
+      Box(
+        Modifier
+          .fillMaxSize()
+          .background(MaterialTheme.colorScheme.surface) // drawn behind the bars
+          .windowInsetsPadding(WindowInsets.safeDrawing) // or .safeDrawingPadding()
+      ) {
+        Content()
+      }
+    }
+  }
+}`}</CodeBlock>
+
+        <h3>With Material 3 Scaffold</h3>
+        <p>
+          <code>Scaffold</code> places its bars inside the insets and hands the remaining space
+          to the content as <code>innerPadding</code>. Pass <code>contentWindowInsets</code>{" "}
+          explicitly so the cutout is included in landscape:
+        </p>
+        <CodeBlock title="Scaffold with safeDrawing">{`Scaffold(
+  topBar = { TopAppBar(title = { Text("Inbox") }) },
+  floatingActionButton = { FloatingActionButton(onClick = {}) { Icon(Icons.Default.Add, null) } },
+  contentWindowInsets = WindowInsets.safeDrawing,
+) { innerPadding ->
+  LazyColumn(
+    modifier = Modifier.consumeWindowInsets(innerPadding),
+    contentPadding = innerPadding, // list scrolls behind the bars, last item stays reachable
+  ) {
+    items(messages) { MessageRow(it) }
+  }
+}`}</CodeBlock>
+
+        <h3>Picking the right inset type</h3>
+        <ul>
+          <li>
+            <code>safeDrawing</code>: keep text and images from being covered by bars, the cutout
+            or the keyboard.
+          </li>
+          <li>
+            <code>safeGestures</code>: keep draggable controls out of the system gesture zones.
+          </li>
+          <li>
+            <code>safeContent</code>: both of the above, for content that is visible and
+            interactive.
+          </li>
+          <li>
+            <code>displayCutout</code> alone: full-bleed media that only needs to avoid the
+            camera.
+          </li>
+        </ul>
+
+        <h3>Reading the values</h3>
+        <CodeBlock title="Resolving safeDrawing to dp and px">{`val density = LocalDensity.current
+val layoutDirection = LocalLayoutDirection.current
+val safe = WindowInsets.safeDrawing
+
+val topPx = safe.getTop(density)                       // Int, px
+val padding = safe.asPaddingValues()                   // PaddingValues, dp
+val startDp = padding.calculateStartPadding(layoutDirection)`}</CodeBlock>
+      </Section>
+
       <Section title="Foldables: detecting the hinge">
         <p>
           On foldable devices, use{" "}
