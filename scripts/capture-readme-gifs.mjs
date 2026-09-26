@@ -15,7 +15,9 @@ try {
   const page = await browser.newPage({ viewport: { width: 1440, height: 900 }, deviceScaleFactor: 1,
     colorScheme: 'light', reducedMotion: 'reduce', locale: 'en-US' });
   const devices = process.argv.slice(2);
-  for (const slug of devices.length ? devices : ['galaxy-z-fold8', 'galaxy-z-flip8', 'galaxy-z-trifold']) {
+  const showcase = ['galaxy-z-flip8', 'galaxy-z-fold8', 'galaxy-z-trifold'];
+  const slugs = devices.length ? devices : showcase;
+  for (const slug of slugs) {
     const triFold = slug === 'galaxy-z-trifold';
     const frames = join(temporary, slug);
     await mkdir(frames);
@@ -48,6 +50,14 @@ try {
       '-filter_complex', '[0:v]scale=640:-1:flags=lanczos,split[a][b];[a]palettegen=stats_mode=diff[p];[b][p]paletteuse=dither=bayer:bayer_scale=3',
       '-loop', '0', join(output, `${slug}-hinge.gif`)], { stdio: 'inherit' });
     console.log(`${slug}: ${timeline.length} frames, 640px, 15 fps`);
+  }
+  // One side-by-side loop for places that accept a single GIF.
+  if (showcase.every(slug => slugs.includes(slug))) {
+    execFileSync(ffmpeg, ['-y', '-loglevel', 'error',
+      ...showcase.flatMap(slug => ['-framerate', '15', '-i', join(temporary, slug, 'frame-%03d.png')]),
+      '-filter_complex', '[0:v][1:v][2:v]hstack=3,scale=1080:-1:flags=lanczos,split[a][b];[a]palettegen=max_colors=128:stats_mode=diff[p];[b][p]paletteuse=dither=bayer:bayer_scale=4:diff_mode=rectangle',
+      '-loop', '0', join(output, 'galaxy-z-all-hinge.gif')], { stdio: 'inherit' });
+    console.log('galaxy-z-all-hinge: Flip8, Fold8 and TriFold side by side, 1080px, 15 fps');
   }
 } finally {
   await browser.close();
