@@ -241,6 +241,10 @@ desktop and mobile.
   shorter logical dimension is at least 600 dp. Its inline help expands the
   Android smallest-width qualifier and the threshold rule. Missing logical size
   remains pending.
+- Cover placement follows the hardware, viewed from the unfolded inner display:
+  Galaxy Z Fold carries its cover on the left half's rear (rear cameras on the right
+  half), so the closed view shows the hinge on the cover's left; Flip carries it on
+  the upper half's rear. Fold previously mounted the cover on the right half.
 - Fold8/Flip8 cover and inner displays share one WebGL scene through folding.
   The cover uses the rigid rear-panel transform; applying the inner cylindrical
   bend to its annotation margins previously pulled it inside the opaque chassis.

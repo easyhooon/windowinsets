@@ -18,11 +18,17 @@ export function verticalHinge(axis: "vertical" | "horizontal", artworkRotation: 
   return (axis === "vertical") !== (artworkRotation % 2 === 1);
 }
 
+/** Galaxy Z Fold carries its cover on the left half's rear (seen from the
+ * inner display); Flip carries it on the upper half's rear. */
+export function coverSide(vertical: boolean, rotatedBook: boolean) {
+  return vertical && !rotatedBook ? -1 : 1;
+}
+
 /** Cover UVs in the capture's coordinate system, shared by mesh and rulers. */
 export function coverPoint(u: number, v: number, width: number, height: number,
   bodyWidth: number, bodyHeight: number, hinge: number, vertical: boolean, rotatedBook: boolean) {
   const x = rotatedBook ? (v - .5) * height
-    : (vertical ? .5 - u : u - .5) * width + (vertical ? bodyWidth / 4 + hinge / 2 : 0);
+    : (vertical ? .5 - u : u - .5) * width + (vertical ? coverSide(vertical, rotatedBook) * (bodyWidth / 4 + hinge / 2) : 0);
   const y = (rotatedBook ? (u - .5) * width : (vertical ? v - .5 : .5 - v) * height)
     + (vertical ? 0 : bodyHeight / 4 + hinge / 2);
   return [x, y] as const;
@@ -49,16 +55,16 @@ export function createFoldHousings(width: number, height: number, radius: number
   return geometry;
 }
 
-/** Transform artwork attached to the positive (right/upper) rigid panel. */
-export function rigidPanelPoint(x: number, y: number, z: number, angle: number, vertical: boolean, hinge: number) {
-  const tangent = bendPoint(vertical ? hinge : x, vertical ? y : hinge, z, angle, vertical, hinge);
-  const offset = (vertical ? x : y) - hinge;
+/** Transform artwork attached to one rigid panel: side 1 is right/upper, -1 left/lower. */
+export function rigidPanelPoint(x: number, y: number, z: number, angle: number, vertical: boolean, hinge: number, side = 1) {
+  const tangent = bendPoint(vertical ? side * hinge : x, vertical ? y : side * hinge, z, angle, vertical, hinge);
+  const offset = (vertical ? x : y) - side * hinge;
   const phi = (180 - angle) * Math.PI / 360;
   // Extend the panel's tangent through its annotation margins. Applying the
   // cylindrical bend there would pull vertices inside the opaque chassis.
   return vertical
-    ? [tangent[0] + offset * Math.cos(phi), y, tangent[2] + offset * Math.sin(phi)] as const
-    : [x, tangent[1] + offset * Math.cos(phi), tangent[2] + offset * Math.sin(phi)] as const;
+    ? [tangent[0] + offset * Math.cos(phi), y, tangent[2] + side * offset * Math.sin(phi)] as const
+    : [x, tangent[1] + offset * Math.cos(phi), tangent[2] + side * offset * Math.sin(phi)] as const;
 }
 
 /** Stylized chassis, not a measurement of the device's physical thickness. */

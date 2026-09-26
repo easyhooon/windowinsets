@@ -192,10 +192,10 @@ test('cover artwork and annotation margins stay on the rigid rear plane througho
   const hinge = .147, rearZ = -.069;
   for (const vertical of [true, false]) for (const angle of [0, 45, 90, 180]) {
     const phi = (180 - angle) * Math.PI / 360;
-    const surface = bendPoint(vertical ? hinge : 0, vertical ? 0 : hinge, 0, angle, vertical, hinge);
-    for (const u of [-.1, .025, hinge, 1, 2]) {
-      const point = rigidPanelPoint(vertical ? u : 0, vertical ? 0 : u, rearZ, angle, vertical, hinge);
-      const normalDistance = -(point[vertical ? 0 : 1] - surface[vertical ? 0 : 1]) * Math.sin(phi)
+    for (const side of [1, -1]) for (const u of [-.1, .025, hinge, 1, 2]) {
+      const surface = bendPoint(vertical ? side * hinge : 0, vertical ? 0 : side * hinge, 0, angle, vertical, hinge);
+      const point = rigidPanelPoint(vertical ? side * u : 0, vertical ? 0 : side * u, rearZ, angle, vertical, hinge, side);
+      const normalDistance = -side * (point[vertical ? 0 : 1] - surface[vertical ? 0 : 1]) * Math.sin(phi)
         + (point[2] - surface[2]) * Math.cos(phi);
       assert.ok(Math.abs(normalDistance - rearZ) < 1e-9,
         `Cover vertex ${u} at ${angle}° must remain outside the chassis rear plane (${normalDistance})`);
@@ -724,8 +724,14 @@ test('closed housing depth matches the published depth on both hinge axes', () =
   }
 });
 
+test('Fold covers sit on the left rear half and Flip covers on the upper rear half', async () => {
+  const { coverPoint } = await import('../app/components/foldGeometry.ts');
+  assert.ok(coverPoint(.5, .5, 1, 2, 4, 3, .01, true, false)[0] < 0);
+  assert.ok(coverPoint(.5, .5, 1, 2, 4, 3, .01, false, false)[1] > 0);
+});
+
 test('landscape book captures rotate the hinge and preserve cover UV distances', async () => {
-  const { verticalHinge, coverPoint } = await import('../app/components/foldGeometry.ts');
+  const { verticalHinge, coverPoint, coverSide } = await import('../app/components/foldGeometry.ts');
   assert.equal(verticalHinge('vertical', 0), true);
   assert.equal(verticalHinge('vertical', 1), false);
   assert.equal(verticalHinge('vertical', 3), false);
@@ -736,9 +742,9 @@ test('landscape book captures rotate the hinge and preserve cover UV distances',
     const b = coverPoint(1, 0, 1, 2, 4, 3, .01, vertical, rotatedBook);
     const c = coverPoint(0, 1, 1, 2, 4, 3, .01, vertical, rotatedBook);
     for (const angle of [0, 30, 60, 90, 180]) {
-      const pa = rigidPanelPoint(...a, -.069, angle, vertical, .01);
-      const pb = rigidPanelPoint(...b, -.069, angle, vertical, .01);
-      const pc = rigidPanelPoint(...c, -.069, angle, vertical, .01);
+      const pa = rigidPanelPoint(...a, -.069, angle, vertical, .01, coverSide(vertical, rotatedBook));
+      const pb = rigidPanelPoint(...b, -.069, angle, vertical, .01, coverSide(vertical, rotatedBook));
+      const pc = rigidPanelPoint(...c, -.069, angle, vertical, .01, coverSide(vertical, rotatedBook));
       assert.ok(Math.abs(Math.hypot(...pa.map((v, i) => v - pb[i])) - 1) < 1e-9);
       assert.ok(Math.abs(Math.hypot(...pa.map((v, i) => v - pc[i])) - 2) < 1e-9);
     }

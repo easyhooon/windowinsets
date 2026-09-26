@@ -5,7 +5,7 @@ import { InsetsDiagram } from "./InsetsDiagram";
 import { DIAGRAM_FONT, DIAGRAM_COLORS } from "./diagramStyle";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
-import { FOLD_CAMERA_DISTANCE, FOLD_CAMERA_FOV, FOLD_DISPLAY_TARGET, FOLD_FRUSTUM_HEIGHT, bendPoint, createChassis, createFoldHousings, hingeHalfWidth, rigidPanelPoint, verticalHinge, coverPoint, triFoldPoint, triFoldAngles, triFoldViewTurn, createTriFoldDisplay, createTriFoldHousings, createTriFoldHingeStrips } from "./foldGeometry";
+import { FOLD_CAMERA_DISTANCE, FOLD_CAMERA_FOV, FOLD_DISPLAY_TARGET, FOLD_FRUSTUM_HEIGHT, bendPoint, createChassis, createFoldHousings, hingeHalfWidth, rigidPanelPoint, verticalHinge, coverPoint, coverSide, triFoldPoint, triFoldAngles, triFoldViewTurn, createTriFoldDisplay, createTriFoldHousings, createTriFoldHingeStrips } from "./foldGeometry";
 import type { DeviceSkin } from "../data/skins";
 import { skinAssetUrl } from "../data/skinAssetUrl";
 import type { CutoutShape, Screen, InsetsMeasurement } from "../data/types";
@@ -423,7 +423,7 @@ export function FoldRenderer3D({
       ? triFoldPoint(x, y, z, value, bodyW, shellThickness)
       : bendPoint(x, y, z, value, isVertical, hingeZoneHalfWidth);
     const outerTransform = (x: number, y: number, z: number, value: number) => triFold
-      ? [x, y, z] as const : rigidPanelPoint(x, y, z, value, isVertical, hingeZoneHalfWidth);
+      ? [x, y, z] as const : rigidPanelPoint(x, y, z, value, isVertical, hingeZoneHalfWidth, coverSide(isVertical, rotatedBook));
 
     let coverPanel = { width: 0, height: 0, padX: 0, padY: 0 };
     let annotationZoom = zoom;
@@ -546,9 +546,11 @@ export function FoldRenderer3D({
         return;
       }
       const turn = reveal * reveal * (3 - 2 * reveal) * Math.PI / 2;
-      deviceGroup.rotation.set(isVertical ? 0 : turn, isVertical ? -turn : 0, rotatedBook ? turn : 0, "ZYX");
+      // Turn the cover panel's rear toward the camera, leaving the hinge on its outer-view side.
+      const side = coverSide(isVertical, rotatedBook);
+      deviceGroup.rotation.set(isVertical ? 0 : turn, isVertical ? -side * turn : 0, rotatedBook ? turn : 0, "ZYX");
       // Center the folded depth after rotating the chassis into the outer view.
-      deviceGroup.position.set(isVertical ? Math.sin(turn) * bodyW / 4 : 0, isVertical ? 0 : Math.sin(turn) * bodyH / 4, 0);
+      deviceGroup.position.set(isVertical ? side * Math.sin(turn) * bodyW / 4 : 0, isVertical ? 0 : Math.sin(turn) * bodyH / 4, 0);
       if (rotatedBook) deviceGroup.position.applyAxisAngle(new THREE.Vector3(0, 0, 1), turn);
       seatFacingDisplay(turn / (Math.PI / 2));
     }
