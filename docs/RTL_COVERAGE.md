@@ -135,6 +135,13 @@ removes a model from its catalog.
   Samsung's raw captures include the display cutout inset but no bounding
   rectangles, so no cutout shape is registered. This confirms availability for
   the exact model on that date only.
+- Galaxy S23 Ultra, Galaxy S23+ and Galaxy S23 were offered only as
+  Vietnam/Hanoi units when checked on 2026-09-25 and 2026-09-26 (S23 Ultra
+  SM-S918B-VN4, S23+ SM-S916B-VN2). Every reservation opened a WebClient that
+  immediately showed `All ongoing tests have ended`, so no measurements exist.
+  Other models reserved on the same days worked, which points at these units
+  rather than the account or browser. Do not rebook them until the catalog
+  offers another site or unit; keep the models as artwork-only previews.
 - Galaxy S23 FE (SM-S711B), Galaxy S22 Ultra (SM-S908U), Galaxy S22+ (SM-S906B)
   and Galaxy S22 (SM-S901B) were reserved and captured on 2026-09-25. Each has
   full-screen main captures in both navigation modes with Android setting and

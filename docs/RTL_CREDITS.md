@@ -203,3 +203,9 @@ page still showed both reservation timers running (23 minutes on S23 Ultra and
 30 minutes on S23+) and offered only **Start** in each reservation detail. No
 early-return dialog or refund was available or claimed. One **Get Free Credits**
 attempt returned `Available only 1 time a day`; the balance remained 0.
+
+On 2026-09-26 the catalog still offered Galaxy S23 Ultra, S23+ and S23 only in
+Vietnam/Hanoi. Galaxy S23 was reserved for one retry and its WebClient again
+showed `All ongoing tests have ended` immediately; no measurements were
+captured. The exact unit identifier, credit change and any refund were not
+recorded. Further S23-series bookings are paused until another unit appears.
