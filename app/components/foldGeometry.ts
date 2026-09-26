@@ -1,8 +1,10 @@
 import * as THREE from "three";
 import { mergeGeometries } from "three/addons/utils/BufferGeometryUtils.js";
 
-/** The orthographic frustum shared by every fold pose, in world units per 700 px canvas. */
-export const FOLD_FRUSTUM_HEIGHT = 2 * Math.tan(THREE.MathUtils.degToRad(16)) * 11;
+export const FOLD_CAMERA_FOV = 32;
+export const FOLD_CAMERA_DISTANCE = 11;
+/** Frustum height at the z=0 display plane shared by every fold pose, in world units per 700 px canvas. */
+export const FOLD_FRUSTUM_HEIGHT = 2 * Math.tan(THREE.MathUtils.degToRad(FOLD_CAMERA_FOV / 2)) * FOLD_CAMERA_DISTANCE;
 /** World size of the inner display's longer padded edge. */
 export const FOLD_DISPLAY_TARGET = 5.2;
 

@@ -5,7 +5,7 @@ import { InsetsDiagram } from "./InsetsDiagram";
 import { DIAGRAM_FONT, DIAGRAM_COLORS } from "./diagramStyle";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
-import { FOLD_DISPLAY_TARGET, FOLD_FRUSTUM_HEIGHT, bendPoint, createChassis, createFoldHousings, hingeHalfWidth, rigidPanelPoint, verticalHinge, coverPoint, triFoldPoint, triFoldAngles, triFoldViewTurn, createTriFoldDisplay, createTriFoldHousings, createTriFoldHingeStrips } from "./foldGeometry";
+import { FOLD_CAMERA_DISTANCE, FOLD_CAMERA_FOV, FOLD_DISPLAY_TARGET, FOLD_FRUSTUM_HEIGHT, bendPoint, createChassis, createFoldHousings, hingeHalfWidth, rigidPanelPoint, verticalHinge, coverPoint, triFoldPoint, triFoldAngles, triFoldViewTurn, createTriFoldDisplay, createTriFoldHousings, createTriFoldHingeStrips } from "./foldGeometry";
 import type { DeviceSkin } from "../data/skins";
 import { skinAssetUrl } from "../data/skinAssetUrl";
 import type { CutoutShape, Screen, InsetsMeasurement } from "../data/types";
@@ -312,14 +312,14 @@ export function FoldRenderer3D({
     const rim = new THREE.DirectionalLight(0xc4d9ff, 2);
     rim.position.set(4, -1, -3);
     scene.add(rim);
-    // Orthographic projection keeps the physical scale constant as panels
-    // move in depth. Its framing is shared by every pose, including the cover.
+    // Like the reference, a head-on perspective camera gives the fold its
+    // depth: panel edges swinging toward the viewer grow, so the silhouette
+    // narrows into the hinge. The z=0 plane keeps the shared frustum scale,
+    // and the facing display is kept on that plane in flat poses.
     const frustumHeight = FOLD_FRUSTUM_HEIGHT;
-    const camera = new THREE.OrthographicCamera(-frustumHeight / 2, frustumHeight / 2, frustumHeight / 2, -frustumHeight / 2, 0.1, 100);
-    // Slightly elevated/angled viewpoint (not a flat head-on view) so the
-    // fold's depth is actually visible instead of just its silhouette.
-    camera.position.set(0, 1.1, 11);
-    camera.lookAt(0, 0, 0.3);
+    const camera = new THREE.PerspectiveCamera(FOLD_CAMERA_FOV, containerW / containerH, 0.1, 100);
+    camera.position.set(0, 0, FOLD_CAMERA_DISTANCE);
+    camera.lookAt(0, 0, 0);
 
     // A landscape capture rotates the physical hinge along with the artwork.
     const rotatedBook = axis === "vertical" && skinRotation % 2 === 1;
@@ -537,6 +537,7 @@ export function FoldRenderer3D({
       if (triFold) {
         deviceGroup.rotation.set(0, triFoldViewTurn(displayedAngle), 0);
         deviceGroup.position.set(0, 0, 0);
+        seatFacingDisplay(Math.max(0, 1 - displayedAngle / COVER_REVEAL_ANGLE));
         return;
       }
       const turn = reveal * reveal * (3 - 2 * reveal) * Math.PI / 2;
@@ -544,6 +545,18 @@ export function FoldRenderer3D({
       // Center the folded depth after rotating the chassis into the outer view.
       deviceGroup.position.set(isVertical ? Math.sin(turn) * bodyW / 4 : 0, isVertical ? 0 : Math.sin(turn) * bodyH / 4, 0);
       if (rotatedBook) deviceGroup.position.applyAxisAngle(new THREE.Vector3(0, 0, 1), turn);
+      seatFacingDisplay(turn / (Math.PI / 2));
+    }
+
+    // Keep the facing cover on the z=0 plane so the closed view's scale
+    // keeps zoom as CSS px per dp; open poses already lie there.
+    const coverBox = new THREE.Box3();
+    function seatFacingDisplay(weight: number) {
+      if (weight <= 0 || !coverMesh.visible) return;
+      deviceGroup.updateMatrix();
+      coverGeometry.computeBoundingBox();
+      coverBox.copy(coverGeometry.boundingBox!).applyMatrix4(deviceGroup.matrix);
+      deviceGroup.position.z -= coverBox.max.z * weight;
     }
 
     function projectMeasurements() {
@@ -640,8 +653,6 @@ export function FoldRenderer3D({
       const pixelRatio = Math.min(4, window.devicePixelRatio * Math.max(1, stateRef.current.zoom / 100));
       if (renderer.getPixelRatio() !== pixelRatio) renderer.setPixelRatio(pixelRatio);
       applyBend();
-      camera.position.set(isVertical ? 3 : 0, isVertical ? 0 : 3, 11);
-      camera.lookAt(0, 0, 0);
       // Texture canvases stay off-DOM. An axis-aligned backup behind a
       // perspective surface leaks a second, flat silhouette around the model.
       projectMeasurements();

@@ -25,11 +25,14 @@ Android-specific substitutions and evidence boundaries:
   sequence slider. This prevents a right-first closing order. Closed is 0°/0°,
   Partially Folded is 90°/180°, and Open is 180°/180°. The slider's 0–180 range
   denotes sequence position, not a sensor reading or Android posture.
-- Fold, Flip and TriFold use a fixed orthographic camera. Auto-fit holds the current
+- Fold, Flip and TriFold use a fixed head-on perspective camera, matching the
+  reference iPhone Duo: at intermediate hinge angles, panel edges swinging toward
+  the viewer grow, so the silhouette narrows into the hinge (#18). The z=0 plane
+  keeps the shared frustum scale; open displays lie on it and the closed cover is
+  seated on it, so zoom stays CSS px per dp in flat poses. Auto-fit holds the current
   scale while the hinge moves, then eases to the new pose's fit once it settles.
-  Folding changes the silhouette through hinge movement without camera zoom.
   Fold opens across its width; Flip opens across its height.
-  Lighting and moving hinges show depth; explicit zoom/pan remain user-controlled.
+  Perspective, lighting and moving hinges show depth; explicit zoom/pan remain user-controlled.
   Metrics explains that dp measures layout space, so outer/inner dp heights can
   differ even when the physical device height stays the same.
 - The ZIP supplies flat artwork, not CAD. Equal panel division, hinge curvature,
@@ -168,7 +171,8 @@ measurements as if they were the same safearea.info metric.
 The displayed zoom is CSS pixels per dp for every series, so Z, S, A, Note and
 Tab percentages are comparable; the internal canvas scale converts through a
 per-device factor, and automatic fit never exceeds 100%. Fold, Flip and TriFold
-use a fixed orthographic camera. Automatic fit targets the visible pose: the
+use a fixed head-on perspective camera whose z=0 plane carries that scale; flat
+poses keep the facing display on it. Automatic fit targets the visible pose: the
 scale stays constant while the hinge moves, then eases (instantly under reduced
 motion) to the settled pose's fit through the same path as the Fit control. The
 fold fit scales the projected body with label room measured from a layout at a
