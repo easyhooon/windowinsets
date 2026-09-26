@@ -1,10 +1,11 @@
 import type { Insets } from "../data/types";
 
-/** Compose preview state: off, content ignoring insets, or padded by
- * `WindowInsets.safeDrawing`. The padding is the recorded safe-area inset
- * (systemBars ∪ displayCutout, IME hidden), so the mock is a simulation derived
- * from the capture, not a rendered Compose frame. */
-export type ComposePreview = "off" | "before" | "after";
+/** App preview state: off, content ignoring insets, or padded by the recorded
+ * safe-area inset (systemBars ∪ displayCutout, IME hidden). Compose's
+ * `WindowInsets.safeDrawing` and a View's combined `getInsets` resolve to the
+ * same values, so the mock is toolkit-neutral and a simulation derived from the
+ * capture, not a rendered app frame. */
+export type AppPreview = "off" | "before" | "after";
 
 export type MockShape =
   | { kind: "rect"; x: number; y: number; width: number; height: number; radius: number; fill: string; clash?: boolean }
@@ -33,7 +34,7 @@ function overlaps(a: { x: number; y: number; width: number; height: number }, ba
 /** A Material 3 Scaffold (top app bar, list, FAB) laid out in dp. Backgrounds
  * always draw edge to edge; "after" pads content by `safe` as
  * `contentWindowInsets = WindowInsets.safeDrawing` would. */
-export function composeMockShapes(width: number, height: number, safe: Insets, mode: Exclude<ComposePreview, "off">): MockShape[] {
+export function appMockShapes(width: number, height: number, safe: Insets, mode: Exclude<AppPreview, "off">): MockShape[] {
   const pad = mode === "after" ? safe : { top: 0, right: 0, bottom: 0, left: 0 };
   const bands = [
     { x: 0, y: 0, width, height: safe.top },
@@ -75,4 +76,4 @@ export function composeMockShapes(width: number, height: number, safe: Insets, m
 }
 
 /** Inset bands drawn over the mock, so obscured content stays visible. */
-export const COMPOSE_INSET_OPACITY = .72;
+export const PREVIEW_INSET_OPACITY = .72;

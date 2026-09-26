@@ -8,7 +8,7 @@ import { Dropdown } from "./Dropdown";
 import { FoldRenderer3D, coverRevealAngle } from "./FoldRenderer3D";
 import { InsetsDiagram } from "./InsetsDiagram";
 import { CodeBlock } from "./CodeBlock";
-import type { ComposePreview } from "./composePreview";
+import type { AppPreview } from "./appPreview";
 import { DiagramViewport, type DiagramViewportHandle } from "./DiagramViewport";
 import { skins } from "../data/skins";
 import { ResizeHandle } from "./ResizeHandle";
@@ -109,8 +109,10 @@ function SourceList({ sources }: { sources: Source[] }) {
 
 
 const dp = (v: number) => `${Number(v.toFixed(2))}.dp`;
+const px = (v: number) => `${Math.round(v)}px`;
 function composeSnippet(safe: Insets, device: string, mode: string) {
-  return `// ${device}
+  return `// Compose
+// ${device}
 // ${mode}, keyboard hidden
 Scaffold(
   contentWindowInsets =
@@ -122,6 +124,27 @@ Scaffold(
     Modifier.padding(innerPadding)
   )
 }`;
+}
+function viewSnippet(safe: Insets, device: string, mode: string) {
+  return `// Views
+// ${device}
+// ${mode}, keyboard hidden
+ViewCompat
+  .setOnApplyWindowInsetsListener(
+    root,
+  ) { view, insets ->
+    val safe = insets.getInsets(
+      Type.systemBars() or
+        Type.displayCutout(),
+    )
+    // left ${px(safe.left)}, top ${px(safe.top)}
+    // right ${px(safe.right)}, bottom ${px(safe.bottom)}
+    view.updatePadding(
+      safe.left, safe.top,
+      safe.right, safe.bottom,
+    )
+    insets
+  }`;
 }
 
 const orientations = [
@@ -147,7 +170,7 @@ export function DeviceView({ device }: { device: Device }) {
   const [showDimensions, setShowDimensions] = useState(true);
   const [layers, setLayers] = useState({ safe: true, insets: true, cutout: true, corners: true });
   const [units, setUnits] = useState<"dp" | "px">("dp");
-  const [composePreview, setComposePreview] = useState<ComposePreview>("off");
+  const [appPreview, setAppPreview] = useState<AppPreview>("off");
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [metricsOpen, setMetricsOpen] = useState(false);
   const [exportStatus, setExportStatus] = useState("");
@@ -171,6 +194,8 @@ export function DeviceView({ device }: { device: Device }) {
   const skin = skins[`${device.slug}/${screen.id}`];
   const safe = measurement ? safeInsets(measurement) : null;
   const safePx = measurement ? safeInsetsPx(measurement) : null;
+  const snippetContext = [foldable ? `${device.name} · ${screen.id === "cover" ? "Outer" : "Inner"}` : device.name,
+    navMode === "gesture" ? "Gesture" : "3-button"] as const;
   const fmt = (v: number, px?: number | null) => formatLength({ dp: v, px, units });
   const mainSkin = skins[`${device.slug}/main`];
   const outerSkin = skins[`${device.slug}/cover`];
@@ -300,19 +325,11 @@ export function DeviceView({ device }: { device: Device }) {
               {safe ? insetsRows(safe, safePx, units, fmt) : pendingInsetsRows}
             </dl>
             {safe && <p className="mt-2 text-xs leading-relaxed text-muted">
-              With the keyboard hidden, Compose's <code>WindowInsets.safeDrawing</code> resolves to these values.
-              {" "}<Link to="/developer-guide#jetpack-compose" className="text-accent underline">Compose guide →</Link>
+              With the keyboard hidden, Compose's <code>WindowInsets.safeDrawing</code> and a View's
+              {" "}<code>systemBars() or displayCutout()</code> insets resolve to these values.
+              {" "}<Link to="/developer-guide#jetpack-compose" className="text-accent underline">Compose</Link>
+              {" · "}<Link to="/developer-guide#views" className="text-accent underline">Views guide →</Link>
             </p>}
-            {safe && composePreview !== "off" && <>
-              <SectionLabel>Compose Preview · {composePreview === "after" ? "After" : "Before"}</SectionLabel>
-              <p className="text-xs leading-relaxed text-muted">
-                {composePreview === "after"
-                  ? "Content is padded by safeDrawing. Backgrounds still draw edge to edge; the list scrolls behind the navigation bar."
-                  : "Content ignores the insets. Red outlines mark controls under a system bar or the cutout."}
-                {" "}Simulated from the recorded insets, not a rendered Compose frame.
-              </p>
-              <CodeBlock title="safeDrawing padding">{composeSnippet(safe, foldable ? `${device.name} · ${screen.id === "cover" ? "Outer" : "Inner"}` : device.name, navMode === "gesture" ? "Gesture" : "3-button")}</CodeBlock>
-            </>}
 
             {measurement?.cutoutShape && <>
               <SectionLabel>Display Cutout Bounds</SectionLabel>
@@ -370,6 +387,17 @@ export function DeviceView({ device }: { device: Device }) {
           {measurement?.condition.note && <p className="mb-3 text-xs text-muted">{measurement.condition.note}</p>}
           <SourceList sources={Array.from(new Map((measurement?.sources ?? []).concat(screen.sources).map(s => [`${s.label}|${s.url ?? ""}`, s])).values())} />
           <Link to="/methodology" className="mt-3 block text-accent underline">How these values are measured →</Link>
+          {safe && appPreview !== "off" && <>
+            <SectionLabel>App Preview · {appPreview === "after" ? "After: insets applied" : "Before: insets ignored"}</SectionLabel>
+            <p className="text-xs leading-relaxed text-muted">
+              {appPreview === "after"
+                ? "Content is padded by the safe-area insets. Backgrounds still draw edge to edge; the list scrolls behind the navigation bar."
+                : "Content ignores the insets. Red outlines mark controls under a system bar or the cutout."}
+              {" "}Simulated from the recorded insets, not a rendered app frame.
+            </p>
+            <CodeBlock title="Compose · safeDrawing">{composeSnippet(safe, ...snippetContext)}</CodeBlock>
+            {safePx && <CodeBlock title="Views · getInsets">{viewSnippet(safePx, ...snippetContext)}</CodeBlock>}
+          </>}
         </details>
       </div>
     </div>
@@ -384,7 +412,7 @@ export function DeviceView({ device }: { device: Device }) {
         {useFold ? <FoldRenderer3D triFold={triFold} angle={angle} axis={device.formFactor === "foldable-flip" ? "horizontal" : "vertical"}
           widthDp={mainWidthDp} heightDp={mainHeightDp}
           safe={mainSafe} safePx={mainSafePx} logicalSizePx={main.logicalSizePx} cornerRadiiDp={main.cornerRadiiDp} cornerRadiiPx={main.cornerRadiiPx} cutoutShape={mainMeasurement?.cutoutShape}
-          zoom={zoom} showFrame={showFrame} showRegions={showRegions} showDimensions={showDimensions} units={units} layers={layers} composePreview={composePreview} skin={mainSkin} skinRotation={main.captureRotation ?? 0} viewRotation={rotation} measured={!!main.logicalSizeDp} cover={outerScreen && outerSkin ? { screen: outerScreen, measurement: outerScreen.insets[navMode], skin: outerSkin } : undefined}
+          zoom={zoom} showFrame={showFrame} showRegions={showRegions} showDimensions={showDimensions} units={units} layers={layers} appPreview={appPreview} skin={mainSkin} skinRotation={main.captureRotation ?? 0} viewRotation={rotation} measured={!!main.logicalSizeDp} cover={outerScreen && outerSkin ? { screen: outerScreen, measurement: outerScreen.insets[navMode], skin: outerSkin } : undefined}
           fallbackMain={{ screen: main, measurement: mainMeasurement }}
           chassisMm={device.chassisMm}
           onMeasurementBounds={(bounds, body) => viewport.current?.fitFoldBounds(bounds, body)}
@@ -395,7 +423,7 @@ export function DeviceView({ device }: { device: Device }) {
             return viewport.current?.effectiveZoom();
           }}
           onTransitionEnd={() => { viewport.current?.refitFold(); if (transitionTarget) { setScreenId(transitionTarget); setTransitionTarget(null); } }} />
-          : <InsetsDiagram screen={screen} measurement={measurement} zoom={zoom} showFrame={showFrame} showRegions={showRegions} showDimensions={showDimensions} units={units} layers={layers} composePreview={composePreview} skin={skin} />}
+          : <InsetsDiagram screen={screen} measurement={measurement} zoom={zoom} showFrame={showFrame} showRegions={showRegions} showDimensions={showDimensions} units={units} layers={layers} appPreview={appPreview} skin={skin} />}
       </DiagramViewport>
       </div>
       <footer className="canvas-footer">
@@ -408,7 +436,6 @@ export function DeviceView({ device }: { device: Device }) {
     </section>
     <div className={`canvas-controls${useFold ? " is-foldable" : ""}`} aria-label="Canvas controls">
       <Dropdown label="Navigation" value={navMode} options={[{ value: "threeButton", label: "3-button" }, { value: "gesture", label: "Gesture" }]} onChange={v => setNavMode(v as NavMode)} />
-      <Dropdown label="Compose" value={safe ? composePreview : "off"} valueWidthCh={6} options={[{ value: "off", label: "Off" }, { value: "before", label: "Before", disabled: !safe }, { value: "after", label: "After (safeDrawing)", disabled: !safe }]} onChange={v => setComposePreview(v as ComposePreview)} />
       <Dropdown label="Orientation" value={String(rotation)} options={orientationOptions} onChange={v => { setRotation(Number(v)); setAutoFit(true); setFitKey(key => key + 1); }} />
       <Dropdown label="Zoom" value={`${displayZoom(zoom)}%`} options={[{ value: "fit", label: "Fit to canvas" }, { value: "out", label: "− Zoom out" }, { value: "in", label: "+ Zoom in" }, ...[25,50,100,200,300].map(z => ({ value: String(z), label: `${z}%` }))]} onChange={v => {
         if (v === "fit") { setAutoFit(true); setFitKey(k => k + 1); return; }
@@ -418,6 +445,7 @@ export function DeviceView({ device }: { device: Device }) {
       }} />
       {useFold && <><Dropdown label="Pose" value={triFold && ![0, 135, 180].includes(angle) ? `${Math.round(angle / 180 * 100)}% open` : String(angle)} options={[{value:"0",label:"Closed"},{value:triFold ? "135" : "90",label:"Partially Folded"},{value:"180",label:"Open"}]} onChange={v => selectPose(v, "pose_menu")} />
       <Dropdown label="Hinge" value={triFold ? `${hinges.left}° / ${hinges.right}°` : `${angle}°`} valueWidthCh={triFold ? 10 : 4} options={[]} onChange={() => {}} footer={<>{triFold && <p className="hinge-sequence-note">Left {hinges.left}° · Right {hinges.right}°<br />Close left first, then right.</p>}<input aria-label={triFold ? "Fold sequence" : "Hinge angle in degrees"} type="range" min={0} max={180} value={angle} onChange={e => pose(e.target.value)} onPointerUp={e => recordPose(e.currentTarget.value, "hinge_slider")} onKeyUp={e => recordPose(e.currentTarget.value, "hinge_slider")} /></>} /></>}
+      <Dropdown label="App preview" value={safe ? appPreview : "off"} valueWidthCh={6} options={[{ value: "off", label: "Off" }, { value: "before", label: "Before", disabled: !safe }, { value: "after", label: "After", disabled: !safe }]} onChange={v => setAppPreview(v as AppPreview)} />
       <div className="dropdown settings" ref={settings}><button className="toolbar-button" aria-label="View settings" aria-expanded={settingsOpen} onClick={() => setSettingsOpen(!settingsOpen)}><Icon name="settings" /></button>
         {settingsOpen && <div className="dropdown-panel settings-panel">
           <label><input type="checkbox" checked={showFrame} onChange={e => setShowFrame(e.target.checked)} />Show Frame</label>

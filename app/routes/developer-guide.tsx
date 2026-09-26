@@ -146,7 +146,7 @@ val padding = safe.asPaddingValues()                   // PaddingValues, dp
 val startDp = padding.calculateStartPadding(layoutDirection)`}</CodeBlock>
       </Section>
 
-      <Section title="Views: reading insets in your Activity or Fragment">
+      <Section id="views" title="Views: reading insets in your Activity or Fragment">
         <h3>With ViewCompat (Jetpack, recommended)</h3>
         <p>
           Use{" "}

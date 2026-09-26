@@ -7,7 +7,7 @@ import type { DeviceSkin } from "../data/skins";
 import { skinAssetUrl } from "../data/skinAssetUrl";
 import type { InsetsMeasurement, Screen } from "../data/types";
 import { cutoutPairs, cornerPairs, formatLengthFromPairs, insetPairs, safeInsets, safeInsetsPx } from "../data/measurementUnits";
-import { CLASH_COLOR, COMPOSE_INSET_OPACITY, composeMockShapes, type ComposePreview, type MockShape } from "./composePreview";
+import { CLASH_COLOR, PREVIEW_INSET_OPACITY, appMockShapes, type AppPreview, type MockShape } from "./appPreview";
 
 const MAX_W = 260;
 const BASE_HEIGHT = 700;
@@ -64,7 +64,7 @@ function RegionLabel({ x, y, name, value, color, scale, width, height, inline = 
   </g>;
 }
 
-function ComposeMock({ shapes, s, strokeScale, layer }: { shapes: MockShape[]; s: number; strokeScale: number; layer: "content" | "clash" }) {
+function AppMock({ shapes, s, strokeScale, layer }: { shapes: MockShape[]; s: number; strokeScale: number; layer: "content" | "clash" }) {
   if (layer === "clash") return <g fill="none" stroke={CLASH_COLOR} strokeWidth={1.4 * strokeScale} strokeDasharray={`${3 * strokeScale} ${2 * strokeScale}`}>
     {shapes.map((shape, i) => shape.kind === "rect" && shape.clash
       ? <rect key={i} x={(shape.x - 3) * s} y={(shape.y - 3) * s} width={(shape.width + 6) * s} height={(shape.height + 6) * s} rx={(shape.radius + 3) * s} />
@@ -95,7 +95,7 @@ export function InsetsDiagram({
   units,
   layers,
   skin,
-  composePreview = "off",
+  appPreview = "off",
 }: {
   screen: Screen;
   measurement: InsetsMeasurement | null;
@@ -107,7 +107,7 @@ export function InsetsDiagram({
   units: Units;
   layers: { safe: boolean; insets: boolean; cutout: boolean; corners: boolean };
   skin?: DeviceSkin;
-  composePreview?: ComposePreview;
+  appPreview?: AppPreview;
 }) {
   const id = useId().replace(/:/g, "");
   const [copyStatus, setCopyStatus] = useState("");
@@ -206,21 +206,21 @@ export function InsetsDiagram({
             {!skin && <rect x={W - 1.5} y={H * 0.24} width={3} height={H * 0.09} rx={1.5} fill="#1e293b" opacity={0.55} />}
 
             {/* Safe area + inset bands */}
-            {safe && composePreview !== "off" && (() => {
-              const shapes = composeMockShapes(dp.width, dp.height, safe, composePreview);
+            {safe && appPreview !== "off" && (() => {
+              const shapes = appMockShapes(dp.width, dp.height, safe, appPreview);
               return <>
-                <ComposeMock shapes={shapes} s={s} strokeScale={labelScale} layer="content" />
-                <g fill={INSET_FILL} fillOpacity={layers.insets ? COMPOSE_INSET_OPACITY : 0}>
+                <AppMock shapes={shapes} s={s} strokeScale={labelScale} layer="content" />
+                <g fill={INSET_FILL} fillOpacity={layers.insets ? PREVIEW_INSET_OPACITY : 0}>
                   {safe.top > 0 && <rect x={0} y={0} width={W} height={safe.top * s} />}
                   {safe.bottom > 0 && <rect x={0} y={H - safe.bottom * s} width={W} height={safe.bottom * s} />}
                   {safe.left > 0 && <rect x={0} y={0} width={safe.left * s} height={H} />}
                   {safe.right > 0 && <rect x={W - safe.right * s} y={0} width={safe.right * s} height={H} />}
                 </g>
                 {layers.cutout && measurement?.cutoutShape && <rect x={measurement.cutoutShape.xDp * s} y={measurement.cutoutShape.yDp * s} width={measurement.cutoutShape.widthDp * s} height={measurement.cutoutShape.heightDp * s} stroke="#8950e8" strokeWidth={.7 * labelScale} fill="#c4a0f1" />}
-                <ComposeMock shapes={shapes} s={s} strokeScale={labelScale} layer="clash" />
+                <AppMock shapes={shapes} s={s} strokeScale={labelScale} layer="clash" />
               </>;
             })()}
-            {safe && composePreview === "off" && (
+            {safe && appPreview === "off" && (
               <>
                 <rect
                   x={safe.left * s} y={safe.top * s}

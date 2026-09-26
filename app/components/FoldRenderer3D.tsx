@@ -10,7 +10,7 @@ import type { DeviceSkin } from "../data/skins";
 import { skinAssetUrl } from "../data/skinAssetUrl";
 import type { CutoutShape, Screen, InsetsMeasurement } from "../data/types";
 import { cutoutPairs, cornerPairs, formatLengthFromPairs, insetPairs, safeInsets, safeInsetsPx } from "../data/measurementUnits";
-import { CLASH_COLOR, COMPOSE_INSET_OPACITY, composeMockShapes, type ComposePreview } from "./composePreview";
+import { CLASH_COLOR, PREVIEW_INSET_OPACITY, appMockShapes, type AppPreview } from "./appPreview";
 
 export const COVER_REVEAL_ANGLE = 60; // Illustrative primary surface, not a measured hinge state.
 /** TriFold turns over the same span but faces its rear cover only past the half turn. */
@@ -93,7 +93,7 @@ function drawDiagram(
     showFrame: boolean; showRegions: boolean; showDimensions: boolean;
     fmt: (v: number) => string;
     layers: { safe: boolean; insets: boolean; cutout: boolean; corners: boolean };
-    composePreview: ComposePreview;
+    appPreview: AppPreview;
     skin?: DeviceSkin;
     skinRotation?: QuarterTurns;
     artwork?: HTMLImageElement;
@@ -142,11 +142,11 @@ function drawDiagram(
   }
 
   const safe = opts.safe;
-  if (opts.showRegions && safe && opts.composePreview !== "off") {
+  if (opts.showRegions && safe && opts.appPreview !== "off") {
     ctx.save();
     roundedRectPath(0, 0, W, H, r);
     ctx.clip();
-    const shapes = composeMockShapes(dpW, dpH, safe, opts.composePreview);
+    const shapes = appMockShapes(dpW, dpH, safe, opts.appPreview);
     for (const shape of shapes) {
       if (shape.kind === "rect") {
         if (shape.fill === "transparent") continue;
@@ -171,7 +171,7 @@ function drawDiagram(
       }
     }
     if (opts.layers.insets) {
-      ctx.globalAlpha = COMPOSE_INSET_OPACITY;
+      ctx.globalAlpha = PREVIEW_INSET_OPACITY;
       ctx.fillStyle = INSET_FILL;
       if (safe.top > 0) ctx.fillRect(0, 0, W, safe.top * px);
       if (safe.bottom > 0) ctx.fillRect(0, H - safe.bottom * px, W, safe.bottom * px);
@@ -293,7 +293,7 @@ export function FoldRenderer3D({
   showDimensions,
   units,
   layers,
-  composePreview = "off",
+  appPreview = "off",
   skin,
   skinRotation = 0,
   viewRotation = 0,
@@ -325,7 +325,7 @@ export function FoldRenderer3D({
   showDimensions: boolean;
   units: Units;
   layers: { safe: boolean; insets: boolean; cutout: boolean; corners: boolean };
-  composePreview?: ComposePreview;
+  appPreview?: AppPreview;
   skin?: DeviceSkin;
   skinRotation?: QuarterTurns;
   viewRotation?: number;
@@ -342,8 +342,8 @@ export function FoldRenderer3D({
   const mountRef = useRef<HTMLDivElement>(null);
   const wrapRef = useRef<HTMLDivElement>(null);
 
-  const stateRef = useRef({ angle, safe, safePx, logicalSizePx, cornerRadiiDp: cornerRadiiDp ?? null, cornerRadiiPx: cornerRadiiPx ?? null, cutoutShape, showFrame, showRegions, showDimensions, units, zoom, layers, composePreview, cover, onTransitionEnd, onDisplayedAngle, onMeasurementBounds });
-  stateRef.current = { angle, safe, safePx, logicalSizePx, cornerRadiiDp: cornerRadiiDp ?? null, cornerRadiiPx: cornerRadiiPx ?? null, cutoutShape, showFrame, showRegions, showDimensions, units, zoom, layers, composePreview, cover, onTransitionEnd, onDisplayedAngle, onMeasurementBounds };
+  const stateRef = useRef({ angle, safe, safePx, logicalSizePx, cornerRadiiDp: cornerRadiiDp ?? null, cornerRadiiPx: cornerRadiiPx ?? null, cutoutShape, showFrame, showRegions, showDimensions, units, zoom, layers, appPreview, cover, onTransitionEnd, onDisplayedAngle, onMeasurementBounds });
+  stateRef.current = { angle, safe, safePx, logicalSizePx, cornerRadiiDp: cornerRadiiDp ?? null, cornerRadiiPx: cornerRadiiPx ?? null, cutoutShape, showFrame, showRegions, showDimensions, units, zoom, layers, appPreview, cover, onTransitionEnd, onDisplayedAngle, onMeasurementBounds };
 
   useEffect(() => {
     if (webglUnavailable) return;
@@ -536,7 +536,7 @@ export function FoldRenderer3D({
           ...cornerPairs(screen.cornerRadiiDp, screen.cornerRadiiPx),
           ...cutoutPairs(measurement?.cutoutShape),
         ]), layers: st.layers, skin: outerSkin, skinRotation: screen.captureRotation ?? 0,
-        composePreview: st.composePreview, artwork: coverArtwork, foreground: coverForeground, hits: coverHits, paddingDp: { x: padX, y: padY },
+        appPreview: st.appPreview, artwork: coverArtwork, foreground: coverForeground, hits: coverHits, paddingDp: { x: padX, y: padY },
         annotationScale: worldPerCssPixel / (panelW / (size.width + padX * 2)) * 100 / annotationZoom,
       });
       coverTexture.needsUpdate = true;
@@ -563,7 +563,7 @@ export function FoldRenderer3D({
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       drawDiagram(ctx, dpW, dpH, px, {
         safe: st.safe, cornerRadiiDp: st.cornerRadiiDp, cutoutShape: st.cutoutShape,
-        showFrame: st.showFrame, showRegions: st.showRegions, showDimensions: st.showDimensions && measured, fmt, layers: st.layers, composePreview: st.composePreview, skin, skinRotation, artwork, foreground, hits, paddingDp: margin / 2, annotationScale: worldPerCssPixel / (worldW / (dpW + margin)) * 100 / annotationZoom,
+        showFrame: st.showFrame, showRegions: st.showRegions, showDimensions: st.showDimensions && measured, fmt, layers: st.layers, appPreview: st.appPreview, skin, skinRotation, artwork, foreground, hits, paddingDp: margin / 2, annotationScale: worldPerCssPixel / (worldW / (dpW + margin)) * 100 / annotationZoom,
       });
       ctx.restore();
       texture.needsUpdate = true;
@@ -792,7 +792,7 @@ export function FoldRenderer3D({
   useEffect(() => {
     const mount = mountRef.current as (HTMLDivElement & { __update?: () => void }) | null;
     mount?.__update?.();
-  }, [viewRotation, angle, safe, safePx, logicalSizePx, cornerRadiiDp, cornerRadiiPx, cutoutShape, showFrame, showRegions, showDimensions, units, zoom, layers, composePreview, cover, onTransitionEnd]);
+  }, [viewRotation, angle, safe, safePx, logicalSizePx, cornerRadiiDp, cornerRadiiPx, cutoutShape, showFrame, showRegions, showDimensions, units, zoom, layers, appPreview, cover, onTransitionEnd]);
 
   if (!widthDp || !heightDp) {
     return (
@@ -806,7 +806,7 @@ export function FoldRenderer3D({
     const visible = angle < coverRevealAngle(triFold) && cover ? cover : fallbackMain;
     if (visible) return <div role="img" aria-label={`${triFold ? "TriFold" : axis === "vertical" ? "Book" : "Flip"} fold flat fallback diagram`} style={{ width: 700, height: 700 }}>
       <InsetsDiagram screen={visible.screen} measurement={visible.measurement} zoom={100} showFrame={showFrame}
-        showRegions={showRegions} showDimensions={showDimensions} units={units} layers={layers} composePreview={composePreview}
+        showRegions={showRegions} showDimensions={showDimensions} units={units} layers={layers} appPreview={appPreview}
         skin={angle < coverRevealAngle(triFold) && cover ? cover.skin : skin} />
     </div>;
   }

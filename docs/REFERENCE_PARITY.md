@@ -432,26 +432,31 @@ The release pass also corrects prerendered shell selection: route parameters sel
 the same model in initial HTML and hydrated navigation, avoiding a Fold8 header on
 other device routes. JavaScript-disabled navigation checks cover this boundary.
 
-## Compose safeDrawing preview — 2026-09-26
+## App inset preview — 2026-09-26
 
 safearea.info has no app-content preview; this is an intentional Android
-addition tracked in issue #19. The `Compose` toolbar control switches the
+addition tracked in issue #19. The `App preview` toolbar control switches the
 display between the region diagram and a mock Material 3 Scaffold (top app bar,
 list, FAB):
 
-- `Before` lays content out from the display origin, as an edge-to-edge app that
-  ignores insets would. Controls intersecting an inset band get a dashed red
+- `Before` lays content out from the display origin, as an edge-to-edge
+  app that ignores insets would. Controls intersecting an inset band get a dashed red
   outline.
 - `After` pads content by the recorded safe-area insets, which equal
-  `WindowInsets.safeDrawing` with the IME hidden. The app bar container and the
-  list still draw behind the bars, matching Scaffold with
+  Compose's `WindowInsets.safeDrawing` and a View's
+  `getInsets(systemBars() or displayCutout())` with the IME hidden. The app bar
+  container and the list still draw behind the bars, matching Scaffold with
   `contentWindowInsets = WindowInsets.safeDrawing` and list `contentPadding`.
 
-The preview is a simulation derived from each capture, not a rendered Compose
-frame and not a new measurement. It is available only where the selected screen
-and navigation mode have a capture; pending screens keep the control disabled.
+The control is optional, so it sits last in the toolbar after the
+reference-shaped view controls, and its Metrics section follows the measured
+data and sources. It is named for the app rather than a toolkit because both Compose and
+Views resolve to the same values. The preview is a simulation derived from each
+capture, not a rendered app frame and not a new measurement. It is available
+only where the selected screen and navigation mode have a capture; pending
+screens keep the control disabled.
 Inset bands and the cutout bounds draw over the mock at reduced opacity so the
 overlap stays visible, and the legend toggles still apply. Flat displays render
 it in the SVG diagram; foldables draw it into the same canvas texture, so it
-bends with the hinge. Metrics adds a Kotlin snippet with the per-edge dp values
-for the selected screen and mode.
+bends with the hinge. Metrics adds a Compose snippet with the per-edge dp values
+and a View snippet with the px values for the selected screen and mode.
