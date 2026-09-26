@@ -178,7 +178,9 @@ scale stays constant while the hinge moves, then eases (instantly under reduced
 motion) to the settled pose's fit through the same path as the Fit control. The
 fold fit scales the projected body with label room measured from a layout at a
 fixed-room base scale, shrinking only if lanes laid out at the result need more
-room, and keeps the device clear of the overlaid legend. Explicit zoom and pan
+room, and keeps the device clear of the overlaid legend. Flat bar and tablet
+fits reserve the same legend room (2026-09-26); before this they centered in the
+full canvas and the legend could cover the body's lower edge. Explicit zoom and pan
 remain unchanged through poses. `fit-transition.spec.ts` checks constant scale
 during motion, the per-pose endpoint fit, manual zoom/pan, and reduced motion on
 desktop and mobile.
@@ -429,3 +431,27 @@ against the stable build and inspected before commit.
 The release pass also corrects prerendered shell selection: route parameters select
 the same model in initial HTML and hydrated navigation, avoiding a Fold8 header on
 other device routes. JavaScript-disabled navigation checks cover this boundary.
+
+## Compose safeDrawing preview — 2026-09-26
+
+safearea.info has no app-content preview; this is an intentional Android
+addition tracked in issue #19. The `Compose` toolbar control switches the
+display between the region diagram and a mock Material 3 Scaffold (top app bar,
+list, FAB):
+
+- `Before` lays content out from the display origin, as an edge-to-edge app that
+  ignores insets would. Controls intersecting an inset band get a dashed red
+  outline.
+- `After` pads content by the recorded safe-area insets, which equal
+  `WindowInsets.safeDrawing` with the IME hidden. The app bar container and the
+  list still draw behind the bars, matching Scaffold with
+  `contentWindowInsets = WindowInsets.safeDrawing` and list `contentPadding`.
+
+The preview is a simulation derived from each capture, not a rendered Compose
+frame and not a new measurement. It is available only where the selected screen
+and navigation mode have a capture; pending screens keep the control disabled.
+Inset bands and the cutout bounds draw over the mock at reduced opacity so the
+overlap stays visible, and the legend toggles still apply. Flat displays render
+it in the SVG diagram; foldables draw it into the same canvas texture, so it
+bends with the hinge. Metrics adds a Kotlin snippet with the per-edge dp values
+for the selected screen and mode.

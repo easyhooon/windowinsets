@@ -10,6 +10,7 @@ import type { DeviceSkin } from "../data/skins";
 import { skinAssetUrl } from "../data/skinAssetUrl";
 import type { CutoutShape, Screen, InsetsMeasurement } from "../data/types";
 import { cutoutPairs, cornerPairs, formatLengthFromPairs, insetPairs, safeInsets, safeInsetsPx } from "../data/measurementUnits";
+import { CLASH_COLOR, COMPOSE_INSET_OPACITY, composeMockShapes, type ComposePreview } from "./composePreview";
 
 export const COVER_REVEAL_ANGLE = 60; // Illustrative primary surface, not a measured hinge state.
 /** TriFold turns over the same span but faces its rear cover only past the half turn. */
@@ -92,6 +93,7 @@ function drawDiagram(
     showFrame: boolean; showRegions: boolean; showDimensions: boolean;
     fmt: (v: number) => string;
     layers: { safe: boolean; insets: boolean; cutout: boolean; corners: boolean };
+    composePreview: ComposePreview;
     skin?: DeviceSkin;
     skinRotation?: QuarterTurns;
     artwork?: HTMLImageElement;
@@ -140,7 +142,60 @@ function drawDiagram(
   }
 
   const safe = opts.safe;
-  if (opts.showRegions && safe) {
+  if (opts.showRegions && safe && opts.composePreview !== "off") {
+    ctx.save();
+    roundedRectPath(0, 0, W, H, r);
+    ctx.clip();
+    const shapes = composeMockShapes(dpW, dpH, safe, opts.composePreview);
+    for (const shape of shapes) {
+      if (shape.kind === "rect") {
+        if (shape.fill === "transparent") continue;
+        ctx.fillStyle = shape.fill;
+        roundedRectPath(shape.x * px, shape.y * px, shape.width * px, shape.height * px, shape.radius * px);
+        ctx.fill();
+      } else if (shape.kind === "circle") {
+        ctx.fillStyle = shape.fill;
+        ctx.beginPath(); ctx.arc(shape.cx * px, shape.cy * px, shape.r * px, 0, Math.PI * 2); ctx.fill();
+      } else if (shape.kind === "text") {
+        ctx.fillStyle = shape.fill;
+        ctx.font = `400 ${shape.size * px}px Roboto, system-ui, sans-serif`;
+        ctx.textAlign = "left"; ctx.textBaseline = "middle";
+        ctx.fillText(shape.text, shape.x * px, shape.y * px);
+      } else {
+        const h = shape.size / 2 * px;
+        ctx.strokeStyle = shape.stroke; ctx.lineWidth = 2.4 * px; ctx.lineCap = "round";
+        ctx.beginPath();
+        ctx.moveTo(shape.cx * px - h, shape.cy * px); ctx.lineTo(shape.cx * px + h, shape.cy * px);
+        ctx.moveTo(shape.cx * px, shape.cy * px - h); ctx.lineTo(shape.cx * px, shape.cy * px + h);
+        ctx.stroke();
+      }
+    }
+    if (opts.layers.insets) {
+      ctx.globalAlpha = COMPOSE_INSET_OPACITY;
+      ctx.fillStyle = INSET_FILL;
+      if (safe.top > 0) ctx.fillRect(0, 0, W, safe.top * px);
+      if (safe.bottom > 0) ctx.fillRect(0, H - safe.bottom * px, W, safe.bottom * px);
+      if (safe.left > 0) ctx.fillRect(0, 0, safe.left * px, H);
+      if (safe.right > 0) ctx.fillRect(W - safe.right * px, 0, safe.right * px, H);
+      ctx.globalAlpha = 1;
+    }
+    if (opts.layers.cutout && opts.cutoutShape) {
+      const c = opts.cutoutShape;
+      ctx.fillStyle = "#c4a0f1";
+      roundedRectPath(c.xDp * px, c.yDp * px, c.widthDp * px, c.heightDp * px, 1 * px);
+      ctx.fill();
+    }
+    const k = labelScale;
+    ctx.strokeStyle = CLASH_COLOR; ctx.lineWidth = 1.4 * px * k; ctx.setLineDash([3 * px * k, 2 * px * k]);
+    for (const shape of shapes) {
+      if (shape.kind === "rect" && shape.clash) roundedRectPath((shape.x - 3) * px, (shape.y - 3) * px, (shape.width + 6) * px, (shape.height + 6) * px, (shape.radius + 3) * px);
+      else if (shape.kind === "text" && shape.clash) roundedRectPath((shape.x - 3) * px, (shape.y - shape.size / 2 - 3) * px, (shape.width + 6) * px, (shape.size + 6) * px, 3 * px);
+      else continue;
+      ctx.stroke();
+    }
+    ctx.setLineDash([]);
+    ctx.restore();
+  } else if (opts.showRegions && safe) {
     ctx.save();
     roundedRectPath(0, 0, W, H, r);
     ctx.clip();
@@ -238,6 +293,7 @@ export function FoldRenderer3D({
   showDimensions,
   units,
   layers,
+  composePreview = "off",
   skin,
   skinRotation = 0,
   viewRotation = 0,
@@ -269,6 +325,7 @@ export function FoldRenderer3D({
   showDimensions: boolean;
   units: Units;
   layers: { safe: boolean; insets: boolean; cutout: boolean; corners: boolean };
+  composePreview?: ComposePreview;
   skin?: DeviceSkin;
   skinRotation?: QuarterTurns;
   viewRotation?: number;
@@ -285,8 +342,8 @@ export function FoldRenderer3D({
   const mountRef = useRef<HTMLDivElement>(null);
   const wrapRef = useRef<HTMLDivElement>(null);
 
-  const stateRef = useRef({ angle, safe, safePx, logicalSizePx, cornerRadiiDp: cornerRadiiDp ?? null, cornerRadiiPx: cornerRadiiPx ?? null, cutoutShape, showFrame, showRegions, showDimensions, units, zoom, layers, cover, onTransitionEnd, onDisplayedAngle, onMeasurementBounds });
-  stateRef.current = { angle, safe, safePx, logicalSizePx, cornerRadiiDp: cornerRadiiDp ?? null, cornerRadiiPx: cornerRadiiPx ?? null, cutoutShape, showFrame, showRegions, showDimensions, units, zoom, layers, cover, onTransitionEnd, onDisplayedAngle, onMeasurementBounds };
+  const stateRef = useRef({ angle, safe, safePx, logicalSizePx, cornerRadiiDp: cornerRadiiDp ?? null, cornerRadiiPx: cornerRadiiPx ?? null, cutoutShape, showFrame, showRegions, showDimensions, units, zoom, layers, composePreview, cover, onTransitionEnd, onDisplayedAngle, onMeasurementBounds });
+  stateRef.current = { angle, safe, safePx, logicalSizePx, cornerRadiiDp: cornerRadiiDp ?? null, cornerRadiiPx: cornerRadiiPx ?? null, cutoutShape, showFrame, showRegions, showDimensions, units, zoom, layers, composePreview, cover, onTransitionEnd, onDisplayedAngle, onMeasurementBounds };
 
   useEffect(() => {
     if (webglUnavailable) return;
@@ -479,7 +536,7 @@ export function FoldRenderer3D({
           ...cornerPairs(screen.cornerRadiiDp, screen.cornerRadiiPx),
           ...cutoutPairs(measurement?.cutoutShape),
         ]), layers: st.layers, skin: outerSkin, skinRotation: screen.captureRotation ?? 0,
-        artwork: coverArtwork, foreground: coverForeground, hits: coverHits, paddingDp: { x: padX, y: padY },
+        composePreview: st.composePreview, artwork: coverArtwork, foreground: coverForeground, hits: coverHits, paddingDp: { x: padX, y: padY },
         annotationScale: worldPerCssPixel / (panelW / (size.width + padX * 2)) * 100 / annotationZoom,
       });
       coverTexture.needsUpdate = true;
@@ -506,7 +563,7 @@ export function FoldRenderer3D({
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       drawDiagram(ctx, dpW, dpH, px, {
         safe: st.safe, cornerRadiiDp: st.cornerRadiiDp, cutoutShape: st.cutoutShape,
-        showFrame: st.showFrame, showRegions: st.showRegions, showDimensions: st.showDimensions && measured, fmt, layers: st.layers, skin, skinRotation, artwork, foreground, hits, paddingDp: margin / 2, annotationScale: worldPerCssPixel / (worldW / (dpW + margin)) * 100 / annotationZoom,
+        showFrame: st.showFrame, showRegions: st.showRegions, showDimensions: st.showDimensions && measured, fmt, layers: st.layers, composePreview: st.composePreview, skin, skinRotation, artwork, foreground, hits, paddingDp: margin / 2, annotationScale: worldPerCssPixel / (worldW / (dpW + margin)) * 100 / annotationZoom,
       });
       ctx.restore();
       texture.needsUpdate = true;
@@ -735,7 +792,7 @@ export function FoldRenderer3D({
   useEffect(() => {
     const mount = mountRef.current as (HTMLDivElement & { __update?: () => void }) | null;
     mount?.__update?.();
-  }, [viewRotation, angle, safe, safePx, logicalSizePx, cornerRadiiDp, cornerRadiiPx, cutoutShape, showFrame, showRegions, showDimensions, units, zoom, layers, cover, onTransitionEnd]);
+  }, [viewRotation, angle, safe, safePx, logicalSizePx, cornerRadiiDp, cornerRadiiPx, cutoutShape, showFrame, showRegions, showDimensions, units, zoom, layers, composePreview, cover, onTransitionEnd]);
 
   if (!widthDp || !heightDp) {
     return (
@@ -749,7 +806,7 @@ export function FoldRenderer3D({
     const visible = angle < coverRevealAngle(triFold) && cover ? cover : fallbackMain;
     if (visible) return <div role="img" aria-label={`${triFold ? "TriFold" : axis === "vertical" ? "Book" : "Flip"} fold flat fallback diagram`} style={{ width: 700, height: 700 }}>
       <InsetsDiagram screen={visible.screen} measurement={visible.measurement} zoom={100} showFrame={showFrame}
-        showRegions={showRegions} showDimensions={showDimensions} units={units} layers={layers}
+        showRegions={showRegions} showDimensions={showDimensions} units={units} layers={layers} composePreview={composePreview}
         skin={angle < coverRevealAngle(triFold) && cover ? cover.skin : skin} />
     </div>;
   }
