@@ -43,7 +43,7 @@ test("sidebar inquiry opens the GitHub issue template chooser", async ({ page },
     await page.locator(".mobile-model").click();
   }
 
-  const inquiry = page.getByRole("link", { name: "Contact me on GitHub (opens in a new tab)" });
+  const inquiry = page.getByRole("link", { name: "Send feedback or report an issue on GitHub (opens in a new tab)" });
   await expect(inquiry).toBeVisible();
   await expect(inquiry).toHaveAttribute(
     "href",
