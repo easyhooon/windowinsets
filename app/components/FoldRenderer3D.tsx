@@ -5,7 +5,7 @@ import { InsetsDiagram } from "./InsetsDiagram";
 import { DIAGRAM_FONT, DIAGRAM_COLORS } from "./diagramStyle";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
-import { bendPoint, createChassis, createFoldHousings, hingeHalfWidth, rigidPanelPoint, verticalHinge, coverPoint, triFoldPoint, triFoldAngles, triFoldViewTurn, createTriFoldDisplay, createTriFoldHousings, createTriFoldHingeStrips } from "./foldGeometry";
+import { FOLD_DISPLAY_TARGET, FOLD_FRUSTUM_HEIGHT, bendPoint, createChassis, createFoldHousings, hingeHalfWidth, rigidPanelPoint, verticalHinge, coverPoint, triFoldPoint, triFoldAngles, triFoldViewTurn, createTriFoldDisplay, createTriFoldHousings, createTriFoldHingeStrips } from "./foldGeometry";
 import type { DeviceSkin } from "../data/skins";
 import { skinAssetUrl } from "../data/skinAssetUrl";
 import type { CutoutShape, Screen, InsetsMeasurement } from "../data/types";
@@ -314,7 +314,7 @@ export function FoldRenderer3D({
     scene.add(rim);
     // Orthographic projection keeps the physical scale constant as panels
     // move in depth. Its framing is shared by every pose, including the cover.
-    const frustumHeight = 2 * Math.tan(THREE.MathUtils.degToRad(16)) * 11;
+    const frustumHeight = FOLD_FRUSTUM_HEIGHT;
     const camera = new THREE.OrthographicCamera(-frustumHeight / 2, frustumHeight / 2, frustumHeight / 2, -frustumHeight / 2, 0.1, 100);
     // Slightly elevated/angled viewpoint (not a flat head-on view) so the
     // fold's depth is actually visible instead of just its silhouette.
@@ -340,7 +340,7 @@ export function FoldRenderer3D({
     // oriented — otherwise a landscape silhouette (book fold) would blow
     // past the frustum tuned for the old always-portrait assumption and get
     // clipped down to just its green center.
-    const target = 5.2;
+    const target = FOLD_DISPLAY_TARGET;
     const worldW = aspect >= 1 ? target : target * aspect;
     const worldH = aspect >= 1 ? target / aspect : target;
     // The annotation texture includes margins; the solid ends at the display.
@@ -737,7 +737,7 @@ export function FoldRenderer3D({
   }
 
   return <div ref={wrapRef} style={{ width: 700, height: 700, position: "relative" }}>
-    <div ref={mountRef} role="img" aria-label={triFold
+    <div ref={mountRef} data-fold-renderer role="img" aria-label={triFold
       ? `TriFold fold diagram, left hinge ${triFoldAngles(angle).left} degrees, right hinge ${triFoldAngles(angle).right} degrees`
       : `${axis === "vertical" ? "Book" : "Flip"} fold diagram, ${angle} degrees`} style={{ width: 700, height: 700 }} />
     <ProjectedRulers measurements={measurements} />

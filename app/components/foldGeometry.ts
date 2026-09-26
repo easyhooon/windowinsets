@@ -1,6 +1,17 @@
 import * as THREE from "three";
 import { mergeGeometries } from "three/addons/utils/BufferGeometryUtils.js";
 
+/** The orthographic frustum shared by every fold pose, in world units per 700 px canvas. */
+export const FOLD_FRUSTUM_HEIGHT = 2 * Math.tan(THREE.MathUtils.degToRad(16)) * 11;
+/** World size of the inner display's longer padded edge. */
+export const FOLD_DISPLAY_TARGET = 5.2;
+
+/** Canvas px per inner-display dp at 100% canvas scale. */
+export function foldCanvasPxPerDp(widthDp: number, heightDp: number) {
+  const margin = widthDp * .25;
+  return FOLD_DISPLAY_TARGET / Math.max(widthDp + margin, heightDp + margin) * 700 / FOLD_FRUSTUM_HEIGHT;
+}
+
 export function verticalHinge(axis: "vertical" | "horizontal", artworkRotation: number) {
   return (axis === "vertical") !== (artworkRotation % 2 === 1);
 }

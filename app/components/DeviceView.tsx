@@ -1,5 +1,5 @@
-import { triFoldAngles } from "./foldGeometry";
-import { flatDiagramSize } from "./diagramAnnotations";
+import { foldCanvasPxPerDp, triFoldAngles } from "./foldGeometry";
+import { flatCanvasPxPerDp, flatDiagramSize } from "./diagramAnnotations";
 import { preciseScreen } from "../data/measurementUnits";
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router";
@@ -206,6 +206,14 @@ export function DeviceView({ device }: { device: Device }) {
     ? 700
     : size ? flatDiagramSize(size.width, size.height, showFrame ? skin : undefined).width : 440;
   const diagramHeight = 700;
+  const mainWidthDp = main.logicalSizeDp?.width ?? (mainSkin ? mainSkin.screen.width / 3 : 0);
+  const mainHeightDp = main.logicalSizeDp?.height ?? (mainSkin ? mainSkin.screen.height / 3 : 0);
+  // Previews without a capture use the same 3x artwork assumption as InsetsDiagram.
+  const flatDp = screen.logicalSizeDp ?? (skin ? { width: skin.screen.width / 3, height: skin.screen.height / 3 } : null);
+  const dpScale = useFold ? foldCanvasPxPerDp(mainWidthDp, mainHeightDp)
+    : flatDp ? flatCanvasPxPerDp(flatDp.width, flatDp.height, showFrame ? skin : undefined,
+      safe, screen.cornerRadiiDp, measurement?.cutoutShape, screen.captureRotation ?? 0) : 1;
+  const displayZoom = (canvasZoom: number) => Math.round(canvasZoom * dpScale);
   const exportJson = () => {
     try {
       downloadDeviceExport(device);
@@ -339,21 +347,21 @@ export function DeviceView({ device }: { device: Device }) {
         zoom={zoom} setZoom={setZoom} rotation={rotation} fitKey={fitKey}
         onUserTransform={() => { setZoom(viewport.current?.effectiveZoom() ?? zoom); setAutoFit(false); }} onFit={() => setAutoFit(true)}
         baseWidth={diagramWidth}
-        baseHeight={700} fitWidth={useFold ? triFold ? 780 : 1000 : diagramWidth} fitHeight={useFold && !triFold ? 1000 : diagramHeight}>
+        baseHeight={700} dpScale={dpScale} fitWidth={useFold ? triFold ? 780 : 1000 : diagramWidth} fitHeight={useFold && !triFold ? 1000 : diagramHeight}>
         {useFold ? <FoldRenderer3D triFold={triFold} angle={angle} axis={device.formFactor === "foldable-flip" ? "horizontal" : "vertical"}
-          widthDp={main.logicalSizeDp?.width ?? (mainSkin ? mainSkin.screen.width / 3 : 0)} heightDp={main.logicalSizeDp?.height ?? (mainSkin ? mainSkin.screen.height / 3 : 0)}
+          widthDp={mainWidthDp} heightDp={mainHeightDp}
           safe={mainSafe} safePx={mainSafePx} logicalSizePx={main.logicalSizePx} cornerRadiiDp={main.cornerRadiiDp} cornerRadiiPx={main.cornerRadiiPx} cutoutShape={mainMeasurement?.cutoutShape}
           zoom={zoom} showFrame={showFrame} showRegions={showRegions} showDimensions={showDimensions} units={units} layers={layers} skin={mainSkin} skinRotation={main.captureRotation ?? 0} viewRotation={rotation} measured={!!main.logicalSizeDp} cover={outerScreen && outerSkin ? { screen: outerScreen, measurement: outerScreen.insets[navMode], skin: outerSkin } : undefined}
           fallbackMain={{ screen: main, measurement: mainMeasurement }}
           chassisMm={device.chassisMm}
-          onMeasurementBounds={() => viewport.current?.effectiveZoom()}
+          onMeasurementBounds={(bounds, body) => viewport.current?.fitFoldBounds(bounds, body)}
           onDisplayedAngle={value => {
             viewport.current?.setFoldAngle(value);
             const visible = value < COVER_REVEAL_ANGLE && outerScreen ? "cover" : "main";
             setScreenId(current => current === visible ? current : visible);
             return viewport.current?.effectiveZoom();
           }}
-          onTransitionEnd={() => { if (transitionTarget) { setScreenId(transitionTarget); setTransitionTarget(null); } }} />
+          onTransitionEnd={() => { viewport.current?.refitFold(); if (transitionTarget) { setScreenId(transitionTarget); setTransitionTarget(null); } }} />
           : <InsetsDiagram screen={screen} measurement={measurement} zoom={zoom} showFrame={showFrame} showRegions={showRegions} showDimensions={showDimensions} units={units} layers={layers} skin={skin} />}
       </DiagramViewport>
       </div>
@@ -368,7 +376,12 @@ export function DeviceView({ device }: { device: Device }) {
     <div className={`canvas-controls${useFold ? " is-foldable" : ""}`} aria-label="Canvas controls">
       <Dropdown label="Navigation" value={navMode} options={[{ value: "threeButton", label: "3-button" }, { value: "gesture", label: "Gesture" }]} onChange={v => setNavMode(v as NavMode)} />
       <Dropdown label="Orientation" value={String(rotation)} options={orientationOptions} onChange={v => { setRotation(Number(v)); setAutoFit(true); setFitKey(key => key + 1); }} />
-      <Dropdown label="Zoom" value={`${Math.round(zoom)}%`} options={[{ value: "fit", label: "Fit to canvas" }, { value: "out", label: "− Zoom out" }, { value: "in", label: "+ Zoom in" }, ...[50,100,200,300,500].map(z => ({ value: String(z), label: `${z}%` }))]} onChange={v => { if (v === "fit") { setAutoFit(true); setFitKey(k => k + 1); } else { setAutoFit(false); setZoom(v === "in" ? Math.min(500, (viewport.current?.effectiveZoom() ?? zoom) + 10) : v === "out" ? Math.max(25, (viewport.current?.effectiveZoom() ?? zoom) - 10) : Number(v)); } }} />
+      <Dropdown label="Zoom" value={`${displayZoom(zoom)}%`} options={[{ value: "fit", label: "Fit to canvas" }, { value: "out", label: "− Zoom out" }, { value: "in", label: "+ Zoom in" }, ...[25,50,100,200,300].map(z => ({ value: String(z), label: `${z}%` }))]} onChange={v => {
+        if (v === "fit") { setAutoFit(true); setFitKey(k => k + 1); return; }
+        const current = displayZoom(viewport.current?.effectiveZoom() ?? zoom);
+        setAutoFit(false);
+        setZoom((v === "in" ? Math.min(500, current + 10) : v === "out" ? Math.max(10, current - 10) : Number(v)) / dpScale);
+      }} />
       {useFold && <><Dropdown label="Pose" value={triFold && ![0, 135, 180].includes(angle) ? `${Math.round(angle / 180 * 100)}% open` : String(angle)} options={[{value:"0",label:"Closed"},{value:triFold ? "135" : "90",label:"Partially Folded"},{value:"180",label:"Open"}]} onChange={v => selectPose(v, "pose_menu")} />
       <Dropdown label="Hinge" value={triFold ? `${hinges.left}° / ${hinges.right}°` : `${angle}°`} valueWidthCh={triFold ? 10 : 4} options={[]} onChange={() => {}} footer={<>{triFold && <p className="hinge-sequence-note">Left {hinges.left}° · Right {hinges.right}°<br />Close left first, then right.</p>}<input aria-label={triFold ? "Fold sequence" : "Hinge angle in degrees"} type="range" min={0} max={180} value={angle} onChange={e => pose(e.target.value)} onPointerUp={e => recordPose(e.currentTarget.value, "hinge_slider")} onKeyUp={e => recordPose(e.currentTarget.value, "hinge_slider")} /></>} /></>}
       <div className="dropdown settings" ref={settings}><button className="toolbar-button" aria-label="View settings" aria-expanded={settingsOpen} onClick={() => setSettingsOpen(!settingsOpen)}><Icon name="settings" /></button>

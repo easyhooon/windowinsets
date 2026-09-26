@@ -4,7 +4,11 @@ async function choose(page: Page, label: string, option: string) {
   await page.getByRole('button', { name: option, exact: true }).click();
 }
 async function assertBadges(page: Page, context: string) {
-  const result = await page.locator('.projected-rulers').evaluateAll(elements => {
+  // Each settled hinge step refits the pose on the next frames.
+  await expect.poll(() => badgeErrors(page), { message: context }).toEqual([]);
+}
+async function badgeErrors(page: Page) {
+  return page.locator('.projected-rulers').evaluateAll(elements => {
     const viewport = document.querySelector('#device-canvas')!.getBoundingClientRect();
     const badges = elements.flatMap(el => [...el.querySelectorAll('[data-badge]')].map(node => ({ name: node.closest('[data-ruler]')!.getAttribute('data-ruler'), box: node.getBoundingClientRect() })));
     const errors: string[] = [];
@@ -18,7 +22,6 @@ async function assertBadges(page: Page, context: string) {
     if (visible.length === 0) errors.push('no visible badges');
     return errors;
   });
-  expect(result, context).toEqual([]);
 }
 for(const slug of ['galaxy-z-fold2','galaxy-z-fold7','galaxy-z-fold8','galaxy-z-flip8']) {
  test(`${slug} full navigation units rotation pose annotation matrix`, async ({page}) => {

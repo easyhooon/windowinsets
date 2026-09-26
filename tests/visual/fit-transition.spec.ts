@@ -18,17 +18,16 @@ async function sample(page: Page) {
   });
 }
 for (const slug of ["galaxy-z-fold8", "galaxy-z-flip8"]) {
-  test(`${slug} automatic fit keeps one scale throughout folding`, async ({ page }) => {
+  test(`${slug} automatic fit holds scale while folding, then fits the new pose`, async ({ page }) => {
     await page.goto(`/${slug}`);
     await settled(page, 0);
     const closed = await sample(page);
-    await choose(page, "Pose", "Open");
-    await settled(page, 180);
-    const open = await sample(page);
+    const zoomButton = page.getByRole("button", { name: /^Zoom:/ });
+    const closedZoom = await zoomButton.textContent();
     expect(closed.scale).toBeGreaterThan(0);
-    expect(open.scale).toBeCloseTo(closed.scale, 4);
+    let previous = closed.scale;
     // Sample the actual CSS transform and rendered angle in the same animation frame.
-    for (const [pose, target] of [["Closed", 0], ["Partially Folded", 90], ["Open", 180], ["Closed", 0]] as const) {
+    for (const [pose, target] of [["Open", 180], ["Partially Folded", 90], ["Closed", 0]] as const) {
       await page.getByRole("button", { name: /^Pose:/ }).click();
       const frames = page.evaluate(() => new Promise<Array<{ angle: number; scale: number }>>(resolve => {
         const samples: Array<{ angle: number; scale: number }> = [];
@@ -44,17 +43,20 @@ for (const slug of ["galaxy-z-fold8", "galaxy-z-flip8"]) {
       }));
       await page.getByRole("button", { name: pose, exact: true }).click();
       const values = await frames;
-      expect(values.filter(v => v.angle > 1 && v.angle < 179).length).toBeGreaterThan(2);
-      for (const frame of values) {
-        expect(frame.scale).toBeCloseTo(closed.scale, 4);
-      }
+      const moving = values.filter(v => Math.abs(v.angle - target) > 1 && v.angle > 1 && v.angle < 179);
+      expect(moving.length).toBeGreaterThan(2);
+      for (const frame of moving) expect(frame.scale).toBeCloseTo(previous, 4);
       await settled(page, target);
-      const displayedZoom = await page.getByRole("button", { name: /^Zoom:/ }).textContent();
-      expect(displayedZoom).toBe(`Zoom:${Math.round((await sample(page)).scale * 100)}%`);
+      await page.waitForTimeout(400);
+      previous = (await sample(page)).scale;
     }
-    await page.screenshot({ path: test.info().outputPath(`${slug}-closed.png`) });
+    expect(previous).toBeCloseTo(closed.scale, 2);
+    await expect(zoomButton).toHaveText(closedZoom!);
     await choose(page, "Pose", "Open");
     await settled(page, 180);
+    await page.waitForTimeout(400);
+    // The open pose fits the canvas instead of overflowing at the closed scale.
+    expect((await sample(page)).scale).toBeLessThan(closed.scale);
     await page.screenshot({ path: test.info().outputPath(`${slug}-open.png`) });
   });
 
@@ -73,14 +75,15 @@ for (const slug of ["galaxy-z-fold8", "galaxy-z-flip8"]) {
     await choose(page, "Zoom", "200%");
     await choose(page, "Pose", "Open");
     await settled(page, 180);
-    expect((await sample(page)).scale).toBe(2);
+    await expect(page.getByRole("button", { name: "Zoom: 200%" })).toBeVisible();
     await page.locator("#device-canvas").focus();
     await page.keyboard.press("0");
     expect((await sample(page)).pan).toBe("translate(0px, 0px)");
-    expect((await sample(page)).scale).toBeLessThanOrEqual(1.5);
+    expect((await sample(page)).scale).toBeLessThan(before.scale);
     await choose(page, "Pose", "Closed");
     await settled(page, 0);
-    expect((await sample(page)).scale).toBeCloseTo(before.scale, 4);
+    await page.waitForTimeout(400);
+    expect((await sample(page)).scale).toBeCloseTo(before.scale, 2);
   });
 
   test(`${slug} reduced motion synchronizes fit and hinge endpoints`, async ({ page }) => {
@@ -91,11 +94,11 @@ for (const slug of ["galaxy-z-fold8", "galaxy-z-flip8"]) {
     for (const [pose, angle] of [["Open", 180], ["Partially Folded", 90], ["Closed", 0]] as const) {
       await choose(page, "Pose", pose);
       await settled(page, angle);
+      // The endpoint fit settles once labels are laid out at the pose's base scale.
+      await page.waitForTimeout(400);
       const current = await sample(page);
-      expect(current.scale).toBeCloseTo(closed.scale, 4);
       expect(current.scale).toBeGreaterThan(0);
-      expect(current.scale).toBeLessThanOrEqual(1.5);
-      // Fewer annotations can let multiple poses reach the 150% Fit ceiling.
+      if (angle === 0) expect(current.scale).toBeCloseTo(closed.scale, 2);
       // An explicit Fit must reproduce the scale already reached at the endpoint.
       await page.locator('#device-canvas').focus();
       await page.keyboard.press('0');

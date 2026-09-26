@@ -107,6 +107,14 @@ export function diagramAnnotations(width: number, height: number, scale: number,
     right: body.right + 120 * u, bottom: body.bottom + 80 * u } };
 }
 
+/** Canvas px per dp for a flat diagram whose annotated bounds fill a 700 px tall SVG. */
+export function flatCanvasPxPerDp(width: number, height: number, skin: DeviceSkin | undefined,
+  safe: Insets | null, radii: CornerRadii | null, cutout: CutoutShape | undefined, rotation = 0) {
+  const scale = 260 / width;
+  const { bounds } = diagramAnnotations(width, height, scale, skin, safe, radii, cutout, rotation);
+  return 700 * scale / (bounds.bottom - bounds.top);
+}
+
 export function flatDiagramSize(width: number, height: number, skin?: DeviceSkin) {
   const { bounds } = diagramAnnotations(width, height, 260 / width, skin, null, null, undefined);
   return { width: 700 * (bounds.right - bounds.left) / (bounds.bottom - bounds.top), height: 700 };

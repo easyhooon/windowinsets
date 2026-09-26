@@ -25,7 +25,8 @@ Android-specific substitutions and evidence boundaries:
   sequence slider. This prevents a right-first closing order. Closed is 0°/0°,
   Partially Folded is 90°/180°, and Open is 180°/180°. The slider's 0–180 range
   denotes sequence position, not a sensor reading or Android posture.
-- Fold, Flip and TriFold use a fixed orthographic camera and a shared fit scale for all poses.
+- Fold, Flip and TriFold use a fixed orthographic camera. Auto-fit holds the current
+  scale while the hinge moves, then eases to the new pose's fit once it settles.
   Folding changes the silhouette through hinge movement without camera zoom.
   Fold opens across its width; Flip opens across its height.
   Lighting and moving hinges show depth; explicit zoom/pan remain user-controlled.
@@ -124,7 +125,7 @@ from https://developer.samsung.com/galaxy-emulator-skin.
 | Desktop layout | Device list, Metrics, large canvas; controls in header | Same three columns, independent scrolling and draggable/keyboard width handles |
 | Mobile | Model selector, collapsible Metrics, bottom controls | Implemented, checked at 390×844 |
 | Device navigation | Searchable grouped list with selected model | Android family tabs (All/Z/S/Tab/Note/A), collapsible series groups, cross-family search, active model on home and detail routes |
-| Viewport | Scroll/drag pan, pinch zoom, +/−, 0 fit | Pointer pan/touch pinch, native wheel pan/Ctrl-wheel zoom, bounded 25–500% zoom, ResizeObserver fit |
+| Viewport | Scroll/drag pan, pinch zoom, +/−, 0 fit | Pointer pan/touch pinch, native wheel pan/Ctrl-wheel zoom, zoom shown as CSS px per dp (10–500%, auto-fit capped at 100%) so every series shares one scale, ResizeObserver fit |
 | Orientation | Portrait, left/right landscape, upside down | All four view rotations; recorded Android insets are not relabeled as landscape captures |
 | Fold | Closed/partial/open, arbitrary hinge | Presets and slider, eased three.js hinge, rigid outer panels, closed solid shell, reduced-motion support |
 | Layers | Safe area/insets/reserved/corners | Independent legend toggles; Android cutout bounding region replaces iOS reserved regions |
@@ -164,14 +165,18 @@ PPI; `Android Density` and `Scale` report the logical density used for dp. These
 extra rows are Android-specific substitutions needed to avoid presenting unlike
 measurements as if they were the same safearea.info metric.
 
-Fold, Flip and TriFold use a fixed orthographic camera and one fit scale across
-all hinge angles. This owner-approved change replaces the previous per-pose
-camera movement and scale interpolation. Fit uses a shared canvas envelope with
-room for annotations; pending notices and legends reserve space so changing the
-active screen does not resize the canvas. Explicit zoom and pan remain unchanged
-through poses. Fit to canvas recalculates for the current viewport and orientation.
-`fit-transition.spec.ts` checks constant CSS scale on every sampled animation frame,
-manual zoom/pan, and reduced motion on desktop and mobile.
+The displayed zoom is CSS pixels per dp for every series, so Z, S, A, Note and
+Tab percentages are comparable; the internal canvas scale converts through a
+per-device factor, and automatic fit never exceeds 100%. Fold, Flip and TriFold
+use a fixed orthographic camera. Automatic fit targets the visible pose: the
+scale stays constant while the hinge moves, then eases (instantly under reduced
+motion) to the settled pose's fit through the same path as the Fit control. The
+fold fit scales the projected body with label room measured from a layout at a
+fixed-room base scale, shrinking only if lanes laid out at the result need more
+room, and keeps the device clear of the overlaid legend. Explicit zoom and pan
+remain unchanged through poses. `fit-transition.spec.ts` checks constant scale
+during motion, the per-pose endpoint fit, manual zoom/pan, and reduced motion on
+desktop and mobile.
 
 ## Verification
 
@@ -306,8 +311,8 @@ main frame-synchronized WebGL fold transition is preserved.
 External WebGL texture rulers have been replaced by screen-space SVG rulers whose
 attachment points use the device's current hinge transform and camera projection.
 The labels and arrows remain flat and outside the projected body. Folding models
-share one fit envelope across poses, including annotation space, instead of
-refitting each projected silhouette. Short measurements use adjacent badges rather
+hold their scale during hinge motion and refit the settled pose, including
+annotation space. Short measurements use adjacent badges rather
 than diagonal leaders through the hinge. See `ISSUE_1_REVIEW.md` for the explicit
 navigation/unit/pose/rotation matrix, integer-angle sweep and browser coverage.
 

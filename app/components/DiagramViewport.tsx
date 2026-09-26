@@ -1,13 +1,25 @@
 import { useEffect, useImperativeHandle, useLayoutEffect, useRef, useState } from "react";
 
 type Bounds = { left: number; top: number; right: number; bottom: number };
-export type DiagramViewportHandle = { fitFoldBounds: (bounds: Bounds) => number; setFoldAngle: (angle: number) => void; effectiveZoom: () => number };
+export type DiagramViewportHandle = { fitFoldBounds: (bounds: Bounds, body: Bounds) => number; setFoldAngle: (angle: number) => void; effectiveZoom: () => number; refitFold: () => void };
 
-export function DiagramViewport({ viewportRef, autoFit = false, closedFit, children, zoom, setZoom, rotation, fitKey, onUserTransform, onFit, baseWidth = 700, baseHeight = 700, fitWidth = baseWidth, fitHeight = baseHeight }: {
+// Displayed zoom is CSS px per dp, like the reference's px per pt.
+// `zoom` itself stays the scale of the 700 px canvas, so limits are converted.
+const MIN_ZOOM = 10, MAX_ZOOM = 500, MAX_FIT_ZOOM = 100;
+const FOLD_LABEL_ROOM = 64;
+// Converts a screen offset into the rotated canvas frame.
+const rotateBack = (x: number, y: number, degrees: number) => {
+  const r = -degrees * Math.PI / 180;
+  return [x * Math.cos(r) - y * Math.sin(r), x * Math.sin(r) + y * Math.cos(r)];
+};
+
+export function DiagramViewport({ viewportRef, autoFit = false, closedFit, children, zoom, setZoom, rotation, fitKey, onUserTransform, onFit, baseWidth = 700, baseHeight = 700, fitWidth = baseWidth, fitHeight = baseHeight, dpScale = 1 }: {
   viewportRef?: React.Ref<DiagramViewportHandle>; autoFit?: boolean; closedFit?: { width: number; height: number };
   children: React.ReactNode; zoom: number; setZoom: (value: number) => void;
   rotation: number; fitKey: number; baseWidth?: number; baseHeight?: number; fitWidth?: number; fitHeight?: number;
   onUserTransform?: () => void; onFit?: () => void;
+  /** Canvas px per dp at 100% canvas scale. */
+  dpScale?: number;
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const scaleRef = useRef<HTMLDivElement>(null);
@@ -15,30 +27,63 @@ export function DiagramViewport({ viewportRef, autoFit = false, closedFit, child
   const effectiveZoom = useRef(zoom);
   const fitScales = useRef({ closed: zoom, open: zoom });
   const [pan, setPan] = useState({ x: 0, y: 0 });
-  const live = useRef({ zoom, pan, setZoom, onUserTransform, onFit, autoFit, closedFit, rotation });
-  live.current = { zoom, pan, setZoom, onUserTransform, onFit, autoFit, closedFit, rotation };
+  const live = useRef({ zoom, pan, setZoom, onUserTransform, onFit, autoFit, closedFit, rotation, dpScale });
+  live.current = { zoom, pan, setZoom, onUserTransform, onFit, autoFit, closedFit, rotation, dpScale };
+  const clampZoom = (value: number, max = MAX_ZOOM) =>
+    Math.max(MIN_ZOOM / live.current.dpScale, Math.min(max / live.current.dpScale, value));
+  // Folds fit the visible pose and keep that scale while the hinge moves, as
+  // the reference does for its foldable. Automatic fit then eases to the new pose.
+  const foldFitPending = useRef(true);
+  // Stop fold fitting immediately; renderer frames can arrive before autoFit=false renders.
+  const userTransform = () => { foldFitPending.current = false; live.current.onUserTransform?.(); };
+  const foldFitAngle = useRef<number | null>(null);
   const fitBounds = useRef({ fitWidth, fitHeight });
   fitBounds.current = { fitWidth, fitHeight };
   const fitCenter = useRef({ x: 0, y: 0 });
-  const projectedFit = useRef<Bounds | null>(null);
-  const fitFoldBounds = (bounds: Bounds) => {
-      projectedFit.current = bounds;
-      if (!live.current.autoFit || !ref.current || !scaleRef.current) return effectiveZoom.current;
+  const projectedFit = useRef<{ bounds: Bounds; body: Bounds } | null>(null);
+  // Folds scale the projected body, not its labels, whose lanes shift with
+  // scale. Fixed label room gives a first scale; labels laid out there set the
+  // final one once, so Fit and pose endpoints settle on the same value.
+  const foldFitSession = useRef<{ base: number; zoom: number | null } | null>(null);
+  const fitFoldBounds = (bounds: Bounds, body: Bounds, replay = false) => {
+      projectedFit.current = { bounds, body };
+      if (!live.current.autoFit || !foldFitPending.current || !ref.current || !scaleRef.current) return effectiveZoom.current;
+      foldFitAngle.current ??= displayedAngle.current;
       const sideways = Math.abs(live.current.rotation) % 180 === 90;
-      const width = bounds.right - bounds.left, height = bounds.bottom - bounds.top;
-      const availableW = ref.current.clientWidth - 32;
-      const availableH = ref.current.clientHeight - 32;
-      effectiveZoom.current = Math.max(25, Math.min(150, 100 * Math.min(availableW / (sideways ? height : width),
-        availableH / (sideways ? width : height))));
-      const displayedZoom = Math.round(effectiveZoom.current);
-      if (live.current.zoom !== displayedZoom) {
-        live.current.zoom = displayedZoom;
-        live.current.setZoom(displayedZoom);
+      const width = body.right - body.left, height = body.bottom - body.top;
+      const viewport = ref.current.getBoundingClientRect();
+      const footer = ref.current.closest(".canvas-panel")?.querySelector(".canvas-footer")?.getBoundingClientRect();
+      // The legend overlays the canvas bottom; keep the device clear of it.
+      const bottomRoom = Math.max(16, footer && footer.height ? viewport.bottom - footer.top + 8 : 16);
+      const availableW = viewport.width - 32, availableH = viewport.height - 16 - bottomRoom;
+      const scaleFor = (roomX: number, roomY: number) => clampZoom(100 * Math.min((availableW - roomX) / (sideways ? height : width),
+        (availableH - roomY) / (sideways ? width : height)), MAX_FIT_ZOOM);
+      const base = scaleFor(2 * FOLD_LABEL_ROOM, 2 * FOLD_LABEL_ROOM);
+      if (foldFitSession.current?.base !== base) foldFitSession.current = { base, zoom: null };
+      const session = foldFitSession.current;
+      // Replayed bounds may predate the current scale; only fresh renderer
+      // bounds laid out at the session scale may settle it.
+      const laidOut = session.zoom ?? base;
+      if (!replay && Math.abs(effectiveZoom.current - laidOut) < .001) {
+        const px = laidOut / 100;
+        const roomX = (body.left - bounds.left + bounds.right - body.right) * px;
+        const roomY = (body.top - bounds.top + bounds.bottom - body.bottom) * px;
+        const next = scaleFor(sideways ? roomY : roomX, sideways ? roomX : roomY);
+        // Lanes laid out at the final scale may need more room; only shrink so it converges.
+        if (session.zoom === null || next < session.zoom - .001) session.zoom = next;
       }
+      effectiveZoom.current = session.zoom ?? base;
+      if (Math.abs(live.current.zoom - effectiveZoom.current) > .001) {
+        live.current.zoom = effectiveZoom.current; live.current.setZoom(effectiveZoom.current);
+      }
+      // Center the labelled bounds, since labels stack unevenly, then lift
+      // the center by half the legend room.
+      const lift = (bottomRoom - 16) / 2 / (effectiveZoom.current / 100);
       const x = (bounds.left + bounds.right) / 2 - 350;
       const y = (bounds.top + bounds.bottom) / 2 - 350;
-      fitCenter.current = { x, y };
-      scaleRef.current.style.transform = `scale(${effectiveZoom.current / 100}) rotate(${live.current.rotation}deg) translate(${-x}px, ${-y}px)`;
+      const [dx, dy] = rotateBack(0, lift, live.current.rotation);
+      fitCenter.current = { x: x + dx, y: y + dy };
+      scaleRef.current.style.transform = `scale(${effectiveZoom.current / 100}) rotate(${live.current.rotation}deg) translate(${-fitCenter.current.x}px, ${-fitCenter.current.y}px)`;
       return effectiveZoom.current;
     };
   const applyScale = (includeBounds = true) => {
@@ -48,12 +93,26 @@ export function DiagramViewport({ viewportRef, autoFit = false, closedFit, child
       ? fitScales.current.closed + (fitScales.current.open - fitScales.current.closed) * progress
       : live.current.zoom;
     if (scaleRef.current) scaleRef.current.style.transform = `scale(${effectiveZoom.current / 100}) rotate(${live.current.rotation}deg) translate(${-fitCenter.current.x}px, ${-fitCenter.current.y}px)`;
-    if (includeBounds && projectedFit.current) fitFoldBounds(projectedFit.current);
+    if (includeBounds && projectedFit.current) fitFoldBounds(projectedFit.current.bounds, projectedFit.current.body, true);
   };
   useImperativeHandle(viewportRef, () => ({
-    setFoldAngle: angle => { displayedAngle.current = angle; applyScale(false); },
+    setFoldAngle: angle => {
+      displayedAngle.current = angle;
+      if (foldFitAngle.current !== null && angle !== foldFitAngle.current) foldFitPending.current = false;
+      applyScale(false);
+    },
     effectiveZoom: () => effectiveZoom.current,
     fitFoldBounds,
+    refitFold: () => {
+      if (!live.current.autoFit || foldFitPending.current || !scaleRef.current) return;
+      const el = scaleRef.current;
+      if (!matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        el.style.transition = "transform 240ms ease-out";
+        setTimeout(() => { el.style.transition = ""; }, 260);
+      }
+      // Share the explicit Fit path so both settle on the same label layout.
+      fit.current();
+    },
   }));
   useLayoutEffect(() => applyScale(), [zoom, rotation, autoFit]);
   const fitting = useRef(false);
@@ -63,17 +122,23 @@ export function DiagramViewport({ viewportRef, autoFit = false, closedFit, child
     const el = ref.current!;
     const fitCanvas = () => {
       fitting.current = true;
+      foldFitPending.current = true;
+      foldFitAngle.current = null;
+      foldFitSession.current = null;
       setFitRevision(value => value + 1);
       const bounds = fitBounds.current;
       const sideways = Math.abs(rotation) % 180 === 90;
       const w = sideways ? bounds.fitHeight : bounds.fitWidth, h = sideways ? bounds.fitWidth : bounds.fitHeight;
-      const scale = (width: number, height: number) => Math.max(25, Math.min(150, Math.floor(Math.min((el.clientWidth - 32) / width, (el.clientHeight - 32) / height) * 100)));
+      const scale = (width: number, height: number) => clampZoom(Math.floor(Math.min((el.clientWidth - 32) / width, (el.clientHeight - 32) / height) * 100), MAX_FIT_ZOOM);
       const open = scale(w, h);
       fitScales.current = { open, closed: closedFit ? scale(sideways ? closedFit.height : closedFit.width, sideways ? closedFit.width : closedFit.height) : open };
       live.current.zoom = open;
       live.current.setZoom(open);
       applyScale();
       setPan({ x: 0, y: 0 });
+      // A fold session settles only on fresh label layout; the zoom prop may
+      // not change after batching, so ask the renderer for another frame.
+      requestAnimationFrame(() => (el.querySelector("[data-fold-renderer]") as (Element & { __update?: () => void }) | null)?.__update?.());
     };
     fit.current = fitCanvas;
     const observer = new ResizeObserver(fitCanvas);
@@ -97,8 +162,7 @@ export function DiagramViewport({ viewportRef, autoFit = false, closedFit, child
       const ratio = Math.min((viewport.width - 32) / (right - left), (viewport.height - 32) / (bottom - top));
       setPan(previous => ({ x: previous.x + viewport.left + viewport.width / 2 - (left + right) / 2,
         y: previous.y + viewport.top + viewport.height / 2 - (top + bottom) / 2 }));
-      const next = Math.max(25, Math.min(150, Math.floor(zoom * ratio)));
-      if (Math.abs(next - zoom) > 1) setZoom(next); else fitting.current = false;
+      const next = clampZoom(Math.floor(zoom * ratio), MAX_FIT_ZOOM); if (Math.abs(next - zoom) > 1) setZoom(next); else fitting.current = false;
     });
     return () => cancelAnimationFrame(frame);
   }, [zoom, rotation, baseWidth, baseHeight, fitKey, fitRevision, setZoom]);
@@ -106,14 +170,14 @@ export function DiagramViewport({ viewportRef, autoFit = false, closedFit, child
   useEffect(() => {
     const el = ref.current!;
     const changeZoom = (value: number) => {
-      live.current.onUserTransform?.();
-      live.current.setZoom(Math.max(25, Math.min(500, Math.round(value))));
+      userTransform();
+      live.current.setZoom(clampZoom(Math.round(value * live.current.dpScale) / live.current.dpScale));
     };
     const wheel = (e: WheelEvent) => {
       e.preventDefault();
       if (e.ctrlKey || e.metaKey) changeZoom(effectiveZoom.current * Math.exp(-e.deltaY * 0.01));
       else {
-        live.current.onUserTransform?.();
+        userTransform();
         setPan(p => ({ x: p.x - e.deltaX, y: p.y - e.deltaY }));
       }
     };
@@ -122,7 +186,7 @@ export function DiagramViewport({ viewportRef, autoFit = false, closedFit, child
       if (["+", "=", "-", "0"].includes(e.key)) {
         e.preventDefault();
         if (e.key === "0") { live.current.onFit?.(); fit.current(); }
-        else changeZoom(effectiveZoom.current + (e.key === "-" ? -10 : 10));
+        else changeZoom(effectiveZoom.current + (e.key === "-" ? -10 : 10) / live.current.dpScale);
       }
     };
     el.addEventListener("wheel", wheel, { passive: false });
@@ -144,13 +208,13 @@ export function DiagramViewport({ viewportRef, autoFit = false, closedFit, child
     onPointerMove={e => {
       const previous = pointers.current.get(e.pointerId);
       if (!previous) return;
-      live.current.onUserTransform?.();
+      userTransform();
       const others = [...pointers.current.entries()].filter(([id]) => id !== e.pointerId);
       if (others.length) {
         const other = others[0][1];
         const after = Math.hypot(e.clientX - other.x, e.clientY - other.y);
         const start = pinchStart.current;
-        if (start && start.distance > 0) setZoom(Math.max(25, Math.min(500, start.zoom * after / start.distance)));
+        if (start && start.distance > 0) setZoom(clampZoom(start.zoom * after / start.distance));
       } else setPan(p => ({ x: p.x + e.clientX - previous.x, y: p.y + e.clientY - previous.y }));
       pointers.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
     }}
