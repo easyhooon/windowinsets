@@ -32,6 +32,53 @@ Found a mistake or have a capture that differs from mine? Open an issue or pull 
 
 Manufacturers don't publish insets, so I measure them with [InsetsProbe](tools/insets-probe) — a tiny Android app that dumps `WindowInsets`, `DisplayCutout`, `RoundedCorner`, `FoldingFeature` and the hinge angle as JSON. It works on a real device or on [Samsung Remote Test Lab](https://developer.samsung.com/remote-test-lab). See [tools/insets-probe/README.md](tools/insets-probe/README.md).
 
+```mermaid
+flowchart LR
+  device["Galaxy device<br/>real or Samsung RTL"] --> probe["InsetsProbe<br/>edge-to-edge activity"]
+  probe -- "OnApplyWindowInsetsListener<br/>on the content root" --> insets["WindowInsetsCompat"]
+  probe -- "WindowInfoTracker" --> fold["FoldingFeature"]
+  probe -- "Sensor.TYPE_HINGE_ANGLE" --> hinge["Hinge angle"]
+  probe -- "WindowManager, DisplayMetrics,<br/>Configuration" --> metrics["Window size and density"]
+  insets & fold & hinge & metrics --> gate{"CapturePolicy"}
+  gate -- "settled full-screen window" --> json["JSON schema v2<br/>&lt;screen&gt;-&lt;navMode&gt;.json"]
+  json --> raw["measurements/&lt;slug&gt;/<br/>immutable evidence"]
+  raw -- "values plus source link" --> data["app/data/devices/&lt;slug&gt;"]
+  data --> site["windowinsets.info"]
+```
+
+### What InsetsProbe records
+
+The probe targets Android 12+ (`minSdk 31`, `targetSdk 36`) and calls `enableEdgeToEdge()`.
+It reads insets in the content root's `OnApplyWindowInsetsListener` without
+consuming them, so it sees what an edge-to-edge app's root receives.
+
+| Data | Android API | JSON field |
+| --- | --- | --- |
+| Bars and gesture areas | `WindowInsetsCompat.getInsets()` for `statusBars`, `navigationBars`, `systemBars`, `displayCutout`, `captionBar`, `systemGestures`, `mandatorySystemGestures`, `tappableElement`; `getInsetsIgnoringVisibility()` for status, navigation and system bars | `insets`, `insetsIgnoringVisibility` |
+| Camera cutout | `DisplayCutout` safe insets, `boundingRects` and `waterfallInsets`; `getCutoutPath()` sampled with `Path.approximate(0.25f)` in display px | `displayCutout` |
+| Corner radii | `RoundedCorner` from both `WindowInsets.getRoundedCorner()` and `Display.getRoundedCorner()` | `roundedCorners` |
+| Window size | `WindowManager.currentWindowMetrics` and `maximumWindowMetrics`, plus the decor view size | `display` |
+| Density and configuration | `DisplayMetrics` (`densityDpi`, `xdpi`/`ydpi`, `DENSITY_DEVICE_STABLE`) and `Configuration` (`fontScale`, `orientation`, `screenWidthDp`/`screenHeightDp`) | `display` |
+| Fold state | Jetpack WindowManager `FoldingFeature` (state, orientation, occlusion, separation, bounds) and `Sensor.TYPE_HINGE_ANGLE` | `hinge` |
+| Navigation mode | Bottom `navigationBars` vs `tappableElement` insets, cross-checked with `Settings.Secure` `navigation_mode`, `config_navBarInteractionMode` and side `systemGestures` | `navigation` |
+| Build | `Build` (model, Android, security patch, build ID), `ro.build.version.oneui`, `SEM_PLATFORM_INT` | `device` |
+
+Every inset and rectangle is stored in px and in dp (`px ÷ density`, two decimals);
+the site keeps the original px rather than reconstructing it from dp.
+
+**Capture guards.** Pressing *Measure* re-reads `getRootWindowInsets()` instead of
+exporting a stale callback. [`CapturePolicy`](tools/insets-probe/app/src/main/java/info/windowinsets/probe/CapturePolicy.kt)
+blocks the export while the layout is still settling, in multi-window, when the
+window is smaller than the display (pop-up, split-screen or compatibility mode),
+when a FlexWindow launch lands on the wrong display, or when *Main* is selected
+while the hinge reports closed and no `FoldingFeature` is present. The screen
+label (*Phone*, *Cover*, *Main*) is recorded with its provenance and never
+switches displays by itself.
+
+For automation, `adb shell am start -n info.windowinsets.probe/.MainActivity --es screen main --ez export true`
+waits one second for `FoldingFeature`, then saves the JSON to the app's external
+files directory and logs it to logcat.
+
 Put raw captures in `measurements/<device-slug>/<screen>-<navMode>.json` and reference them from the device's `Source` so anyone can re-check them.
 
 ## Camera cutouts and cover-screen limits
