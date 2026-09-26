@@ -435,14 +435,14 @@ other device routes. JavaScript-disabled navigation checks cover this boundary.
 ## App inset preview — 2026-09-26
 
 safearea.info has no app-content preview; this is an intentional Android
-addition tracked in issue #19. The `App preview` toolbar control switches the
+addition tracked in issue #19. The `App insets` toolbar control switches the
 display between the region diagram and a mock Material 3 Scaffold (top app bar,
 list, FAB):
 
-- `Before` lays content out from the display origin, as an edge-to-edge
+- `Ignored` lays content out from the display origin, as an edge-to-edge
   app that ignores insets would. Controls intersecting an inset band get a dashed red
   outline.
-- `After` pads content by the recorded safe-area insets, which equal
+- `Applied` pads content by the recorded safe-area insets, which equal
   Compose's `WindowInsets.safeDrawing` and a View's
   `getInsets(systemBars() or displayCutout())` with the IME hidden. The app bar
   container and the list still draw behind the bars, matching Scaffold with
@@ -450,7 +450,7 @@ list, FAB):
 
 The control is optional, so it sits last in the toolbar after the
 reference-shaped view controls, and its Metrics section follows the measured
-data and sources. It is named for the app rather than a toolkit because both Compose and
+data and sources. The options name what happens to the insets rather than `Before`/`After`, which did not say before or after what. It is named for the app rather than a toolkit because both Compose and
 Views resolve to the same values. The preview is a simulation derived from each
 capture, not a rendered app frame and not a new measurement. It is available
 only where the selected screen and navigation mode have a capture; pending

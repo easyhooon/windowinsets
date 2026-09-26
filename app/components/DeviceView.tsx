@@ -388,9 +388,9 @@ export function DeviceView({ device }: { device: Device }) {
           <SourceList sources={Array.from(new Map((measurement?.sources ?? []).concat(screen.sources).map(s => [`${s.label}|${s.url ?? ""}`, s])).values())} />
           <Link to="/methodology" className="mt-3 block text-accent underline">How these values are measured →</Link>
           {safe && appPreview !== "off" && <>
-            <SectionLabel>App Preview · {appPreview === "after" ? "After: insets applied" : "Before: insets ignored"}</SectionLabel>
+            <SectionLabel>App Preview · Insets {appPreview}</SectionLabel>
             <p className="text-xs leading-relaxed text-muted">
-              {appPreview === "after"
+              {appPreview === "applied"
                 ? "Content is padded by the safe-area insets. Backgrounds still draw edge to edge; the list scrolls behind the navigation bar."
                 : "Content ignores the insets. Red outlines mark controls under a system bar or the cutout."}
               {" "}Simulated from the recorded insets, not a rendered app frame.
@@ -445,7 +445,7 @@ export function DeviceView({ device }: { device: Device }) {
       }} />
       {useFold && <><Dropdown label="Pose" value={triFold && ![0, 135, 180].includes(angle) ? `${Math.round(angle / 180 * 100)}% open` : String(angle)} options={[{value:"0",label:"Closed"},{value:triFold ? "135" : "90",label:"Partially Folded"},{value:"180",label:"Open"}]} onChange={v => selectPose(v, "pose_menu")} />
       <Dropdown label="Hinge" value={triFold ? `${hinges.left}° / ${hinges.right}°` : `${angle}°`} valueWidthCh={triFold ? 10 : 4} options={[]} onChange={() => {}} footer={<>{triFold && <p className="hinge-sequence-note">Left {hinges.left}° · Right {hinges.right}°<br />Close left first, then right.</p>}<input aria-label={triFold ? "Fold sequence" : "Hinge angle in degrees"} type="range" min={0} max={180} value={angle} onChange={e => pose(e.target.value)} onPointerUp={e => recordPose(e.currentTarget.value, "hinge_slider")} onKeyUp={e => recordPose(e.currentTarget.value, "hinge_slider")} /></>} /></>}
-      <Dropdown label="App preview" value={safe ? appPreview : "off"} valueWidthCh={6} options={[{ value: "off", label: "Off" }, { value: "before", label: "Before", disabled: !safe }, { value: "after", label: "After", disabled: !safe }]} onChange={v => setAppPreview(v as AppPreview)} />
+      <Dropdown label="App insets" value={safe ? appPreview : "off"} valueWidthCh={7} options={[{ value: "off", label: "Off" }, { value: "ignored", label: "Ignored", disabled: !safe }, { value: "applied", label: "Applied", disabled: !safe }]} onChange={v => setAppPreview(v as AppPreview)} />
       <div className="dropdown settings" ref={settings}><button className="toolbar-button" aria-label="View settings" aria-expanded={settingsOpen} onClick={() => setSettingsOpen(!settingsOpen)}><Icon name="settings" /></button>
         {settingsOpen && <div className="dropdown-panel settings-panel">
           <label><input type="checkbox" checked={showFrame} onChange={e => setShowFrame(e.target.checked)} />Show Frame</label>
