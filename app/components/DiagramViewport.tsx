@@ -159,9 +159,12 @@ export function DiagramViewport({ viewportRef, autoFit = false, closedFit, child
       const left = Math.min(...boxes.map(box => box.left)), right = Math.max(...boxes.map(box => box.right));
       const top = Math.min(...boxes.map(box => box.top)), bottom = Math.max(...boxes.map(box => box.bottom));
       const viewport = el.getBoundingClientRect();
-      const ratio = Math.min((viewport.width - 32) / (right - left), (viewport.height - 32) / (bottom - top));
+      // Same legend room as the fold fit: the footer overlays the canvas bottom.
+      const footer = el.closest(".canvas-panel")?.querySelector(".canvas-footer")?.getBoundingClientRect();
+      const bottomRoom = Math.max(16, footer && footer.height ? viewport.bottom - footer.top + 8 : 16);
+      const ratio = Math.min((viewport.width - 32) / (right - left), (viewport.height - 16 - bottomRoom) / (bottom - top));
       setPan(previous => ({ x: previous.x + viewport.left + viewport.width / 2 - (left + right) / 2,
-        y: previous.y + viewport.top + viewport.height / 2 - (top + bottom) / 2 }));
+        y: previous.y + viewport.top + 16 + (viewport.height - 16 - bottomRoom) / 2 - (top + bottom) / 2 }));
       const next = clampZoom(Math.floor(zoom * ratio), MAX_FIT_ZOOM); if (Math.abs(next - zoom) > 1) setZoom(next); else fitting.current = false;
     });
     return () => cancelAnimationFrame(frame);
