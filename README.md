@@ -22,9 +22,9 @@ The full write-up lives on the site at [/methodology](https://windowinsets.info/
 
 - **Three source tiers.** Every value is `official` (published by Samsung/Google), `measured` (captured with InsetsProbe on a real device or Samsung Remote Test Lab, raw JSON committed here) or `community` (not yet reproduced). Each source shows the date it was checked.
 - **Insets are measured, not published.** Samsung documents resolution and density, but not status/navigation bar heights, cutouts or corner radii, so I read them from Android itself with [InsetsProbe](tools/insets-probe).
-- **Conditions are part of the data.** Portrait, full screen, default Display size / Font size / Screen resolution, one navigation mode (gesture or 3-button) per capture, and the One UI + Android version are all recorded. A value is only valid for those conditions.
+- **Conditions are part of the data.** Full screen, the recorded capture orientation (phones and cover screens in portrait; most tablets and the Fold8 and TriFold inner displays in landscape), default Display size / Font size / Screen resolution, one navigation mode (gesture or 3-button) per capture, and the One UI + Android version are all recorded. A value is only valid for those conditions.
 - **Never estimated.** Nothing is interpolated from another device or derived from resolution alone. Unverified values are `null` and shown as **pending**.
-- **Known limits.** One UI updates can change values; landscape and multi-window are not covered yet; a real app may see different insets if it adds its own padding or window flags.
+- **Known limits.** One UI updates can change values; each screen is captured in one orientation, so other rotations and multi-window are not covered yet; a real app may see different insets if it adds its own padding or window flags.
 
 Found a mistake or have a capture that differs from mine? Open an issue or pull request with your InsetsProbe JSON — a reproduction is as valuable as a new device.
 
@@ -118,9 +118,11 @@ The Samsung Galaxy Emulator Skin downloads checked on 2026-09-25 contain no
 Galaxy Watch skins. Galaxy Watch4 and later use Wear OS Powered by Samsung, so
 Android `WindowInsets` can be measured, but the current InsetsProbe workflow and
 device data model assume phone navigation modes (gesture or 3-button) and do not
-represent watch-specific round-screen safe areas. Supporting Galaxy Watch needs
-traceable watch artwork and a Wear OS measurement path that records those safe
-areas separately. Until then, Galaxy Watch models are not part of the public
+represent watch-specific round-screen safe areas. A separate
+[Wear OS probe module](tools/insets-probe/wear) now computes the geometric safe
+square inside a round window, but it does not capture or export measurements yet.
+Supporting Galaxy Watch still needs traceable watch artwork and a Wear OS
+measurement path that records those safe areas separately. Until then, Galaxy Watch models are not part of the public
 device catalogue, and no watch measurements are inferred from product images.
 See [Galaxy Watch platform history](https://developer.samsung.com/galaxy-watch-tizen/notice.html)
 and Android's [Wear OS screen-shape guidance](https://developer.android.com/training/wearables/views/layouts).
@@ -138,11 +140,13 @@ and Android's [Wear OS screen-shape guidance](https://developer.android.com/trai
    existing preview slug. Its screens override preview data; additional skin-only
    screens stay pending. Routes, sitemap and prerendering use the merged catalogue.
 
-Current public catalogue: 119 models (29 S, 29 Tab, 9 Fold, 8 Flip, 1 TriFold,
-3 Note, 40 A). The skin archive retains 126 models, including eight pre-2020 models.
-New Fold/Flip entries have static main/cover previews where supplied; models
-with a main skin also have hinge animation. Note/A artwork is available as static
-previews; inset measurements remain pending.
+Current public catalogue: 120 models (29 S, 29 Tab, 9 Fold, 8 Flip, 1 TriFold,
+3 Note, 41 A), 78 of them with verified insets (21 S, 14 Tab, 8 Fold, 8 Flip,
+1 TriFold, 2 Note, 24 A). The skin archive retains 126 models; seven pre-2020
+models stay archived outside the public catalogue. Galaxy A52s 5G is public from
+RTL captures without an official skin. Fold/Flip entries have static main/cover
+previews where supplied; models with a main skin also have hinge animation.
+Models without captures remain static previews with pending insets.
 
 ## Development
 
